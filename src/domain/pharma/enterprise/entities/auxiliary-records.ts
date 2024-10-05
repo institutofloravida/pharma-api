@@ -3,7 +3,7 @@ import { Entity } from '@/core/entities/entity'
 export interface AuxiliaryRecordProps {
   content: string
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
 }
 export abstract class AuxiliaryRecord<Props extends AuxiliaryRecordProps>
   extends Entity<Props> {
