@@ -1,21 +1,21 @@
-import { randomUUID } from "crypto"
+import { randomUUID } from 'crypto'
 
-export class UniqueEntityId{
+export class UniqueEntityId {
   private value: string
 
-  constructor(value?:  string){
+  constructor(value?: string) {
     this.value = value ?? randomUUID()
   }
 
-  toString(){
+  toString() {
     return this.value
   }
 
-  toValue(){
+  toValue() {
     return this.value
   }
 
-  public equal(id: UniqueEntityId){
+  public equal(id: UniqueEntityId) {
     return this.value === id.toValue()
   }
 }

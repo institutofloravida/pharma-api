@@ -1,1 +1,54 @@
-node_modules
+# Logs e arquivos de depuração
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependências do Node.js
+node_modules/
+.pnpm/
+.pnp.js
+
+# Diretórios de build e distribuição
+build/
+dist/
+
+# Arquivos de banco de dados (caso esteja utilizando SQLite localmente)
+*.db
+*.sqlite
+
+# Docker e arquivos de ambiente
+.env
+.env.*
+.dockerignore
+Dockerfile
+
+# Prisma
+prisma/dev.db
+prisma/test.db
+prisma/migrations/
+
+# Cobertura de testes e cache do Vitest
+coverage/
+.vitest/
+
+# Diretórios de IDE e editor
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Cache do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Diretório do Git
+.git/
+
+# Outros arquivos temporários
+*.swp
+*.temp
+*.backup
