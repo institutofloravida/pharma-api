@@ -3,11 +3,11 @@ import type { UnitMeasureRepository } from '../repositories/unit-measure-reposit
 import { UnitMeasure } from '../../enterprise/entities/unitMeasure'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
-interface createQuestionUseCaseRequest {
+interface createUnitMeasureUseCaseRequest {
   acronym: string
   content: string
 }
-type createQuestionUseCaseResponse = Either<
+type createUnitMeasureUseCaseResponse = Either<
   ConflictError,
   {
     unitMeasure: UnitMeasure
@@ -15,7 +15,7 @@ type createQuestionUseCaseResponse = Either<
 >
 export class CreateUnitMeasureUseCase {
   constructor(private unitMeasureRepository: UnitMeasureRepository) {}
-  async execute({ acronym, content }: createQuestionUseCaseRequest): Promise<createQuestionUseCaseResponse> {
+  async execute({ acronym, content }: createUnitMeasureUseCaseRequest): Promise<createUnitMeasureUseCaseResponse> {
     const unitMeasure = UnitMeasure.create({
       content,
       acronym,

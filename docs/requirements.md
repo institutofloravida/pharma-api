@@ -5,23 +5,26 @@
 - [ ] Deve ser possível se autenticar;
 - [ ] Deve ser possível esquecer a senha;
 - [ ] Deve ser possível obter o perfil de um usuário logado;
-- [ ] Deve ser possível cadastrar um operador;
-- [ ] Deve ser possível cadastrar um medicamento;
-- [ ] Deve ser possível cadastrar um usuário(pessoa que recebe o medicamento);
-- [ ] Deve ser possível registrar uma movimentação de entrada ou de saída de medicamentos;
-- [ ] Deve ser possível visualizar alertas de medicamentos a vencer
-- [ ] Deve ser possível cadastrar um fabricante;
-- [ ] Deve ser possível cadastrar uma unidade de medida;
-- [ ] Deve ser possível cadastrar uma classe terapeutica;
-- [ ] Deve ser possível cadastrar um estoque;
+
 - [ ] Deve ser possível associar uma instituição a um estoque;
 - [ ] Deve ser possível associar uma instituição a um operador; 
-- [ ] Deve ser possível cadastrar uma forma farmacêutica;
-- [ ] Deve ser possível cadastrar um lote de medicamentos;
-- [ ] Deve ser possível cadastrar uma instituição;
+
 - [ ] Deve ser possível cadastrar um operador;
+- [ ] Deve ser possível cadastrar um medicamento;
+- [ ] Deve ser possível cadastrar um fabricante;
+- ✅ Deve ser possível cadastrar uma unidade de medida;
+- ✅ Deve ser possível cadastrar uma classe terapeutica;
+- [ ] Deve ser possível cadastrar um estoque;
+- [ ] Deve ser possível cadastrar um operador;
+- [ ] Deve ser possível cadastrar uma forma farmacêutica;
+- [ ] Deve ser possível cadastrar uma instituição;
+- [ ] Deve ser possível cadastrar um lote de medicamentos;
+- [ ] Deve ser possível cadastrar um usuário(pessoa que recebe o medicamento);
+
+- [ ] Deve ser possível visualizar alertas de medicamentos a vencer
 - [ ] Deve ser possível realizar a dispensação de um medicamento;
 - [ ] Deve ser possível realizar baixa de medicamentos;
+- [ ] Deve ser possível registrar uma movimentação de entrada ou de saída de medicamentos;
 
 
   ### relatótórios
