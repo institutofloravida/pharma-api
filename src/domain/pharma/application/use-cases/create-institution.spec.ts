@@ -1,4 +1,4 @@
-import { InMemoryInstitutionRepository } from 'test/repositories/in-memory-institution'
+import { InMemoryInstitutionRepository } from 'test/repositories/in-memory-institution-repository'
 import { CreateInstitutionUseCase } from './create-institution'
 
 let inMemoryInstitutionRepository: InMemoryInstitutionRepository
@@ -35,7 +35,7 @@ describe('Institution', () => {
     if (result.isRight()) {
       expect(inMemoryInstitutionRepository.items).toHaveLength(1)
       expect(inMemoryInstitutionRepository.items[0].id).toBe(result.value?.institution.id)
-      expect(inMemoryInstitutionRepository.items[0].description).toBeNull()
+      expect(inMemoryInstitutionRepository.items[0].description).toBeUndefined()
     }
   })
 })

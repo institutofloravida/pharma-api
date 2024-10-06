@@ -6,14 +6,13 @@ interface InstitutionProps extends CompanyProps {}
 
 export class Institution extends Company<InstitutionProps> {
   static create(
-    props: Optional<InstitutionProps, 'createdAt' | 'description'>,
+    props: Optional<InstitutionProps, 'createdAt'>,
     id?: UniqueEntityId,
   ) {
     const institution = new Institution(
       {
         ...props,
         createdAt: props.createdAt ?? new Date(),
-        description: props.description ?? null,
       },
       id,
     )

@@ -2,7 +2,7 @@ import { AuxiliaryRecord, type AuxiliaryRecordProps } from './auxiliary-records'
 
 export interface CompanyProps extends AuxiliaryRecordProps {
   cnpj: string
-  description?: string | null
+  description?: string
 }
 
 export abstract class Company<Props extends CompanyProps>
