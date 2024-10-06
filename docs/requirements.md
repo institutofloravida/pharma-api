@@ -10,7 +10,7 @@
 - [ ] Deve ser possível associar uma instituição a um operador; 
 
 - [ ] Deve ser possível cadastrar um operador;
-- [ ] Deve ser possível cadastrar um medicamento;
+- ✅ Deve ser possível cadastrar um medicamento;
 - ✅ Deve ser possível cadastrar um fabricante;
 - ✅ Deve ser possível cadastrar uma unidade de medida;
 - ✅ Deve ser possível cadastrar uma classe terapeutica;
@@ -22,9 +22,10 @@
 - [ ] Deve ser possível cadastrar um usuário(pessoa que recebe o medicamento);
 
 - [ ] Deve ser possível visualizar alertas de medicamentos a vencer
-- [ ] Deve ser possível realizar a dispensação de um medicamento;
-- [ ] Deve ser possível realizar baixa de medicamentos;
-- [ ] Deve ser possível registrar uma movimentação de entrada ou de saída de medicamentos;
+- [ ] Deve ser possível realizar a dispensação de um medicamento(FEFO);
+- [ ] Deve ser possível registrar o recebimento de medicamentos;
+- [ ] deve ser possível registrar a saída de medicamentos
+- [ ] deve ser possível inventariar um estoque
 
 
   ### relatótórios
