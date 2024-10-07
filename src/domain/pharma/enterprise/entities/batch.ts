@@ -8,7 +8,7 @@ interface BatchProps extends AuxiliaryRecordProps {
   expirationDate: Date
   manufacturerId: UniqueEntityId
   manufacturingDate?: Date
-  quantity: number
+  currentQuantity: number
 }
 
 export class Batch extends AuxiliaryRecord<BatchProps> {

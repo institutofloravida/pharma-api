@@ -2,12 +2,12 @@ import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
 import type { Optional } from '../../../../core/types/optional'
 import { AuxiliaryRecord, type AuxiliaryRecordProps } from './auxiliary-records'
 
-interface StockProps extends AuxiliaryRecordProps {
+export interface StockProps extends AuxiliaryRecordProps {
   status: boolean
 }
 
 export class Stock extends AuxiliaryRecord<StockProps> {
-  get isActive(): boolean {
+  get isActive() {
     return this.props.status
   }
 
@@ -21,12 +21,13 @@ export class Stock extends AuxiliaryRecord<StockProps> {
   }
 
   static create(
-    props: Optional<StockProps, 'createdAt'>,
+    props: Optional<StockProps, 'createdAt' | 'status'>,
     id?: UniqueEntityId,
   ) {
     const stock = new Stock({
       ...props,
       createdAt: props.createdAt ?? new Date(),
+      status: true,
     }, id)
 
     return stock

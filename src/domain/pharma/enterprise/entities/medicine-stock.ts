@@ -5,6 +5,7 @@ interface MedicineStockProps {
   medicineId: UniqueEntityId
   stockId: UniqueEntityId
   quantity: number
+  // batch
   minimumLevel?: number
   lastMove?: Date
   createdAt: Date
