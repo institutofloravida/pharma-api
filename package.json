@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@rocketseat/eslint-config": "^3.0.12",
     "@types/node": "^22.7.4",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
