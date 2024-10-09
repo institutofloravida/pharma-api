@@ -1,16 +1,16 @@
 import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
-import type { BatchStock } from './batch-stock'
+import type { Optional } from '@/core/types/optional'
 
-interface MedicineStockProps {
+export interface MedicineStockProps {
   medicineId: UniqueEntityId
   stockId: UniqueEntityId
   currentQuantity: number
-  minimumLevel?: number
-  batchs: BatchStock[]
+  minimumLevel: number
+  batchsStockIds: string[]
   lastMove?: Date
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
 }
 
 export class MedicineStock extends AggregateRoot<MedicineStockProps> {
@@ -31,25 +31,21 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
     this.touch()
   }
 
-  public replenish(value: number) {
-    this.props.currentQuantity += value
-  }
-
-  public subtract(value: number) {
-    if (value > this.quantity) {
-      throw new Error(
-        'value to be subtract is greater than the current quantity.',
-      )
-    }
-    this.props.currentQuantity -= value
-  }
-
-  get minimumLevel(): number | undefined {
+  get minimumLevel() {
     return this.props.minimumLevel
   }
 
-  set minimumLevel(value: number | undefined) {
+  set minimumLevel(value: number) {
     this.props.minimumLevel = value
+    this.touch()
+  }
+
+  get batchsStockIds() {
+    return this.props.batchsStockIds
+  }
+
+  set batchsStockIds(value: string[]) {
+    this.props.batchsStockIds = value
     this.touch()
   }
 
@@ -74,12 +70,38 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
     this.props.updatedAt = new Date()
   }
 
+  public replenish(value: number) {
+    this.props.currentQuantity += value
+  }
+
+  public subtract(value: number) {
+    if (value > this.quantity) {
+      throw new Error(
+        'value to be subtract is greater than the current quantity.',
+      )
+    }
+    this.props.currentQuantity -= value
+  }
+
+  public equals(medicineStock: MedicineStock) {
+    if (
+      medicineStock.medicineId.toString() === this.medicineId.toString() &&
+      medicineStock.stockId.toString() === this.stockId.toString()
+    ) {
+      return true
+    }
+
+    return false
+  }
+
   static create(
-    props: MedicineStockProps,
+    props: Optional<MedicineStockProps, 'createdAt' | 'minimumLevel'>,
     id?: UniqueEntityId,
   ) {
     const medicinestock = new MedicineStock({
       ...props,
+      createdAt: props.createdAt ?? new Date(),
+      minimumLevel: props.minimumLevel ?? 0,
     }, id)
 
     return medicinestock

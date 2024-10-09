@@ -1,15 +1,15 @@
 import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
-import { type BatchProps } from './batch'
+import type { Optional } from '@/core/types/optional'
 
-interface BatchStockProps extends BatchProps {
+export interface BatchStockProps {
   stockId: UniqueEntityId
   batchId: UniqueEntityId
 
   currentQuantity: number
   lastMove?: Date
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
 }
 
 export class BatchStock extends Entity<BatchStockProps> {
@@ -61,11 +61,12 @@ export class BatchStock extends Entity<BatchStockProps> {
   }
 
   static create(
-    props: BatchStockProps,
+    props: Optional< BatchStockProps, 'createdAt'>,
     id?: UniqueEntityId,
   ) {
     const batchstock = new BatchStock({
       ...props,
+      createdAt: props.createdAt ?? new Date(),
     }, id)
 
     return batchstock

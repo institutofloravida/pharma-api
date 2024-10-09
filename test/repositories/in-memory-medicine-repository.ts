@@ -9,7 +9,8 @@ export class InMemoryMedicineRepository implements MedicineRepository {
   }
 
   async findByContent(content: string) {
-    const medicine = this.items.find(item => item.content.toLowerCase() === content.toLowerCase().trim())
+    const medicine = this.items.find(
+      item => item.content.toLowerCase().trim() === content.toLowerCase().trim())
     if (!medicine) {
       return null
     }
@@ -27,5 +28,14 @@ export class InMemoryMedicineRepository implements MedicineRepository {
     }
 
     return null
+  }
+
+  async findById(id: string) {
+    const medicine = this.items.find(item => item.id.toString() === id)
+    if (!medicine) {
+      return null
+    }
+
+    return medicine
   }
 }

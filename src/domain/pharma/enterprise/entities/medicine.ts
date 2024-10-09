@@ -2,7 +2,7 @@ import type { Optional } from '@/core/types/optional'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 
-interface MedicineProps {
+export interface MedicineProps {
   content: string
   description?: string | null
   dosage: string
