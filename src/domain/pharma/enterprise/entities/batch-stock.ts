@@ -1,23 +1,18 @@
+import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
-import { AggregateRoot } from '@/core/entities/aggregate-root'
-import type { BatchStock } from './batch-stock'
+import { type BatchProps } from './batch'
 
-interface MedicineStockProps {
-  medicineId: UniqueEntityId
+interface BatchStockProps extends BatchProps {
   stockId: UniqueEntityId
+  batchId: UniqueEntityId
+
   currentQuantity: number
-  minimumLevel?: number
-  batchs: BatchStock[]
   lastMove?: Date
   createdAt: Date
   updatedAt: Date
 }
 
-export class MedicineStock extends AggregateRoot<MedicineStockProps> {
-  get medicineId(): UniqueEntityId {
-    return this.props.medicineId
-  }
-
+export class BatchStock extends Entity<BatchStockProps> {
   get stockId(): UniqueEntityId {
     return this.props.stockId
   }
@@ -44,15 +39,6 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
     this.props.currentQuantity -= value
   }
 
-  get minimumLevel(): number | undefined {
-    return this.props.minimumLevel
-  }
-
-  set minimumLevel(value: number | undefined) {
-    this.props.minimumLevel = value
-    this.touch()
-  }
-
   get lastMove(): Date | undefined {
     return this.props.lastMove
   }
@@ -75,13 +61,13 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
   }
 
   static create(
-    props: MedicineStockProps,
+    props: BatchStockProps,
     id?: UniqueEntityId,
   ) {
-    const medicinestock = new MedicineStock({
+    const batchstock = new BatchStock({
       ...props,
     }, id)
 
-    return medicinestock
+    return batchstock
   }
 }

@@ -1,16 +1,18 @@
 import type { Optional } from '@/core/types/optional'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { AuxiliaryRecord, type AuxiliaryRecordProps } from './auxiliary-records'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
 
-interface MedicineProps extends AuxiliaryRecordProps {
+interface MedicineProps {
   content: string
   description?: string | null
   dosage: string
   pharmaceuticalFormId: UniqueEntityId
   therapeuticClassesIds: UniqueEntityId[]
+  createdAt: Date
+  updatedAt?: Date | null
 }
 
-export class Medicine extends AuxiliaryRecord<MedicineProps> {
+export class Medicine extends AggregateRoot<MedicineProps> {
   get content() {
     return this.props.content
   }
@@ -62,6 +64,10 @@ export class Medicine extends AuxiliaryRecord<MedicineProps> {
 
   get updatedAt() {
     return this.props.updatedAt
+  }
+
+  public touch() {
+    this.props.updatedAt = new Date()
   }
 
   public equals(medicine: Medicine) {

@@ -1,17 +1,31 @@
+import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
 import type { Optional } from '../../../../core/types/optional'
-import { AuxiliaryRecord, type AuxiliaryRecordProps } from './auxiliary-records'
 
-interface BatchProps extends AuxiliaryRecordProps {
-  medicineId: UniqueEntityId
-  stockId: UniqueEntityId
-  expirationDate: Date
+export interface BatchProps {
   manufacturerId: UniqueEntityId
+  code: string
+
+  expirationDate: Date
   manufacturingDate?: Date
-  currentQuantity: number
+  createdAt: Date
+  updatedAt: Date
 }
 
-export class Batch extends AuxiliaryRecord<BatchProps> {
+export class Batch extends Entity<BatchProps> {
+  get manufacturerId() {
+    return this.props.manufacturerId
+  }
+
+  get code() {
+    return this.props.code
+  }
+
+  set code(value) {
+    this.props.code = value
+    this.touch()
+  }
+
   get expirationDate() {
     return this.props.expirationDate
   }
@@ -21,10 +35,6 @@ export class Batch extends AuxiliaryRecord<BatchProps> {
     this.touch()
   }
 
-  get manufacturerId() {
-    return this.props.manufacturerId
-  }
-
   get manufacturingDate() {
     return this.props.manufacturingDate
   }
@@ -32,6 +42,18 @@ export class Batch extends AuxiliaryRecord<BatchProps> {
   set manufacturingDate(value) {
     this.props.manufacturingDate = value
     this.touch()
+  }
+
+  get createdAt() {
+    return this.props.createdAt
+  }
+
+  get updatedAt() {
+    return this.props.updatedAt
+  }
+
+  private touch() {
+    this.props.updatedAt = new Date()
   }
 
   static create(

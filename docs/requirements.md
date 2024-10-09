@@ -9,7 +9,6 @@
 - [ ] Deve ser possível associar uma instituição a um estoque;
 - [ ] Deve ser possível associar uma instituição a um operador; 
 
-- [ ] Deve ser possível cadastrar um operador;
 - ✅ Deve ser possível cadastrar um medicamento;
 - ✅ Deve ser possível cadastrar um fabricante;
 - ✅ Deve ser possível cadastrar uma unidade de medida;
