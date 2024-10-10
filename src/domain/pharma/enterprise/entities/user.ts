@@ -1,7 +1,7 @@
 import type { Optional } from '@/core/types/optional'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Entity } from '@/core/entities/entity'
 import type { Pathology } from './pathology'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
 
 export type Gender = 'M' | 'F' | 'O'
 export type Race = 'black' | 'white' | 'yellow' | 'mixed' | 'undeclared' | 'indigenous'
@@ -20,7 +20,7 @@ export interface UserProps {
   updatedAt?: Date | null
 }
 
-export class User extends Entity<UserProps> {
+export class User extends AggregateRoot<UserProps> {
   get name() {
     return this.props.name
   }
