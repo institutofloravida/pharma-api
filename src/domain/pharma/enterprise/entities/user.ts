@@ -1,6 +1,5 @@
 import type { Optional } from '@/core/types/optional'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { Pathology } from './pathology'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 
 export type Gender = 'M' | 'F' | 'O'
@@ -13,9 +12,9 @@ export interface UserProps {
   birthDate: Date
   gender: Gender
   race: Race
-  pathologies: Pathology[]
+  pathologiesIds: UniqueEntityId[]
   generalRegistration?: string | null
-  address: UniqueEntityId
+  addressId: UniqueEntityId
   createdAt: Date
   updatedAt?: Date | null
 }
@@ -39,6 +38,10 @@ export class User extends AggregateRoot<UserProps> {
     this.touch()
   }
 
+  public getFormattedCpf(): string {
+    return this.cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4')
+  }
+
   get sus() {
     return this.props.sus
   }
@@ -46,6 +49,10 @@ export class User extends AggregateRoot<UserProps> {
   set sus(value: string) {
     this.props.sus = value
     this.touch()
+  }
+
+  public getFormattedSus(): string {
+    return this.sus.replace(/^(\d{3})(\d{4})(\d{4})(\d{4})$/, '$1 $2 $3 $4')
   }
 
   get birthDate() {
@@ -75,12 +82,12 @@ export class User extends AggregateRoot<UserProps> {
     this.touch()
   }
 
-  get pathologies() {
-    return this.props.pathologies
+  get pathologiesIds() {
+    return this.props.pathologiesIds
   }
 
-  set pathologies(value: Pathology[]) {
-    this.props.pathologies = value
+  set pathologiesIds(value: UniqueEntityId[]) {
+    this.props.pathologiesIds = value
     this.touch()
   }
 
@@ -93,8 +100,8 @@ export class User extends AggregateRoot<UserProps> {
     this.touch()
   }
 
-  get address() {
-    return this.props.address
+  get addressId() {
+    return this.props.addressId
   }
 
   get createdAt() {

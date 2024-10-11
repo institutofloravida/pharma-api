@@ -2,7 +2,7 @@ import type { Optional } from '@/core/types/optional'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AuxiliaryRecord, type AuxiliaryRecordProps } from './auxiliary-records'
 
-interface PathologyProps extends AuxiliaryRecordProps {}
+export interface PathologyProps extends AuxiliaryRecordProps {}
 
 export class Pathology extends AuxiliaryRecord<PathologyProps> {
   static create(

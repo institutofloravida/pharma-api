@@ -19,7 +19,7 @@
 - ✅ Deve ser possível cadastrar uma forma farmacêutica;
 - ✅ Deve ser possível cadastrar uma instituição;
 - ✅ Deve ser possível cadastrar um lote de medicamentos;
-- [ ] Deve ser possível cadastrar um usuário(pessoa que recebe o medicamento);
+- ✅ Deve ser possível cadastrar um usuário(pessoa que recebe o medicamento);
 
 - [ ] Deve ser possível visualizar alertas de medicamentos a vencer
 - [ ] Deve ser possível realizar a dispensação de um medicamento(FEFO);
