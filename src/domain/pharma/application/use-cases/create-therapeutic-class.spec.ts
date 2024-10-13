@@ -1,13 +1,13 @@
-import { InMemoryTherapeuticClassRepository } from 'test/repositories/in-memory-therapeutic-class-repository'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 import { CreateTherapeuticClassUseCase } from './create-therapeutic-class'
 
-let inMemoryTherapeuticClassRepository: InMemoryTherapeuticClassRepository
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let sut: CreateTherapeuticClassUseCase
 
 describe('Therapeutic Class', () => {
   beforeEach(() => {
-    inMemoryTherapeuticClassRepository = new InMemoryTherapeuticClassRepository()
-    sut = new CreateTherapeuticClassUseCase(inMemoryTherapeuticClassRepository)
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
+    sut = new CreateTherapeuticClassUseCase(inMemoryTherapeuticClassesRepository)
   })
   it('shoult be able create a therapeuic class', async () => {
     const result = await sut.execute({
@@ -15,8 +15,8 @@ describe('Therapeutic Class', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryTherapeuticClassRepository.items).toHaveLength(1)
-      expect(inMemoryTherapeuticClassRepository.items[0].content).toBe(result.value?.therapeuticClass.content)
+      expect(inMemoryTherapeuticClassesRepository.items).toHaveLength(1)
+      expect(inMemoryTherapeuticClassesRepository.items[0].content).toBe(result.value?.therapeuticClass.content)
     }
   })
 
@@ -29,8 +29,8 @@ describe('Therapeutic Class', () => {
     })
     expect(result2.isLeft()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryTherapeuticClassRepository.items).toHaveLength(1)
-      expect(inMemoryTherapeuticClassRepository.items[0].id).toBe(result.value?.therapeuticClass.id)
+      expect(inMemoryTherapeuticClassesRepository.items).toHaveLength(1)
+      expect(inMemoryTherapeuticClassesRepository.items[0].id).toBe(result.value?.therapeuticClass.id)
     }
   })
 })

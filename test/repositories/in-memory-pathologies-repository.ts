@@ -1,7 +1,7 @@
-import type { PathologyRepository } from '@/domain/pharma/application/repositories/pathology-repository'
+import type { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
 import type { Pathology } from '@/domain/pharma/enterprise/entities/pathology'
 
-export class InMemoryPathologyRepository implements PathologyRepository {
+export class InMemoryPathologiesRepository implements PathologiesRepository {
   public items: Pathology[] = []
 
   async create(pathology: Pathology) {

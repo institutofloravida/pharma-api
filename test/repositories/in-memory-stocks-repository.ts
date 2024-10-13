@@ -1,7 +1,7 @@
-import type { StockRepository } from '@/domain/pharma/application/repositories/stock-repository'
+import type { StocksRepository } from '@/domain/pharma/application/repositories/stocks-repository'
 import type { Stock } from '@/domain/pharma/enterprise/entities/stock'
 
-export class InMemoryStockRepository implements StockRepository {
+export class InMemoryStocksRepository implements StocksRepository {
   public items: Stock[] = []
 
   async create(stock: Stock) {

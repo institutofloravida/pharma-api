@@ -1,6 +1,6 @@
 import type { TherapeuticClass } from '../../enterprise/entities/therapeutic-class'
 
-export interface TherapeuticClassRepository {
+export interface TherapeuticClassesRepository {
   create(therapeuticClass: TherapeuticClass): Promise<void>
   findByContent(content: string): Promise<TherapeuticClass | null>
 }

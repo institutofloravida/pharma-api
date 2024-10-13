@@ -1,7 +1,7 @@
-import type { OperatorRepository } from '@/domain/pharma/application/repositories/operator-repository'
+import type { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
 import type { Operator } from '@/domain/pharma/enterprise/entities/operator'
 
-export class InMemoryOperatorRepository implements OperatorRepository {
+export class InMemoryOperatorsRepository implements OperatorsRepository {
   public items: Operator[] = []
 
   async create(operator: Operator) {

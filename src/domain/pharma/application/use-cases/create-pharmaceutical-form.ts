@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { PharmaceuticalForm } from '../../enterprise/entities/pharmaceutical-form'
-import type { PharmaceuticalFormRepository } from '../repositories/pharmaceutical-form-repository'
+import type { PharmaceuticalFormRepository } from '../repositories/pharmaceutical-forms-repository'
 
 interface createPharmaceuticalFormUseCaseRequest {
   content: string

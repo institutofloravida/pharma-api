@@ -1,14 +1,14 @@
-import { InMemoryOperatorRepository } from 'test/repositories/in-memory-operator-repository'
+import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
 import { CreateOperatorUseCase } from './create-operator'
 import { makeOperator } from 'test/factories/make-operator'
 
-let inMemoryOperatorRepository: InMemoryOperatorRepository
+let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let sut: CreateOperatorUseCase
 
 describe('Operator', () => {
   beforeEach(() => {
-    inMemoryOperatorRepository = new InMemoryOperatorRepository()
-    sut = new CreateOperatorUseCase(inMemoryOperatorRepository)
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
+    sut = new CreateOperatorUseCase(inMemoryOperatorsRepository)
   })
   it('should be able create a operator', async () => {
     const operator = makeOperator()
@@ -17,8 +17,8 @@ describe('Operator', () => {
 
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryOperatorRepository.items).toHaveLength(1)
-      expect(inMemoryOperatorRepository.items[0].name).toBe(result.value?.operator.name)
+      expect(inMemoryOperatorsRepository.items).toHaveLength(1)
+      expect(inMemoryOperatorsRepository.items[0].name).toBe(result.value?.operator.name)
     }
   })
 
@@ -36,9 +36,9 @@ describe('Operator', () => {
     expect(result.isRight()).toBeTruthy()
     expect(result2.isLeft()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryOperatorRepository.items).toHaveLength(1)
-      expect(inMemoryOperatorRepository.items[0].id).toBe(result.value?.operator.id)
-      expect(inMemoryOperatorRepository.items[0].role).toBe('COMMON')
+      expect(inMemoryOperatorsRepository.items).toHaveLength(1)
+      expect(inMemoryOperatorsRepository.items[0].id).toBe(result.value?.operator.id)
+      expect(inMemoryOperatorsRepository.items[0].role).toBe('COMMON')
     }
   })
 })

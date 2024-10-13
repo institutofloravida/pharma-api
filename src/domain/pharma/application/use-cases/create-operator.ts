@@ -2,7 +2,7 @@ import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
 import { Operator, OperatorRole } from '../../enterprise/entities/operator'
-import type { OperatorRepository } from '../repositories/operator-repository'
+import type { OperatorRepository } from '../repositories/operators-repository'
 import { OperatorAlreadyExistsError } from './_errors/operator-already-exists-error'
 
 interface createOperatorUseCaseRequest {

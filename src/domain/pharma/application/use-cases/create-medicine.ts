@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Medicine } from '../../enterprise/entities/medicine'
-import type { MedicineRepository } from '../repositories/medicine-repository'
+import type { MedicineRepository } from '../repositories/medicines-repository'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 interface createMedicineUseCaseRequest {

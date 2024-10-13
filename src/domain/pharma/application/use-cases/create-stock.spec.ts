@@ -1,14 +1,14 @@
-import { InMemoryStockRepository } from 'test/repositories/in-memory-stock-repository'
+import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { CreateStockUseCase } from './create-stock'
 import { makeStock } from 'test/factories/make-stock'
 
-let inMemoryStockRepository: InMemoryStockRepository
+let inMemoryStocksRepository: InMemoryStocksRepository
 let sut: CreateStockUseCase
 
 describe('Stock', () => {
   beforeEach(() => {
-    inMemoryStockRepository = new InMemoryStockRepository()
-    sut = new CreateStockUseCase(inMemoryStockRepository)
+    inMemoryStocksRepository = new InMemoryStocksRepository()
+    sut = new CreateStockUseCase(inMemoryStocksRepository)
   })
   it('shoult be able create a stock', async () => {
     const stock = makeStock()
@@ -16,8 +16,8 @@ describe('Stock', () => {
 
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryStockRepository.items).toHaveLength(1)
-      expect(inMemoryStockRepository.items[0].content).toBe(result.value?.stock.content)
+      expect(inMemoryStocksRepository.items).toHaveLength(1)
+      expect(inMemoryStocksRepository.items[0].content).toBe(result.value?.stock.content)
     }
   })
 
@@ -32,8 +32,8 @@ describe('Stock', () => {
     expect(result.isRight()).toBeTruthy()
     expect(result2.isLeft()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryStockRepository.items).toHaveLength(1)
-      expect(inMemoryStockRepository.items[0].id).toBe(result.value?.stock.id)
+      expect(inMemoryStocksRepository.items).toHaveLength(1)
+      expect(inMemoryStocksRepository.items[0].id).toBe(result.value?.stock.id)
     }
   })
 })

@@ -1,14 +1,14 @@
-import { InMemoryUnitMeasureRepository }
-  from 'test/repositories/in-memory-unit-measure-repository'
+import { InMemoryUnitsMeasureRepository }
+  from 'test/repositories/in-memory-units-measure-repository'
 import { CreateUnitMeasureUseCase } from './create-unit-measure'
 
-let inMemoryUnitMeasureRepository: InMemoryUnitMeasureRepository
+let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let sut: CreateUnitMeasureUseCase
 
 describe('Unit Measures', () => {
   beforeEach(() => {
-    inMemoryUnitMeasureRepository = new InMemoryUnitMeasureRepository()
-    sut = new CreateUnitMeasureUseCase(inMemoryUnitMeasureRepository)
+    inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
+    sut = new CreateUnitMeasureUseCase(inMemoryUnitsMeasureRepository)
   })
   it('shoult be able create a unit measure', async () => {
     const result = await sut.execute({
@@ -17,8 +17,8 @@ describe('Unit Measures', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryUnitMeasureRepository.items).toHaveLength(1)
-      expect(inMemoryUnitMeasureRepository.items[0].acronym).toBe(result.value?.unitMeasure.acronym)
+      expect(inMemoryUnitsMeasureRepository.items).toHaveLength(1)
+      expect(inMemoryUnitsMeasureRepository.items[0].acronym).toBe(result.value?.unitMeasure.acronym)
     }
   })
 
@@ -33,8 +33,8 @@ describe('Unit Measures', () => {
     })
     expect(result2.isLeft()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryUnitMeasureRepository.items).toHaveLength(1)
-      expect(inMemoryUnitMeasureRepository.items[0].id).toBe(result.value?.unitMeasure.id)
+      expect(inMemoryUnitsMeasureRepository.items).toHaveLength(1)
+      expect(inMemoryUnitsMeasureRepository.items[0].id).toBe(result.value?.unitMeasure.id)
     }
   })
 })

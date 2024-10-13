@@ -1,13 +1,13 @@
-import { InMemoryManufacturerRepository } from 'test/repositories/in-memory-manufacturer-repository'
+import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
 import { CreateManufacturerUseCase } from './create-manufacturer'
 
-let inMemoryManufacturerRepository: InMemoryManufacturerRepository
+let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let sut: CreateManufacturerUseCase
 
 describe('Manufacturer', () => {
   beforeEach(() => {
-    inMemoryManufacturerRepository = new InMemoryManufacturerRepository()
-    sut = new CreateManufacturerUseCase(inMemoryManufacturerRepository)
+    inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
+    sut = new CreateManufacturerUseCase(inMemoryManufacturersRepository)
   })
   it('shoult be able create a Manufacturer', async () => {
     const result = await sut.execute({
@@ -17,8 +17,8 @@ describe('Manufacturer', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryManufacturerRepository.items).toHaveLength(1)
-      expect(inMemoryManufacturerRepository.items[0].content).toBe(result.value?.manufacturer.content)
+      expect(inMemoryManufacturersRepository.items).toHaveLength(1)
+      expect(inMemoryManufacturersRepository.items[0].content).toBe(result.value?.manufacturer.content)
     }
   })
 
@@ -39,9 +39,9 @@ describe('Manufacturer', () => {
     expect(result2.isLeft()).toBeTruthy()
     expect(result3.isLeft()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryManufacturerRepository.items).toHaveLength(1)
-      expect(inMemoryManufacturerRepository.items[0].id).toBe(result.value?.manufacturer.id)
-      expect(inMemoryManufacturerRepository.items[0].description).toBeUndefined()
+      expect(inMemoryManufacturersRepository.items).toHaveLength(1)
+      expect(inMemoryManufacturersRepository.items[0].id).toBe(result.value?.manufacturer.id)
+      expect(inMemoryManufacturersRepository.items[0].description).toBeUndefined()
     }
   })
 })

@@ -1,7 +1,7 @@
-import type { PharmaceuticalFormRepository } from '@/domain/pharma/application/repositories/pharmaceutical-form-repository'
+import type { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repositories/pharmaceutical-forms-repository'
 import type { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
 
-export class InMemoryPharmaceuticalFormRepository implements PharmaceuticalFormRepository {
+export class InMemoryPharmaceuticalFormsRepository implements PharmaceuticalFormsRepository {
   public items: PharmaceuticalForm[] = []
 
   async create(pharmaceuticalForm: PharmaceuticalForm) {

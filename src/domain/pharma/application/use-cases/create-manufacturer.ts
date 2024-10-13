@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Manufacturer } from '../../enterprise/entities/manufacturer'
-import type { ManufacturerRepository } from '../repositories/manufacturer-repository'
+import type { ManufacturerRepository } from '../repositories/manufacturers-repository'
 
 interface createManufacturerUseCaseRequest {
   content: string,

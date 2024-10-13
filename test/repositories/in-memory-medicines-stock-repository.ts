@@ -1,7 +1,7 @@
-import { MedicineStockRepository } from '@/domain/pharma/application/repositories/medicine-stock-repository'
+import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
 import { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock'
 
-export class InMemoryMedicineStockRepository implements MedicineStockRepository {
+export class InMemoryMedicinesStockRepository implements MedicinesStockRepository {
   public items: MedicineStock[] = []
 
   async create(medicinestock: MedicineStock) {

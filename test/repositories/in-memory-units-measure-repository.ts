@@ -1,7 +1,7 @@
-import type { UnitMeasureRepository } from '@/domain/pharma/application/repositories/unit-measure-repository'
+import type { UnitsMeasureRepository } from '@/domain/pharma/application/repositories/units-measure-repository'
 import type { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
 
-export class InMemoryUnitMeasureRepository implements UnitMeasureRepository {
+export class InMemoryUnitsMeasureRepository implements UnitsMeasureRepository {
   public items: UnitMeasure[] = []
 
   async create(unitMeasure: UnitMeasure) {

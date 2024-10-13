@@ -1,7 +1,7 @@
-import type { TherapeuticClassRepository } from '@/domain/pharma/application/repositories/therapeutic-class-repository'
+import type { TherapeuticClassesRepository } from '@/domain/pharma/application/repositories/therapeutic-classes-repository'
 import type { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeutic-class'
 
-export class InMemoryTherapeuticClassRepository implements TherapeuticClassRepository {
+export class InMemoryTherapeuticClassesRepository implements TherapeuticClassesRepository {
   public items: TherapeuticClass[] = []
 
   async create(therapeuticClass: TherapeuticClass) {

@@ -1,25 +1,25 @@
-import { InMemoryUserRepository } from 'test/repositories/in-memory-user-repository'
+import { InMemoryUserRepository } from 'test/repositories/in-memory-users-repository'
 import { CreateUserUseCase } from './create-user'
-import { InMemoryPathologyRepository } from 'test/repositories/in-memory-pathology-repository'
+import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makePathology } from 'test/factories/make-pathology'
 import { faker } from '@faker-js/faker'
 
-let inMemoryPathologyRepository: InMemoryPathologyRepository
+let inMemoryPathologiesRepository: InMemoryPathologiesRepository
 let inMemoryUserRepository: InMemoryUserRepository
 let sut: CreateUserUseCase
 
 describe('User', () => {
   beforeEach(() => {
-    inMemoryPathologyRepository = new InMemoryPathologyRepository()
+    inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
     inMemoryUserRepository = new InMemoryUserRepository()
-    sut = new CreateUserUseCase(inMemoryUserRepository, inMemoryPathologyRepository)
+    sut = new CreateUserUseCase(inMemoryUserRepository, inMemoryPathologiesRepository)
   })
   it('should be able create a user', async () => {
-    await inMemoryPathologyRepository.create(
+    await inMemoryPathologiesRepository.create(
       makePathology({}, new UniqueEntityId('1')),
     )
-    await inMemoryPathologyRepository.create(
+    await inMemoryPathologiesRepository.create(
       makePathology({}, new UniqueEntityId('2')),
     )
     const result = await sut.execute({
@@ -46,10 +46,10 @@ describe('User', () => {
   })
 
   it('not should allowed duplicity at cpf', async () => {
-    await inMemoryPathologyRepository.create(
+    await inMemoryPathologiesRepository.create(
       makePathology({}, new UniqueEntityId('1')),
     )
-    await inMemoryPathologyRepository.create(
+    await inMemoryPathologiesRepository.create(
       makePathology({}, new UniqueEntityId('2')),
     )
 
@@ -92,10 +92,10 @@ describe('User', () => {
   })
 
   it('not should allowed duplicity at SUS card', async () => {
-    await inMemoryPathologyRepository.create(
+    await inMemoryPathologiesRepository.create(
       makePathology({}, new UniqueEntityId('1')),
     )
-    await inMemoryPathologyRepository.create(
+    await inMemoryPathologiesRepository.create(
       makePathology({}, new UniqueEntityId('2')),
     )
 

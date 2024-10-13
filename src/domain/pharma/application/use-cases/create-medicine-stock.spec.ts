@@ -1,41 +1,41 @@
-import { InMemoryMedicineStockRepository } from 'test/repositories/in-memory-medicine-stock-repository'
+import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository'
 import { CreateMedicineStockUseCase } from './create-medicine-stock'
-import { InMemoryStockRepository } from 'test/repositories/in-memory-stock-repository'
-import { InMemoryMedicineRepository } from 'test/repositories/in-memory-medicine-repository'
-import { InMemoryBatchRepository } from 'test/repositories/in-memory-batch-repository'
-import { InMemoryBatchStockRepository } from 'test/repositories/in-memory-batch-stock-repository'
+import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
+import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
+import { InMemoryBatchsRepository } from 'test/repositories/in-memory-batchs-repository'
+import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { makeStock } from 'test/factories/make-stock'
 import { makeMedicine } from 'test/factories/make-medicine'
 
-let inMemoryStockRepository: InMemoryStockRepository
-let inMemoryMedicineRepository: InMemoryMedicineRepository
-let inMemoryBatchRepository: InMemoryBatchRepository
-let inMemoryBatchStockRepository: InMemoryBatchStockRepository
-let inMemoryMedicineStockRepository: InMemoryMedicineStockRepository
+let inMemoryStocksRepository: InMemoryStocksRepository
+let inMemoryMedicinesRepository: InMemoryMedicinesRepository
+let inMemoryBatchsRepository: InMemoryBatchsRepository
+let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
+let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let sut: CreateMedicineStockUseCase
 
 describe('MedicineStock', () => {
   beforeEach(() => {
-    inMemoryStockRepository = new InMemoryStockRepository()
-    inMemoryMedicineRepository = new InMemoryMedicineRepository()
-    inMemoryBatchRepository = new InMemoryBatchRepository()
-    inMemoryBatchStockRepository = new InMemoryBatchStockRepository()
-    inMemoryMedicineStockRepository = new InMemoryMedicineStockRepository()
+    inMemoryStocksRepository = new InMemoryStocksRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryBatchsRepository = new InMemoryBatchsRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository()
+    inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
 
     sut = new CreateMedicineStockUseCase(
-      inMemoryStockRepository,
-      inMemoryMedicineRepository,
-      inMemoryBatchRepository,
-      inMemoryBatchStockRepository,
-      inMemoryMedicineStockRepository,
+      inMemoryStocksRepository,
+      inMemoryMedicinesRepository,
+      inMemoryBatchsRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryMedicinesStockRepository,
     )
   })
   it('shoult be able create a medicine stock', async () => {
     const stock = makeStock()
-    await inMemoryStockRepository.create(stock)
+    await inMemoryStocksRepository.create(stock)
 
     const medicine = makeMedicine()
-    await inMemoryMedicineRepository.create(medicine)
+    await inMemoryMedicinesRepository.create(medicine)
 
     const result = await sut.execute({
       code: 'ABCD1',
@@ -47,16 +47,16 @@ describe('MedicineStock', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryMedicineStockRepository.items).toHaveLength(1)
-      expect(inMemoryMedicineStockRepository.items[0].quantity).toBe(result.value?.medicineStock.quantity)
+      expect(inMemoryMedicinesStockRepository.items).toHaveLength(1)
+      expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(result.value?.medicineStock.quantity)
     }
   })
   it('not should allowed duplicity', async () => {
     const stock = makeStock()
-    await inMemoryStockRepository.create(stock)
+    await inMemoryStocksRepository.create(stock)
 
     const medicine = makeMedicine()
-    await inMemoryMedicineRepository.create(medicine)
+    await inMemoryMedicinesRepository.create(medicine)
 
     const result = await sut.execute({
       code: 'ABCD1',
@@ -76,8 +76,8 @@ describe('MedicineStock', () => {
     })
     expect(result2.isLeft()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryMedicineStockRepository.items).toHaveLength(1)
-      expect(inMemoryMedicineStockRepository.items[0].id).toBe(result.value?.medicineStock.id)
+      expect(inMemoryMedicinesStockRepository.items).toHaveLength(1)
+      expect(inMemoryMedicinesStockRepository.items[0].id).toBe(result.value?.medicineStock.id)
     }
   })
 })

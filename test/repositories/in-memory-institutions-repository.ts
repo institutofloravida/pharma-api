@@ -1,7 +1,7 @@
-import type { InstitutionRepository } from '@/domain/pharma/application/repositories/institution-repository'
+import type { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
 import type { Institution } from '@/domain/pharma/enterprise/entities/institution'
 
-export class InMemoryInstitutionRepository implements InstitutionRepository {
+export class InMemoryInstitutionsRepository implements InstitutionsRepository {
   public items: Institution[] = []
 
   async create(institution: Institution) {

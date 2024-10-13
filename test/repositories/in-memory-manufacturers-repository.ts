@@ -1,7 +1,7 @@
-import type { ManufacturerRepository } from '@/domain/pharma/application/repositories/manufacturer-repository'
+import type { ManufacturersRepository } from '@/domain/pharma/application/repositories/manufacturers-repository'
 import type { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 
-export class InMemoryManufacturerRepository implements ManufacturerRepository {
+export class InMemoryManufacturersRepository implements ManufacturersRepository {
   public items: Manufacturer[] = []
 
   async create(manufacturer: Manufacturer) {

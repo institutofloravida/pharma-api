@@ -1,13 +1,13 @@
-import { InMemoryInstitutionRepository } from 'test/repositories/in-memory-institution-repository'
+import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { CreateInstitutionUseCase } from './create-institution'
 
-let inMemoryInstitutionRepository: InMemoryInstitutionRepository
+let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let sut: CreateInstitutionUseCase
 
 describe('Institution', () => {
   beforeEach(() => {
-    inMemoryInstitutionRepository = new InMemoryInstitutionRepository()
-    sut = new CreateInstitutionUseCase(inMemoryInstitutionRepository)
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
+    sut = new CreateInstitutionUseCase(inMemoryInstitutionsRepository)
   })
   it('shoult be able create a Institution', async () => {
     const result = await sut.execute({
@@ -17,8 +17,8 @@ describe('Institution', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryInstitutionRepository.items).toHaveLength(1)
-      expect(inMemoryInstitutionRepository.items[0].content).toBe(result.value?.institution.content)
+      expect(inMemoryInstitutionsRepository.items).toHaveLength(1)
+      expect(inMemoryInstitutionsRepository.items[0].content).toBe(result.value?.institution.content)
     }
   })
 
@@ -33,9 +33,9 @@ describe('Institution', () => {
     })
     expect(result2.isLeft()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryInstitutionRepository.items).toHaveLength(1)
-      expect(inMemoryInstitutionRepository.items[0].id).toBe(result.value?.institution.id)
-      expect(inMemoryInstitutionRepository.items[0].description).toBeUndefined()
+      expect(inMemoryInstitutionsRepository.items).toHaveLength(1)
+      expect(inMemoryInstitutionsRepository.items[0].id).toBe(result.value?.institution.id)
+      expect(inMemoryInstitutionsRepository.items[0].description).toBeUndefined()
     }
   })
 })
