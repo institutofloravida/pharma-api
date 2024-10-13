@@ -2,13 +2,14 @@ import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
 import { Operator, OperatorRole } from '../../enterprise/entities/operator'
-import type { OperatorRepository } from '../repositories/operators-repository'
+import { OperatorsRepository } from '../repositories/operators-repository'
 import { OperatorAlreadyExistsError } from './_errors/operator-already-exists-error'
+import type { HashGenerator } from '../cryptography/hash-generator'
 
 interface createOperatorUseCaseRequest {
   name: string
   email: string
-  passwordHash: string
+  password: string
   role?: OperatorRole
 }
 type createOperatorUseCaseResponse = Either<
@@ -17,25 +18,31 @@ type createOperatorUseCaseResponse = Either<
     operator: Operator
   }
 >
-export class CreateOperatorUseCase {
-  constructor(private operatorRepository: OperatorRepository) {}
+export class RegisterOperatorUseCase {
+  constructor(
+    private operatorRepository: OperatorsRepository,
+    private hashGenerator: HashGenerator,
+  ) {}
+
   async execute({
     name,
     email,
-    passwordHash,
-    role,
+    password,
+    role = 'COMMON',
   }: createOperatorUseCaseRequest): Promise<createOperatorUseCaseResponse> {
-    const operator = Operator.create({
-      name,
-      email,
-      passwordHash,
-      role: role ?? 'COMMON',
-    })
-
     const operatorWithSameEmail = await this.operatorRepository.findByEmail(email)
     if (operatorWithSameEmail) {
       return left(new OperatorAlreadyExistsError(email))
     }
+
+    const passwordHash = await this.hashGenerator.hash(password)
+
+    const operator = Operator.create({
+      name,
+      email,
+      passwordHash,
+      role,
+    })
 
     await this.operatorRepository.create(operator)
 
