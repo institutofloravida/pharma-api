@@ -1,14 +1,14 @@
 import { left, right, type Either } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MedicineStock } from '../../enterprise/entities/medicine-stock'
-import type { MedicineStockRepository } from '../repositories/medicines-stock-repository'
-import type { MedicineRepository } from '../repositories/medicines-repository'
+import type { MedicinesStockRepository } from '../repositories/medicines-stock-repository'
+import type { MedicinesRepository } from '../repositories/medicines-repository'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
-import type { StockRepository } from '../repositories/stocks-repository'
+import type { StocksRepository } from '../repositories/stocks-repository'
 import { BatchStock } from '../../enterprise/entities/batch-stock'
-import type { BatchRepository } from '../repositories/batchs-repository'
+import type { BatchsRepository } from '../repositories/batchs-repository'
 import { Batch } from '../../enterprise/entities/batch'
-import type { BatchStockRepository } from '../repositories/batch-stocks-repository'
+import type { BatchStocksRepository } from '../repositories/batch-stocks-repository'
 import { MedicineStockAlreadyExistsError } from './_errors/medicine-stock-already-exists-error'
 
 interface createMedicineStockUseCaseRequest {
@@ -31,11 +31,11 @@ type createMedicineStockUseCaseResponse = Either<
 >
 export class CreateMedicineStockUseCase {
   constructor(
-    private stockRepository: StockRepository,
-    private medicineRepository: MedicineRepository,
-    private batchRepository: BatchRepository,
-    private batchStockRepository: BatchStockRepository,
-    private medicinestockRepository: MedicineStockRepository,
+    private stockRepository: StocksRepository,
+    private medicineRepository: MedicinesRepository,
+    private batchRepository: BatchsRepository,
+    private batchStockRepository: BatchStocksRepository,
+    private medicinestockRepository: MedicinesStockRepository,
   ) {}
 
   async execute({
@@ -65,6 +65,7 @@ export class CreateMedicineStockUseCase {
     })
 
     const batchStock = BatchStock.create({
+      medicineId: new UniqueEntityId(medicineId),
       batchId: batch.id,
       currentQuantity: quantity,
       stockId: new UniqueEntityId(stockId),

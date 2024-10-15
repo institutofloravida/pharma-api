@@ -1,4 +1,4 @@
-import { InMemoryUserRepository } from 'test/repositories/in-memory-users-repository'
+import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { CreateUserUseCase } from './create-user'
 import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
@@ -6,13 +6,13 @@ import { makePathology } from 'test/factories/make-pathology'
 import { faker } from '@faker-js/faker'
 
 let inMemoryPathologiesRepository: InMemoryPathologiesRepository
-let inMemoryUserRepository: InMemoryUserRepository
+let inMemoryUserRepository: InMemoryUsersRepository
 let sut: CreateUserUseCase
 
 describe('User', () => {
   beforeEach(() => {
     inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
-    inMemoryUserRepository = new InMemoryUserRepository()
+    inMemoryUserRepository = new InMemoryUsersRepository()
     sut = new CreateUserUseCase(inMemoryUserRepository, inMemoryPathologiesRepository)
   })
   it('should be able create a user', async () => {

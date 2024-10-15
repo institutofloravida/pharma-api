@@ -1,7 +1,7 @@
 import type { UsersRepository } from '@/domain/pharma/application/repositories/users-repository'
 import type { User } from '@/domain/pharma/enterprise/entities/user'
 
-export class InMemoryUserRepository implements UsersRepository {
+export class InMemoryUsersRepository implements UsersRepository {
   public items: User[] = []
 
   async create(user: User) {
