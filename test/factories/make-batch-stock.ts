@@ -7,6 +7,7 @@ export function makeBatchStock(
   id?: UniqueEntityId,
 ) {
   const batchStock = BatchStock.create({
+    medicineId: new UniqueEntityId(),
     stockId: new UniqueEntityId(),
     batchId: new UniqueEntityId(),
     currentQuantity: faker.number.int({ min: 1, max: 1000 }),

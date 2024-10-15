@@ -6,6 +6,8 @@ export interface BatchStockProps {
   stockId: UniqueEntityId
   batchId: UniqueEntityId
 
+  medicineId: UniqueEntityId
+
   currentQuantity: number
   lastMove?: Date
   createdAt: Date
@@ -15,6 +17,14 @@ export interface BatchStockProps {
 export class BatchStock extends Entity<BatchStockProps> {
   get stockId(): UniqueEntityId {
     return this.props.stockId
+  }
+
+  get batchId(): UniqueEntityId {
+    return this.props.batchId
+  }
+
+  get medicineId(): UniqueEntityId {
+    return this.props.medicineId
   }
 
   get quantity(): number {

@@ -19,8 +19,8 @@ describe('MedicineStock', () => {
     inMemoryStocksRepository = new InMemoryStocksRepository()
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
     inMemoryBatchsRepository = new InMemoryBatchsRepository()
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(inMemoryMedicinesStockRepository)
 
     sut = new CreateMedicineStockUseCase(
       inMemoryStocksRepository,

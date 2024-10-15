@@ -1,0 +1,107 @@
+import { left, right, type Either } from '@/core/either'
+import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
+import type { MedicinesStockRepository } from '../repositories/medicines-stock-repository'
+import type { MedicinesRepository } from '../repositories/medicines-repository'
+import type { BatchStocksRepository } from '../repositories/batch-stocks-repository'
+import type { BatchsRepository } from '../repositories/batchs-repository'
+import { NoBatchInStockFoundError } from './_errors/no-batch-in-stock-found-error'
+import { InsufficientQuantityInStockError } from './_errors/insufficient-quantity-in-stock-error'
+import { InsufficientQuantityBatchInStockError } from './_errors/insufficient-quantity-batch-in-stock-error'
+import { MedicineExit } from '../../enterprise/entities/exit'
+import type { MedicinesExitsRepository } from '../repositories/medicines-exits-repository'
+import { Dispensation, DispensationBatch } from '../../enterprise/entities/dispensation'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import type { DispensationsMedicinesRepository } from '../repositories/dispensations-medicines-repository'
+
+interface DispensationMedicineUseCaseRequest {
+  medicineId: string
+  stockId: string
+  userId: string
+  operatorId: string
+  batchesStocks: DispensationBatch[]
+  dispensationDate?: Date
+}
+
+type DispensationMedicineUseCaseResponse = Either<
+  ResourceNotFoundError | InsufficientQuantityInStockError | NoBatchInStockFoundError,
+  {
+    dispensation: Dispensation
+  }
+>
+export class DispensationMedicineUseCase {
+  constructor(
+    private dispensationsMedicinesRepository: DispensationsMedicinesRepository,
+    private medicinesExitsRepository: MedicinesExitsRepository,
+    private medicinesRepository: MedicinesRepository,
+    private medicinesStockRepository: MedicinesStockRepository,
+    private batchStockskRepository: BatchStocksRepository,
+    private batchsRepository: BatchsRepository,
+  ) {}
+
+  async execute({
+    medicineId,
+    stockId,
+    userId,
+    operatorId,
+    batchesStocks,
+    dispensationDate,
+  }: DispensationMedicineUseCaseRequest): Promise<DispensationMedicineUseCaseResponse> {
+    const medicine = await this.medicinesRepository.findById(medicineId)
+    if (!medicine) {
+      return left(new ResourceNotFoundError())
+    }
+
+    const medicineStock = await this.medicinesStockRepository.findByMedicineIdAndStockId(medicineId, stockId)
+    if (!medicineStock) {
+      return left(new NoBatchInStockFoundError(medicine.content))
+    }
+
+    let totalQuantityToDispense = 0
+
+    for (const item of batchesStocks) {
+      const batchStock = await this.batchStockskRepository.findById(item.batchStockId.toString())
+      if (!batchStock) {
+        return left(new ResourceNotFoundError())
+      }
+
+      const batch = await this.batchsRepository.findById(batchStock.batchId.toString())
+      if (!batch) {
+        return left(new ResourceNotFoundError())
+      }
+
+      if (batchStock.quantity < item.quantity) {
+        return left(new InsufficientQuantityBatchInStockError(medicine.content, batch.code, batchStock.quantity))
+      }
+
+      totalQuantityToDispense += item.quantity
+    }
+
+    if (medicineStock.quantity < totalQuantityToDispense) {
+      return left(new InsufficientQuantityInStockError(medicine.content, medicineStock.quantity))
+    }
+
+    for (const item of batchesStocks) {
+      const medicineExit = MedicineExit.create({
+        medicineStockId: medicineStock.id,
+        batchStockId: item.batchStockId,
+        exitDate: dispensationDate,
+        exitType: 'DISPENSATION',
+        quantity: item.quantity,
+        operatorId,
+      })
+
+      await this.medicinesExitsRepository.create(medicineExit)
+      await this.batchStockskRepository.subtract(item.batchStockId.toString(), item.quantity)
+    }
+
+    const dispensation = Dispensation.create({
+      userId: new UniqueEntityId(userId),
+      dispensationDate,
+      batchsStocks: batchesStocks,
+    })
+
+    await this.dispensationsMedicinesRepository.create(dispensation)
+
+    return right({ dispensation })
+  }
+}
