@@ -1,5 +1,5 @@
 import { left, right, type Either } from '@/core/either'
-import type { UnitMeasureRepository } from '../repositories/units-measure-repository'
+import type { UnitsMeasureRepository } from '../repositories/units-measure-repository'
 import { UnitMeasure } from '../../enterprise/entities/unitMeasure'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
@@ -14,7 +14,7 @@ type createUnitMeasureUseCaseResponse = Either<
   }
 >
 export class CreateUnitMeasureUseCase {
-  constructor(private unitMeasureRepository: UnitMeasureRepository) {}
+  constructor(private unitMeasureRepository: UnitsMeasureRepository) {}
   async execute({ acronym, content }: createUnitMeasureUseCaseRequest): Promise<createUnitMeasureUseCaseResponse> {
     const unitMeasure = UnitMeasure.create({
       content,

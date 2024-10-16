@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Institution } from '../../enterprise/entities/institution'
-import type { InstitutionRepository } from '../repositories/institutions-repository'
+import type { InstitutionsRepository } from '../repositories/institutions-repository'
 
 interface createInstitutionUseCaseRequest {
   content: string,
@@ -15,7 +15,7 @@ type createInstitutionUseCaseResponse = Either<
   }
 >
 export class CreateInstitutionUseCase {
-  constructor(private institutionRepository: InstitutionRepository) {}
+  constructor(private institutionRepository: InstitutionsRepository) {}
   async execute({ content, cnpj, description }: createInstitutionUseCaseRequest): Promise<createInstitutionUseCaseResponse> {
     const institution = Institution.create({
       content,

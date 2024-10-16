@@ -2,7 +2,7 @@ import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
 import { Stock } from '../../enterprise/entities/stock'
-import type { StockRepository } from '../repositories/stocks-repository'
+import type { StocksRepository } from '../repositories/stocks-repository'
 
 interface createStockUseCaseRequest {
   content: string
@@ -15,7 +15,7 @@ type createStockUseCaseResponse = Either<
   }
 >
 export class CreateStockUseCase {
-  constructor(private stockRepository: StockRepository) {}
+  constructor(private stockRepository: StocksRepository) {}
   async execute({
     content,
     status,
