@@ -1,7 +1,2 @@
 ### Questions
-
-
--> institution -> Stock -> medicine -> batch -> batchStock | medicineStock 
-
-### todo
-- change 'batchs' to 'batches'
+- permitir dispensar medicamento no dia do vencimento?
