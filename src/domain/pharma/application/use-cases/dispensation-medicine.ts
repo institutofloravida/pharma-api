@@ -9,16 +9,17 @@ import { InsufficientQuantityInStockError } from './_errors/insufficient-quantit
 import { InsufficientQuantityBatchInStockError } from './_errors/insufficient-quantity-batch-in-stock-error'
 import { MedicineExit } from '../../enterprise/entities/exit'
 import type { MedicinesExitsRepository } from '../repositories/medicines-exits-repository'
-import { Dispensation, DispensationBatch } from '../../enterprise/entities/dispensation'
+import { Dispensation } from '../../enterprise/entities/dispensation'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { DispensationsMedicinesRepository } from '../repositories/dispensations-medicines-repository'
+import type { MovimentationBatchStock } from '../../enterprise/entities/batch-stock'
 
 interface DispensationMedicineUseCaseRequest {
   medicineId: string
   stockId: string
   userId: string
   operatorId: string
-  batchesStocks: DispensationBatch[]
+  batchesStocks: MovimentationBatchStock[]
   dispensationDate?: Date
 }
 

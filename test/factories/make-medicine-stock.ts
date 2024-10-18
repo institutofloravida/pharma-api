@@ -9,7 +9,7 @@ export function makeMedicineStock(
   const medicineStock = MedicineStock.create({
     medicineId: new UniqueEntityId(),
     stockId: new UniqueEntityId(),
-    currentQuantity: faker.number.int({ min: 1, max: 1000 }),
+    currentQuantity: 0,
     minimumLevel: faker.number.int({ min: 1, max: 100 }),
     batchsStockIds: Array.from({ length: 3 }, () => new UniqueEntityId().toString()),
     lastMove: faker.date.recent(),

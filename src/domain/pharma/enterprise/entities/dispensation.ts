@@ -1,16 +1,12 @@
 import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { Optional } from '@/core/types/optional'
-
-export interface DispensationBatch {
-  batchStockId: UniqueEntityId
-  quantity: number
-}
+import type { MovimentationBatchStock } from './batch-stock'
 
 export interface DispensationProps {
   userId: UniqueEntityId
   dispensationDate: Date
-  batchsStocks: DispensationBatch[]
+  batchsStocks: MovimentationBatchStock[]
   createdAt: Date
   updatedAt?: Date
 }
