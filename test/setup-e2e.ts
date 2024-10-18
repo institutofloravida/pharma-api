@@ -23,7 +23,7 @@ beforeAll(async () => {
 
   await prisma.$connect()
 
-  execSync(`DATABASE_URL=${databaseURL} pnpm prisma migrate deploy`)
+  execSync(`DATABASE_URL=${databaseURL} npx prisma migrate deploy`)
 })
 
 afterAll(async () => {
