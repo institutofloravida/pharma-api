@@ -13,6 +13,7 @@ import { Dispensation } from '../../enterprise/entities/dispensation'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { DispensationsMedicinesRepository } from '../repositories/dispensations-medicines-repository'
 import type { MovimentationBatchStock } from '../../enterprise/entities/batch-stock'
+import { ExpiredMedicineDispenseError } from './_errors/expired-medicine-dispense-error'
 
 interface DispensationMedicineUseCaseRequest {
   medicineId: string
@@ -68,6 +69,12 @@ export class DispensationMedicineUseCase {
       const batch = await this.batchsRepository.findById(batchStock.batchId.toString())
       if (!batch) {
         return left(new ResourceNotFoundError())
+      }
+
+      const expirationDate = new Date(batch.expirationDate)
+
+      if (expirationDate <= new Date()) {
+        return left(new ExpiredMedicineDispenseError(batch.code, medicine.content))
       }
 
       if (batchStock.quantity < item.quantity) {

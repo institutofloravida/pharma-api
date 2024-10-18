@@ -45,7 +45,114 @@ describe('Dispensation Medicine', () => {
       inMemoryBatchsRepository,
     )
   })
-  it('must be able to dispense quantities of the same medication in different batches', async () => {
+  it('should be able to dispense a medication', async () => {
+    const quantityToDispense = 5
+    const user = makeUser()
+    await inMemoryUsersRepository.create(user)
+
+    const stock = makeStock()
+    await inMemoryStocksRepository.create(stock)
+
+    const medicine = makeMedicine()
+    await inMemoryMedicinesRepository.create(medicine)
+
+    const medicineStock = makeMedicineStock({
+      batchsStockIds: [],
+      medicineId: medicine.id,
+      stockId: stock.id,
+    })
+
+    const batch1 = makeBatch()
+    await inMemoryBatchsRepository.create(batch1)
+
+    const batchStock1 = makeBatchStock({
+      batchId: batch1.id,
+      medicineId: medicine.id,
+      stockId: stock.id,
+      currentQuantity: 20,
+    })
+    medicineStock.batchsStockIds = [batchStock1.id.toString()]
+    medicineStock.quantity = batchStock1.quantity
+
+    await inMemoryBatchStocksRepository.create(batchStock1)
+    await inMemoryMedicinesStockRepository.create(medicineStock)
+
+    const result = await sut.execute({
+      medicineId: medicine.id.toString(),
+      operatorId: 'operator-1',
+      stockId: stock.id.toString(),
+      userId: user.id.toString(),
+      batchesStocks: [
+        {
+          batchStockId: batchStock1.id,
+          quantity: quantityToDispense,
+        },
+      ],
+    })
+    expect(result.isRight()).toBeTruthy()
+    if (result.isRight()) {
+      expect(inMemoryDispensationsMedicinesRepository.items).toHaveLength(1)
+      expect(inMemoryDispensationsMedicinesRepository.items[0].totalQuantity).toEqual(result.value.dispensation.totalQuantity)
+
+      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(20 - quantityToDispense)
+    }
+  })
+  it('should not be able to dispense a medication with batch expired', async () => {
+    const date = new Date('2024-02-15')
+    vi.setSystemTime(date)
+
+    const quantityToDispense = 5
+    const user = makeUser()
+    await inMemoryUsersRepository.create(user)
+
+    const stock = makeStock()
+    await inMemoryStocksRepository.create(stock)
+
+    const medicine = makeMedicine()
+    await inMemoryMedicinesRepository.create(medicine)
+
+    const medicineStock = makeMedicineStock({
+      batchsStockIds: [],
+      medicineId: medicine.id,
+      stockId: stock.id,
+    })
+
+    const batch1 = makeBatch({
+      expirationDate: new Date('2024-02-15'),
+    })
+    await inMemoryBatchsRepository.create(batch1)
+
+    const batchStock1 = makeBatchStock({
+      batchId: batch1.id,
+      medicineId: medicine.id,
+      stockId: stock.id,
+      currentQuantity: 20,
+    })
+    medicineStock.batchsStockIds = [batchStock1.id.toString()]
+    medicineStock.quantity = batchStock1.quantity
+
+    await inMemoryBatchStocksRepository.create(batchStock1)
+    await inMemoryMedicinesStockRepository.create(medicineStock)
+
+    const result = await sut.execute({
+      medicineId: medicine.id.toString(),
+      operatorId: 'operator-1',
+      stockId: stock.id.toString(),
+      userId: user.id.toString(),
+      batchesStocks: [
+        {
+          batchStockId: batchStock1.id,
+          quantity: quantityToDispense,
+        },
+      ],
+    })
+    expect(result.isLeft()).toBeTruthy()
+    if (result.isRight()) {
+      expect(inMemoryDispensationsMedicinesRepository.items).toHaveLength(0)
+      expect(inMemoryBatchStocksRepository.items[0]).toBe(20)
+    }
+  })
+  it('should be able to dispense quantities of the same medication in different batches', async () => {
     const user = makeUser()
     await inMemoryUsersRepository.create(user)
 
