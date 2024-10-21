@@ -1,9 +1,9 @@
 import { left, right, type Either } from '@/core/either'
 
-import { OperatorsRepository } from '../repositories/operators-repository'
-import type { HashComparer } from '../cryptography/hash-compare'
-import type { Encrypter } from '../cryptography/encrypter'
-import { WrongCredentialsError } from './_errors/wrong-credentials-error'
+import { OperatorsRepository } from '../../repositories/operators-repository'
+import type { HashComparer } from '../../cryptography/hash-compare'
+import type { Encrypter } from '../../cryptography/encrypter'
+import { WrongCredentialsError } from '../_errors/wrong-credentials-error'
 
 interface AuthenticateOperatorUseCaseRequest {
   email: string

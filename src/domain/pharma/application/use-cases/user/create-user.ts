@@ -1,11 +1,11 @@
 import { left, right, type Either } from '@/core/either'
 
-import { User, type Gender, type Race } from '../../enterprise/entities/user'
-import { UsersRepository } from '../repositories/users-repository'
+import { User, type Gender, type Race } from '../../../enterprise/entities/user'
+import { UsersRepository } from '../../repositories/users-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { PathologiesRepository } from '../repositories/pathologies-repository'
+import type { PathologiesRepository } from '../../repositories/pathologies-repository'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
-import { UserAlreadyExistsError } from './_errors/user-already-exists-error'
+import { UserAlreadyExistsError } from '../_errors/user-already-exists-error'
 
 interface createUserUseCaseRequest {
   name: string

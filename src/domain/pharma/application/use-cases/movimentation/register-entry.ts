@@ -1,14 +1,14 @@
 import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
-import type { MedicinesStockRepository } from '../repositories/medicines-stock-repository'
-import type { MedicinesRepository } from '../repositories/medicines-repository'
-import type { BatchStocksRepository } from '../repositories/batch-stocks-repository'
-import type { BatchsRepository } from '../repositories/batchs-repository'
-import { NoBatchInStockFoundError } from './_errors/no-batch-in-stock-found-error'
-import { MedicineEntry, type EntryType } from '../../enterprise/entities/entry'
-import type { MedicinesEntriesRepository } from '../repositories/medicines-entries-repository'
+import type { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
+import type { MedicinesRepository } from '../../repositories/medicines-repository'
+import type { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
+import type { BatchsRepository } from '../../repositories/batchs-repository'
+import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
+import { MedicineEntry, type EntryType } from '../../../enterprise/entities/entry'
+import type { MedicinesEntriesRepository } from '../../repositories/medicines-entries-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { InvalidEntryQuantityError } from './_errors/invalid-entry-quantity-error'
+import { InvalidEntryQuantityError } from '../_errors/invalid-entry-quantity-error'
 
 interface RegisterEntryUseCaseRequest {
   medicineId: string

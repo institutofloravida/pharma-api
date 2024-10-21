@@ -1,10 +1,10 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
-import { Operator, OperatorRole } from '../../enterprise/entities/operator'
-import { OperatorsRepository } from '../repositories/operators-repository'
-import { OperatorAlreadyExistsError } from './_errors/operator-already-exists-error'
-import type { HashGenerator } from '../cryptography/hash-generator'
+import { Operator, OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { OperatorsRepository } from '../../repositories/operators-repository'
+import { OperatorAlreadyExistsError } from '../_errors/operator-already-exists-error'
+import type { HashGenerator } from '../../cryptography/hash-generator'
 
 interface createOperatorUseCaseRequest {
   name: string
