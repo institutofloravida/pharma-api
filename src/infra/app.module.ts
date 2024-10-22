@@ -10,8 +10,8 @@ import { envSchema } from './env'
         envSchema.parse(env),
       isGlobal: true,
     }),
-    HttpModule,
     AuthModule,
+    HttpModule,
   ],
 })
 export class AppModule {}
