@@ -2,7 +2,7 @@ import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
 import { Stock } from '../../../enterprise/entities/stock'
-import type { StocksRepository } from '../../repositories/stocks-repository'
+import { StocksRepository } from '../../repositories/stocks-repository'
 
 interface createStockUseCaseRequest {
   content: string

@@ -1,4 +1,4 @@
-import type { BatchStock } from '../../enterprise/entities/batch-stock'
+import { BatchStock } from '../../enterprise/entities/batch-stock'
 
 export interface BatchStocksRepository {
   create(batchStock: BatchStock): Promise<void | null>

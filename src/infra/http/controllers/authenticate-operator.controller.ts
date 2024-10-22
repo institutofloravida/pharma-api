@@ -1,9 +1,8 @@
-import { Body, Controller, HttpCode, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
+import { Body, Controller, Post, UsePipes } from '@nestjs/common'
 import { z } from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/prisma/prisma.service'
-import { compare } from 'bcryptjs'
+
+import { AuthenticateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/authenticate-operator'
 
 const authenticateOperatorBodySchema = z.object({
   email: z.string().email(),
@@ -15,32 +14,24 @@ type AuthenticateOperatorBodySchema = z.infer<typeof authenticateOperatorBodySch
 @Controller('/sessions')
 export class AuthenticateOperatorController {
   constructor(
-    private prisma: PrismaService,
-    private jwt: JwtService,
+    private authenticateOperator: AuthenticateOperatorUseCase,
   ) {}
 
   @Post()
-  @HttpCode(201)
   @UsePipes(new ZodValidationPipe(authenticateOperatorBodySchema))
   async handle(@Body() body: AuthenticateOperatorBodySchema) {
     const { email, password } = body
 
-    const operator = await this.prisma.operator.findUnique({
-      where: {
-        email,
-      },
+    const result = await this.authenticateOperator.execute({
+      email,
+      password,
     })
 
-    if (!operator) {
-      throw new UnauthorizedException('credentials invalid.')
+    if (result.isLeft()) {
+      throw new Error()
     }
 
-    const passwordIsValid = await compare(password, operator.passwordHash)
-    if (!passwordIsValid) {
-      throw new UnauthorizedException('credentials invalid.')
-    }
-
-    const accessToken = this.jwt.sign({ sub: operator.id })
+    const { accessToken } = result.value
 
     return { access_token: accessToken }
   }

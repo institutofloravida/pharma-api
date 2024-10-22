@@ -1,5 +1,5 @@
-import type { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
-import type { Institution } from '@/domain/pharma/enterprise/entities/institution'
+import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
+import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 
 export class InMemoryInstitutionsRepository implements InstitutionsRepository {
   public items: Institution[] = []

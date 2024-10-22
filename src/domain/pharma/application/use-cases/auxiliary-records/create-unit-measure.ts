@@ -1,5 +1,5 @@
 import { left, right, type Either } from '@/core/either'
-import type { UnitsMeasureRepository } from '../../repositories/units-measure-repository'
+import { UnitsMeasureRepository } from '../../repositories/units-measure-repository'
 import { UnitMeasure } from '../../../enterprise/entities/unitMeasure'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 

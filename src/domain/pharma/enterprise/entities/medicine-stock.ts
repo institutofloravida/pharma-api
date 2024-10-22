@@ -1,6 +1,6 @@
-import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
+import { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
-import type { Optional } from '@/core/types/optional'
+import { Optional } from '@/core/types/optional'
 
 export interface MedicineStockProps {
   medicineId: UniqueEntityId

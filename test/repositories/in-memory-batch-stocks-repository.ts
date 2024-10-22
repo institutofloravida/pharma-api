@@ -1,5 +1,5 @@
 import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
-import type { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
+import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 
 export class InMemoryBatchStocksRepository implements BatchStocksRepository {

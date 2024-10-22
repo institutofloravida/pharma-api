@@ -1,4 +1,4 @@
-import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Operator, type OperatorProps } from '@/domain/pharma/enterprise/entities/operator'
 import { faker } from '@faker-js/faker'
 

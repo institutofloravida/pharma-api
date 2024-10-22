@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { TherapeuticClass } from '../../../enterprise/entities/therapeutic-class'
-import type { TherapeuticClassesRepository } from '../../repositories/therapeutic-classes-repository'
+import { TherapeuticClassesRepository } from '../../repositories/therapeutic-classes-repository'
 
 interface createTherapeuticClassUseCaseRequest {
   content: string

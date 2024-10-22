@@ -1,5 +1,5 @@
-import type { Optional } from '@/core/types/optional'
-import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Optional } from '@/core/types/optional'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Entity } from '@/core/entities/entity'
 
 export type OperatorRole = 'ADMIN' | 'COMMON'

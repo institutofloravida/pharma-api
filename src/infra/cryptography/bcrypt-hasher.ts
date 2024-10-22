@@ -1,6 +1,6 @@
 import { hash, compare } from 'bcryptjs'
-import type { HashComparer } from '@/domain/pharma/application/cryptography/hash-compare'
-import type { HashGenerator } from '@/domain/pharma/application/cryptography/hash-generator'
+import { HashComparer } from '@/domain/pharma/application/cryptography/hash-compare'
+import { HashGenerator } from '@/domain/pharma/application/cryptography/hash-generator'
 
 export class BcryptHasher implements HashGenerator, HashComparer {
   private SALT_ROUNDS = 8

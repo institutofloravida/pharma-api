@@ -1,7 +1,7 @@
 import { Entity } from '@/core/entities/entity'
-import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { Optional } from '@/core/types/optional'
-import type { MovimentationBatchStock } from './batch-stock'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Optional } from '@/core/types/optional'
+import { MovimentationBatchStock } from './batch-stock'
 
 export interface DispensationProps {
   userId: UniqueEntityId

@@ -1,5 +1,5 @@
-import type { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
-import type { Operator } from '@/domain/pharma/enterprise/entities/operator'
+import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
+import { Operator } from '@/domain/pharma/enterprise/entities/operator'
 
 export class InMemoryOperatorsRepository implements OperatorsRepository {
   public items: Operator[] = []

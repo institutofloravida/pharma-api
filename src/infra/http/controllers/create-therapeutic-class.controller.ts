@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common'
 import { z } from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/prisma/prisma.service'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 
 const createTherapeuticClassBodySchema = z.object({

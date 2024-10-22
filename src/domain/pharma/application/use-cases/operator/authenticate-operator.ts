@@ -1,9 +1,10 @@
 import { left, right, type Either } from '@/core/either'
 
 import { OperatorsRepository } from '../../repositories/operators-repository'
-import type { HashComparer } from '../../cryptography/hash-compare'
-import type { Encrypter } from '../../cryptography/encrypter'
+import { HashComparer } from '../../cryptography/hash-compare'
+import { Encrypter } from '../../cryptography/encrypter'
 import { WrongCredentialsError } from '../_errors/wrong-credentials-error'
+import { Injectable } from '@nestjs/common'
 
 interface AuthenticateOperatorUseCaseRequest {
   email: string
@@ -15,6 +16,8 @@ type AuthenticateOperatorUseCaseResponse = Either<
     accessToken: string
   }
 >
+
+@Injectable()
 export class AuthenticateOperatorUseCase {
   constructor(
     private operatorRepository: OperatorsRepository,
@@ -40,8 +43,6 @@ export class AuthenticateOperatorUseCase {
     const accessToken = await this.encrypter.encrypter({
       sub: operator.id.toString(),
     })
-
-    await this.operatorRepository.create(operator)
 
     return right({
       accessToken,

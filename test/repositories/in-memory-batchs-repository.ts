@@ -1,5 +1,5 @@
-import type { BatchsRepository } from '@/domain/pharma/application/repositories/batchs-repository'
-import type { Batch } from '@/domain/pharma/enterprise/entities/batch'
+import { BatchsRepository } from '@/domain/pharma/application/repositories/batchs-repository'
+import { Batch } from '@/domain/pharma/enterprise/entities/batch'
 
 export class InMemoryBatchsRepository implements BatchsRepository {
   public items: Batch[] = []

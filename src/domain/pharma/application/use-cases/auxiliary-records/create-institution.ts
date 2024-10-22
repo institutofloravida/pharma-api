@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Institution } from '../../../enterprise/entities/institution'
-import type { InstitutionsRepository } from '../../repositories/institutions-repository'
+import { InstitutionsRepository } from '../../repositories/institutions-repository'
 
 interface createInstitutionUseCaseRequest {
   content: string,

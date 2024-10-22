@@ -1,4 +1,4 @@
-import type { Stock } from '../../enterprise/entities/stock'
+import { Stock } from '../../enterprise/entities/stock'
 
 export interface StocksRepository {
   create(stock: Stock): Promise<void>

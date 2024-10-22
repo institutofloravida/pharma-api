@@ -1,4 +1,4 @@
-import type { Pathology } from '../../enterprise/entities/pathology'
+import { Pathology } from '../../enterprise/entities/pathology'
 
 export interface PathologiesRepository {
   create(pathology: Pathology): Promise<void>
