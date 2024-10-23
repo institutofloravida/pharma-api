@@ -1,14 +1,17 @@
-import { ConflictException, UsePipes } from '@nestjs/common'
+import { UsePipes } from '@nestjs/common'
 import { Body, Controller, HttpCode, Post } from '@nestjs/common'
-import { hash } from 'bcryptjs'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { z } from 'zod'
+import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/register-operator'
+import { OperatorRole } from '@prisma/client'
+
+const operatorRoles = Object.values(OperatorRole) as [OperatorRole, ...OperatorRole[]]
 
 const createAccountOperatorBodySchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string(),
+  role: z.enum(operatorRoles).optional(),
 })
 
 type CreateAccountOperatorBodySchema = z.infer<typeof createAccountOperatorBodySchema>
@@ -16,32 +19,26 @@ type CreateAccountOperatorBodySchema = z.infer<typeof createAccountOperatorBodyS
 @Controller('/accounts')
 export class CreateAccountOperatorController {
   constructor(
-    private prisma: PrismaService,
+    private registerOperator: RegisterOperatorUseCase,
   ) {}
 
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createAccountOperatorBodySchema))
   async handle(@Body() body: CreateAccountOperatorBodySchema) {
-    const { name, email, password } = body
+    const { name, email, password, role } = body
 
-    const operatorWithSameEmail = await this.prisma.operator.findUnique({
-      where: {
-        email,
-      },
+    const result = await this.registerOperator.execute({
+      name,
+      email,
+      password,
+      role,
     })
 
-    const passwordHash = await hash(password, 8)
-
-    if (operatorWithSameEmail) {
-      throw new ConflictException('Operator With same e-mail alrefy exists!')
+    if (result.isLeft()) {
+      throw new Error()
     }
-    await this.prisma.operator.create({
-      data: {
-        name,
-        email,
-        passwordHash,
-      },
-    })
+
+    return result.value.operator
   }
 }

@@ -5,6 +5,7 @@ import { Operator, OperatorRole } from '@/domain/pharma/enterprise/entities/oper
 import { OperatorsRepository } from '../../repositories/operators-repository'
 import { OperatorAlreadyExistsError } from '../_errors/operator-already-exists-error'
 import { HashGenerator } from '../../cryptography/hash-generator'
+import { Injectable } from '@nestjs/common'
 
 interface createOperatorUseCaseRequest {
   name: string
@@ -18,6 +19,7 @@ type createOperatorUseCaseResponse = Either<
     operator: Operator
   }
 >
+@Injectable()
 export class RegisterOperatorUseCase {
   constructor(
     private operatorRepository: OperatorsRepository,
