@@ -1,4 +1,4 @@
-import type { UnitMeasure } from '../../enterprise/entities/unitMeasure'
+import { UnitMeasure } from '../../enterprise/entities/unitMeasure'
 
 export interface UnitsMeasureRepository {
   create(unitMeasure: UnitMeasure): Promise<void>

@@ -1,6 +1,6 @@
-import type { Optional } from '@/core/types/optional'
+import { Optional } from '@/core/types/optional'
 import { Company, type CompanyProps } from './company'
-import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 interface ManufacturerProps extends CompanyProps {}
 

@@ -1,5 +1,5 @@
 import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
-import type { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
+import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 
 export class InMemoryBatchStocksRepository implements BatchStocksRepository {
@@ -7,8 +7,14 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
 
   constructor(private medicineStockRepository: MedicinesStockRepository) {}
 
-  async create(batchstock: BatchStock) {
-    this.items.push(batchstock)
+  async create(batchStock: BatchStock) {
+    this.items.push(batchStock)
+    const medicineStock = await this.medicineStockRepository.findByMedicineIdAndStockId(batchStock.medicineId.toString(), batchStock.stockId.toString())
+    if (!medicineStock) {
+      return null
+    }
+    medicineStock.replenish(batchStock.quantity)
+    await this.medicineStockRepository.save(medicineStock)
   }
 
   async replenish(batchStockId: string, quantity: number) {
@@ -16,17 +22,18 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
     if (!batchStock) {
       return null
     }
-
-    batchStock.replenish(quantity)
-    await this.save(batchStock)
-
     const medicineStock = await this.medicineStockRepository.findByMedicineIdAndStockId(batchStock.medicineId.toString(), batchStock.stockId.toString())
     if (!medicineStock) {
       return null
     }
+    batchStock.replenish(quantity)
+    medicineStock.replenish(batchStock.quantity)
 
-    medicineStock.replenish(quantity)
-    await this.medicineStockRepository.save(medicineStock)
+    await Promise.all([
+      this.save(batchStock),
+      this.medicineStockRepository.save(medicineStock),
+
+    ])
 
     return batchStock
   }

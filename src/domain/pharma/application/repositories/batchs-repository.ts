@@ -1,4 +1,4 @@
-import type { Batch } from '../../enterprise/entities/batch'
+import { Batch } from '../../enterprise/entities/batch'
 
 export interface BatchsRepository {
   create(batch: Batch): Promise<void>

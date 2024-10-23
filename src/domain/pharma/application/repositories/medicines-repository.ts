@@ -1,4 +1,4 @@
-import type { Medicine } from '../../enterprise/entities/medicine'
+import { Medicine } from '../../enterprise/entities/medicine'
 
 export interface MedicinesRepository {
   create(medicine: Medicine): Promise<void>

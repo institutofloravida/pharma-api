@@ -1,4 +1,4 @@
-# PHARMA API | INTITUTO FLORA VIDA
+# PHARMA API | INSTITUTO FLORA VIDA
 
 ## RFs (Requisitos Funcionais)
 
@@ -24,7 +24,7 @@
 - [ ] Deve ser possível visualizar alertas de medicamentos a vencer
 - ✅ Deve ser possível realizar a dispensação de um medicamento(FEFO);
 - ✅ Deve ser possível registrar o recebimento de medicamentos;
-- [ ] deve ser possível registrar a saída de medicamentos
+- ✅ deve ser possível registrar a saída de medicamentos
 - [ ] deve ser possível inventariar um estoque
 
 

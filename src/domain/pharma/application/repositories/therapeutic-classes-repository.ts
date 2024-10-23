@@ -1,4 +1,4 @@
-import type { TherapeuticClass } from '../../enterprise/entities/therapeutic-class'
+import { TherapeuticClass } from '../../enterprise/entities/therapeutic-class'
 
 export interface TherapeuticClassesRepository {
   create(therapeuticClass: TherapeuticClass): Promise<void>

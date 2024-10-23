@@ -1,6 +1,6 @@
 import { Entity } from '@/core/entities/entity'
-import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
-import type { Optional } from '@/core/types/optional'
+import { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
+import { Optional } from '@/core/types/optional'
 
 export interface MovimentationBatchStock {
   batchStockId: UniqueEntityId

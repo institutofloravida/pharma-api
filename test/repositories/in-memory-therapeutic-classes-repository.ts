@@ -1,5 +1,5 @@
-import type { TherapeuticClassesRepository } from '@/domain/pharma/application/repositories/therapeutic-classes-repository'
-import type { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeutic-class'
+import { TherapeuticClassesRepository } from '@/domain/pharma/application/repositories/therapeutic-classes-repository'
+import { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeutic-class'
 
 export class InMemoryTherapeuticClassesRepository implements TherapeuticClassesRepository {
   public items: TherapeuticClass[] = []

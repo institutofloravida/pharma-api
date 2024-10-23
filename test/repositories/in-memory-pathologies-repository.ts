@@ -1,5 +1,5 @@
-import type { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
-import type { Pathology } from '@/domain/pharma/enterprise/entities/pathology'
+import { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
+import { Pathology } from '@/domain/pharma/enterprise/entities/pathology'
 
 export class InMemoryPathologiesRepository implements PathologiesRepository {
   public items: Pathology[] = []

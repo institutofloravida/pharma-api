@@ -1,5 +1,5 @@
-import type { UnitsMeasureRepository } from '@/domain/pharma/application/repositories/units-measure-repository'
-import type { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
+import { UnitsMeasureRepository } from '@/domain/pharma/application/repositories/units-measure-repository'
+import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
 
 export class InMemoryUnitsMeasureRepository implements UnitsMeasureRepository {
   public items: UnitMeasure[] = []

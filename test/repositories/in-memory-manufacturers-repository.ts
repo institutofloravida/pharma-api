@@ -1,5 +1,5 @@
-import type { ManufacturersRepository } from '@/domain/pharma/application/repositories/manufacturers-repository'
-import type { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
+import { ManufacturersRepository } from '@/domain/pharma/application/repositories/manufacturers-repository'
+import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 
 export class InMemoryManufacturersRepository implements ManufacturersRepository {
   public items: Manufacturer[] = []

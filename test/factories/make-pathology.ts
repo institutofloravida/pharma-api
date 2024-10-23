@@ -1,4 +1,4 @@
-import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Pathology, type PathologyProps } from '@/domain/pharma/enterprise/entities/pathology'
 import { faker } from '@faker-js/faker'
 
