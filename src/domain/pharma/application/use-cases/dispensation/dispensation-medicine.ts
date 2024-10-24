@@ -14,6 +14,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { DispensationsMedicinesRepository } from '../../repositories/dispensations-medicines-repository'
 import { MovimentationBatchStock } from '../../../enterprise/entities/batch-stock'
 import { ExpiredMedicineDispenseError } from '../_errors/expired-medicine-dispense-error'
+import { Injectable } from '@nestjs/common'
 
 interface DispensationMedicineUseCaseRequest {
   medicineId: string
@@ -25,11 +26,17 @@ interface DispensationMedicineUseCaseRequest {
 }
 
 type DispensationMedicineUseCaseResponse = Either<
-  ResourceNotFoundError | InsufficientQuantityInStockError | NoBatchInStockFoundError,
+  ResourceNotFoundError |
+  InsufficientQuantityInStockError |
+  NoBatchInStockFoundError |
+  InsufficientQuantityBatchInStockError |
+  ExpiredMedicineDispenseError,
   {
     dispensation: Dispensation
   }
 >
+
+@Injectable()
 export class DispensationMedicineUseCase {
   constructor(
     private dispensationsMedicinesRepository: DispensationsMedicinesRepository,
@@ -38,7 +45,7 @@ export class DispensationMedicineUseCase {
     private medicinesStockRepository: MedicinesStockRepository,
     private batchStockskRepository: BatchStocksRepository,
     private batchsRepository: BatchsRepository,
-  ) {}
+  ) { }
 
   async execute({
     medicineId,

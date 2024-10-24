@@ -3,17 +3,21 @@ import { ConflictError } from '@/core/erros/errors/conflict-error'
 
 import { Stock } from '../../../enterprise/entities/stock'
 import { StocksRepository } from '../../repositories/stocks-repository'
+import { Injectable } from '@nestjs/common'
 
 interface createStockUseCaseRequest {
   content: string
   status: boolean
 }
+
 type createStockUseCaseResponse = Either<
   ConflictError,
   {
     stock: Stock
   }
 >
+
+@Injectable()
 export class CreateStockUseCase {
   constructor(private stockRepository: StocksRepository) {}
   async execute({

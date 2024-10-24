@@ -10,12 +10,12 @@ import { BatchsRepository } from '../../repositories/batchs-repository'
 import { Batch } from '../../../enterprise/entities/batch'
 import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 import { MedicineStockAlreadyExistsError } from '../_errors/medicine-stock-already-exists-error'
+import { Injectable } from '@nestjs/common'
 
 interface createMedicineStockUseCaseRequest {
   medicineId: string,
   stockId: string
   quantity: number
-
   code: string
   expirationDate: Date,
   manufacturerId: string,
@@ -23,12 +23,13 @@ interface createMedicineStockUseCaseRequest {
 }
 
 type createMedicineStockUseCaseResponse = Either<
-  ResourceNotFoundError,
+  ResourceNotFoundError | MedicineStockAlreadyExistsError,
   {
     medicineStock: MedicineStock
   }
-
 >
+
+@Injectable()
 export class CreateMedicineStockUseCase {
   constructor(
     private stockRepository: StocksRepository,

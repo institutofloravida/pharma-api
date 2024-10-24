@@ -6,6 +6,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { PathologiesRepository } from '../../repositories/pathologies-repository'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { UserAlreadyExistsError } from '../_errors/user-already-exists-error'
+import { Injectable } from '@nestjs/common'
 
 interface createUserUseCaseRequest {
   name: string
@@ -18,12 +19,15 @@ interface createUserUseCaseRequest {
   addressId: string
   pathologiesIds: string[]
 }
+
 type createUserUseCaseResponse = Either<
-  UserAlreadyExistsError,
+  UserAlreadyExistsError | ResourceNotFoundError,
   {
     user: User
   }
 >
+
+@Injectable()
 export class CreateUserUseCase {
   constructor(
     private userRepository: UsersRepository,

@@ -2,20 +2,24 @@ import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Institution } from '../../../enterprise/entities/institution'
 import { InstitutionsRepository } from '../../repositories/institutions-repository'
+import { Injectable } from '@nestjs/common'
 
 interface createInstitutionUseCaseRequest {
   content: string,
   cnpj: string
   description?: string
 }
+
 type createInstitutionUseCaseResponse = Either<
   ConflictError,
   {
     institution: Institution
   }
 >
+
+@Injectable()
 export class CreateInstitutionUseCase {
-  constructor(private institutionRepository: InstitutionsRepository) {}
+  constructor(private institutionRepository: InstitutionsRepository) { }
   async execute({ content, cnpj, description }: createInstitutionUseCaseRequest): Promise<createInstitutionUseCaseResponse> {
     const institution = Institution.create({
       content,

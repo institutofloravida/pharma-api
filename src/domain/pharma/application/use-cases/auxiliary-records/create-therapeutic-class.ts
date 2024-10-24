@@ -2,16 +2,20 @@ import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { TherapeuticClass } from '../../../enterprise/entities/therapeutic-class'
 import { TherapeuticClassesRepository } from '../../repositories/therapeutic-classes-repository'
+import { Injectable } from '@nestjs/common'
 
 interface createTherapeuticClassUseCaseRequest {
   content: string
 }
+
 type createTherapeuticClassUseCaseResponse = Either<
   ConflictError,
   {
     therapeuticClass: TherapeuticClass
   }
 >
+
+@Injectable()
 export class CreateTherapeuticClassUseCase {
   constructor(private therapeuticClassRepository: TherapeuticClassesRepository) {}
   async execute({ content }: createTherapeuticClassUseCaseRequest): Promise<createTherapeuticClassUseCaseResponse> {

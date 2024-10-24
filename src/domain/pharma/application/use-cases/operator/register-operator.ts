@@ -1,5 +1,4 @@
 import { left, right, type Either } from '@/core/either'
-import { ConflictError } from '@/core/erros/errors/conflict-error'
 
 import { Operator, OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { OperatorsRepository } from '../../repositories/operators-repository'
@@ -13,12 +12,14 @@ interface createOperatorUseCaseRequest {
   password: string
   role?: OperatorRole
 }
+
 type createOperatorUseCaseResponse = Either<
-  ConflictError,
+OperatorAlreadyExistsError,
   {
     operator: Operator
   }
 >
+
 @Injectable()
 export class RegisterOperatorUseCase {
   constructor(

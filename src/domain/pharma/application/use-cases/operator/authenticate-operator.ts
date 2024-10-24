@@ -10,6 +10,7 @@ interface AuthenticateOperatorUseCaseRequest {
   email: string
   password: string
 }
+
 type AuthenticateOperatorUseCaseResponse = Either<
   WrongCredentialsError,
   {

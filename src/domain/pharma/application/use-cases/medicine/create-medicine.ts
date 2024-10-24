@@ -3,6 +3,7 @@ import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Medicine } from '../../../enterprise/entities/medicine'
 import { MedicinesRepository } from '../../repositories/medicines-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Injectable } from '@nestjs/common'
 
 interface createMedicineUseCaseRequest {
   content: string,
@@ -11,12 +12,15 @@ interface createMedicineUseCaseRequest {
   pharmaceuticalFormId: UniqueEntityId
   therapeuticClassesIds: UniqueEntityId[]
 }
+
 type createMedicineUseCaseResponse = Either<
   ConflictError,
   {
     medicine: Medicine
   }
 >
+
+@Injectable()
 export class CreateMedicineUseCase {
   constructor(private medicineRepository: MedicinesRepository) {}
   async execute({

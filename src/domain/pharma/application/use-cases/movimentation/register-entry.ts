@@ -9,6 +9,7 @@ import { MedicineEntry, type EntryType } from '../../../enterprise/entities/entr
 import { MedicinesEntriesRepository } from '../../repositories/medicines-entries-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { InvalidEntryQuantityError } from '../_errors/invalid-entry-quantity-error'
+import { Injectable } from '@nestjs/common'
 
 interface RegisterEntryUseCaseRequest {
   medicineId: string
@@ -24,6 +25,8 @@ type RegisterEntryUseCaseResponse = Either<
   ResourceNotFoundError | InvalidEntryQuantityError | NoBatchInStockFoundError,
   null
 >
+
+@Injectable()
 export class RegisterEntryUseCase {
   constructor(
     private medicineEntryRepository: MedicinesEntriesRepository,

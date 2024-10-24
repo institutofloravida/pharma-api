@@ -10,6 +10,7 @@ import { MedicinesExitsRepository } from '../../repositories/medicines-exits-rep
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { InvalidExitQuantityError } from '../_errors/invalid-exit-quantity-error'
 import { InsufficientQuantityBatchInStockError } from '../_errors/insufficient-quantity-batch-in-stock-error'
+import { Injectable } from '@nestjs/common'
 
 interface RegisterExitUseCaseRequest {
   medicineId: string
@@ -22,9 +23,14 @@ interface RegisterExitUseCaseRequest {
 }
 
 type RegisterExitUseCaseResponse = Either<
-  ResourceNotFoundError | NoBatchInStockFoundError,
+  ResourceNotFoundError |
+  NoBatchInStockFoundError |
+  InvalidExitQuantityError |
+  InsufficientQuantityBatchInStockError,
   null
 >
+
+@Injectable()
 export class RegisterExitUseCase {
   constructor(
     private medicineExitRepository: MedicinesExitsRepository,
