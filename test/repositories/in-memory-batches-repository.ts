@@ -1,7 +1,7 @@
-import { BatchsRepository } from '@/domain/pharma/application/repositories/batchs-repository'
+import { BatchesRepository } from '@/domain/pharma/application/repositories/batches-repository'
 import { Batch } from '@/domain/pharma/enterprise/entities/batch'
 
-export class InMemoryBatchsRepository implements BatchsRepository {
+export class InMemoryBatchesRepository implements BatchesRepository {
   public items: Batch[] = []
 
   async create(batch: Batch) {

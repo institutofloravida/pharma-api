@@ -1,10 +1,10 @@
-import { BatchStock } from '../../enterprise/entities/batch-stock'
+import { Batchestock } from '../../enterprise/entities/batch-stock'
 
-export interface BatchStocksRepository {
-  create(batchStock: BatchStock): Promise<void | null>
-  save(batchstock: BatchStock): Promise<void | null>
-  replenish(batchStockId: string, quantity: number): Promise<BatchStock | null>
-  subtract(batchStockId: string, quantity: number): Promise<BatchStock | null>
-  findByBatchIdAndStockId(batchId: string, stockId: string): Promise<BatchStock | null>
-  findById(id:string): Promise<BatchStock | null>
+export interface BatchestocksRepository {
+  create(batchestock: Batchestock): Promise<void | null>
+  save(batchestock: Batchestock): Promise<void | null>
+  replenish(batchestockId: string, quantity: number): Promise<Batchestock | null>
+  subtract(batchestockId: string, quantity: number): Promise<Batchestock | null>
+  findByBatchIdAndStockId(batchId: string, stockId: string): Promise<Batchestock | null>
+  findById(id:string): Promise<Batchestock | null>
 }

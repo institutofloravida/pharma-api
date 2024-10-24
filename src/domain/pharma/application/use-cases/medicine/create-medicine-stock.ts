@@ -5,10 +5,10 @@ import { MedicinesStockRepository } from '../../repositories/medicines-stock-rep
 import { MedicinesRepository } from '../../repositories/medicines-repository'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { StocksRepository } from '../../repositories/stocks-repository'
-import { BatchStock } from '../../../enterprise/entities/batch-stock'
-import { BatchsRepository } from '../../repositories/batchs-repository'
+import { Batchestock } from '../../../enterprise/entities/batch-stock'
+import { BatchesRepository } from '../../repositories/batches-repository'
 import { Batch } from '../../../enterprise/entities/batch'
-import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
+import { BatchestocksRepository } from '../../repositories/batch-stocks-repository'
 import { MedicineStockAlreadyExistsError } from '../_errors/medicine-stock-already-exists-error'
 import { Injectable } from '@nestjs/common'
 
@@ -34,8 +34,8 @@ export class CreateMedicineStockUseCase {
   constructor(
     private stockRepository: StocksRepository,
     private medicineRepository: MedicinesRepository,
-    private batchRepository: BatchsRepository,
-    private batchStockRepository: BatchStocksRepository,
+    private batchRepository: BatchesRepository,
+    private batchestockRepository: BatchestocksRepository,
     private medicinestockRepository: MedicinesStockRepository,
   ) {}
 
@@ -65,7 +65,7 @@ export class CreateMedicineStockUseCase {
       manufacturingDate,
     })
 
-    const batchStock = BatchStock.create({
+    const batchestock = Batchestock.create({
       medicineId: new UniqueEntityId(medicineId),
       batchId: batch.id,
       currentQuantity: quantity,
@@ -77,7 +77,7 @@ export class CreateMedicineStockUseCase {
       medicineId: new UniqueEntityId(medicineId),
       stockId: new UniqueEntityId(stockId),
       currentQuantity: quantity,
-      batchsStockIds: [batchStock.id.toString()],
+      batchesStockIds: [batchestock.id.toString()],
     })
 
     const medicineStockExists = await this.medicinestockRepository.medicineStockExists(medicineStock)
@@ -88,7 +88,7 @@ export class CreateMedicineStockUseCase {
 
     await Promise.all([
       this.batchRepository.create(batch),
-      this.batchStockRepository.create(batchStock),
+      this.batchestockRepository.create(batchestock),
       this.medicinestockRepository.create(medicineStock),
     ])
 

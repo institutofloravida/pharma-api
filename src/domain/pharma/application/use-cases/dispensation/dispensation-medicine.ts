@@ -2,8 +2,8 @@ import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
 import { MedicinesRepository } from '../../repositories/medicines-repository'
-import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
-import { BatchsRepository } from '../../repositories/batchs-repository'
+import { BatchestocksRepository } from '../../repositories/batch-stocks-repository'
+import { BatchesRepository } from '../../repositories/batches-repository'
 import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
 import { InsufficientQuantityInStockError } from '../_errors/insufficient-quantity-in-stock-error'
 import { InsufficientQuantityBatchInStockError } from '../_errors/insufficient-quantity-batch-in-stock-error'
@@ -12,7 +12,7 @@ import { MedicinesExitsRepository } from '../../repositories/medicines-exits-rep
 import { Dispensation } from '../../../enterprise/entities/dispensation'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { DispensationsMedicinesRepository } from '../../repositories/dispensations-medicines-repository'
-import { MovimentationBatchStock } from '../../../enterprise/entities/batch-stock'
+import { MovimentationBatchestock } from '../../../enterprise/entities/batch-stock'
 import { ExpiredMedicineDispenseError } from '../_errors/expired-medicine-dispense-error'
 import { Injectable } from '@nestjs/common'
 
@@ -21,7 +21,7 @@ interface DispensationMedicineUseCaseRequest {
   stockId: string
   userId: string
   operatorId: string
-  batchesStocks: MovimentationBatchStock[]
+  batchesStocks: MovimentationBatchestock[]
   dispensationDate?: Date
 }
 
@@ -43,8 +43,8 @@ export class DispensationMedicineUseCase {
     private medicinesExitsRepository: MedicinesExitsRepository,
     private medicinesRepository: MedicinesRepository,
     private medicinesStockRepository: MedicinesStockRepository,
-    private batchStockskRepository: BatchStocksRepository,
-    private batchsRepository: BatchsRepository,
+    private batchestockskRepository: BatchestocksRepository,
+    private batchesRepository: BatchesRepository,
   ) { }
 
   async execute({
@@ -68,12 +68,12 @@ export class DispensationMedicineUseCase {
     let totalQuantityToDispense = 0
 
     for (const item of batchesStocks) {
-      const batchStock = await this.batchStockskRepository.findById(item.batchStockId.toString())
-      if (!batchStock) {
+      const batchestock = await this.batchestockskRepository.findById(item.batchestockId.toString())
+      if (!batchestock) {
         return left(new ResourceNotFoundError())
       }
 
-      const batch = await this.batchsRepository.findById(batchStock.batchId.toString())
+      const batch = await this.batchesRepository.findById(batchestock.batchId.toString())
       if (!batch) {
         return left(new ResourceNotFoundError())
       }
@@ -84,8 +84,8 @@ export class DispensationMedicineUseCase {
         return left(new ExpiredMedicineDispenseError(batch.code, medicine.content))
       }
 
-      if (batchStock.quantity < item.quantity) {
-        return left(new InsufficientQuantityBatchInStockError(medicine.content, batch.code, batchStock.quantity))
+      if (batchestock.quantity < item.quantity) {
+        return left(new InsufficientQuantityBatchInStockError(medicine.content, batch.code, batchestock.quantity))
       }
 
       totalQuantityToDispense += item.quantity
@@ -98,7 +98,7 @@ export class DispensationMedicineUseCase {
     for (const item of batchesStocks) {
       const medicineExit = MedicineExit.create({
         medicineStockId: medicineStock.id,
-        batchStockId: item.batchStockId,
+        batchestockId: item.batchestockId,
         exitDate: dispensationDate,
         exitType: 'DISPENSATION',
         quantity: item.quantity,
@@ -106,13 +106,13 @@ export class DispensationMedicineUseCase {
       })
 
       await this.medicinesExitsRepository.create(medicineExit)
-      await this.batchStockskRepository.subtract(item.batchStockId.toString(), item.quantity)
+      await this.batchestockskRepository.subtract(item.batchestockId.toString(), item.quantity)
     }
 
     const dispensation = Dispensation.create({
       userId: new UniqueEntityId(userId),
       dispensationDate,
-      batchsStocks: batchesStocks,
+      batchesStocks: batchesStocks,
     })
 
     await this.dispensationsMedicinesRepository.create(dispensation)

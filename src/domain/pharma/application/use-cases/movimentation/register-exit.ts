@@ -2,8 +2,8 @@ import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
 import { MedicinesRepository } from '../../repositories/medicines-repository'
-import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
-import { BatchsRepository } from '../../repositories/batchs-repository'
+import { BatchestocksRepository } from '../../repositories/batch-stocks-repository'
+import { BatchesRepository } from '../../repositories/batches-repository'
 import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
 import { MedicineExit, type ExitType } from '../../../enterprise/entities/exit'
 import { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository'
@@ -36,8 +36,8 @@ export class RegisterExitUseCase {
     private medicineExitRepository: MedicinesExitsRepository,
     private medicinesRepository: MedicinesRepository,
     private medicinesStockRepository: MedicinesStockRepository,
-    private batchStockskRepository: BatchStocksRepository,
-    private batchsRepository: BatchsRepository,
+    private batchestockskRepository: BatchestocksRepository,
+    private batchesRepository: BatchesRepository,
   ) {}
 
   async execute({
@@ -59,12 +59,12 @@ export class RegisterExitUseCase {
       return left(new NoBatchInStockFoundError(medicine.content))
     }
 
-    const batchStock = await this.batchStockskRepository.findById(batcheStockId)
-    if (!batchStock) {
+    const batchestock = await this.batchestockskRepository.findById(batcheStockId)
+    if (!batchestock) {
       return left(new ResourceNotFoundError())
     }
 
-    const batch = await this.batchsRepository.findById(batchStock.batchId.toString())
+    const batch = await this.batchesRepository.findById(batchestock.batchId.toString())
     if (!batch) {
       return left(new ResourceNotFoundError())
     }
@@ -73,18 +73,18 @@ export class RegisterExitUseCase {
       return left(new InvalidExitQuantityError())
     }
 
-    if (quantity > batchStock.quantity) {
+    if (quantity > batchestock.quantity) {
       return left(new InsufficientQuantityBatchInStockError(medicine.content, batch.code, quantity))
     }
 
-    const batchStockUpdated = await this.batchStockskRepository.subtract(batcheStockId, quantity)
+    const batchestockUpdated = await this.batchestockskRepository.subtract(batcheStockId, quantity)
 
-    if (!batchStockUpdated) {
+    if (!batchestockUpdated) {
       return left(new ResourceNotFoundError())
     }
 
     const exit = MedicineExit.create({
-      batchStockId: new UniqueEntityId(batcheStockId),
+      batchestockId: new UniqueEntityId(batcheStockId),
       exitType,
       medicineStockId: medicineStock.id,
       operatorId,

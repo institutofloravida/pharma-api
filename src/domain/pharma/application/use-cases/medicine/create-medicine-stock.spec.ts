@@ -2,15 +2,15 @@ import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-me
 import { CreateMedicineStockUseCase } from './create-medicine-stock'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
-import { InMemoryBatchsRepository } from 'test/repositories/in-memory-batchs-repository'
-import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
+import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
+import { InMemoryBatchestocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { makeStock } from 'test/factories/make-stock'
 import { makeMedicine } from 'test/factories/make-medicine'
 
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
-let inMemoryBatchsRepository: InMemoryBatchsRepository
-let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
+let inMemoryBatchesRepository: InMemoryBatchesRepository
+let inMemoryBatchestocksRepository: InMemoryBatchestocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let sut: CreateMedicineStockUseCase
 
@@ -18,15 +18,15 @@ describe('MedicineStock', () => {
   beforeEach(() => {
     inMemoryStocksRepository = new InMemoryStocksRepository()
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
-    inMemoryBatchsRepository = new InMemoryBatchsRepository()
+    inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(inMemoryMedicinesStockRepository)
+    inMemoryBatchestocksRepository = new InMemoryBatchestocksRepository(inMemoryMedicinesStockRepository)
 
     sut = new CreateMedicineStockUseCase(
       inMemoryStocksRepository,
       inMemoryMedicinesRepository,
-      inMemoryBatchsRepository,
-      inMemoryBatchStocksRepository,
+      inMemoryBatchesRepository,
+      inMemoryBatchestocksRepository,
       inMemoryMedicinesStockRepository,
     )
   })

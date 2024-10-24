@@ -2,8 +2,8 @@ import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
 import { MedicinesRepository } from '../../repositories/medicines-repository'
-import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
-import { BatchsRepository } from '../../repositories/batchs-repository'
+import { BatchestocksRepository } from '../../repositories/batch-stocks-repository'
+import { BatchesRepository } from '../../repositories/batches-repository'
 import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
 import { MedicineEntry, type EntryType } from '../../../enterprise/entities/entry'
 import { MedicinesEntriesRepository } from '../../repositories/medicines-entries-repository'
@@ -32,8 +32,8 @@ export class RegisterEntryUseCase {
     private medicineEntryRepository: MedicinesEntriesRepository,
     private medicinesRepository: MedicinesRepository,
     private medicinesStockRepository: MedicinesStockRepository,
-    private batchStockskRepository: BatchStocksRepository,
-    private batchsRepository: BatchsRepository,
+    private batchestockskRepository: BatchestocksRepository,
+    private batchesRepository: BatchesRepository,
   ) {}
 
   async execute({
@@ -55,12 +55,12 @@ export class RegisterEntryUseCase {
       return left(new NoBatchInStockFoundError(medicine.content))
     }
 
-    const batchStock = await this.batchStockskRepository.findById(batcheStockId)
-    if (!batchStock) {
+    const batchestock = await this.batchestockskRepository.findById(batcheStockId)
+    if (!batchestock) {
       return left(new ResourceNotFoundError())
     }
 
-    const batch = await this.batchsRepository.findById(batchStock.batchId.toString())
+    const batch = await this.batchesRepository.findById(batchestock.batchId.toString())
     if (!batch) {
       return left(new ResourceNotFoundError())
     }
@@ -69,7 +69,7 @@ export class RegisterEntryUseCase {
       return left(new InvalidEntryQuantityError())
     }
 
-    await this.batchStockskRepository.replenish(batcheStockId, quantity)
+    await this.batchestockskRepository.replenish(batcheStockId, quantity)
 
     const entry = MedicineEntry.create({
       batcheStockId: new UniqueEntityId(batcheStockId),

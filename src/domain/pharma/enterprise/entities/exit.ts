@@ -6,7 +6,7 @@ export type ExitType = 'DISPENSATION' | 'EXPIRATION' | 'OTHER'
 
 export interface MedicineExitProps {
   medicineStockId: UniqueEntityId
-  batchStockId: UniqueEntityId
+  batchestockId: UniqueEntityId
   quantity: number
   operatorId: string
   exitType: ExitType
@@ -20,8 +20,8 @@ export class MedicineExit extends Entity<MedicineExitProps> {
     return this.props.medicineStockId
   }
 
-  get batchStockId() {
-    return this.props.batchStockId
+  get batchestockId() {
+    return this.props.batchestockId
   }
 
   get quantity() {
