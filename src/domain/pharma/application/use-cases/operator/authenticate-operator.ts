@@ -35,8 +35,7 @@ export class AuthenticateOperatorUseCase {
       return left(new WrongCredentialsError())
     }
 
-    const isPasswordValid = this.hashComparer.compare(password, operator.passwordHash)
-
+    const isPasswordValid = await this.hashComparer.compare(password, operator.passwordHash)
     if (!isPasswordValid) {
       return left(new WrongCredentialsError())
     }

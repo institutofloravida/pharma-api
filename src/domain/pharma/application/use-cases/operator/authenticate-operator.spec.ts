@@ -31,4 +31,16 @@ describe('Authenticate Operator', () => {
       accessToken: expect.any(String),
     })
   })
+  it('shoult not be able to authenticate a operator with bad credentials', async () => {
+    const operator = makeOperator({
+      email: 'teste@gmail.com',
+      passwordHash: await fakeHasher.hash('1234567'),
+    })
+    inMemoryOperatorsRepository.create(operator)
+    const result = await sut.execute({
+      email: operator.email,
+      password: '1234567asasas',
+    })
+    expect(result.isLeft()).toBeTruthy()
+  })
 })
