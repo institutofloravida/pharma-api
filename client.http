@@ -2,6 +2,14 @@
 
 @authToken = {{authenticate.response.body.access_token}}
 
+
+# @name validate_token 
+GET {{baseurl}}/validate-token
+Content-Type: application/json                        
+Authorization: 'Bearer {{{{authToken}}}}'
+
+###
+
 # @name create_account
 POST {{baseurl}}/accounts
 Content-Type: application/json
@@ -12,6 +20,8 @@ Content-Type: application/json
   "password": "12345678"
 }
 
+
+
 ###
 
 # @name authenticate 
@@ -19,8 +29,8 @@ POST {{baseurl}}/sessions
 Content-Type: application/json
 
 {
-  "email": "teste@gmail.com",
-  "password": "12345678asasdfsdfs"
+  "email": "user1@gmail.com",
+  "password": "12345678"
 }
 
 ###

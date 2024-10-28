@@ -7,10 +7,11 @@ import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/o
 import { AuthenticateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/authenticate-operator'
 import { CreateTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/create-therapeutic-class'
 import { CryptographyModule } from '../cryptography/cryptography.module'
+import { ValidateTokenController } from './controllers/validate-token'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
-  controllers: [CreateAccountOperatorController, AuthenticateOperatorController, CreateTherapeuticClassController],
+  controllers: [CreateAccountOperatorController, AuthenticateOperatorController, CreateTherapeuticClassController, ValidateTokenController],
   providers: [RegisterOperatorUseCase, AuthenticateOperatorUseCase, CreateTherapeuticClassUseCase],
 })
 export class HttpModule {}
