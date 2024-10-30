@@ -1,4 +1,4 @@
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
 import { Operator } from '@/domain/pharma/enterprise/entities/operator'
 

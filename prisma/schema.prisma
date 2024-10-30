@@ -13,13 +13,14 @@ enum OperatorRole {
 }
 
 model Operator {
-  id           String       @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
-  email        String       @unique
-  passwordHash String
-  role         OperatorRole @default(COMMON)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime?    @updatedAt
+  email        String        @unique
+  passwordHash String        @map("password_hash")
+  institutions Institution[] @relation("OperatorInstitutions")
+  role         OperatorRole  @default(COMMON)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime?     @updatedAt @map("updated_at")
 
   @@map("operators")
 }
@@ -28,7 +29,19 @@ model TherapeuticClass {
   id          String   @id @default(uuid())
   name        String
   description String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("therapeutic_classes")
+}
+
+model Institution {
+  id          String     @id @default(uuid())
+  name        String
+  cnpj        String     @unique
+  description String?
+  operators   Operator[] @relation("OperatorInstitutions")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime?  @updatedAt @map("updated_at")
+
+  @@map("institutions")
 }

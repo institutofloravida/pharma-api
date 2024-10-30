@@ -15,8 +15,8 @@ POST {{baseurl}}/accounts
 Content-Type: application/json
 
 {
-  "name": "user1",
-  "email": "user1@gmail.com",
+  "name": "fulano de tal",
+  "email": "floravida@gmail.com",
   "password": "12345678"
 }
 
@@ -29,7 +29,7 @@ POST {{baseurl}}/sessions
 Content-Type: application/json
 
 {
-  "email": "user1@gmail.com",
+  "email": "floravida@gmail.com",
   "password": "12345678"
 }
 
@@ -49,5 +49,13 @@ Authorization: Bearer {{authToken}}
 
 # @name fetch_operators 
 GET  {{baseurl}}/operators?page=0
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+
+###
+
+# @name fetch_institutions 
+GET  {{baseurl}}/institutions?page=1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}

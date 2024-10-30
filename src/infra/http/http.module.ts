@@ -10,6 +10,8 @@ import { CryptographyModule } from '../cryptography/cryptography.module'
 import { ValidateTokenController } from './controllers/validate-token'
 import { FetchOperatorsController } from './controllers/fetch-operators.controller'
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
+import { FetchInstitutionsController } from './controllers/fetch-institutions.controller'
+import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -19,12 +21,14 @@ import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/oper
     CreateTherapeuticClassController,
     ValidateTokenController,
     FetchOperatorsController,
+    FetchInstitutionsController,
   ],
   providers: [
-    FethOperatorsUseCase,
     RegisterOperatorUseCase,
     AuthenticateOperatorUseCase,
     CreateTherapeuticClassUseCase,
+    FethOperatorsUseCase,
+    FethInstitutionsUseCase,
   ],
 })
 export class HttpModule {}

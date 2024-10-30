@@ -1,3 +1,4 @@
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 
@@ -25,5 +26,13 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
     }
 
     return institution
+  }
+
+  async findMany({ page }: PaginationParams): Promise<Institution[]> {
+    const institutions = this.items
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return institutions
   }
 }

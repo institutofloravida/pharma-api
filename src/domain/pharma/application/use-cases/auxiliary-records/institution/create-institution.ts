@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
-import { Institution } from '../../../enterprise/entities/institution'
-import { InstitutionsRepository } from '../../repositories/institutions-repository'
+import { Institution } from '../../../../enterprise/entities/institution'
+import { InstitutionsRepository } from '../../../repositories/institutions-repository'
 import { Injectable } from '@nestjs/common'
 
 interface createInstitutionUseCaseRequest {

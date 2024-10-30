@@ -23,6 +23,7 @@
     "test:e2e:watch": "vitest --config ./vitest.config.e2e.mts"
   },
   "dependencies": {
+    "@js-brasil/fakerbr": "^0.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",

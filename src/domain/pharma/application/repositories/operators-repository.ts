@@ -1,4 +1,4 @@
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Operator } from '../../enterprise/entities/operator'
 
 export abstract class OperatorsRepository {

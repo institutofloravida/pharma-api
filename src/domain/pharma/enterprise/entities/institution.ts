@@ -2,7 +2,7 @@ import { Optional } from '@/core/types/optional'
 import { Company, type CompanyProps } from './company'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
-interface InstitutionProps extends CompanyProps {}
+export interface InstitutionProps extends CompanyProps {}
 
 export class Institution extends Company<InstitutionProps> {
   static create(
