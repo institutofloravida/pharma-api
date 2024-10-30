@@ -8,6 +8,7 @@ export interface OperatorProps {
   name: string
   email: string
   passwordHash: string
+  institutionsIds?: UniqueEntityId[]
   role: OperatorRole
   createdAt: Date
   updatedAt?: Date | null

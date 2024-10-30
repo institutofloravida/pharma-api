@@ -8,10 +8,23 @@ import { AuthenticateOperatorUseCase } from '@/domain/pharma/application/use-cas
 import { CreateTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/create-therapeutic-class'
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { ValidateTokenController } from './controllers/validate-token'
+import { FetchOperatorsController } from './controllers/fetch-operators.controller'
+import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
-  controllers: [CreateAccountOperatorController, AuthenticateOperatorController, CreateTherapeuticClassController, ValidateTokenController],
-  providers: [RegisterOperatorUseCase, AuthenticateOperatorUseCase, CreateTherapeuticClassUseCase],
+  controllers: [
+    CreateAccountOperatorController,
+    AuthenticateOperatorController,
+    CreateTherapeuticClassController,
+    ValidateTokenController,
+    FetchOperatorsController,
+  ],
+  providers: [
+    FethOperatorsUseCase,
+    RegisterOperatorUseCase,
+    AuthenticateOperatorUseCase,
+    CreateTherapeuticClassUseCase,
+  ],
 })
 export class HttpModule {}

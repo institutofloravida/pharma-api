@@ -3,6 +3,7 @@ import { Operator } from '@/domain/pharma/enterprise/entities/operator'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaOperatorMapper } from '../mappers/prisma-operator-mapper'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 
 @Injectable()
 export class PrismaOperatorsRepository implements OperatorsRepository {
@@ -27,5 +28,17 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
     }
 
     return PrismaOperatorMapper.toDomain(operator)
+  }
+
+  async findMany({ page }: PaginationParams): Promise<Operator[]> {
+    const operators = await this.prisma.operator.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+
+    return operators.map(PrismaOperatorMapper.toDomain)
   }
 }

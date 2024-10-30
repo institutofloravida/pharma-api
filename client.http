@@ -43,3 +43,11 @@ Authorization: Bearer {{authToken}}
 {
   "name": "antibiótico"
 }
+
+
+###
+
+# @name fetch_operators 
+GET  {{baseurl}}/operators?page=0
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

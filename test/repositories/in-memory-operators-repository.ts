@@ -1,3 +1,4 @@
+import type { PaginationParams } from '@/core/repositories/pagination-params'
 import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
 import { Operator } from '@/domain/pharma/enterprise/entities/operator'
 
@@ -16,5 +17,13 @@ export class InMemoryOperatorsRepository implements OperatorsRepository {
     }
 
     return null
+  }
+
+  async findMany({ page }: PaginationParams): Promise<Operator[]> {
+    const operators = this.items
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return operators
   }
 }
