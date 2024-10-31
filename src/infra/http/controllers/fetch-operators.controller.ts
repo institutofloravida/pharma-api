@@ -4,6 +4,8 @@ import { z } from 'zod'
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { OperatorPresenter } from '../presenters/operator-presenter'
+import { RolesGuard } from '@/infra/auth/roles.guard'
+import { Roles } from '@/infra/auth/role-decorator'
 
 const pageQueryParamSchema = z
   .string()
@@ -17,11 +19,12 @@ const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
 @Controller('/operators')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('ADMIN')
 export class FetchOperatorsController {
   constructor(private fetchOperators: FethOperatorsUseCase) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
     const result = await this.fetchOperators.execute({
       page,

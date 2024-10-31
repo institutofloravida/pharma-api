@@ -7,6 +7,7 @@ import { Env } from '../env'
 
 const tokenPayloadSchema = z.object({
   sub: z.string().uuid(),
+  role: z.enum(['ADMIN', 'COMMON']),
 })
 
 export type UserPayload = z.infer<typeof tokenPayloadSchema>
@@ -24,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: UserPayload) {
+    console.log(payload)
     return tokenPayloadSchema.parse(payload)
   }
 }

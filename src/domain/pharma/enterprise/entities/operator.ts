@@ -70,7 +70,7 @@ export class Operator extends Entity<OperatorProps> {
     const operator = new Operator({
       ...props,
       createdAt: props.createdAt ?? new Date(),
-      role: 'COMMON',
+      role: props.role ?? 'COMMON',
     }, id)
 
     return operator

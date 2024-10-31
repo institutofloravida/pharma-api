@@ -48,7 +48,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_operators 
-GET  {{baseurl}}/operators?page=0
+GET  {{baseurl}}/operators?page=1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 

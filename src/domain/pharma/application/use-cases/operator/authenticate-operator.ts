@@ -42,6 +42,7 @@ export class AuthenticateOperatorUseCase {
 
     const accessToken = await this.encrypter.encrypter({
       sub: operator.id.toString(),
+      role: operator.role.toString(),
     })
 
     return right({

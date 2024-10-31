@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/register-operator'
 import { OperatorRole } from '@prisma/client'
 
-const operatorRoles = Object.values(OperatorRole) as [OperatorRole, ...OperatorRole[]]
+export const operatorRoles = Object.values(OperatorRole) as [OperatorRole, ...OperatorRole[]]
 
 const createAccountOperatorBodySchema = z.object({
   name: z.string(),
