@@ -8,9 +8,25 @@ export function makeStock(
 ) {
   const stock = Stock.create({
     content: faker.database.collation(),
+    institutionId: new UniqueEntityId(),
     ...override,
   },
   id)
 
   return stock
 }
+
+// @Injectable()
+// export class StockFactory {
+//   constructor(private prisma: PrismaService) {}
+
+//   async makePrismaStock(data: Partial<StockProps> = {}): Promise<Stock> {
+//     const stock = makeStock(data)
+
+//     await this.prisma.stock.create({
+//       data: PrismaStockMapper.toPrisma(stock),
+//     })
+
+//     return stock
+//   }
+// }

@@ -16,6 +16,18 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
     })
   }
 
+  async findById(id: string): Promise<Institution | null> {
+    const institution = await this.prisma.institution.findFirst({
+      where: {
+        id,
+      },
+    })
+    if (!institution) {
+      return null
+    }
+    return PrismaInstitutionMapper.toDomain(institution)
+  }
+
   async findByContent(content: string): Promise<Institution | null> {
     const institution = await this.prisma.institution.findFirst({
       where: {

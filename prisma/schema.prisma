@@ -25,6 +25,19 @@ model Operator {
   @@map("operators")
 }
 
+model Stock {
+  id            String       @id @default(uuid())
+  name          String
+  status        Boolean      @default(true)
+  role          OperatorRole @default(COMMON)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime?    @updatedAt @map("updated_at")
+  institutionId String?      @map("institution_id")
+  Institution   Institution? @relation(fields: [institutionId], references: [id])
+
+  @@map("stocks")
+}
+
 model TherapeuticClass {
   id          String   @id @default(uuid())
   name        String
@@ -42,6 +55,7 @@ model Institution {
   operators   Operator[] @relation("OperatorInstitutions")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime?  @updatedAt @map("updated_at")
+  stock       Stock[]
 
   @@map("institutions")
 }

@@ -29,9 +29,11 @@ describe('Fetch institutions (E2E)', () => {
   })
 
   test('[GET] /institutions', async () => {
-    const user = await operatorFactory.makePrismaOperator()
+    const user = await operatorFactory.makePrismaOperator({
+      role: 'ADMIN',
+    })
 
-    const accessToken = jwt.sign({ sub: user.id.toString() })
+    const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
     await Promise.all([
       institutionFactory.makePrismaInstitution({

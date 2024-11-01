@@ -4,6 +4,7 @@ import { AuxiliaryRecord, type AuxiliaryRecordProps } from './auxiliary-records'
 
 export interface StockProps extends AuxiliaryRecordProps {
   status: boolean
+  institutionId: UniqueEntityId
 }
 
 export class Stock extends AuxiliaryRecord<StockProps> {
@@ -20,6 +21,15 @@ export class Stock extends AuxiliaryRecord<StockProps> {
     this.touch()
   }
 
+  get institutionId() {
+    return this.props.institutionId
+  }
+
+  set institutionId(value: UniqueEntityId) {
+    this.props.institutionId = value
+    this.touch()
+  }
+
   static create(
     props: Optional<StockProps, 'createdAt' | 'status'>,
     id?: UniqueEntityId,
@@ -27,7 +37,7 @@ export class Stock extends AuxiliaryRecord<StockProps> {
     const stock = new Stock({
       ...props,
       createdAt: props.createdAt ?? new Date(),
-      status: true,
+      status: props.status ?? true,
     }, id)
 
     return stock

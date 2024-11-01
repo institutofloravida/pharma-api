@@ -8,8 +8,8 @@ export class InMemoryStocksRepository implements StocksRepository {
     this.items.push(stock)
   }
 
-  async findByContent(content: string) {
-    const stock = this.items.find(item => item.content.toLowerCase().trim() === content.toLowerCase().trim())
+  async findByContent(content: string, institutionId: string) {
+    const stock = this.items.find(item => (item.content.toLowerCase().trim() === content.toLowerCase().trim()) && item.institutionId.toString() === institutionId)
     if (!stock) {
       return null
     }

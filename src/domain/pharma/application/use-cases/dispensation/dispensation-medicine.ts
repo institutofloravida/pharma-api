@@ -112,7 +112,7 @@ export class DispensationMedicineUseCase {
     const dispensation = Dispensation.create({
       userId: new UniqueEntityId(userId),
       dispensationDate,
-      batchesStocks: batchesStocks,
+      batchesStocks,
     })
 
     await this.dispensationsMedicinesRepository.create(dispensation)

@@ -13,6 +13,7 @@ export function makeOperator(
     name: faker.person.fullName(),
     email: faker.internet.email(),
     passwordHash: faker.internet.password(),
+    role: 'COMMON',
     ...override,
   },
   id)
@@ -26,7 +27,6 @@ export class OperatorFactory {
 
   async makePrismaOperator(data: Partial<OperatorProps> = {}): Promise<Operator> {
     const operator = makeOperator(data)
-
     await this.prisma.operator.create({
       data: PrismaOperatorMapper.toPrisma(operator),
     })

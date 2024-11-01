@@ -5,6 +5,16 @@ import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 export class InMemoryInstitutionsRepository implements InstitutionsRepository {
   public items: Institution[] = []
 
+  async findById(id: string): Promise<Institution | null> {
+    const institution = this.items.find(item => item.id.toValue() === id)
+
+    if (!institution) {
+      return null
+    }
+
+    return institution
+  }
+
   async create(institution: Institution) {
     this.items.push(institution)
   }
