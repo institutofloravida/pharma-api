@@ -1,5 +1,5 @@
 import { Dispensation } from '../../enterprise/entities/dispensation'
 
-export interface DispensationsMedicinesRepository {
-  create(dispensation: Dispensation): Promise<void>
+export abstract class DispensationsMedicinesRepository {
+  abstract create(dispensation: Dispensation): Promise<void>
 }

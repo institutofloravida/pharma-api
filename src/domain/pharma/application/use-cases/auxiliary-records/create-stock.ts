@@ -5,7 +5,7 @@ import { Stock } from '../../../enterprise/entities/stock'
 import { StocksRepository } from '../../repositories/stocks-repository'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { InstitutionsRepository } from '../../repositories/institutions-repository'
+import { InstitutionsRepository } from '../../repositories/institutions-repository'
 import { InstitutionNotExistsError } from './institution/_errors/institution-not-exists-error'
 
 interface createStockUseCaseRequest {
@@ -15,7 +15,7 @@ interface createStockUseCaseRequest {
 }
 
 type createStockUseCaseResponse = Either<
-  ConflictError,
+  ConflictError | InstitutionNotExistsError,
   {
     stock: Stock
   }
