@@ -12,13 +12,16 @@ import { FetchOperatorsController } from './controllers/fetch-operators.controll
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { FetchInstitutionsController } from './controllers/fetch-institutions.controller'
 import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
+import { CreateInstitutionController } from './controllers/create-institution.contoller'
+import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/create-institution'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
     CreateAccountOperatorController,
-    AuthenticateOperatorController,
     CreateTherapeuticClassController,
+    CreateInstitutionController,
+    AuthenticateOperatorController,
     ValidateTokenController,
     FetchOperatorsController,
     FetchInstitutionsController,
@@ -27,6 +30,7 @@ import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/a
     RegisterOperatorUseCase,
     AuthenticateOperatorUseCase,
     CreateTherapeuticClassUseCase,
+    CreateInstitutionUseCase,
     FethOperatorsUseCase,
     FethInstitutionsUseCase,
   ],

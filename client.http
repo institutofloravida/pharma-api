@@ -3,7 +3,7 @@
 @authToken = {{authenticate.response.body.access_token}}
 
 
-# @name validate_token 
+# @name validate_token
 GET {{baseurl}}/validate-token
 Content-Type: application/json                        
 Authorization: 'Bearer {{{{authToken}}}}'
@@ -24,7 +24,7 @@ Content-Type: application/json
 
 ###
 
-# @name authenticate 
+# @name authenticate
 POST {{baseurl}}/sessions
 Content-Type: application/json
 
@@ -35,7 +35,7 @@ Content-Type: application/json
 
 ###
 
-# @name create_therapeutic_class 
+# @name create_therapeutic_class
 POST {{baseurl}}/therapeutic-class
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
@@ -47,7 +47,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetch_operators 
+# @name fetch_operators
 GET  {{baseurl}}/operators?page=1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
@@ -55,7 +55,19 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetch_institutions 
+# @name fetch_institutions
 GET  {{baseurl}}/institutions?page=1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_institution
+POST {{baseurl}}/institutions
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "UBS Módulo - 11",
+  "cnpj": "11223344551233"
+}

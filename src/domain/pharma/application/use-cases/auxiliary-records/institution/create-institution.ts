@@ -1,8 +1,9 @@
 import { left, right, type Either } from '@/core/either'
-import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Institution } from '../../../../enterprise/entities/institution'
 import { InstitutionsRepository } from '../../../repositories/institutions-repository'
 import { Injectable } from '@nestjs/common'
+import { InstitutionWithSameContentAlreadyExistsError } from './_errors/institution-with-same-content-already-exists-error'
+import { InstitutionWithSameCnpjAlreadyExistsError } from './_errors/institution-with-same-cnpj-already-exists-error'
 
 interface createInstitutionUseCaseRequest {
   content: string,
@@ -11,7 +12,8 @@ interface createInstitutionUseCaseRequest {
 }
 
 type createInstitutionUseCaseResponse = Either<
-  ConflictError,
+  InstitutionWithSameContentAlreadyExistsError |
+  InstitutionWithSameCnpjAlreadyExistsError,
   {
     institution: Institution
   }
@@ -29,12 +31,12 @@ export class CreateInstitutionUseCase {
 
     const contentExists = await this.institutionRepository.findByContent(content)
     if (contentExists) {
-      return left(new ConflictError())
+      return left(new InstitutionWithSameContentAlreadyExistsError(content))
     }
 
     const cnpjExists = await this.institutionRepository.findByCnpj(cnpj)
     if (cnpjExists) {
-      return left(new ConflictError())
+      return left(new InstitutionWithSameCnpjAlreadyExistsError(cnpj))
     }
 
     await this.institutionRepository.create(institution)

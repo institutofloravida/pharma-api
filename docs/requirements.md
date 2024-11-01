@@ -4,9 +4,8 @@
 
 - ✅ Deve ser possível se autenticar;
 - [ ] Deve ser possível esquecer a senha;
-- [ ] Deve ser possível obter o perfil de um usuário logado;
+- ✅ Deve ser possível obter o perfil de um usuário logado;
 
-- [ ] Deve ser possível associar uma instituição a um estoque;
 - [ ] Deve ser possível associar uma instituição a um operador; 
 
 - ✅ Deve ser possível cadastrar um medicamento;
