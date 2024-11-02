@@ -45,7 +45,6 @@ export class CreateInstitutionController {
         case InstitutionWithSameContentAlreadyExistsError:
           throw new ConflictException(error.message)
         default:
-          console.log(error)
           throw new BadRequestException(error.message)
       }
     }

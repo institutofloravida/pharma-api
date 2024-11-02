@@ -31,7 +31,10 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
   async findByContent(content: string): Promise<Institution | null> {
     const institution = await this.prisma.institution.findFirst({
       where: {
-        name: content,
+        name: {
+          equals: content,
+          mode: 'insensitive',
+        },
       },
     })
 

@@ -1,4 +1,4 @@
-import type { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { SetMetadata } from '@nestjs/common'
 
 export const ROLES_KEY = 'roles'

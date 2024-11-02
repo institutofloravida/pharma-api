@@ -68,6 +68,18 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "name": "UBS Módulo - 11",
-  "cnpj": "11223344551233"
+  "name": "UBS Módulo - 15",
+  "cnpj": "11223344551223"
+}
+
+###
+
+# @name create_stock
+POST {{baseurl}}/stocks
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Stock Flora Vida",
+  "institutionId": "623bc731-bae7-4ca1-9606-f1e8e56de985"
 }

@@ -7,6 +7,8 @@ import { TherapeuticClassesRepository } from '@/domain/pharma/application/reposi
 import { PrismaTherapeuticClassesRepository } from './prisma/repositories/prisma-therapeutic-classes-repository'
 import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
 import { PrismaInstitutionsRepository } from './prisma/repositories/prisma-institution-repository'
+import { StocksRepository } from '@/domain/pharma/application/repositories/stocks-repository'
+import { PrismaStocksRepository } from './prisma/repositories/prisma-stocks-repositories'
 
 @Module({
   providers: [
@@ -14,6 +16,7 @@ import { PrismaInstitutionsRepository } from './prisma/repositories/prisma-insti
     { provide: OperatorsRepository, useClass: PrismaOperatorsRepository },
     { provide: TherapeuticClassesRepository, useClass: PrismaTherapeuticClassesRepository },
     { provide: InstitutionsRepository, useClass: PrismaInstitutionsRepository },
+    { provide: StocksRepository, useClass: PrismaStocksRepository },
     PrismaUsersRepository],
   exports: [
     PrismaService,
@@ -21,6 +24,7 @@ import { PrismaInstitutionsRepository } from './prisma/repositories/prisma-insti
     PrismaUsersRepository,
     TherapeuticClassesRepository,
     InstitutionsRepository,
+    StocksRepository,
   ],
 })
 export class DatabaseModule {}

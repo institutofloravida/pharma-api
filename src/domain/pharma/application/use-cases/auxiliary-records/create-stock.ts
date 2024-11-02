@@ -43,7 +43,6 @@ export class CreateStockUseCase {
       status,
       institutionId: new UniqueEntityId(institutionId),
     })
-
     const stockExists = await this.stockRepository.findByContent(content, institutionId)
     if (stockExists) {
       return left(new ConflictError())
