@@ -1,0 +1,52 @@
+import { left, right, type Either } from '@/core/either'
+import { ConflictError } from '@/core/erros/errors/conflict-error'
+import { Medicine } from '../../../enterprise/entities/medicine'
+import { MedicinesRepository } from '../../repositories/medicines-repository'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Injectable } from '@nestjs/common'
+
+interface createMedicineUseCaseRequest {
+  content: string,
+  description?: string | null
+  dosage: string
+  pharmaceuticalFormId: UniqueEntityId
+  therapeuticClassesIds: UniqueEntityId[]
+}
+
+type createMedicineUseCaseResponse = Either<
+  ConflictError,
+  {
+    medicine: Medicine
+  }
+>
+
+@Injectable()
+export class CreateMedicineUseCase {
+  constructor(private medicineRepository: MedicinesRepository) {}
+  async execute({
+    content,
+    dosage,
+    description,
+    pharmaceuticalFormId,
+    therapeuticClassesIds,
+  }: createMedicineUseCaseRequest): Promise<createMedicineUseCaseResponse> {
+    const medicine = Medicine.create({
+      content,
+      dosage,
+      description,
+      pharmaceuticalFormId,
+      therapeuticClassesIds,
+    })
+
+    const contentExists = await this.medicineRepository.medicineExists(medicine)
+    if (contentExists) {
+      return left(new ConflictError())
+    }
+
+    await this.medicineRepository.create(medicine)
+
+    return right({
+      medicine,
+    })
+  }
+}

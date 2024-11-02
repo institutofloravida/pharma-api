@@ -1,7 +1,7 @@
-import type { Stock } from '../../enterprise/entities/stock'
+import { Stock } from '../../enterprise/entities/stock'
 
-export interface StocksRepository {
-  create(stock: Stock): Promise<void>
-  findByContent(content: string):Promise<Stock | null>
-  findById(id: string):Promise<Stock | null>
+export abstract class StocksRepository {
+  abstract create(stock: Stock): Promise<void>
+  abstract findByContent(content: string, institutionId: string):Promise<Stock | null>
+  abstract findById(id: string):Promise<Stock | null>
 }

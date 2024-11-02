@@ -1,7 +1,7 @@
-import type { UnitMeasure } from '../../enterprise/entities/unitMeasure'
+import { UnitMeasure } from '../../enterprise/entities/unitMeasure'
 
-export interface UnitsMeasureRepository {
-  create(unitMeasure: UnitMeasure): Promise<void>
-  findByContent(content: string): Promise<UnitMeasure | null>
-  findByAcronym(acronym: string): Promise<UnitMeasure | null>
+export abstract class UnitsMeasureRepository {
+  abstract create(unitMeasure: UnitMeasure): Promise<void>
+  abstract findByContent(content: string): Promise<UnitMeasure | null>
+  abstract findByAcronym(acronym: string): Promise<UnitMeasure | null>
 }

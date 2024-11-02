@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,13 +13,48 @@ enum OperatorRole {
 }
 
 model Operator {
-  id           String       @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
-  email        String       @unique
-  passwordHash String
-  role         OperatorRole @default(COMMON)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime?    @updatedAt
+  email        String        @unique
+  passwordHash String        @map("password_hash")
+  institutions Institution[] @relation("OperatorInstitutions")
+  role         OperatorRole  @default(COMMON)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime?     @updatedAt @map("updated_at")
 
   @@map("operators")
+}
+
+model Stock {
+  id            String       @id @default(uuid())
+  name          String
+  status        Boolean      @default(true)
+  institutionId String       @map("institution_id")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime?    @updatedAt @map("updated_at")
+  Institution   Institution? @relation(fields: [institutionId], references: [id])
+
+  @@map("stocks")
+}
+
+model Institution {
+  id          String     @id @default(uuid())
+  name        String
+  cnpj        String     @unique
+  description String?
+  operators   Operator[] @relation("OperatorInstitutions")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime?  @updatedAt @map("updated_at")
+  stocks      Stock[]
+
+  @@map("institutions")
+}
+
+model TherapeuticClass {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("therapeutic_classes")
 }

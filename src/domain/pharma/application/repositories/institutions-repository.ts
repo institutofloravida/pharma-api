@@ -1,7 +1,10 @@
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Institution } from '../../enterprise/entities/institution'
 
-export interface InstitutionsRepository {
-  create(institution: Institution): Promise<void>
-  findByContent(content: string): Promise<Institution | null>
-  findByCnpj(cnpj: string): Promise<Institution | null>
+export abstract class InstitutionsRepository {
+  abstract create(institution: Institution): Promise<void>
+  abstract findById(id: string): Promise<Institution | null>
+  abstract findByContent(content: string): Promise<Institution | null>
+  abstract findByCnpj(cnpj: string): Promise<Institution | null>
+  abstract findMany(params: PaginationParams): Promise<Institution[]>
 }

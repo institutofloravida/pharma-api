@@ -1,5 +1,5 @@
-import type { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repositories/pharmaceutical-forms-repository'
-import type { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
+import { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repositories/pharmaceutical-forms-repository'
+import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
 
 export class InMemoryPharmaceuticalFormsRepository implements PharmaceuticalFormsRepository {
   public items: PharmaceuticalForm[] = []

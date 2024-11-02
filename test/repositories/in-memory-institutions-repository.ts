@@ -1,8 +1,19 @@
-import type { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
-import type { Institution } from '@/domain/pharma/enterprise/entities/institution'
+import { PaginationParams } from '@/core/repositories/pagination-params'
+import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
+import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 
 export class InMemoryInstitutionsRepository implements InstitutionsRepository {
   public items: Institution[] = []
+
+  async findById(id: string): Promise<Institution | null> {
+    const institution = this.items.find(item => item.id.toValue() === id)
+
+    if (!institution) {
+      return null
+    }
+
+    return institution
+  }
 
   async create(institution: Institution) {
     this.items.push(institution)
@@ -25,5 +36,13 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
     }
 
     return institution
+  }
+
+  async findMany({ page }: PaginationParams): Promise<Institution[]> {
+    const institutions = this.items
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return institutions
   }
 }

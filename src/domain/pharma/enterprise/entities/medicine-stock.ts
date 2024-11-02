@@ -1,13 +1,13 @@
-import type { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
+import { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
-import type { Optional } from '@/core/types/optional'
+import { Optional } from '@/core/types/optional'
 
 export interface MedicineStockProps {
   medicineId: UniqueEntityId
   stockId: UniqueEntityId
   currentQuantity: number
   minimumLevel: number
-  batchsStockIds: string[]
+  batchesStockIds: string[]
   lastMove?: Date
   createdAt: Date
   updatedAt?: Date
@@ -40,12 +40,12 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
     this.touch()
   }
 
-  get batchsStockIds() {
-    return this.props.batchsStockIds
+  get batchesStockIds() {
+    return this.props.batchesStockIds
   }
 
-  set batchsStockIds(value: string[]) {
-    this.props.batchsStockIds = value
+  set batchesStockIds(value: string[]) {
+    this.props.batchesStockIds = value
     this.touch()
   }
 

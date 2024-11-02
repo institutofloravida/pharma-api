@@ -1,12 +1,85 @@
 @baseurl = http://localhost:3333
 
+@authToken = {{authenticate.response.body.access_token}}
+
+
+# @name validate_token
+GET {{baseurl}}/validate-token
+Content-Type: application/json                        
+Authorization: 'Bearer {{{{authToken}}}}'
+
+###
 
 # @name create_account
 POST {{baseurl}}/accounts
 Content-Type: application/json
 
 {
-  "name": "user3",
-  "email": "user3@gmail.com",
+  "name": "fulano de tal",
+  "email": "floravida@gmail.com",
   "password": "12345678"
+}
+
+
+
+###
+
+# @name authenticate
+POST {{baseurl}}/sessions
+Content-Type: application/json
+
+{
+  "email": "floravida@gmail.com",
+  "password": "12345678"
+}
+
+###
+
+# @name create_therapeutic_class
+POST {{baseurl}}/therapeutic-class
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "antibiótico"
+}
+
+
+###
+
+# @name fetch_operators
+GET  {{baseurl}}/operators?page=1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+
+###
+
+# @name fetch_institutions
+GET  {{baseurl}}/institutions?page=1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_institution
+POST {{baseurl}}/institutions
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "UBS Módulo - 15",
+  "cnpj": "11223344551223"
+}
+
+###
+
+# @name create_stock
+POST {{baseurl}}/stocks
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Stock Flora Vida",
+  "institutionId": "623bc731-bae7-4ca1-9606-f1e8e56de985"
 }

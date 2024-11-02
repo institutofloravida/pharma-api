@@ -1,5 +1,5 @@
-import type { MedicineExit } from '../../enterprise/entities/exit'
+import { MedicineExit } from '../../enterprise/entities/exit'
 
-export interface MedicinesExitsRepository {
-  create(medicineExit: MedicineExit): Promise<void>
+export abstract class MedicinesExitsRepository {
+  abstract create(medicineExit: MedicineExit): Promise<void>
 }

@@ -1,12 +1,12 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { BatchStock, type BatchStockProps } from '@/domain/pharma/enterprise/entities/batch-stock'
+import { Batchestock, type BatchestockProps } from '@/domain/pharma/enterprise/entities/batch-stock'
 import { faker } from '@faker-js/faker'
 
-export function makeBatchStock(
-  override: Partial<BatchStockProps> = {},
+export function makeBatchestock(
+  override: Partial<BatchestockProps> = {},
   id?: UniqueEntityId,
 ) {
-  const batchStock = BatchStock.create({
+  const batchestock = Batchestock.create({
     medicineId: new UniqueEntityId(),
     stockId: new UniqueEntityId(),
     batchId: new UniqueEntityId(),
@@ -18,5 +18,5 @@ export function makeBatchStock(
   },
   id)
 
-  return batchStock
+  return batchestock
 }

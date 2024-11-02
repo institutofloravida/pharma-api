@@ -1,12 +1,12 @@
 import { Entity } from '@/core/entities/entity'
-import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { Optional } from '@/core/types/optional'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Optional } from '@/core/types/optional'
 
 export type ExitType = 'DISPENSATION' | 'EXPIRATION' | 'OTHER'
 
 export interface MedicineExitProps {
   medicineStockId: UniqueEntityId
-  batchStockId: UniqueEntityId
+  batchestockId: UniqueEntityId
   quantity: number
   operatorId: string
   exitType: ExitType
@@ -20,8 +20,8 @@ export class MedicineExit extends Entity<MedicineExitProps> {
     return this.props.medicineStockId
   }
 
-  get batchStockId() {
-    return this.props.batchStockId
+  get batchestockId() {
+    return this.props.batchestockId
   }
 
   get quantity() {

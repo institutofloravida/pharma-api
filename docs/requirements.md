@@ -1,12 +1,11 @@
-# PHARMA API | INTITUTO FLORA VIDA
+# PHARMA API | INSTITUTO FLORA VIDA
 
 ## RFs (Requisitos Funcionais)
 
 - ✅ Deve ser possível se autenticar;
 - [ ] Deve ser possível esquecer a senha;
-- [ ] Deve ser possível obter o perfil de um usuário logado;
+- ✅ Deve ser possível obter o perfil de um usuário logado;
 
-- [ ] Deve ser possível associar uma instituição a um estoque;
 - [ ] Deve ser possível associar uma instituição a um operador; 
 
 - ✅ Deve ser possível cadastrar um medicamento;
@@ -24,7 +23,7 @@
 - [ ] Deve ser possível visualizar alertas de medicamentos a vencer
 - ✅ Deve ser possível realizar a dispensação de um medicamento(FEFO);
 - ✅ Deve ser possível registrar o recebimento de medicamentos;
-- [ ] deve ser possível registrar a saída de medicamentos
+- ✅ deve ser possível registrar a saída de medicamentos
 - [ ] deve ser possível inventariar um estoque
 
 
