@@ -1,12 +1,12 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 
-import { Stock } from '../../../enterprise/entities/stock'
-import { StocksRepository } from '../../repositories/stocks-repository'
+import { Stock } from '../../../../enterprise/entities/stock'
+import { StocksRepository } from '../../../repositories/stocks-repository'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { InstitutionsRepository } from '../../repositories/institutions-repository'
-import { InstitutionNotExistsError } from './institution/_errors/institution-not-exists-error'
+import { InstitutionsRepository } from '../../../repositories/institutions-repository'
+import { InstitutionNotExistsError } from '../institution/_errors/institution-not-exists-error'
 
 interface createStockUseCaseRequest {
   content: string

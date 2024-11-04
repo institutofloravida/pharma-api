@@ -15,7 +15,9 @@ import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/a
 import { CreateInstitutionController } from './controllers/create-institution.contoller'
 import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/create-institution'
 import { CreateStockController } from './controllers/create-stock.controller'
-import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/create-stock'
+import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/create-stock'
+import { FetchStocksController } from './controllers/fetch-stocks-controller'
+import { FethStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -28,6 +30,7 @@ import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxili
     CreateStockController,
     FetchOperatorsController,
     FetchInstitutionsController,
+    FetchStocksController,
   ],
   providers: [
     AuthenticateOperatorUseCase,
@@ -37,6 +40,7 @@ import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxili
     CreateStockUseCase,
     FethOperatorsUseCase,
     FethInstitutionsUseCase,
+    FethStocksUseCase,
   ],
 })
 export class HttpModule {}

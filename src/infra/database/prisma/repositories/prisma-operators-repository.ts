@@ -16,10 +16,38 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
     })
   }
 
+  async findById(id: string): Promise<Operator | null> {
+    const operator = await this.prisma.operator.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        institutions: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    })
+
+    if (!operator) {
+      return null
+    }
+
+    return PrismaOperatorMapper.toDomain(operator)
+  }
+
   async findByEmail(email: string): Promise<Operator | null> {
     const operator = await this.prisma.operator.findUnique({
       where: {
         email,
+      },
+      include: {
+        institutions: {
+          select: {
+            id: true,
+          },
+        },
       },
     })
 
@@ -32,6 +60,13 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
 
   async findMany({ page }: PaginationParams): Promise<Operator[]> {
     const operators = await this.prisma.operator.findMany({
+      include: {
+        institutions: {
+          select: {
+            id: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: 'desc',
       },

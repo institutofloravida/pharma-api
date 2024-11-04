@@ -1,3 +1,4 @@
+import type { PaginationParams } from '@/core/repositories/pagination-params'
 import { StocksRepository } from '@/domain/pharma/application/repositories/stocks-repository'
 import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 
@@ -24,5 +25,14 @@ export class InMemoryStocksRepository implements StocksRepository {
     }
 
     return stock
+  }
+
+  async findManyByInstitutionsId({ page }: PaginationParams, institutionsIds: string[]): Promise<Stock[]> {
+    const stocks = this.items
+      .filter(item => institutionsIds.includes(item.institutionId.toString()))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return stocks
   }
 }

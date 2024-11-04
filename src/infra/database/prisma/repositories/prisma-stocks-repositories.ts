@@ -3,6 +3,7 @@ import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 import { PrismaService } from '../prisma.service'
 import { PrismaStockMapper } from '../mappers/prisma-stock-mapper'
 import { Injectable } from '@nestjs/common'
+import type { PaginationParams } from '@/core/repositories/pagination-params'
 
 @Injectable()
 export class PrismaStocksRepository implements StocksRepository {
@@ -46,5 +47,21 @@ export class PrismaStocksRepository implements StocksRepository {
     }
 
     return PrismaStockMapper.toDomain(stock)
+  }
+
+  async findManyByInstitutionsId({ page }: PaginationParams, institutionsIds: string[]): Promise<Stock[]> {
+    const stocks = await this.prisma.stock.findMany({
+      where: {
+        institutionId: {
+          in: institutionsIds,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+    return stocks.map(PrismaStockMapper.toDomain)
   }
 }

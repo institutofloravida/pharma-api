@@ -8,7 +8,7 @@ export interface OperatorProps {
   name: string
   email: string
   passwordHash: string
-  institutionsIds?: UniqueEntityId[]
+  institutionsIds: UniqueEntityId[]
   role: OperatorRole
   createdAt: Date
   updatedAt?: Date | null
@@ -42,6 +42,15 @@ export class Operator extends Entity<OperatorProps> {
     this.touch()
   }
 
+  get institutionsIds() {
+    return this.props.institutionsIds
+  }
+
+  set institutionsIds(value) {
+    this.props.institutionsIds = value
+    this.touch()
+  }
+
   get role() {
     return this.props.role
   }
@@ -64,13 +73,14 @@ export class Operator extends Entity<OperatorProps> {
   }
 
   static create(
-    props: Optional<OperatorProps, 'createdAt' | 'role'>,
+    props: Optional<OperatorProps, 'createdAt' | 'role' | 'institutionsIds'>,
     id?: UniqueEntityId,
   ) {
     const operator = new Operator({
       ...props,
       createdAt: props.createdAt ?? new Date(),
       role: props.role ?? 'COMMON',
+      institutionsIds: props.institutionsIds ?? [],
     }, id)
 
     return operator

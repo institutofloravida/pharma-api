@@ -83,3 +83,14 @@ Authorization: Bearer {{authToken}}
   "name": "Stock Flora Vida",
   "institutionId": "623bc731-bae7-4ca1-9606-f1e8e56de985"
 }
+
+###
+
+# @name fetch_stocks
+GET {{baseurl}}/stocks?page=1
+Authorization: Bearer {{authToken}}
+
+# ###
+# # @name fetch_stocks
+# GET {{baseurl}}/stocks?page=1&insitut3ionsIds=7794b891-d60e-4d5b-b9ba-1dc100133af1
+# Authorization: Bearer {{authToken}}

@@ -3,11 +3,12 @@ import { Operator } from '@/domain/pharma/enterprise/entities/operator'
 import { Operator as PrismaOperator, type Prisma } from '@prisma/client'
 
 export class PrismaOperatorMapper {
-  static toDomain(raw: PrismaOperator): Operator {
+  static toDomain(raw: PrismaOperator & { institutions: { id: string }[] }): Operator {
     return Operator.create({
       name: raw.name,
       email: raw.email,
       passwordHash: raw.passwordHash,
+      institutionsIds: raw.institutions.map(item => new UniqueEntityId(item.id)),
       role: raw.role,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
@@ -22,6 +23,9 @@ export class PrismaOperatorMapper {
       name: operator.name,
       email: operator.email,
       passwordHash: operator.passwordHash,
+      institutions: {
+        connect: operator.institutionsIds.map(institutionId => ({ id: institutionId.toString() })),
+      },
       role: operator.role,
       createdAt: operator.createdAt,
       updatedAt: operator.updatedAt,
