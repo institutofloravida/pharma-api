@@ -6,7 +6,7 @@ export class StockPresenter {
       id: stock.id.toString(),
       name: stock.content,
       status: stock.isActive,
-      innstitutionId: stock.institutionId.toString(),
+      institutionId: stock.institutionId.toString(),
       createdAt: stock.createdAt,
       updatedAt: stock.updatedAt,
     }

@@ -3,7 +3,7 @@ import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 import { PrismaService } from '../prisma.service'
 import { PrismaStockMapper } from '../mappers/prisma-stock-mapper'
 import { Injectable } from '@nestjs/common'
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 
 @Injectable()
 export class PrismaStocksRepository implements StocksRepository {

@@ -5,7 +5,7 @@ import { CreateTherapeuticClassController } from './controllers/create-therapeut
 import { DatabaseModule } from '../database/database.module'
 import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/register-operator'
 import { AuthenticateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/authenticate-operator'
-import { CreateTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/create-therapeutic-class'
+import { CreateTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/create-therapeutic-class'
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { ValidateTokenController } from './controllers/validate-token'
 import { FetchOperatorsController } from './controllers/fetch-operators.controller'
@@ -18,6 +18,8 @@ import { CreateStockController } from './controllers/create-stock.controller'
 import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/create-stock'
 import { FetchStocksController } from './controllers/fetch-stocks-controller'
 import { FethStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
+import { FetchTerapeuticClasssController } from './controllers/fetch-therapeutic-class.controller'
+import { FetchTherapeuticClassesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/fetch-therapeutic-classes'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -31,6 +33,7 @@ import { FethStocksUseCase } from '@/domain/pharma/application/use-cases/auxilia
     FetchOperatorsController,
     FetchInstitutionsController,
     FetchStocksController,
+    FetchTerapeuticClasssController,
   ],
   providers: [
     AuthenticateOperatorUseCase,
@@ -41,6 +44,7 @@ import { FethStocksUseCase } from '@/domain/pharma/application/use-cases/auxilia
     FethOperatorsUseCase,
     FethInstitutionsUseCase,
     FethStocksUseCase,
+    FetchTherapeuticClassesUseCase,
   ],
 })
 export class HttpModule {}

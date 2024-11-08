@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
-import { TherapeuticClass } from '../../../enterprise/entities/therapeutic-class'
-import { TherapeuticClassesRepository } from '../../repositories/therapeutic-classes-repository'
+import { TherapeuticClass } from '../../../../enterprise/entities/therapeutic-class'
+import { TherapeuticClassesRepository } from '../../../repositories/therapeutic-classes-repository'
 import { Injectable } from '@nestjs/common'
 
 interface createTherapeuticClassUseCaseRequest {

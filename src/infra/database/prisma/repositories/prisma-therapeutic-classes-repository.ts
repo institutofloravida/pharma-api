@@ -3,6 +3,7 @@ import { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeuti
 import { PrismaService } from '../prisma.service'
 import { PrismaTherapeuticClassMapper } from '../mappers/prisma-therapeutic-class.mapper'
 import { Injectable } from '@nestjs/common'
+import type { PaginationParams } from '@/core/repositories/pagination-params'
 
 @Injectable()
 export class PrismaTherapeuticClassesRepository implements TherapeuticClassesRepository {
@@ -15,6 +16,31 @@ export class PrismaTherapeuticClassesRepository implements TherapeuticClassesRep
   }
 
   async findByContent(content: string): Promise<TherapeuticClass | null> {
-    throw new Error('Method not implemented.')
+    const therapeuticClass = await this.prisma.therapeuticClass.findFirst({
+      where: {
+        name: {
+          equals: content,
+          mode: 'insensitive',
+        },
+      },
+
+    })
+
+    if (!therapeuticClass) {
+      return null
+    }
+
+    return PrismaTherapeuticClassMapper.toDomain(therapeuticClass)
+  }
+
+  async findMany({ page }: PaginationParams): Promise<TherapeuticClass[]> {
+    const therapeuticClasses = await this.prisma.therapeuticClass.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+    return therapeuticClasses.map(PrismaTherapeuticClassMapper.toDomain)
   }
 }

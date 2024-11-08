@@ -1,3 +1,4 @@
+import type { PaginationParams } from '@/core/repositories/pagination-params'
 import { TherapeuticClassesRepository } from '@/domain/pharma/application/repositories/therapeutic-classes-repository'
 import { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeutic-class'
 
@@ -15,5 +16,13 @@ export class InMemoryTherapeuticClassesRepository implements TherapeuticClassesR
     }
 
     return therapeuticClass
+  }
+
+  async findMany({ page }: PaginationParams): Promise<TherapeuticClass[]> {
+    const therapeuticClasses = this.items
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return therapeuticClasses
   }
 }

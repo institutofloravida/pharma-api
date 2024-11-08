@@ -35,18 +35,6 @@ Content-Type: application/json
 
 ###
 
-# @name create_therapeutic_class
-POST {{baseurl}}/therapeutic-class
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "name": "antibiótico"
-}
-
-
-###
-
 # @name fetch_operators
 GET  {{baseurl}}/operators?page=1
 Content-Type: application/json
@@ -90,7 +78,20 @@ Authorization: Bearer {{authToken}}
 GET {{baseurl}}/stocks?page=1
 Authorization: Bearer {{authToken}}
 
-# ###
-# # @name fetch_stocks
-# GET {{baseurl}}/stocks?page=1&insitut3ionsIds=7794b891-d60e-4d5b-b9ba-1dc100133af1
-# Authorization: Bearer {{authToken}}
+###
+
+# @name create_therapeutic_class
+POST {{baseurl}}/therapeutic-class
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "antibiótico"
+}
+
+
+###
+
+# @name fetch_therapeutic_classes
+GET {{baseurl}}/therapeutic-class?page=1
+Authorization: Bearer {{authToken}}
