@@ -1,4 +1,4 @@
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import  { PaginationParams } from '@/core/repositories/pagination-params'
 import { TherapeuticClassesRepository } from '@/domain/pharma/application/repositories/therapeutic-classes-repository'
 import { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeutic-class'
 

@@ -1,4 +1,4 @@
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Stock } from '../../enterprise/entities/stock'
 
 export abstract class StocksRepository {

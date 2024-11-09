@@ -92,6 +92,13 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+
 # @name fetch_therapeutic_classes
 GET {{baseurl}}/therapeutic-class?page=1
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetch_therapeutic_classes
+GET {{baseurl}}/pharmaceutical-form?page=1
 Authorization: Bearer {{authToken}}

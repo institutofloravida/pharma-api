@@ -56,6 +56,9 @@ export class PrismaStocksRepository implements StocksRepository {
           in: institutionsIds,
         },
       },
+      include: {
+        Institution: true,
+      },
       orderBy: {
         createdAt: 'desc',
       },

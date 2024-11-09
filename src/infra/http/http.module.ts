@@ -20,6 +20,8 @@ import { FetchStocksController } from './controllers/fetch-stocks-controller'
 import { FethStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 import { FetchTerapeuticClasssController } from './controllers/fetch-therapeutic-class.controller'
 import { FetchTherapeuticClassesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/fetch-therapeutic-classes'
+import { FetchPharmaceuticalFormController } from './controllers/fetch-pharmaceutical-form.controller'
+import { FetchPharmaceuticalFormsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/fetch-pharmaceutical-form'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -34,6 +36,7 @@ import { FetchTherapeuticClassesUseCase } from '@/domain/pharma/application/use-
     FetchInstitutionsController,
     FetchStocksController,
     FetchTerapeuticClasssController,
+    FetchPharmaceuticalFormController,
   ],
   providers: [
     AuthenticateOperatorUseCase,
@@ -45,6 +48,7 @@ import { FetchTherapeuticClassesUseCase } from '@/domain/pharma/application/use-
     FethInstitutionsUseCase,
     FethStocksUseCase,
     FetchTherapeuticClassesUseCase,
+    FetchPharmaceuticalFormsUseCase,
   ],
 })
 export class HttpModule {}

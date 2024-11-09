@@ -9,6 +9,8 @@ import { InstitutionsRepository } from '@/domain/pharma/application/repositories
 import { PrismaInstitutionsRepository } from './prisma/repositories/prisma-institution-repository'
 import { StocksRepository } from '@/domain/pharma/application/repositories/stocks-repository'
 import { PrismaStocksRepository } from './prisma/repositories/prisma-stocks-repositories'
+import { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repositories/pharmaceutical-forms-repository'
+import { PrismaPharmaceuticalFormsRepository } from './prisma/repositories/prisma-pharmaceutical-form-repository'
 
 @Module({
   providers: [
@@ -17,6 +19,7 @@ import { PrismaStocksRepository } from './prisma/repositories/prisma-stocks-repo
     { provide: TherapeuticClassesRepository, useClass: PrismaTherapeuticClassesRepository },
     { provide: InstitutionsRepository, useClass: PrismaInstitutionsRepository },
     { provide: StocksRepository, useClass: PrismaStocksRepository },
+    { provide: PharmaceuticalFormsRepository, useClass: PrismaPharmaceuticalFormsRepository },
     PrismaUsersRepository],
   exports: [
     PrismaService,
@@ -25,6 +28,7 @@ import { PrismaStocksRepository } from './prisma/repositories/prisma-stocks-repo
     TherapeuticClassesRepository,
     InstitutionsRepository,
     StocksRepository,
+    PharmaceuticalFormsRepository,
   ],
 })
 export class DatabaseModule {}

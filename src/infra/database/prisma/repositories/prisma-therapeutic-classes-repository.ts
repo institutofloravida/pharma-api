@@ -3,7 +3,7 @@ import { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeuti
 import { PrismaService } from '../prisma.service'
 import { PrismaTherapeuticClassMapper } from '../mappers/prisma-therapeutic-class.mapper'
 import { Injectable } from '@nestjs/common'
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 
 @Injectable()
 export class PrismaTherapeuticClassesRepository implements TherapeuticClassesRepository {

@@ -7,7 +7,7 @@ import { Roles } from '@/infra/auth/role-decorator'
 import { FethStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 import { StockPresenter } from '../presenters/stock-presenter'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import type { UserPayload } from '@/infra/auth/jwt-strategy'
+import { UserPayload } from '@/infra/auth/jwt-strategy'
 
 const pageQueryParamSchema = z
   .string()
