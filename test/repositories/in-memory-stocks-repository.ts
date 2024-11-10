@@ -44,13 +44,9 @@ export class InMemoryStocksRepository implements StocksRepository {
   }
 
   async findManyWithInstitution({ page }: PaginationParams, institutionsIds: string[], isSuper = false): Promise<StockWithInstitution[]> {
-    console.log(page)
-    console.log(institutionsIds)
-    console.log(isSuper)
-
     let stocks = this.items
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    console.log(stocks.length)
+
     if (!isSuper) {
       stocks = stocks.filter((item) =>
         institutionsIds

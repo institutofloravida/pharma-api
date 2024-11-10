@@ -94,7 +94,6 @@ describe('Fetch Stocks', () => {
         })),
       ])
     }
-    console.log(inMemoryStocksRepository.items.filter(item => item.institutionId.toString() === institution.id.toValue()).length)
     const result = await sut.execute({
       page: 3,
       institutionsIds: [institution.id.toString()],

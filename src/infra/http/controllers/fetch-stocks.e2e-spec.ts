@@ -35,7 +35,7 @@ describe('Fetch stocks (E2E)', () => {
     const insitution = await institutionFactory.makePrismaInstitution()
     const insitution2 = await institutionFactory.makePrismaInstitution()
     const user = await operatorFactory.makePrismaOperator({
-      role: 'SUPER_ADMIN',
+      role: 'MANAGER',
       institutionsIds: [insitution.id],
     })
 

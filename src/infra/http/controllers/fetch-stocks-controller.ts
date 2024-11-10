@@ -33,9 +33,7 @@ export class FetchStocksController {
     @Query('institutionsIds', new ParseArrayPipe({ items: String, optional: true })) institutionsIds: string[],
   ) {
     const userId = user.sub
-    console.log(page)
-    console.log(institutionsIds)
-    console.log(userId)
+
     const result = await this.fetchStocks.execute({ page, institutionsIds, operatorId: userId })
     if (result.isLeft()) {
       throw new BadRequestException({})

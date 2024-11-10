@@ -3,10 +3,17 @@
 @authToken = {{authenticate.response.body.access_token}}
 
 
+# @name get_details_operator
+GET {{baseurl}}/me
+Authorization: Bearer {{authToken}}
+
+###
+
+
 # @name validate_token
 GET {{baseurl}}/validate-token
 Content-Type: application/json                        
-Authorization: 'Bearer {{{{authToken}}}}'
+Authorization: Bearer {{authToken}}
 
 ###
 

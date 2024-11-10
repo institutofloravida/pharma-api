@@ -2,7 +2,7 @@ import { left, right, type Either } from '@/core/either'
 
 import { Operator, OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { OperatorsRepository } from '../../repositories/operators-repository'
-import { OperatorAlreadyExistsError } from '../_errors/operator-already-exists-error'
+import { OperatorAlreadyExistsError } from './_errors/operator-already-exists-error'
 import { HashGenerator } from '../../cryptography/hash-generator'
 import { Injectable } from '@nestjs/common'
 

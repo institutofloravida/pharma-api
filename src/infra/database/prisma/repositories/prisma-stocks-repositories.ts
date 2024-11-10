@@ -82,7 +82,6 @@ export class PrismaStocksRepository implements StocksRepository {
       take: 20,
       skip: (page - 1) * 20,
     })
-    console.log(stocks.length)
     return stocks.map((stock) => ({
       stock: PrismaStockMapper.toDomain(stock),
       institutionName: stock.Institution?.name ?? '',

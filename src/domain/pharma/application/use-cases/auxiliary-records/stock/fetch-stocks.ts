@@ -44,10 +44,6 @@ export class FetchStocksUseCase {
     if (!institutionsIds) {
       institutionsIds = operator?.institutionsIds?.map(item => item.toString())
     }
-    console.log('##################################')
-    console.log(page)
-    console.log(institutionsIds)
-    console.log('##################################')
 
     const stocks = await this.stocksRepository.findManyWithInstitution(
       {

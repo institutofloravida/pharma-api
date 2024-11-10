@@ -22,10 +22,13 @@ import { FetchTerapeuticClasssController } from './controllers/fetch-therapeutic
 import { FetchTherapeuticClassesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/fetch-therapeutic-classes'
 import { FetchPharmaceuticalFormController } from './controllers/fetch-pharmaceutical-form.controller'
 import { FetchPharmaceuticalFormsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/fetch-pharmaceutical-form'
+import { GetOperatorDetailsController } from './controllers/get-operator-details.controller'
+import { GetOperatorDetailsUseCase } from '@/domain/pharma/application/use-cases/operator/get-operator-details'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
+    GetOperatorDetailsController,
     AuthenticateOperatorController,
     ValidateTokenController,
     CreateAccountOperatorController,
@@ -37,8 +40,10 @@ import { FetchPharmaceuticalFormsUseCase } from '@/domain/pharma/application/use
     FetchStocksController,
     FetchTerapeuticClasssController,
     FetchPharmaceuticalFormController,
+
   ],
   providers: [
+    GetOperatorDetailsUseCase,
     AuthenticateOperatorUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
