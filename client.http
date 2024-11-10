@@ -20,8 +20,6 @@ Content-Type: application/json
   "password": "12345678"
 }
 
-
-
 ###
 
 # @name authenticate
@@ -83,7 +81,7 @@ Authorization: Bearer {{authToken}}
 # @name create_therapeutic_class
 POST {{baseurl}}/therapeutic-class
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{authToken}} 
 
 {
   "name": "antibiótico"

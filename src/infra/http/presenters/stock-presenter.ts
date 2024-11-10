@@ -1,14 +1,13 @@
 import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 
 export class StockPresenter {
-  static toHTTP(stock: Stock) {
+  static toHTTP({ stock, institutionName }: { stock: Stock } & { institutionName: string | null },
+  ) {
     return {
       id: stock.id.toString(),
       name: stock.content,
       status: stock.isActive,
-      institutionId: stock.institutionId.toString(),
-      createdAt: stock.createdAt,
-      updatedAt: stock.updatedAt,
+      institutionName,
     }
   }
 }

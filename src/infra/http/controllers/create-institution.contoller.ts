@@ -19,7 +19,7 @@ type CreateInstitutionBodySchema = z.infer<typeof createInstitutionBodySchema>
 @Controller('/institutions')
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('SUPER_ADMIN')
 export class CreateInstitutionController {
   constructor(
     private createInstitution: CreateInstitutionUseCase,

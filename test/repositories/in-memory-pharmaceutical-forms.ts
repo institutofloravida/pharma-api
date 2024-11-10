@@ -1,4 +1,4 @@
-import  { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repositories/pharmaceutical-forms-repository'
 import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
 

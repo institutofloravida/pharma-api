@@ -28,9 +28,9 @@ describe('Create Stock (E2E)', () => {
     await app.init()
   })
 
-  test.only('[POST] /stocks', async () => {
+  test('[POST] /stocks', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     })
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 

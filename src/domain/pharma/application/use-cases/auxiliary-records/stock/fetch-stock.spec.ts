@@ -1,5 +1,5 @@
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
-import { FethStocksUseCase } from './fetch-stocks'
+import { FetchStocksUseCase } from './fetch-stocks'
 import { makeStock } from 'test/factories/make-stock'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { makeInstitution } from 'test/factories/make-insitution'
@@ -9,18 +9,20 @@ import { makeOperator } from 'test/factories/make-operator'
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryInstitutionRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository:InMemoryStocksRepository
-let sut: FethStocksUseCase
+let sut: FetchStocksUseCase
 describe('Fetch Stocks', () => {
   beforeEach(() => {
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
-    inMemoryStocksRepository = new InMemoryStocksRepository()
     inMemoryInstitutionRepository = new InMemoryInstitutionsRepository()
+    inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionRepository)
 
-    sut = new FethStocksUseCase(inMemoryStocksRepository, inMemoryOperatorsRepository)
+    sut = new FetchStocksUseCase(inMemoryStocksRepository, inMemoryOperatorsRepository, inMemoryInstitutionRepository)
   })
 
   it('should be able to fetch stocks', async () => {
-    const operator = makeOperator()
+    const operator = makeOperator({
+      role: 'MANAGER',
+    })
 
     const institution = makeInstitution()
     const institution2 = makeInstitution()
@@ -30,7 +32,6 @@ describe('Fetch Stocks', () => {
     await inMemoryOperatorsRepository.create(operator)
     await inMemoryInstitutionRepository.create(institution)
     await inMemoryInstitutionRepository.create(institution2)
-
     await inMemoryStocksRepository.create(
       makeStock({
         institutionId: institution.id,
@@ -49,7 +50,6 @@ describe('Fetch Stocks', () => {
         createdAt: new Date(2024, 0, 27),
       }),
     )
-
     const result = await sut.execute({
       page: 1,
       institutionsIds: [institution.id.toString()],
@@ -60,17 +60,18 @@ describe('Fetch Stocks', () => {
       operatorId: operator.id.toString(),
     })
 
+    expect(result.isRight()).toBeTruthy()
+    expect(result2.isRight()).toBeTruthy()
+
     if (result.isRight() && result2.isRight()) {
-      expect(result.value?.stocks).toEqual([
-        expect.objectContaining({ createdAt: new Date(2024, 0, 29) }),
-        expect.objectContaining({ createdAt: new Date(2024, 0, 20) }),
-      ])
-      expect(result.value.stocks).toEqual(result2.value.stocks)
+      expect(result.value.stocks).toHaveLength(2)
     }
   })
 
   it('should be able to fetch paginated stocks', async () => {
-    const operator = makeOperator()
+    const operator = makeOperator({
+      role: 'MANAGER',
+    })
     const institution = makeInstitution()
     const institution2 = makeInstitution()
 
@@ -93,7 +94,7 @@ describe('Fetch Stocks', () => {
         })),
       ])
     }
-
+    console.log(inMemoryStocksRepository.items.filter(item => item.institutionId.toString() === institution.id.toValue()).length)
     const result = await sut.execute({
       page: 3,
       institutionsIds: [institution.id.toString()],

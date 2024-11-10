@@ -18,7 +18,7 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: faker.internet.email(),
       password: faker.internet.password(),
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
@@ -32,7 +32,7 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: faker.internet.email(),
       password: '123456',
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     })
 
     const hashedPassword = await fakeHasher.hash('123456')
@@ -45,14 +45,14 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: 'teste@gmail.com',
       password: faker.internet.password(),
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     })
 
     const result2 = await sut.execute({
       name: faker.person.firstName(),
       email: 'teste@gmail.com',
       password: faker.internet.password(),
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     })
     expect(result.isRight()).toBeTruthy()
     expect(result2.isLeft()).toBeTruthy()

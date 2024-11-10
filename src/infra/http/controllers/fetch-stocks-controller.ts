@@ -4,10 +4,10 @@ import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/role-decorator'
-import { FethStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 import { StockPresenter } from '../presenters/stock-presenter'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt-strategy'
+import { FetchStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 
 const pageQueryParamSchema = z
   .string()
@@ -22,9 +22,9 @@ type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
 @Controller('/stocks')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'COMMON')
+@Roles('SUPER_ADMIN', 'MANAGER')
 export class FetchStocksController {
-  constructor(private fetchStocks: FethStocksUseCase) {}
+  constructor(private fetchStocks: FetchStocksUseCase) {}
 
   @Get()
   async handle(
@@ -33,6 +33,9 @@ export class FetchStocksController {
     @Query('institutionsIds', new ParseArrayPipe({ items: String, optional: true })) institutionsIds: string[],
   ) {
     const userId = user.sub
+    console.log(page)
+    console.log(institutionsIds)
+    console.log(userId)
     const result = await this.fetchStocks.execute({ page, institutionsIds, operatorId: userId })
     if (result.isLeft()) {
       throw new BadRequestException({})

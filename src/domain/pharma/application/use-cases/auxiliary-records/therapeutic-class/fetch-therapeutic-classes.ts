@@ -1,7 +1,7 @@
 import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { TherapeuticClassesRepository } from '../../../repositories/therapeutic-classes-repository'
-import  { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeutic-class'
+import { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeutic-class'
 
 interface FetchTherapeuticClassesUseCaseRequest {
   page: number

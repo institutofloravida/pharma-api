@@ -30,7 +30,7 @@ describe('Fetch institutions (E2E)', () => {
 
   test('[GET] /institutions', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

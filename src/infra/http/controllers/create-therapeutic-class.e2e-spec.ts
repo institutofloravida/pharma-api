@@ -30,7 +30,7 @@ describe('Create Therapeutic Class (E2E)', () => {
 
   test('[POST] /therapeuticclasss', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

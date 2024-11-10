@@ -19,7 +19,7 @@ type CreateStockBodySchema = z.infer<typeof createStockBodySchema>
 @Controller('/stocks')
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('SUPER_ADMIN')
 export class CreateStockController {
   constructor(
     private createStock: CreateStockUseCase,

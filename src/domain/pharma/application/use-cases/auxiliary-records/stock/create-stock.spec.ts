@@ -11,7 +11,7 @@ describe('Stock', () => {
   beforeEach(() => {
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
 
-    inMemoryStocksRepository = new InMemoryStocksRepository()
+    inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
     sut = new CreateStockUseCase(inMemoryStocksRepository, inMemoryInstitutionsRepository)
   })
   it('shoult be able create a stock', async () => {

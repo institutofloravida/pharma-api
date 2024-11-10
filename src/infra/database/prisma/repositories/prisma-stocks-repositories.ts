@@ -1,4 +1,4 @@
-import { StocksRepository } from '@/domain/pharma/application/repositories/stocks-repository'
+import { StocksRepository, type StockWithInstitution } from '@/domain/pharma/application/repositories/stocks-repository'
 import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 import { PrismaService } from '../prisma.service'
 import { PrismaStockMapper } from '../mappers/prisma-stock-mapper'
@@ -66,5 +66,26 @@ export class PrismaStocksRepository implements StocksRepository {
       skip: (page - 1) * 20,
     })
     return stocks.map(PrismaStockMapper.toDomain)
+  }
+
+  async findManyWithInstitution({ page }: PaginationParams, institutionsIds: string[], isSuper?: boolean): Promise<StockWithInstitution[]> {
+    const stocks = await this.prisma.stock.findMany({
+      where: !isSuper
+        ? { institutionId: { in: institutionsIds } }
+        : undefined,
+      include: {
+        Institution: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+    console.log(stocks.length)
+    return stocks.map((stock) => ({
+      stock: PrismaStockMapper.toDomain(stock),
+      institutionName: stock.Institution?.name ?? '',
+    }))
   }
 }

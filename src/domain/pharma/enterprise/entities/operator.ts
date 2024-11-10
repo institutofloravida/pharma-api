@@ -2,7 +2,7 @@ import { Optional } from '@/core/types/optional'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Entity } from '@/core/entities/entity'
 
-export type OperatorRole = 'ADMIN' | 'COMMON'
+export type OperatorRole = 'COMMON' | 'MANAGER' | 'SUPER_ADMIN'
 
 export interface OperatorProps {
   name: string
@@ -55,6 +55,10 @@ export class Operator extends Entity<OperatorProps> {
     return this.props.role
   }
 
+  set role(role: OperatorRole) {
+    this.props.role = role
+  }
+
   public assignRole(value: OperatorRole) {
     this.props.role = value
     this.touch()
@@ -66,6 +70,27 @@ export class Operator extends Entity<OperatorProps> {
 
   get updatedAt() {
     return this.props.updatedAt
+  }
+
+  public isSuperAdmin() {
+    return this.role === 'SUPER_ADMIN'
+  }
+
+  public isManager() {
+    return this.role === 'MANAGER'
+  }
+
+  public isCommon() {
+    return this.role === 'COMMON'
+  }
+
+  public canManageInstitution(institutionId: UniqueEntityId): boolean {
+    return this.role === 'SUPER_ADMIN' ||
+           (this.role === 'MANAGER' && this.institutionsIds.includes(institutionId))
+  }
+
+  public canManageOperators(): boolean {
+    return this.role === 'SUPER_ADMIN' || this.role === 'MANAGER'
   }
 
   private touch() {

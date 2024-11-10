@@ -20,7 +20,7 @@ type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
 @Controller('/operators')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('SUPER_ADMIN', 'MANAGER')
 export class FetchOperatorsController {
   constructor(private fetchOperators: FethOperatorsUseCase) {}
 
