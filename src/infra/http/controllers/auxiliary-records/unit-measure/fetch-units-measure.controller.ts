@@ -3,7 +3,7 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchUnitsMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/fetch-units-measure'
-import { PrismaUnitMeasureMapper } from '@/infra/database/prisma/mappers/prisma-unit-measure-mapper'
+import { UnitMeasurePresenter } from '@/infra/http/presenters/unit-measure-presenter'
 
 const pageQueryParamSchema = z
   .string()
@@ -33,6 +33,6 @@ export class FetchUnitsMeasureController {
 
     const unitsmeasure = result.value.unitsMeasure
 
-    return { units_measure: unitsmeasure.map(PrismaUnitMeasureMapper.toPrisma) }
+    return { units_measure: unitsmeasure.map(UnitMeasurePresenter.toHTTP) }
   }
 }

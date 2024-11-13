@@ -117,3 +117,40 @@ Authorization: Bearer {{authToken}}
 {
   "name": "xarope"
 }
+
+
+###
+
+# @name create_manufactures
+POST {{baseurl}}/manufacturer
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "Aché Laboratórios",
+  "cnpj": "12345678901234"
+}
+
+###
+
+# @name fetch_manufacturers
+GET {{baseurl}}/pharmaceutical-form?page=1
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_unit-measure
+POST {{baseurl}}/unit-measure
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "Caixa",
+  "acronym": "CX"
+}
+
+###
+
+# @name fetch_units-measures
+GET {{baseurl}}/unit-measure?page=1
+Authorization: Bearer {{authToken}}

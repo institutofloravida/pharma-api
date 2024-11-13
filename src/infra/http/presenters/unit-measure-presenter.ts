@@ -5,6 +5,7 @@ export class UnitMeasurePresenter {
     return {
       id: unitmeasure.id.toString(),
       name: unitmeasure.content,
+      acronym: unitmeasure.acronym,
     }
   }
 }

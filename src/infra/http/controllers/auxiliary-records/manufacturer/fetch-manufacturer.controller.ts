@@ -3,7 +3,7 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchManufacturersUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/fetch-manufacturers'
-import { PrismaManufacturerMapper } from '@/infra/database/prisma/mappers/prisma-manufacturer-mapper'
+import { ManufacturerPresenter } from '@/infra/http/presenters/manufacturer-presenter'
 
 const pageQueryParamSchema = z
   .string()
@@ -32,6 +32,6 @@ export class FetchManufacturersController {
 
     const manufacturers = result.value.manufacturers
 
-    return { manufacturers: manufacturers.map(PrismaManufacturerMapper.toPrisma) }
+    return { manufacturers: manufacturers.map(ManufacturerPresenter.toHTTP) }
   }
 }
