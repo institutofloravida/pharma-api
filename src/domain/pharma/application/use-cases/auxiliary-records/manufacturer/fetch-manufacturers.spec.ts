@@ -33,7 +33,7 @@ describe('Fetch manufatureres', () => {
     ])
   })
 
-  it('should be able to fetch paginated pharmaceutical forms', async () => {
+  it('should be able to fetch paginated manufcturers', async () => {
     for (let i = 1; i <= 22; i++) {
       await inMemoryManufacturersRepository.create(makeManufacturer())
     }
@@ -45,4 +45,3 @@ describe('Fetch manufatureres', () => {
     expect(result.value?.manufacturers).toHaveLength(2)
   })
 })
-
