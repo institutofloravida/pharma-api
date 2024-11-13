@@ -1,6 +1,6 @@
-import { InMemoryUnitsMeasureRepository } from "test/repositories/in-memory-units-measure-repository"
-import { FetchUnitsMeasureUseCase } from "./fetch-unit-measures"
-import { makeUnitMeasure } from "test/factories/make-unit-measure"
+import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
+import { FetchUnitsMeasureUseCase } from './fetch-units-measure'
+import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let sut: FetchUnitsMeasureUseCase

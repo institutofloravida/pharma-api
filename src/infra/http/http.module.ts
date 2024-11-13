@@ -30,6 +30,10 @@ import { CreateManufacturerController } from './controllers/auxiliary-records/ma
 import { CreateManufacturerUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/create-manufacturer'
 import { FetchManufacturersController } from './controllers/auxiliary-records/manufacturer/fetch-manufacturer.controller'
 import { FetchManufacturersUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/fetch-manufacturers'
+import { CreateUnitMeasureController } from './controllers/auxiliary-records/unit-measure/create-unit-measure.controller'
+import { CreateUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/create-unit-measure'
+import { FetchUnitsMeasureController } from './controllers/auxiliary-records/unit-measure/fetch-units-measure.controller'
+import { FetchUnitsMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/fetch-units-measure'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -43,12 +47,14 @@ import { FetchManufacturersUseCase } from '@/domain/pharma/application/use-cases
     CreateStockController,
     CreatePharmaceuticalFormController,
     CreateManufacturerController,
+    CreateUnitMeasureController,
     FetchOperatorsController,
     FetchInstitutionsController,
     FetchStocksController,
     FetchTerapeuticClasssController,
     FetchPharmaceuticalFormController,
     FetchManufacturersController,
+    FetchUnitsMeasureController,
 
   ],
   providers: [
@@ -60,12 +66,14 @@ import { FetchManufacturersUseCase } from '@/domain/pharma/application/use-cases
     CreateStockUseCase,
     CreatePharmaceuticalFormUseCase,
     CreateManufacturerUseCase,
+    CreateUnitMeasureUseCase,
     FethOperatorsUseCase,
     FethInstitutionsUseCase,
     FetchStocksUseCase,
     FetchTherapeuticClassesUseCase,
     FetchPharmaceuticalFormsUseCase,
     FetchManufacturersUseCase,
+    FetchUnitsMeasureUseCase,
   ],
 })
 export class HttpModule {}
