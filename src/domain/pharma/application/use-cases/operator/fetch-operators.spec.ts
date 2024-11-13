@@ -33,7 +33,7 @@ describe('Fetch Operators', () => {
     ])
   })
 
-  it('should be able to fetch paginated  operators', async () => {
+  it('should be able to fetch paginated operators', async () => {
     for (let i = 1; i <= 22; i++) {
       await inMemoryOperatorsRepository.create(makeOperator())
     }

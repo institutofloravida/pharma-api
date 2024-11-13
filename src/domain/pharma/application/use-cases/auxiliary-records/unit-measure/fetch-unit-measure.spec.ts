@@ -4,14 +4,14 @@ import { makeUnitMeasure } from "test/factories/make-unit-measure"
 
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let sut: FetchUnitsMeasureUseCase
-describe('Fetch UnitsMeasure', () => {
+describe('Fetch Units Measure', () => {
   beforeEach(() => {
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
 
     sut = new FetchUnitsMeasureUseCase(inMemoryUnitsMeasureRepository)
   })
 
-  it('should be able to fetch therapeutic classes', async () => {
+  it('should be able to fetch units measure', async () => {
     await inMemoryUnitsMeasureRepository.create(
       makeUnitMeasure({ createdAt: new Date(2024, 0, 29) }),
     )
@@ -33,7 +33,7 @@ describe('Fetch UnitsMeasure', () => {
     ])
   })
 
-  it('should be able to fetch paginated therapeutic classes', async () => {
+  it('should be able to fetch paginated units measure', async () => {
     for (let i = 1; i <= 22; i++) {
       await inMemoryUnitsMeasureRepository.create(makeUnitMeasure())
     }
