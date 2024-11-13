@@ -6,7 +6,6 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 
 const createTherapeuticClassBodySchema = z.object({
   name: z.string(),
-  description: z.string().optional(),
 })
 
 type CreateTherapeuticClassBodySchema = z.infer<typeof createTherapeuticClassBodySchema>
@@ -22,12 +21,11 @@ export class CreateTherapeuticClassController {
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createTherapeuticClassBodySchema))
   async handle(@Body() body: CreateTherapeuticClassBodySchema) {
-    const { name, description } = body
+    const { name } = body
 
     const therapeuticClass = await this.prisma.therapeuticClass.create({
       data: {
         name,
-        description,
       },
     })
 

@@ -52,10 +52,9 @@ model Institution {
 }
 
 model TherapeuticClass {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("therapeutic_classes")
 }
