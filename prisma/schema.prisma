@@ -88,3 +88,12 @@ model UnitMeasure {
 
   @@map("unit_measures")
 }
+
+model Pathology {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("pathology")
+}

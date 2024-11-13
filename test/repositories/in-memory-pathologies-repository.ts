@@ -3,8 +3,6 @@ import { PathologiesRepository } from '@/domain/pharma/application/repositories/
 import { Pathology } from '@/domain/pharma/enterprise/entities/pathology'
 
 export class InMemoryPathologiesRepository implements PathologiesRepository {
-  
-  
   public items: Pathology[] = []
 
   async create(pathology: Pathology) {
@@ -30,12 +28,11 @@ export class InMemoryPathologiesRepository implements PathologiesRepository {
     return pathology
   }
 
-  async findMany({page}: PaginationParams): Promise<Pathology[]> {
+  async findMany({ page }: PaginationParams): Promise<Pathology[]> {
     const pathologies = this.items
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice((page - 1) * 20, page * 20)
 
     return pathologies
-
   }
 }
