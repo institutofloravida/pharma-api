@@ -2,7 +2,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 import { AuxiliaryRecord, type AuxiliaryRecordProps } from './auxiliary-records'
 
-interface UnitMeasureProps extends AuxiliaryRecordProps {
+export interface UnitMeasureProps extends AuxiliaryRecordProps {
   acronym: string
 }
 

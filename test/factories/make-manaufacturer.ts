@@ -7,9 +7,8 @@ export function makeManufacturer(
   id?: UniqueEntityId,
 ) {
   const manufacturer = Manufacturer.create({
-    content: faker.commerce.department(),
-    cnpj: faker.string.numeric({length: 14}),
-    description: faker.lorem.paragraph(),
+    cnpj: faker.string.numeric({length:14}),
+    content: faker.lorem.sentence(),   
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     ...override,

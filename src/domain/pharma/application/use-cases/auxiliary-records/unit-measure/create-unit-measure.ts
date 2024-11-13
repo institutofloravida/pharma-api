@@ -1,6 +1,6 @@
 import { left, right, type Either } from '@/core/either'
-import { UnitsMeasureRepository } from '../../repositories/units-measure-repository'
-import { UnitMeasure } from '../../../enterprise/entities/unitMeasure'
+import { UnitsMeasureRepository } from '../../../repositories/units-measure-repository'
+import { UnitMeasure } from '../../../../enterprise/entities/unitMeasure'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Injectable } from '@nestjs/common'
 
