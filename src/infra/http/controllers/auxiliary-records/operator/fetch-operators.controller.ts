@@ -1,9 +1,11 @@
 import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
+import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { InstitutionPresenter } from '../presenters/institution-presenter'
+import { OperatorPresenter } from '../../../presenters/operator-presenter'
+import { RolesGuard } from '@/infra/auth/roles.guard'
+import { Roles } from '@/infra/auth/role-decorator'
 
 const pageQueryParamSchema = z
   .string()
@@ -16,22 +18,23 @@ const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
-@Controller('/institutions')
-export class FetchInstitutionsController {
-  constructor(private fetchInstitutions: FethInstitutionsUseCase) {}
+@Controller('/operators')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('SUPER_ADMIN', 'MANAGER')
+export class FetchOperatorsController {
+  constructor(private fetchOperators: FethOperatorsUseCase) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
-    const result = await this.fetchInstitutions.execute({
+    const result = await this.fetchOperators.execute({
       page,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})
     }
 
-    const institutions = result.value.institutions
+    const operators = result.value.operators
 
-    return { institutions: institutions.map(InstitutionPresenter.toHTTP) }
+    return { operators: operators.map(OperatorPresenter.toHTTP) }
   }
 }

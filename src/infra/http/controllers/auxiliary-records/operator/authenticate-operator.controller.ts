@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
 import { z } from 'zod'
-import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
+import { ZodValidationPipe } from '../../../pipes/zod-validation-pipe'
 
 import { AuthenticateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/authenticate-operator'
 import { WrongCredentialsError } from '@/domain/pharma/application/use-cases/_errors/wrong-credentials-error'
