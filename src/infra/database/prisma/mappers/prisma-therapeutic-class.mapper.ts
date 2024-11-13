@@ -15,8 +15,7 @@ export class PrismaTherapeuticClassMapper {
   static toPrisma(therapeuticClass: TherapeuticClass): Prisma.TherapeuticClassCreateInput {
     return {
       id: therapeuticClass.id.toString(),
-      name: 'a',
-      description: therapeuticClass.content,
+      name: therapeuticClass.content,
       createdAt: therapeuticClass.createdAt,
     }
   }

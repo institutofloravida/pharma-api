@@ -1,6 +1,6 @@
-import { InMemoryManufacturersRepository } from "test/repositories/in-memory-manufacturers-repository"
-import { FetchManufacturersUseCase } from "../manufacturer/fetch-manufacturers"
-import { makeManufacturer } from "test/factories/make-manaufacturer"
+import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
+import { FetchManufacturersUseCase } from '../manufacturer/fetch-manufacturers'
+import { makeManufacturer } from 'test/factories/make-manufacturer'
 
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let sut: FetchManufacturersUseCase
@@ -13,7 +13,7 @@ describe('Fetch manufatureres', () => {
 
   it('should be able to fetch manufatureres', async () => {
     await inMemoryManufacturersRepository.create(
-      makeManufacturer({createdAt: new Date(2024,0,29)}),
+      makeManufacturer({ createdAt: new Date(2024, 0, 29) }),
     )
     await inMemoryManufacturersRepository.create(
       makeManufacturer({ createdAt: new Date(2024, 0, 20) }),

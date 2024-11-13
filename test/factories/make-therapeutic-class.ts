@@ -11,7 +11,7 @@ export function makeTherapeuticClass(
   id?: UniqueEntityId,
 ) {
   const therapeuticclass = TherapeuticClass.create({
-    content: faker.science.chemicalElement.name,
+    content: faker.lorem.sentence(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     ...override,
@@ -28,7 +28,7 @@ export class TherapeuticClassFactory {
 
   async makePrismaTherapeuticClass(data: Partial<TherapeuticClassProps> = {}): Promise<TherapeuticClass> {
     const therapeuticclass = makeTherapeuticClass(data)
-
+    console.log('aaaa>>>>>>$$$$', therapeuticclass)
     await this.prisma.therapeuticClass.create({
       data: PrismaTherapeuticClassMapper.toPrisma(therapeuticclass),
     })
