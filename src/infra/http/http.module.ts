@@ -24,6 +24,8 @@ import { FetchPharmaceuticalFormController } from './controllers/fetch-pharmaceu
 import { FetchPharmaceuticalFormsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/fetch-pharmaceutical-form'
 import { GetOperatorDetailsController } from './controllers/get-operator-details.controller'
 import { GetOperatorDetailsUseCase } from '@/domain/pharma/application/use-cases/operator/get-operator-details'
+import { CreatePharmaceuticalFormController } from './controllers/create-pharmaceutical-form.controller'
+import { CreatePharmaceuticalFormUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/create-pharmaceutical-form'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -35,6 +37,7 @@ import { GetOperatorDetailsUseCase } from '@/domain/pharma/application/use-cases
     CreateTherapeuticClassController,
     CreateInstitutionController,
     CreateStockController,
+    CreatePharmaceuticalFormController,
     FetchOperatorsController,
     FetchInstitutionsController,
     FetchStocksController,
@@ -49,6 +52,7 @@ import { GetOperatorDetailsUseCase } from '@/domain/pharma/application/use-cases
     CreateTherapeuticClassUseCase,
     CreateInstitutionUseCase,
     CreateStockUseCase,
+    CreatePharmaceuticalFormUseCase,
     FethOperatorsUseCase,
     FethInstitutionsUseCase,
     FetchStocksUseCase,

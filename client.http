@@ -94,7 +94,6 @@ Authorization: Bearer {{authToken}}
   "name": "antibiótico"
 }
 
-
 ###
 
 
@@ -104,6 +103,17 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetch_therapeutic_classes
+# @name fetch_pharmaceutical_form
 GET {{baseurl}}/pharmaceutical-form?page=1
 Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_pharmaceutical_form
+POST {{baseurl}}/pharmaceutical-form
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "xarope"
+}
