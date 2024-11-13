@@ -1,9 +1,9 @@
 import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common'
 import { z } from 'zod'
-import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
+import { ZodValidationPipe } from '../../../pipes/zod-validation-pipe'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreatePharmaceuticalFormUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/create-pharmaceutical-form'
-import { PharmaceuticalFormPresenter } from '../presenters/pharmaceutical-form-presenter'
+import { PharmaceuticalFormPresenter } from '../../../presenters/pharmaceutical-form-presenter'
 
 const createPharmaceuticalFormBodySchema = z.object({
   name: z.string(),

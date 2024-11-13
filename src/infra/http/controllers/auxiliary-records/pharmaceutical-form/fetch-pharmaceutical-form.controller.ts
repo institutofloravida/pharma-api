@@ -3,7 +3,7 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchPharmaceuticalFormsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/fetch-pharmaceutical-form'
-import { PharmaceuticalFormPresenter } from '../presenters/pharmaceutical-form-presenter'
+import { PharmaceuticalFormPresenter } from '../../../presenters/pharmaceutical-form-presenter'
 
 const pageQueryParamSchema = z
   .string()
