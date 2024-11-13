@@ -27,10 +27,6 @@ export class OperatorFactory {
   constructor(private prisma: PrismaService) {}
 
   async makePrismaOperator(data: Partial<OperatorProps> = {}): Promise<Operator> {
-    // const instituion = new UniqueEntityId((await this.prisma.institution.create({
-    //   data: { name: faker.company.name(), cnpj: faker.string.numeric({ length: 14 }) },
-    // })).id)
-
     const operator = makeOperator({
       institutionsIds: data.institutionsIds,
       ...data,
