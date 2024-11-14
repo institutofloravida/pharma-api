@@ -16,7 +16,7 @@ const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
-@Controller('/pathology')
+@Controller('/pathologies')
 export class FetchpathologiesController {
   constructor(private fetchpathologies: FetchPathologiesUseCase) {}
 
@@ -26,7 +26,7 @@ export class FetchpathologiesController {
     const result = await this.fetchpathologies.execute({
       page,
     })
-      
+
     if (result.isLeft()) {
       throw new BadRequestException({})
     }

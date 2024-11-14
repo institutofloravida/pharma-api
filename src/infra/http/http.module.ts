@@ -36,6 +36,8 @@ import { FetchUnitsMeasureController } from './controllers/auxiliary-records/uni
 import { FetchUnitsMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/fetch-units-measure'
 import { CreatePathologyController } from './controllers/auxiliary-records/pathology/create-pathology.controller'
 import { CreatePathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/create-pathology'
+import { FetchpathologiesController } from './controllers/auxiliary-records/pathology/fetch-pathologies.controller'
+import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/fetch-pathologies'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -58,6 +60,7 @@ import { CreatePathologyUseCase } from '@/domain/pharma/application/use-cases/au
     FetchPharmaceuticalFormController,
     FetchManufacturersController,
     FetchUnitsMeasureController,
+    FetchpathologiesController,
 
   ],
   providers: [
@@ -78,6 +81,7 @@ import { CreatePathologyUseCase } from '@/domain/pharma/application/use-cases/au
     FetchPharmaceuticalFormsUseCase,
     FetchManufacturersUseCase,
     FetchUnitsMeasureUseCase,
+    FetchPathologiesUseCase,
   ],
 })
 export class HttpModule {}
