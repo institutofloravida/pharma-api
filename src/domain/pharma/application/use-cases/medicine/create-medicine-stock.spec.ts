@@ -6,7 +6,9 @@ import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-r
 import { InMemoryBatchestocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { makeStock } from 'test/factories/make-stock'
 import { makeMedicine } from 'test/factories/make-medicine'
+import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 
+let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
@@ -16,7 +18,8 @@ let sut: CreateMedicineStockUseCase
 
 describe('MedicineStock', () => {
   beforeEach(() => {
-    inMemoryStocksRepository = new InMemoryStocksRepository()
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
+    inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()

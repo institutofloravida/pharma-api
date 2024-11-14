@@ -3,10 +3,17 @@
 @authToken = {{authenticate.response.body.access_token}}
 
 
+# @name get_details_operator
+GET {{baseurl}}/me
+Authorization: Bearer {{authToken}}
+
+###
+
+
 # @name validate_token
 GET {{baseurl}}/validate-token
 Content-Type: application/json                        
-Authorization: 'Bearer {{{{authToken}}}}'
+Authorization: Bearer {{authToken}}
 
 ###
 
@@ -20,8 +27,6 @@ Content-Type: application/json
   "password": "12345678"
 }
 
-
-
 ###
 
 # @name authenticate
@@ -32,18 +37,6 @@ Content-Type: application/json
   "email": "floravida@gmail.com",
   "password": "12345678"
 }
-
-###
-
-# @name create_therapeutic_class
-POST {{baseurl}}/therapeutic-class
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "name": "antibiótico"
-}
-
 
 ###
 
@@ -83,3 +76,99 @@ Authorization: Bearer {{authToken}}
   "name": "Stock Flora Vida",
   "institutionId": "623bc731-bae7-4ca1-9606-f1e8e56de985"
 }
+
+###
+
+# @name fetch_stocks
+GET {{baseurl}}/stocks?page=1
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_therapeutic_class
+POST {{baseurl}}/therapeutic-class
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "antibiótico"
+}
+
+###
+
+
+# @name fetch_therapeutic_classes
+GET {{baseurl}}/therapeutic-class?page=1
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetch_pharmaceutical_form
+GET {{baseurl}}/pharmaceutical-form?page=1
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_pharmaceutical_form
+POST {{baseurl}}/pharmaceutical-form
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "xarope"
+}
+
+
+###
+
+# @name create_manufactures
+POST {{baseurl}}/manufacturer
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "Aché Laboratórios",
+  "cnpj": "12345678901234"
+}
+
+###
+
+# @name fetch_manufacturers
+GET {{baseurl}}/pharmaceutical-form?page=1
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_unit-measure
+POST {{baseurl}}/unit-measure
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "Caixa",
+  "acronym": "CX"
+}
+
+###
+
+# @name fetch_units-measures
+GET {{baseurl}}/unit-measure?page=1
+Authorization: Bearer {{authToken}}
+
+
+###
+
+# @name create_pathology
+POST {{baseurl}}/pathology
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "Hipertensão"
+}
+
+###
+
+# @name fetch_pathologies
+GET {{baseurl}}/pathology?page=1
+Authorization: Bearer {{authToken}}

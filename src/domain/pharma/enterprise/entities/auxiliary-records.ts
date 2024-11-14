@@ -11,17 +11,17 @@ export abstract class AuxiliaryRecord<Props extends AuxiliaryRecordProps>
     return this.props.content
   }
 
+  set content(value: string) {
+    this.content = value
+    this.touch()
+  }
+
   get createdAt() {
     return this.props.createdAt
   }
 
   get updatedAt() {
     return this.props.updatedAt
-  }
-
-  set content(value: string) {
-    this.content = value
-    this.touch()
   }
 
   public touch() {

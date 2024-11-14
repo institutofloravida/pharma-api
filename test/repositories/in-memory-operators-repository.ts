@@ -9,6 +9,16 @@ export class InMemoryOperatorsRepository implements OperatorsRepository {
     this.items.push(operator)
   }
 
+  async findById(id: string): Promise<Operator | null> {
+    const operator = this.items.find(item => item.id.toString() === id)
+
+    if (!operator) {
+      return null
+    }
+
+    return operator
+  }
+
   async findByEmail(email: string) {
     const operator = this.items.find(item => item.email === email)
 

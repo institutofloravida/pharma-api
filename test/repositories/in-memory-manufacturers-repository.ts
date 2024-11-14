@@ -1,3 +1,4 @@
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { ManufacturersRepository } from '@/domain/pharma/application/repositories/manufacturers-repository'
 import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 
@@ -25,5 +26,13 @@ export class InMemoryManufacturersRepository implements ManufacturersRepository 
     }
 
     return manufacturer
+  }
+
+  async findMany({ page }: PaginationParams): Promise<Manufacturer[]> {
+    const manufacturers = this.items
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return manufacturers
   }
 }

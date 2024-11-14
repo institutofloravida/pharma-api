@@ -8,7 +8,8 @@ datasource db {
 }
 
 enum OperatorRole {
-  ADMIN
+  SUPER_ADMIN
+  MANAGER
   COMMON
 }
 
@@ -51,10 +52,48 @@ model Institution {
 }
 
 model TherapeuticClass {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("therapeutic_classes")
+}
+
+model PharmaceuticalForm {
+  id        String    @id @default(uuid())
+  name      String    @unique()
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("pharmaceutical_forms")
+}
+
+model Manufacturer {
+  id          String    @id @default(uuid())
+  name        String
+  cnpj        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  @@map("manufacturers")
+}
+
+model UnitMeasure {
+  id        String    @id @default(uuid())
+  acronym   String    @unique
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("unit_measures")
+}
+
+model Pathology {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("pathology")
 }

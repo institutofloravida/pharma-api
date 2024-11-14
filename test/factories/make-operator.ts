@@ -13,6 +13,7 @@ export function makeOperator(
     name: faker.person.fullName(),
     email: faker.internet.email(),
     passwordHash: faker.internet.password(),
+    institutionsIds: [new UniqueEntityId()],  // IDs fictícios para desenvolvimento
     role: 'COMMON',
     ...override,
   },
@@ -26,7 +27,11 @@ export class OperatorFactory {
   constructor(private prisma: PrismaService) {}
 
   async makePrismaOperator(data: Partial<OperatorProps> = {}): Promise<Operator> {
-    const operator = makeOperator(data)
+    const operator = makeOperator({
+      institutionsIds: data.institutionsIds,
+      ...data,
+    })
+
     await this.prisma.operator.create({
       data: PrismaOperatorMapper.toPrisma(operator),
     })
