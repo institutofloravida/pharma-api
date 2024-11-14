@@ -154,3 +154,21 @@ Authorization: Bearer {{authToken}}
 # @name fetch_units-measures
 GET {{baseurl}}/unit-measure?page=1
 Authorization: Bearer {{authToken}}
+
+
+###
+
+# @name create_pathology
+POST {{baseurl}}/pathology
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "Hipertensão"
+}
+
+###
+
+# @name fetch_pathologies
+GET {{baseurl}}/pathology?page=1
+Authorization: Bearer {{authToken}}
