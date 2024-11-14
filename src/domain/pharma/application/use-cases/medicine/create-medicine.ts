@@ -8,9 +8,8 @@ import { Injectable } from '@nestjs/common'
 interface createMedicineUseCaseRequest {
   content: string,
   description?: string | null
-  dosage: string
-  pharmaceuticalFormId: UniqueEntityId
   therapeuticClassesIds: UniqueEntityId[]
+  medicinesVariantsIds?: UniqueEntityId[]
 }
 
 type createMedicineUseCaseResponse = Either<
@@ -25,17 +24,15 @@ export class CreateMedicineUseCase {
   constructor(private medicineRepository: MedicinesRepository) {}
   async execute({
     content,
-    dosage,
     description,
-    pharmaceuticalFormId,
     therapeuticClassesIds,
+    medicinesVariantsIds,
   }: createMedicineUseCaseRequest): Promise<createMedicineUseCaseResponse> {
     const medicine = Medicine.create({
       content,
-      dosage,
       description,
-      pharmaceuticalFormId,
       therapeuticClassesIds,
+      medicinesVariantsIds,
     })
 
     const contentExists = await this.medicineRepository.medicineExists(medicine)

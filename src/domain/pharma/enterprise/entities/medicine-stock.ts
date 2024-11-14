@@ -3,7 +3,7 @@ import { AggregateRoot } from '@/core/entities/aggregate-root'
 import { Optional } from '@/core/types/optional'
 
 export interface MedicineStockProps {
-  medicineId: UniqueEntityId
+  medicineVariantId: UniqueEntityId
   stockId: UniqueEntityId
   currentQuantity: number
   minimumLevel: number
@@ -14,8 +14,8 @@ export interface MedicineStockProps {
 }
 
 export class MedicineStock extends AggregateRoot<MedicineStockProps> {
-  get medicineId(): UniqueEntityId {
-    return this.props.medicineId
+  get medicineVariantId(): UniqueEntityId {
+    return this.props.medicineVariantId
   }
 
   get stockId(): UniqueEntityId {
@@ -85,7 +85,7 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
 
   public equals(medicineStock: MedicineStock) {
     if (
-      medicineStock.medicineId.toString() === this.medicineId.toString() &&
+      medicineStock.medicineVariantId.toString() === this.medicineVariantId.toString() &&
       medicineStock.stockId.toString() === this.stockId.toString()
     ) {
       return true

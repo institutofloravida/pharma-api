@@ -49,8 +49,8 @@ export class InMemoryMedicinesStockRepository implements MedicinesStockRepositor
     return medicinestock
   }
 
-  async findByMedicineIdAndStockId(medicineId: string, stockId: string): Promise<MedicineStock | null> {
-    const medicinestock = this.items.find(item => item.medicineId.toString() === medicineId && item.stockId.toString() === stockId)
+  async findByMedicineVariantIdAndStockId(medicineVariantId: string, stockId: string): Promise<MedicineStock | null> {
+    const medicinestock = this.items.find(item => item.medicineVariantId.toString() === medicineVariantId && item.stockId.toString() === stockId)
     if (!medicinestock) {
       return null
     }

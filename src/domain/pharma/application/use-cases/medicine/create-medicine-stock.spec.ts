@@ -1,33 +1,33 @@
 import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository'
 import { CreateMedicineStockUseCase } from './create-medicine-stock'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
-import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
 import { InMemoryBatchestocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { makeStock } from 'test/factories/make-stock'
-import { makeMedicine } from 'test/factories/make-medicine'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
+import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory-medicines-variants-repository'
+import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
-let inMemoryMedicinesRepository: InMemoryMedicinesRepository
+let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchestocksRepository: InMemoryBatchestocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let sut: CreateMedicineStockUseCase
 
-describe('MedicineStock', () => {
+describe('Medicine Stock', () => {
   beforeEach(() => {
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
     inMemoryBatchestocksRepository = new InMemoryBatchestocksRepository(inMemoryMedicinesStockRepository)
 
     sut = new CreateMedicineStockUseCase(
       inMemoryStocksRepository,
-      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
       inMemoryBatchesRepository,
       inMemoryBatchestocksRepository,
       inMemoryMedicinesStockRepository,
@@ -37,14 +37,14 @@ describe('MedicineStock', () => {
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
 
-    const medicine = makeMedicine()
-    await inMemoryMedicinesRepository.create(medicine)
+    const medicineVariant = makeMedicineVariant()
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
 
     const result = await sut.execute({
       code: 'ABCD1',
       quantity: 20,
       manufacturerId: 'manufacturer_1',
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicineVariant.id.toString(),
       stockId: stock.id.toString(),
       expirationDate: new Date('01-01-2024'),
     })
@@ -58,14 +58,14 @@ describe('MedicineStock', () => {
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
 
-    const medicine = makeMedicine()
-    await inMemoryMedicinesRepository.create(medicine)
+    const medicineVariant = makeMedicineVariant()
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
 
     const result = await sut.execute({
       code: 'ABCD1',
       quantity: 20,
       manufacturerId: 'manufacturer_1',
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicineVariant.id.toString(),
       stockId: stock.id.toString(),
       expirationDate: new Date('01-01-2024'),
     })
@@ -73,7 +73,7 @@ describe('MedicineStock', () => {
       code: 'ABCD1',
       quantity: 20,
       manufacturerId: 'manufacturer_1',
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicineVariant.id.toString(),
       stockId: stock.id.toString(),
       expirationDate: new Date('01-01-2024'),
     })

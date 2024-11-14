@@ -1,6 +1,5 @@
 import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
 import { CreateMedicineUseCase } from './create-medicine'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let sut: CreateMedicineUseCase
@@ -13,8 +12,6 @@ describe('Medicine', () => {
   it('shoult be able create a Medicine', async () => {
     const result = await sut.execute({
       content: 'dipirona',
-      dosage: '20mg',
-      pharmaceuticalFormId: new UniqueEntityId('pharmaceutical_form_1'),
       therapeuticClassesIds: [],
       description: 'lorem ipsum tarara',
     })
@@ -28,14 +25,10 @@ describe('Medicine', () => {
   it('not should allowed duplicity', async () => {
     const result = await sut.execute({
       content: 'dipirona',
-      dosage: '20mg',
-      pharmaceuticalFormId: new UniqueEntityId('pharmaceutical_form_1'),
       therapeuticClassesIds: [],
     })
     const result2 = await sut.execute({
       content: 'dipirona',
-      dosage: '20mg',
-      pharmaceuticalFormId: new UniqueEntityId('pharmaceutical_form_1'),
       therapeuticClassesIds: [],
     })
     expect(result2.isLeft()).toBeTruthy()

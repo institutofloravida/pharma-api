@@ -42,7 +42,7 @@ describe('Register Exit', () => {
 
     const medicineStock = makeMedicineStock({
       batchesStockIds: [],
-      medicineId: medicine.id,
+      medicineVariantId: medicine.id,
       stockId: stock.id,
     })
 
@@ -51,7 +51,7 @@ describe('Register Exit', () => {
 
     const batchestock1 = makeBatchestock({
       batchId: batch1.id,
-      medicineId: medicine.id,
+      medicineVariantId: medicine.id,
       stockId: stock.id,
       currentQuantity: 30,
     })
@@ -60,7 +60,7 @@ describe('Register Exit', () => {
     await inMemoryMedicinesStockRepository.create(medicineStock)
     await inMemoryBatchestocksRepository.create(batchestock1)
     const result = await sut.execute({
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicine.id.toString(),
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
@@ -87,7 +87,7 @@ describe('Register Exit', () => {
 
     const medicineStock = makeMedicineStock({
       batchesStockIds: [],
-      medicineId: medicine.id,
+      medicineVariantId: medicine.id,
       stockId: stock.id,
     })
 
@@ -96,7 +96,7 @@ describe('Register Exit', () => {
 
     const batchestock1 = makeBatchestock({
       batchId: batch1.id,
-      medicineId: medicine.id,
+      medicineVariantId: medicine.id,
       stockId: stock.id,
       currentQuantity: 50,
     })
@@ -106,7 +106,7 @@ describe('Register Exit', () => {
     await inMemoryBatchestocksRepository.create(batchestock1)
 
     await sut.execute({
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicine.id.toString(),
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
@@ -114,7 +114,7 @@ describe('Register Exit', () => {
       quantity: quantityZeroToExit + 5,
     })
     const result = await sut.execute({
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicine.id.toString(),
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
@@ -139,7 +139,7 @@ describe('Register Exit', () => {
 
     const medicineStock = makeMedicineStock({
       batchesStockIds: [],
-      medicineId: medicine.id,
+      medicineVariantId: medicine.id,
       stockId: stock.id,
     })
 
@@ -148,7 +148,7 @@ describe('Register Exit', () => {
 
     const batchestock1 = makeBatchestock({
       batchId: batch1.id,
-      medicineId: medicine.id,
+      medicineVariantId: medicine.id,
       stockId: stock.id,
       currentQuantity: 30,
     })
@@ -157,7 +157,7 @@ describe('Register Exit', () => {
 
     const batchestock2 = makeBatchestock({
       batchId: batch2.id,
-      medicineId: medicine.id,
+      medicineVariantId: medicine.id,
       stockId: stock.id,
       currentQuantity: 25,
     })
@@ -168,7 +168,7 @@ describe('Register Exit', () => {
     await inMemoryBatchestocksRepository.create(batchestock2)
 
     const result1 = await sut.execute({
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicine.id.toString(),
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
@@ -176,7 +176,7 @@ describe('Register Exit', () => {
       quantity: quantityToExitBatch1,
     })
     const result2 = await sut.execute({
-      medicineId: medicine.id.toString(),
+      medicineVariantId: medicine.id.toString(),
       batcheStockId: batchestock2.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',

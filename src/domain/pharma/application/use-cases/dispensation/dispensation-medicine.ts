@@ -17,7 +17,7 @@ import { ExpiredMedicineDispenseError } from '../_errors/expired-medicine-dispen
 import { Injectable } from '@nestjs/common'
 
 interface DispensationMedicineUseCaseRequest {
-  medicineId: string
+  medicineVariantId: string
   stockId: string
   userId: string
   operatorId: string
@@ -48,19 +48,19 @@ export class DispensationMedicineUseCase {
   ) { }
 
   async execute({
-    medicineId,
+    medicineVariantId,
     stockId,
     userId,
     operatorId,
     batchesStocks,
     dispensationDate,
   }: DispensationMedicineUseCaseRequest): Promise<DispensationMedicineUseCaseResponse> {
-    const medicine = await this.medicinesRepository.findById(medicineId)
+    const medicine = await this.medicinesRepository.findById(medicineVariantId)
     if (!medicine) {
       return left(new ResourceNotFoundError())
     }
 
-    const medicineStock = await this.medicinesStockRepository.findByMedicineIdAndStockId(medicineId, stockId)
+    const medicineStock = await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(medicineVariantId, stockId)
     if (!medicineStock) {
       return left(new NoBatchInStockFoundError(medicine.content))
     }

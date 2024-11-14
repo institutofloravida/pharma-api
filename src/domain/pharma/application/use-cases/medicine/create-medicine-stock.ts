@@ -11,9 +11,10 @@ import { Batch } from '../../../enterprise/entities/batch'
 import { BatchestocksRepository } from '../../repositories/batch-stocks-repository'
 import { MedicineStockAlreadyExistsError } from '../_errors/medicine-stock-already-exists-error'
 import { Injectable } from '@nestjs/common'
+import { MedicinesVariantsRepository } from '../../repositories/medicine-variant-repository'
 
 interface createMedicineStockUseCaseRequest {
-  medicineId: string,
+  medicineVariantId: string,
   stockId: string
   quantity: number
   code: string
@@ -33,14 +34,15 @@ type createMedicineStockUseCaseResponse = Either<
 export class CreateMedicineStockUseCase {
   constructor(
     private stockRepository: StocksRepository,
-    private medicineRepository: MedicinesRepository,
+    private medicinesVariantsRepository: MedicinesVariantsRepository,
+
     private batchRepository: BatchesRepository,
-    private batchestockRepository: BatchestocksRepository,
-    private medicinestockRepository: MedicinesStockRepository,
+    private batcheStockRepository: BatchestocksRepository,
+    private medicineStockRepository: MedicinesStockRepository,
   ) {}
 
   async execute({
-    medicineId,
+    medicineVariantId,
     stockId,
     quantity,
     code,
@@ -49,12 +51,12 @@ export class CreateMedicineStockUseCase {
     manufacturingDate,
 
   }: createMedicineStockUseCaseRequest): Promise<createMedicineStockUseCaseResponse> {
-    const [medicine, stock] = await Promise.all([
-      this.medicineRepository.findById(medicineId),
+    const [medicineVariant, stock] = await Promise.all([
+      this.medicinesVariantsRepository.findById(medicineVariantId),
       this.stockRepository.findById(stockId),
     ])
 
-    if (!medicine || !stock) {
+    if (!medicineVariant || !stock) {
       return left(new ResourceNotFoundError())
     }
 
@@ -66,7 +68,7 @@ export class CreateMedicineStockUseCase {
     })
 
     const batchestock = Batchestock.create({
-      medicineId: new UniqueEntityId(medicineId),
+      medicineVariantId: new UniqueEntityId(medicineVariantId),
       batchId: batch.id,
       currentQuantity: quantity,
       stockId: new UniqueEntityId(stockId),
@@ -74,13 +76,13 @@ export class CreateMedicineStockUseCase {
     })
 
     const medicineStock = MedicineStock.create({
-      medicineId: new UniqueEntityId(medicineId),
+      medicineVariantId: new UniqueEntityId(medicineVariantId),
       stockId: new UniqueEntityId(stockId),
       currentQuantity: quantity,
       batchesStockIds: [batchestock.id.toString()],
     })
 
-    const medicineStockExists = await this.medicinestockRepository.medicineStockExists(medicineStock)
+    const medicineStockExists = await this.medicineStockRepository.medicineStockExists(medicineStock)
 
     if (medicineStockExists) {
       return left(new MedicineStockAlreadyExistsError(medicineStockExists.id.toString()))
@@ -88,8 +90,8 @@ export class CreateMedicineStockUseCase {
 
     await Promise.all([
       this.batchRepository.create(batch),
-      this.batchestockRepository.create(batchestock),
-      this.medicinestockRepository.create(medicineStock),
+      this.batcheStockRepository.create(batchestock),
+      this.medicineStockRepository.create(medicineStock),
     ])
 
     return right({

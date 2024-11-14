@@ -9,7 +9,7 @@ export class InMemoryBatchestocksRepository implements BatchestocksRepository {
 
   async create(batchestock: Batchestock) {
     this.items.push(batchestock)
-    const medicineStock = await this.medicineStockRepository.findByMedicineIdAndStockId(batchestock.medicineId.toString(), batchestock.stockId.toString())
+    const medicineStock = await this.medicineStockRepository.findByMedicineVariantIdAndStockId(batchestock.medicineVariantId.toString(), batchestock.stockId.toString())
     if (!medicineStock) {
       return null
     }
@@ -22,7 +22,7 @@ export class InMemoryBatchestocksRepository implements BatchestocksRepository {
     if (!batchestock) {
       return null
     }
-    const medicineStock = await this.medicineStockRepository.findByMedicineIdAndStockId(batchestock.medicineId.toString(), batchestock.stockId.toString())
+    const medicineStock = await this.medicineStockRepository.findByMedicineVariantIdAndStockId(batchestock.medicineVariantId.toString(), batchestock.stockId.toString())
     if (!medicineStock) {
       return null
     }
@@ -47,7 +47,7 @@ export class InMemoryBatchestocksRepository implements BatchestocksRepository {
     batchestock.subtract(quantity)
     await this.save(batchestock)
 
-    const medicineStock = await this.medicineStockRepository.findByMedicineIdAndStockId(batchestock.medicineId.toString(), batchestock.stockId.toString())
+    const medicineStock = await this.medicineStockRepository.findByMedicineVariantIdAndStockId(batchestock.medicineVariantId.toString(), batchestock.stockId.toString())
     if (!medicineStock) {
       throw new Error('Medicine stock not found')
     }

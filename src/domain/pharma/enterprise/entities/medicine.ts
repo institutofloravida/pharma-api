@@ -5,11 +5,11 @@ import { AggregateRoot } from '@/core/entities/aggregate-root'
 export interface MedicineProps {
   content: string
   description?: string | null
-  dosage: string
-  pharmaceuticalFormId: UniqueEntityId
   therapeuticClassesIds: UniqueEntityId[]
+  medicinesVariantsIds: UniqueEntityId[]
   createdAt: Date
   updatedAt?: Date | null
+
 }
 
 export class Medicine extends AggregateRoot<MedicineProps> {
@@ -31,15 +31,6 @@ export class Medicine extends AggregateRoot<MedicineProps> {
     this.touch()
   }
 
-  get pharmaceuticalForm() {
-    return this.props.pharmaceuticalFormId
-  }
-
-  set pharmaceuticalForm(value: UniqueEntityId) {
-    this.props.pharmaceuticalFormId = value
-    this.touch()
-  }
-
   get therapeuticClasses() {
     return this.props.therapeuticClassesIds
   }
@@ -49,12 +40,12 @@ export class Medicine extends AggregateRoot<MedicineProps> {
     this.touch()
   }
 
-  get dosage() {
-    return this.props.dosage
+  get medicinesVariantsIds() {
+    return this.props.medicinesVariantsIds
   }
 
-  set dosage(value: string) {
-    this.props.dosage = value
+  set medicinesVariantsIds(value: UniqueEntityId[]) {
+    this.props.medicinesVariantsIds = value
     this.touch()
   }
 
@@ -66,15 +57,9 @@ export class Medicine extends AggregateRoot<MedicineProps> {
     return this.props.updatedAt
   }
 
-  public touch() {
-    this.props.updatedAt = new Date()
-  }
-
   public equals(medicine: Medicine) {
     if (
-      medicine.content.toLowerCase().trim() === this.content.toLowerCase().trim() &&
-      medicine.dosage.toLowerCase().trim().replace(' ', '') === this.dosage.toLowerCase().trim().replace(' ', '') &&
-      medicine.pharmaceuticalForm.toString().toLowerCase().trim() === this.pharmaceuticalForm.toString().toLowerCase().trim()
+      medicine.content.toString().toLocaleLowerCase().trim() === this.content.toString().toLocaleLowerCase().trim()
     ) {
       return true
     }
@@ -82,13 +67,18 @@ export class Medicine extends AggregateRoot<MedicineProps> {
     return false
   }
 
+  public touch() {
+    this.props.updatedAt = new Date()
+  }
+
   static create(
-    props: Optional<MedicineProps, 'createdAt'>,
+    props: Optional<MedicineProps, 'createdAt' | 'medicinesVariantsIds'>,
     id?: UniqueEntityId,
   ) {
     const medicine = new Medicine({
       ...props,
       createdAt: props.createdAt ?? new Date(),
+      medicinesVariantsIds: props.medicinesVariantsIds ?? [],
     }, id)
 
     return medicine

@@ -12,7 +12,7 @@ import { InvalidEntryQuantityError } from '../_errors/invalid-entry-quantity-err
 import { Injectable } from '@nestjs/common'
 
 interface RegisterEntryUseCaseRequest {
-  medicineId: string
+  medicineVariantId: string
   stockId: string
   operatorId: string
   batcheStockId: string
@@ -37,7 +37,7 @@ export class RegisterEntryUseCase {
   ) {}
 
   async execute({
-    medicineId,
+    medicineVariantId,
     stockId,
     operatorId,
     batcheStockId,
@@ -45,12 +45,12 @@ export class RegisterEntryUseCase {
     entryDate,
     entryType,
   }: RegisterEntryUseCaseRequest): Promise<RegisterEntryUseCaseResponse> {
-    const medicine = await this.medicinesRepository.findById(medicineId)
+    const medicine = await this.medicinesRepository.findById(medicineVariantId)
     if (!medicine) {
       return left(new ResourceNotFoundError())
     }
 
-    const medicineStock = await this.medicinesStockRepository.findByMedicineIdAndStockId(medicineId, stockId)
+    const medicineStock = await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(medicineVariantId, stockId)
     if (!medicineStock) {
       return left(new NoBatchInStockFoundError(medicine.content))
     }

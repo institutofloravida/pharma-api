@@ -9,9 +9,10 @@ export function makeMedicine(
   const medicine = Medicine.create({
     content: faker.commerce.productName(),
     description: faker.lorem.sentence(),
-    dosage: `${faker.number.int({ min: 1, max: 500 })}mg`,
-    pharmaceuticalFormId: new UniqueEntityId(),
+    // dosage: `${faker.number.int({ min: 1, max: 500 })}mg`,
+    // pharmaceuticalFormId: new UniqueEntityId(),
     therapeuticClassesIds: Array.from({ length: 3 }, () => new UniqueEntityId()),
+    medicinesVariantsIds: Array.from({ length: 2 }, () => new UniqueEntityId()),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     ...override,

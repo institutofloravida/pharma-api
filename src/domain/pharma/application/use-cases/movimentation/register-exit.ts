@@ -13,7 +13,7 @@ import { InsufficientQuantityBatchInStockError } from '../_errors/insufficient-q
 import { Injectable } from '@nestjs/common'
 
 interface RegisterExitUseCaseRequest {
-  medicineId: string
+  medicineVariantId: string
   stockId: string
   operatorId: string
   batcheStockId: string
@@ -41,7 +41,7 @@ export class RegisterExitUseCase {
   ) {}
 
   async execute({
-    medicineId,
+    medicineVariantId,
     stockId,
     operatorId,
     batcheStockId,
@@ -49,12 +49,12 @@ export class RegisterExitUseCase {
     exitDate,
     exitType,
   }: RegisterExitUseCaseRequest): Promise<RegisterExitUseCaseResponse> {
-    const medicine = await this.medicinesRepository.findById(medicineId)
+    const medicine = await this.medicinesRepository.findById(medicineVariantId)
     if (!medicine) {
       return left(new ResourceNotFoundError())
     }
 
-    const medicineStock = await this.medicinesStockRepository.findByMedicineIdAndStockId(medicineId, stockId)
+    const medicineStock = await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(medicineVariantId, stockId)
     if (!medicineStock) {
       return left(new NoBatchInStockFoundError(medicine.content))
     }
