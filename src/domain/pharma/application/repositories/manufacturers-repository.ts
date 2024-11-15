@@ -1,4 +1,4 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Manufacturer } from '../../enterprise/entities/manufacturer'
 
 export abstract class ManufacturersRepository {

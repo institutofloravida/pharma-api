@@ -7,7 +7,7 @@ export function makeMedicineStock(
   id?: UniqueEntityId,
 ) {
   const medicineStock = MedicineStock.create({
-    medicineId: new UniqueEntityId(),
+    medicineVariantId: new UniqueEntityId(),
     stockId: new UniqueEntityId(),
     currentQuantity: 0,
     minimumLevel: faker.number.int({ min: 1, max: 100 }),

@@ -4,7 +4,7 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/create-medicine'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { MedicinePresenter } from '../../presenters/medicine-presenter'
+import { MedicinePresenter } from '../../../presenters/medicine-presenter'
 
 const createMedicineBodySchema = z.object({
   name: z.string(),

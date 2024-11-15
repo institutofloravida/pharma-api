@@ -38,10 +38,10 @@ import { CreatePathologyController } from './controllers/auxiliary-records/patho
 import { CreatePathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/create-pathology'
 import { FetchpathologiesController } from './controllers/auxiliary-records/pathology/fetch-pathologies.controller'
 import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/fetch-pathologies'
-import { CreateMedicineController } from './controllers/medicine/create-medicine.controller'
+import { CreateMedicineController } from './controllers/medicine/medicine/create-medicine.controller'
 import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/create-medicine'
 import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/medicine/fetch-medicines'
-import { FetchmedicinesController } from './controllers/medicine/fetch-medicines.controller'
+import { FetchmedicinesController } from './controllers/medicine/medicine/fetch-medicines.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],

@@ -1,6 +1,6 @@
-import { InMemoryPharmaceuticalFormsRepository } from "test/repositories/in-memory-pharmaceutical-forms"
-import { FetchPharmaceuticalFormsUseCase } from "./fetch-pharmaceutical-form"
-import { makePharmaceuticalForm } from "test/factories/make-pharmaceutical-form"
+import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memory-pharmaceutical-forms'
+import { FetchPharmaceuticalFormsUseCase } from './fetch-pharmaceutical-form'
+import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let sut: FetchPharmaceuticalFormsUseCase
@@ -45,4 +45,3 @@ describe('Fetch Pharmaceutical Forms', () => {
     expect(result.value?.pharmaceuticalForms).toHaveLength(2)
   })
 })
-

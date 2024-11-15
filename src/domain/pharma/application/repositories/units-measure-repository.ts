@@ -1,4 +1,4 @@
-import { PaginationParams } from '@/core/repositories/pagination-params';
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { UnitMeasure } from '../../enterprise/entities/unitMeasure'
 
 export abstract class UnitsMeasureRepository {

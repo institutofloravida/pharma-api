@@ -1,4 +1,4 @@
-import  { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Medicine } from '../../enterprise/entities/medicine'
 
 export abstract class MedicinesRepository {

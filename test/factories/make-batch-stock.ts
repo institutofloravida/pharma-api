@@ -7,7 +7,7 @@ export function makeBatchestock(
   id?: UniqueEntityId,
 ) {
   const batchestock = Batchestock.create({
-    medicineId: new UniqueEntityId(),
+    medicineVariantId: new UniqueEntityId(),
     stockId: new UniqueEntityId(),
     batchId: new UniqueEntityId(),
     currentQuantity: 0,
