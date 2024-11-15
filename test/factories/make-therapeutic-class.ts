@@ -28,7 +28,6 @@ export class TherapeuticClassFactory {
 
   async makePrismaTherapeuticClass(data: Partial<TherapeuticClassProps> = {}): Promise<TherapeuticClass> {
     const therapeuticclass = makeTherapeuticClass(data)
-    console.log('aaaa>>>>>>$$$$', therapeuticclass)
     await this.prisma.therapeuticClass.create({
       data: PrismaTherapeuticClassMapper.toPrisma(therapeuticclass),
     })
