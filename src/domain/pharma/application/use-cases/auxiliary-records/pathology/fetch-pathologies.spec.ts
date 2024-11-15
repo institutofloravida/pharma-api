@@ -1,6 +1,6 @@
-import { InMemoryPathologiesRepository } from "test/repositories/in-memory-pathologies-repository"
-import { FetchPathologiesUseCase } from "../pathology/fetch-pathologies"
-import { makePathology } from "test/factories/make-pathology"
+import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
+import { FetchPathologiesUseCase } from '../pathology/fetch-pathologies'
+import { makePathology } from 'test/factories/make-pathology'
 
 let inMemoryPathologiesRepository: InMemoryPathologiesRepository
 let sut: FetchPathologiesUseCase
@@ -13,7 +13,7 @@ describe('Fetch manufatureres', () => {
 
   it('should be able to fetch pathologies', async () => {
     await inMemoryPathologiesRepository.create(
-      makePathology({createdAt: new Date(2024,0,29)}),
+      makePathology({ createdAt: new Date(2024, 0, 29) }),
     )
     await inMemoryPathologiesRepository.create(
       makePathology({ createdAt: new Date(2024, 0, 20) }),

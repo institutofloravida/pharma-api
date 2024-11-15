@@ -181,7 +181,12 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}} 
 
 {
-  "name": "Dipirona",
-  "description": "A dipirona é um anti-inflamatório não esteroidal (AINE) com ação antitérmica (alívio de febres) e analgésica (alívio de dores). Pode ser encontrado com os nomes comerciais de Novalgina, Dorflex, Neosaldina, Lisador Dip, Benegrip, entre outros.",
-  "therapeuticClassesIds": ["7e07eebc-4418-4224-a392-10b900abbbe4"]
+  "name": "Ibuprofeno",
+  "therapeuticClassesIds": ["7e07eebc-4418-4224-a392-10b900abbbe4", "e9b9dfb6-cb92-473b-bd6a-a487cec713e3"]
 }
+
+###
+
+# @name fetch_medicines
+GET {{baseurl}}/medicines?page=1
+Authorization: Bearer {{authToken}}

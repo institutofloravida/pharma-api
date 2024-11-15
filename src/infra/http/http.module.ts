@@ -40,6 +40,8 @@ import { FetchpathologiesController } from './controllers/auxiliary-records/path
 import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/fetch-pathologies'
 import { CreateMedicineController } from './controllers/medicine/create-medicine.controller'
 import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/create-medicine'
+import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/medicine/fetch-medicines'
+import { FetchmedicinesController } from './controllers/medicine/fetch-medicines.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -64,6 +66,7 @@ import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/med
     FetchManufacturersController,
     FetchUnitsMeasureController,
     FetchpathologiesController,
+    FetchmedicinesController,
 
   ],
   providers: [
@@ -86,6 +89,7 @@ import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/med
     FetchManufacturersUseCase,
     FetchUnitsMeasureUseCase,
     FetchPathologiesUseCase,
+    FetchMedicinesUseCase,
   ],
 })
 export class HttpModule {}

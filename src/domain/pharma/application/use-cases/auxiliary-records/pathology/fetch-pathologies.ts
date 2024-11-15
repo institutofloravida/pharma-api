@@ -1,5 +1,4 @@
 import { Either, right } from '@/core/either'
-import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 import { Injectable } from '@nestjs/common'
 import { PathologiesRepository } from '../../../repositories/pathologies-repository'
 import { Pathology } from '@/domain/pharma/enterprise/entities/pathology'

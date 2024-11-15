@@ -1,3 +1,4 @@
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
 import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 
@@ -37,5 +38,13 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     }
 
     return medicine
+  }
+
+  async findMany({ page }: PaginationParams): Promise<Medicine[]> {
+    const medicines = this.items
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return medicines
   }
 }

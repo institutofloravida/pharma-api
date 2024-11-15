@@ -32,7 +32,12 @@ export class MedicineFactory {
     const medicine = makeMedicine(data)
 
     await this.prisma.medicine.create({
-      data: PrismaMedicineMapper.toPrisma(medicine),
+      data: {
+        ...PrismaMedicineMapper.toPrisma(medicine),
+        medicineVariants: {
+        },
+
+      },
     })
 
     return medicine
