@@ -38,6 +38,8 @@ import { CreatePathologyController } from './controllers/auxiliary-records/patho
 import { CreatePathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/create-pathology'
 import { FetchpathologiesController } from './controllers/auxiliary-records/pathology/fetch-pathologies.controller'
 import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/fetch-pathologies'
+import { CreateMedicineController } from './controllers/medicine/create-medicine.controller'
+import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/create-medicine'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -53,6 +55,7 @@ import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/a
     CreateManufacturerController,
     CreateUnitMeasureController,
     CreatePathologyController,
+    CreateMedicineController,
     FetchOperatorsController,
     FetchInstitutionsController,
     FetchStocksController,
@@ -74,6 +77,7 @@ import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/a
     CreateManufacturerUseCase,
     CreateUnitMeasureUseCase,
     CreatePathologyUseCase,
+    CreateMedicineUseCase,
     FethOperatorsUseCase,
     FethInstitutionsUseCase,
     FetchStocksUseCase,

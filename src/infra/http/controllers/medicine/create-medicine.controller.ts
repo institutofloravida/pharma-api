@@ -2,12 +2,15 @@ import { BadRequestException, Body, ConflictException, Controller, HttpCode, Pos
 import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import type { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/create-medicine'
+import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/create-medicine'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { MedicinePresenter } from '../../presenters/medicine-presenter'
 
 const createMedicineBodySchema = z.object({
   name: z.string(),
-  dosage: z.string(),
-
+  description: z.string().optional(),
+  therapeuticClassesIds: z.array(z.string()),
+  medicinesVariantsIds: z.array(z.string()).optional(),
 })
 
 type CreateMedicineBodySchema = z.infer<typeof createMedicineBodySchema>
@@ -24,11 +27,18 @@ export class CreateMedicineController {
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createMedicineBodySchema))
   async handle(@Body() body: CreateMedicineBodySchema) {
-    const { name } = body
+    const {
+      name,
+      therapeuticClassesIds,
+      description,
+      medicinesVariantsIds,
+    } = body
 
     const result = await this.createMedicine.execute({
       content: name,
-
+      therapeuticClassesIds: therapeuticClassesIds.map(item => new UniqueEntityId(item)),
+      description,
+      medicinesVariantsIds: medicinesVariantsIds?.map(item => new UniqueEntityId(item)),
     })
 
     if (result.isLeft()) {

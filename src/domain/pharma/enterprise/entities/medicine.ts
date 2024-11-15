@@ -31,11 +31,11 @@ export class Medicine extends AggregateRoot<MedicineProps> {
     this.touch()
   }
 
-  get therapeuticClasses() {
+  get therapeuticClassesIds() {
     return this.props.therapeuticClassesIds
   }
 
-  set therapeuticClasses(value: UniqueEntityId[]) {
+  set therapeuticClassesIds(value: UniqueEntityId[]) {
     this.props.therapeuticClassesIds = value
     this.touch()
   }

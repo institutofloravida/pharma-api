@@ -17,6 +17,8 @@ import { UnitsMeasureRepository } from '@/domain/pharma/application/repositories
 import { PrismaUnitsMeasureRepository } from './prisma/repositories/prisma-unit-measure-repository'
 import { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
 import { PrismaPathologysRepository } from './prisma/repositories/prisma-pathology-repository'
+import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
+import { PrismaMedicinesRepository } from './prisma/repositories/prisma-medicines-repository'
 
 @Module({
   providers: [
@@ -29,6 +31,7 @@ import { PrismaPathologysRepository } from './prisma/repositories/prisma-patholo
     { provide: ManufacturersRepository, useClass: PrismaManufacturersRepository },
     { provide: UnitsMeasureRepository, useClass: PrismaUnitsMeasureRepository },
     { provide: PathologiesRepository, useClass: PrismaPathologysRepository },
+    { provide: MedicinesRepository, useClass: PrismaMedicinesRepository },
     PrismaUsersRepository],
   exports: [
     PrismaService,
@@ -41,6 +44,7 @@ import { PrismaPathologysRepository } from './prisma/repositories/prisma-patholo
     ManufacturersRepository,
     UnitsMeasureRepository,
     PathologiesRepository,
+    MedicinesRepository,
   ],
 })
 export class DatabaseModule {}
