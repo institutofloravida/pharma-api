@@ -1,8 +1,19 @@
+import type { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicinesVariantsRepository } from '@/domain/pharma/application/repositories/medicine-variant-repository'
 import { MedicineVariant } from '@/domain/pharma/enterprise/entities/medicine-variant'
+import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
+import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
+import type { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import type { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
 
 export class InMemoryMedicinesVariantsRepository implements MedicinesVariantsRepository {
   public items: MedicineVariant[] = []
+
+  constructor(
+    private medicinesRepository: InMemoryMedicinesRepository,
+    private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
+    private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
+  ) {}
 
   async create(medicinevariant: MedicineVariant) {
     this.items.push(medicinevariant)
@@ -27,5 +38,49 @@ export class InMemoryMedicinesVariantsRepository implements MedicinesVariantsRep
     }
 
     return medicineVariant
+  }
+
+  async findManyByMedicineIdWithMedicine(medicineId: string, { page }: PaginationParams): Promise<MedicineVariantWithMedicine[]> {
+    const medicinesVariantsWith = this.items
+      .filter(item => item.medicineId.toString() === medicineId)
+      .slice((page - 1) * 20, page * 20)
+      .map(medicineVariant => {
+        const medicine = this.medicinesRepository.items.find(medicine => {
+          return medicine.id.equal(medicineVariant.medicineId)
+        })
+
+        if (!medicine) {
+          throw new Error(`Medicine with Id ${medicineVariant.id.toString()} does not exist.`)
+        }
+
+        const pharmaceuticalForm = this.pharmaceuticalFormsRepository.items.find(pharmaceuticalForm => {
+          return pharmaceuticalForm.id.equal(pharmaceuticalForm.id)
+        })
+
+        if (!pharmaceuticalForm) {
+          throw new Error(`pharmaceuticalForm with Id ${medicineVariant.pharmaceuticalFormId.toString()} does not exist.`)
+        }
+
+        const unitMeasure = this.unitsMeasureRepository.items.find(UnitMeasure => {
+          return UnitMeasure.id.equal(UnitMeasure.id)
+        })
+
+        if (!unitMeasure) {
+          throw new Error(`UnitMeasure with Id ${medicineVariant.unitMeasureId.toString()} does not exist.`)
+        }
+
+        return MedicineVariantWithMedicine.create({
+          dosage: medicineVariant.dosage,
+          medicineId: medicineVariant.medicineId,
+          medicine: medicine.content,
+          pharmaceuticalForm: pharmaceuticalForm.content,
+          pharmaceuticalFormId: medicineVariant.pharmaceuticalFormId,
+          unitMeasure: unitMeasure.acronym,
+          unitMeasureId: medicineVariant.unitMeasureId,
+          createdAt: medicineVariant.createdAt,
+          updatedAt: medicineVariant.updatedAt,
+        })
+      })
+    return medicinesVariantsWith
   }
 }

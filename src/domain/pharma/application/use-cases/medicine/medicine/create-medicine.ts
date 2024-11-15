@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either'
 import { ConflictError } from '@/core/erros/errors/conflict-error'
-import { Medicine } from '../../../enterprise/entities/medicine'
-import { MedicinesRepository } from '../../repositories/medicines-repository'
+import { Medicine } from '../../../../enterprise/entities/medicine'
+import { MedicinesRepository } from '../../../repositories/medicines-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Injectable } from '@nestjs/common'
 

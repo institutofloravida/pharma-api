@@ -1,6 +1,9 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MedicineVariant, type MedicineVariantProps } from '@/domain/pharma/enterprise/entities/medicine-variant'
+import { PrismaMedicineVariantMapper } from '@/infra/database/prisma/mappers/prisma-medicine-variant-mapper'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
+import { Injectable } from '@nestjs/common'
 
 export function makeMedicineVariant(
   override: Partial<MedicineVariantProps> = {},
@@ -19,4 +22,21 @@ export function makeMedicineVariant(
   )
 
   return medicineVariant
+}
+
+@Injectable()
+export class MedicineVariantFactory {
+  constructor(private prisma: PrismaService) {}
+
+  async makePrismaMedicineVariant(data: Partial<MedicineVariantProps> = {}): Promise<MedicineVariant> {
+    const medicineVariant = makeMedicineVariant(data)
+
+    await this.prisma.medicineVariant.create({
+      data: {
+        ...PrismaMedicineVariantMapper.toPrisma(medicineVariant),
+      },
+    })
+
+    return medicineVariant
+  }
 }

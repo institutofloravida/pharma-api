@@ -108,39 +108,25 @@ model Medicine {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
 
-  therapeuticClasses          TherapeuticClass[]            @relation("TherapeuticClassesOnMedicines")
-  medicineVariants            MedicineVariant[]             @relation("MedicineVariantsOnMedicines")
-  MedicineWithMedicineVariant MedicineWithMedicineVariant[]
-  MedicineTherapeuticClass    MedicineTherapeuticClass[]
+  therapeuticClasses       TherapeuticClass[]         @relation("TherapeuticClassesOnMedicines")
+  medicineVariants         MedicineVariant[]
+  MedicineTherapeuticClass MedicineTherapeuticClass[]
 
   @@index([name])
 }
 
 model MedicineVariant {
   id                   String    @id @default(uuid())
+  medicineId           String    @map("medicine_id")
   dosage               String
-  pharmaceuticalFormId String
-  unitMeasureId        String
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime? @updatedAt
+  pharmaceuticalFormId String    @map("pharmaceutical_form_id")
+  unitMeasureId        String    @map("unit_measure_id")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime? @updatedAt @map("updated_at")
 
-  medicines                   Medicine[]                    @relation("MedicineVariantsOnMedicines")
-  MedicineWithMedicineVariant MedicineWithMedicineVariant[]
+  medicine Medicine @relation(fields: [medicineId], references: [id])
 
   @@map("medicine_variants")
-}
-
-model MedicineWithMedicineVariant {
-  medicineId        String
-  medicineVariantId String
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime? @updatedAt
-
-  medicine        Medicine        @relation(fields: [medicineId], references: [id])
-  medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
-
-  @@id([medicineId, medicineVariantId])
-  @@map("medicine_medicine_variant")
 }
 
 model MedicineTherapeuticClass {

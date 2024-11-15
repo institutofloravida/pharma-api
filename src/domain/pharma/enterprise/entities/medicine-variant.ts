@@ -43,6 +43,14 @@ export class MedicineVariant extends AggregateRoot<MedicineVariantProps> {
     this.touch()
   }
 
+  get createdAt() {
+    return this.props.createdAt
+  }
+
+  get updatedAt() {
+    return this.props.updatedAt
+  }
+
   private touch() {
     this.props.updatedAt = new Date()
   }

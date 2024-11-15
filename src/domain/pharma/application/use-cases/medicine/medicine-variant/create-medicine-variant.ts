@@ -3,7 +3,7 @@ import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Injectable } from '@nestjs/common'
 import { MedicineVariant } from '@/domain/pharma/enterprise/entities/medicine-variant'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { MedicinesVariantsRepository } from '../../repositories/medicine-variant-repository'
+import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
 
 interface createMedicineVariantUseCaseRequest {
   medicineId: string;

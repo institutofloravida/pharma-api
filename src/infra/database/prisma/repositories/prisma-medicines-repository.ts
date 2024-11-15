@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
 import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
-import { PrismaMedicineMapper } from '../mappers/prisma-medicine-repository'
+import { PrismaMedicineMapper } from '../mappers/prisma-medicine-mapper'
 
 @Injectable()
 export class PrismaMedicinesRepository implements MedicinesRepository {

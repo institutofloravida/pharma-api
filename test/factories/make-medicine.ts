@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Medicine, type MedicineProps } from '@/domain/pharma/enterprise/entities/medicine'
-import { PrismaMedicineMapper } from '@/infra/database/prisma/mappers/prisma-medicine-repository'
+import { PrismaMedicineMapper } from '@/infra/database/prisma/mappers/prisma-medicine-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
