@@ -1,7 +1,7 @@
 import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
-import type { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
-import type { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
+import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
+import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
 
 interface FetchMedicinesVariantsUseCaseRequest {
   medicineId: string;

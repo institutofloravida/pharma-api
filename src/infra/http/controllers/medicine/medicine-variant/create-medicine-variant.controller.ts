@@ -51,6 +51,6 @@ export class CreateMedicineVariantController {
       }
     }
 
-    return { medicine: MedicineVariantPresenter.toHTTP(result.value.medicineVariant) }
+    return { medicine_variant: MedicineVariantPresenter.toHTTP(result.value.medicineVariant) }
   }
 }

@@ -2,6 +2,8 @@ import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import { FetchMedicinesVariantsUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine-variant/fetch-medicines-variants'
+import { MedicineVariantWithMedicinePresenter } from '@/infra/http/presenters/medicine-variant-with-medicine-presenter'
 
 const pageQueryParamSchema = z
   .string()
@@ -15,22 +17,26 @@ const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
 @Controller('/medicines-variants')
-export class FetchmedicinevariantsController {
-  constructor(private fetchmedicinevariants: FetchMedicineVariantsUseCase) {}
+export class FetchMedicinesVariantsController {
+  constructor(private fetchMedicinesVariants: FetchMedicinesVariantsUseCase) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
-    const result = await this.fetchmedicinevariants.execute({
+  async handle(
+    @Query('page', queryValidationPipe) page: PageQueryParamSchema,
+    @Query('medicineId') medicineId: string,
+  ) {
+    const result = await this.fetchMedicinesVariants.execute({
       page,
+      medicineId,
     })
 
     if (result.isLeft()) {
       throw new BadRequestException({})
     }
 
-    const medicinevariants = result.value.medicinevariants
+    const medicinevariants = result.value.medicinesVariants
 
-    return { medicinevariants: medicinevariants.map(MedicineVariantPresenter.toHTTP) }
+    return { medicines_variants: medicinevariants.map(MedicineVariantWithMedicinePresenter.toHTTP) }
   }
 }
