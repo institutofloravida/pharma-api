@@ -57,6 +57,14 @@ export class Medicine extends AggregateRoot<MedicineProps> {
     return this.props.updatedAt
   }
 
+  get excerpt() {
+    if (!this.description) {
+      return null
+    }
+
+    return this.description.substring(0, 120).trimEnd().concat('...')
+  }
+
   public equals(medicine: Medicine) {
     if (
       medicine.content.toString().toLocaleLowerCase().trim() === this.content.toString().toLocaleLowerCase().trim()

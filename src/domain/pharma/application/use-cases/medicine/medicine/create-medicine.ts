@@ -9,7 +9,6 @@ interface createMedicineUseCaseRequest {
   content: string,
   description?: string | null
   therapeuticClassesIds: UniqueEntityId[]
-  medicinesVariantsIds?: UniqueEntityId[]
 }
 
 type createMedicineUseCaseResponse = Either<
@@ -26,13 +25,11 @@ export class CreateMedicineUseCase {
     content,
     description,
     therapeuticClassesIds,
-    medicinesVariantsIds,
   }: createMedicineUseCaseRequest): Promise<createMedicineUseCaseResponse> {
     const medicine = Medicine.create({
       content,
       description,
       therapeuticClassesIds,
-      medicinesVariantsIds,
     })
 
     const contentExists = await this.medicineRepository.medicineExists(medicine)

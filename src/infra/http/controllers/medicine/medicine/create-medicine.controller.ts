@@ -10,7 +10,6 @@ const createMedicineBodySchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   therapeuticClassesIds: z.array(z.string()),
-  medicinesVariantsIds: z.array(z.string()).optional(),
 })
 
 type CreateMedicineBodySchema = z.infer<typeof createMedicineBodySchema>
@@ -31,14 +30,12 @@ export class CreateMedicineController {
       name,
       therapeuticClassesIds,
       description,
-      medicinesVariantsIds,
     } = body
 
     const result = await this.createMedicine.execute({
       content: name,
       therapeuticClassesIds: therapeuticClassesIds.map(item => new UniqueEntityId(item)),
       description,
-      medicinesVariantsIds: medicinesVariantsIds?.map(item => new UniqueEntityId(item)),
     })
 
     if (result.isLeft()) {

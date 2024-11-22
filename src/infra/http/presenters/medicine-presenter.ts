@@ -5,7 +5,7 @@ export class MedicinePresenter {
     return {
       id: medicine.id.toString(),
       name: medicine.content,
-      description: medicine.description,
+      description: medicine.excerpt,
       medicinesVariantesIds: medicine.medicinesVariantsIds,
       therapeuticsClassesIds: medicine.therapeuticClassesIds,
     }
