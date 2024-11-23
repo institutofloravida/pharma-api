@@ -4,7 +4,8 @@ import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 import { MedicinesRepository } from '../../../repositories/medicines-repository'
 
 interface FetchMedicinesUseCaseRequest {
-  page: number
+  page: number,
+  content?: string,
 }
 
 type FetchMedicinesUseCaseResponse = Either<
@@ -20,8 +21,9 @@ export class FetchMedicinesUseCase {
 
   async execute({
     page,
+    content,
   }: FetchMedicinesUseCaseRequest): Promise<FetchMedicinesUseCaseResponse> {
-    const medicines = await this.MedicinesRepository.findMany({ page })
+    const medicines = await this.MedicinesRepository.findMany({ page }, content)
 
     return right({
       medicines,

@@ -20,7 +20,7 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
   }
 
   async medicineExists(medicine: Medicine) {
-    const medicineExists = await this.items.find(item => {
+    const medicineExists = this.items.find(item => {
       return medicine.equals(item)
     })
 
@@ -40,8 +40,14 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     return medicine
   }
 
-  async findMany({ page }: PaginationParams): Promise<Medicine[]> {
-    const medicines = this.items
+  async findMany({ page }: PaginationParams, content?: string): Promise<Medicine[]> {
+    let medicines = this.items
+
+    if (content && content.trim().length > 0) {
+      medicines = medicines.filter(item => item.content.includes(''))
+    }
+
+    medicines = medicines
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice((page - 1) * 20, page * 20)
 

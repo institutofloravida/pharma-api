@@ -41,11 +41,11 @@ import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/a
 import { CreateMedicineController } from './controllers/medicine/medicine/create-medicine.controller'
 import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine/create-medicine'
 import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine/fetch-medicines'
-import { FetchmedicinesController } from './controllers/medicine/medicine/fetch-medicines.controller'
 import { CreateMedicineVariantController } from './controllers/medicine/medicine-variant/create-medicine-variant.controller'
 import { CreateMedicineVariantUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine-variant/create-medicine-variant'
 import { FetchMedicinesVariantsController } from './controllers/medicine/medicine-variant/fetch-medicine-variant.controller'
 import { FetchMedicinesVariantsUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine-variant/fetch-medicines-variants'
+import { FetchMedicinesController } from './controllers/medicine/medicine/fetch-medicines.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -71,7 +71,7 @@ import { FetchMedicinesVariantsUseCase } from '@/domain/pharma/application/use-c
     FetchManufacturersController,
     FetchUnitsMeasureController,
     FetchpathologiesController,
-    FetchmedicinesController,
+    FetchMedicinesController,
     FetchMedicinesVariantsController,
 
   ],
