@@ -54,6 +54,13 @@ To generate the Prisma client, which handles database interactions, run:
 npx prisma generate
 ```
 
+### 6. Run Seed
+To execute the seed,run:
+```bash
+npx prisma db seed
+```
+
+
 ### 6. Starting the Server
 Now you can start the server in development mode:
 ```bash
