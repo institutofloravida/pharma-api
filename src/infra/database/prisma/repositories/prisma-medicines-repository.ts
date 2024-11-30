@@ -58,8 +58,8 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     return PrismaMedicineMapper.toDomain(medicine)
   }
 
-  async findMany({ page }, content?: string): Promise<Medicine[]> {
-    const manufacturers = await this.prisma.medicine.findMany({
+  async findMany({ page }, content?: string): Promise<{ medicines: Medicine[], totalCount: number }> {
+    const medicines = await this.prisma.medicine.findMany({
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * 20,
       take: 20,
@@ -71,6 +71,18 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
       },
     })
 
-    return manufacturers.map(PrismaMedicineMapper.toDomain)
+    const totalCount = await this.prisma.medicine.count({
+      where: {
+        name: {
+          contains: content ?? '',
+          mode: 'insensitive',
+        },
+      },
+    })
+    const medicinesMappered = medicines.map(PrismaMedicineMapper.toDomain)
+    return {
+      medicines: medicinesMappered,
+      totalCount,
+    }
   }
 }

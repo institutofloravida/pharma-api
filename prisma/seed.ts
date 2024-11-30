@@ -231,7 +231,6 @@ async function main() {
   const therapeuticClasse04 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antifúngicos',
-
     },
   })
 

@@ -6,6 +6,7 @@ import { PrismaMedicineVariantMapper } from '../mappers/prisma-medicine-variant-
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
 import { PrismaMedicineVariantWithMedicineMapper } from '../mappers/prisma-medicine-variant-with-medicine-mapper'
+import type { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepository {
@@ -50,11 +51,25 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
   async findManyByMedicineIdWithMedicine(
     medicineId: string,
     { page }: PaginationParams,
-  ): Promise<MedicineVariantWithMedicine[]> {
-    const pageSize = 20 // Número de itens por página
-
+    content?: string,
+  ):Promise<{
+    medicinesVariants: MedicineVariantWithMedicine[],
+    meta: Meta
+  }> {
+    const pageSize = 20
     const medicineVariants = await this.prisma.medicineVariant.findMany({
-      where: { medicineId },
+      where: {
+        medicineId,
+        AND: {
+          medicine: {
+            name: {
+              contains: content ?? '',
+              mode: 'insensitive',
+
+            },
+          },
+        },
+      },
       include: {
         medicine: true,
         pharmaceuticalForm: true,
@@ -64,6 +79,28 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
       take: pageSize,
     })
 
-    return medicineVariants.map(PrismaMedicineVariantWithMedicineMapper.toDomain)
+    const totalCount = await this.prisma.medicineVariant.count({
+      where: {
+        medicineId,
+        AND: {
+          medicine: {
+            name: {
+              contains: content ?? '',
+              mode: 'insensitive',
+            },
+          },
+        },
+      },
+    })
+
+    const medicineVariantsMappered = medicineVariants.map(PrismaMedicineVariantWithMedicineMapper.toDomain)
+
+    return {
+      medicinesVariants: medicineVariantsMappered,
+      meta: {
+        page,
+        totalCount,
+      },
+    }
   }
 }

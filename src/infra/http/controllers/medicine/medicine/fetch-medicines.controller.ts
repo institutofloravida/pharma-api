@@ -32,8 +32,14 @@ export class FetchMedicinesController {
       throw new BadRequestException({})
     }
 
-    const medicines = result.value.medicines
+    const { medicines, meta } = result.value
 
-    return { medicines: medicines.map(MedicinePresenter.toHTTP) }
+    return {
+      medicines: medicines.map(MedicinePresenter.toHTTP),
+      meta: {
+        totalCount: meta.totalCount,
+        page: meta.page,
+      },
+    }
   }
 }

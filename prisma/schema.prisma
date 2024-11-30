@@ -97,7 +97,6 @@ model TherapeuticClass {
   name      String
   createdAt DateTime @default(now()) @map("created_at")
 
-  medicines                Medicine[]                 @relation("TherapeuticClassesOnMedicines")
   MedicineTherapeuticClass MedicineTherapeuticClass[]
 
   @@map("therapeutic_classes")
@@ -110,7 +109,6 @@ model Medicine {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
 
-  therapeuticClasses       TherapeuticClass[]         @relation("TherapeuticClassesOnMedicines")
   medicineVariants         MedicineVariant[]
   MedicineTherapeuticClass MedicineTherapeuticClass[]
 

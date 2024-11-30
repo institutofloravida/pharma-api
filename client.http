@@ -208,5 +208,5 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_Variants
-GET {{baseurl}}/medicines-variants?page=1
+GET {{baseurl}}/medicines-variants?page=2&query=
 Authorization: Bearer {{authToken}}
