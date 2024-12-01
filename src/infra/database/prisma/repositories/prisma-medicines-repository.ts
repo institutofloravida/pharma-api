@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma.service'
 import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
 import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 import { PrismaMedicineMapper } from '../mappers/prisma-medicine-mapper'
+import type { Meta } from '@/core/repositories/meta'
+import type { PaginationParams } from '@/core/repositories/pagination-params'
 
 @Injectable()
 export class PrismaMedicinesRepository implements MedicinesRepository {
@@ -58,7 +60,7 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     return PrismaMedicineMapper.toDomain(medicine)
   }
 
-  async findMany({ page }, content?: string): Promise<{ medicines: Medicine[], totalCount: number }> {
+  async findMany({ page }: PaginationParams, content?: string): Promise<{ medicines: Medicine[], meta: Meta }> {
     const medicines = await this.prisma.medicine.findMany({
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * 20,
@@ -82,7 +84,10 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     const medicinesMappered = medicines.map(PrismaMedicineMapper.toDomain)
     return {
       medicines: medicinesMappered,
-      totalCount,
+      meta: {
+        page,
+        totalCount,
+      },
     }
   }
 }

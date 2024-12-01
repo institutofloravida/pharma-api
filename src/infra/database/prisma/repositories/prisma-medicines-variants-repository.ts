@@ -22,8 +22,10 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
   async medicineVariantExists(medicineVariant: MedicineVariant): Promise<MedicineVariant | null> {
     const medicineVariantRecord = await this.prisma.medicineVariant.findFirst({
       where: {
+        medicineId: medicineVariant.medicineId.toString(),
         dosage: medicineVariant.dosage.trim(),
         pharmaceuticalFormId: medicineVariant.pharmaceuticalFormId.toString(),
+        unitMeasureId: medicineVariant.unitMeasureId.toString(),
       },
     })
 

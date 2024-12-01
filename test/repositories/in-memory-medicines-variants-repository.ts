@@ -5,6 +5,7 @@ import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities
 import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
 import type { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
 import type { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
+import type { Meta } from '@/core/repositories/meta'
 
 export class InMemoryMedicinesVariantsRepository implements MedicinesVariantsRepository {
   public items: MedicineVariant[] = []
@@ -40,10 +41,12 @@ export class InMemoryMedicinesVariantsRepository implements MedicinesVariantsRep
     return medicineVariant
   }
 
-  async findManyByMedicineIdWithMedicine(medicineId: string, { page }: PaginationParams): Promise<MedicineVariantWithMedicine[]> {
-    const medicinesVariantsWith = this.items
+  async findManyByMedicineIdWithMedicine(medicineId: string, { page }: PaginationParams, content?: string): Promise<{
+    medicinesVariants: MedicineVariantWithMedicine[],
+    meta: Meta
+  }> {
+    const medicinesVariantsWithMedicine = this.items
       .filter(item => item.medicineId.toString() === medicineId)
-      .slice((page - 1) * 20, page * 20)
       .map(medicineVariant => {
         const medicine = this.medicinesRepository.items.find(medicine => {
           return medicine.id.equal(medicineVariant.medicineId)
@@ -81,6 +84,17 @@ export class InMemoryMedicinesVariantsRepository implements MedicinesVariantsRep
           updatedAt: medicineVariant.updatedAt,
         })
       })
-    return medicinesVariantsWith
+
+    const medicinesVariantsWithMedicineFiltred = medicinesVariantsWithMedicine
+      .filter(item => item.medicine.includes(content ?? ''))
+      .slice((page - 1) * 20, page * 20)
+
+    return {
+      medicinesVariants: medicinesVariantsWithMedicineFiltred,
+      meta: {
+        page,
+        totalCount: medicinesVariantsWithMedicineFiltred.length,
+      },
+    }
   }
 }

@@ -104,7 +104,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_pharmaceutical_form
-GET {{baseurl}}/pharmaceutical-form?page=1
+GET {{baseurl}}/pharmaceutical-form?page=1&query=
 Authorization: Bearer {{authToken}}
 
 ###
@@ -152,7 +152,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_units-measures
-GET {{baseurl}}/unit-measure?page=1
+GET {{baseurl}}/unit-measure?page=1&query=g
 Authorization: Bearer {{authToken}}
 
 
@@ -199,14 +199,14 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}} 
 
 {
-  "medicineId": "9cfffffa-7374-472f-8627-ebe4ecd8b6ad",
-  "dosage": "Ibuprofeno",
-  "pharmaceuticalFormId": "fb740d76-d997-4798-bc18-8e44736361b1",
-  "unitMeasureId": "63037a0b-a0d2-455a-913b-2b01967ac812"
+  "medicineId": "35fc9301-0f48-4179-8c18-f2e215a6b30f",
+  "dosage": "500",
+  "pharmaceuticalFormId": "566b4913-3633-4d59-be16-df60cef5558e",
+  "unitMeasureId": "a90fdb0d-bdd6-44b2-ac67-331cbc76f04c"
 }
 
 ###
 
 # @name fetch_Variants
-GET {{baseurl}}/medicines-variants?page=2&query=
+GET {{baseurl}}/medicines-variants?page=1&query=dip
 Authorization: Bearer {{authToken}}

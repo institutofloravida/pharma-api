@@ -19,7 +19,12 @@ describe('Medicine Variant', () => {
     inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
 
-    inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository()
+    inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository(
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+    )
+
     sut = new CreateMedicineVariantUseCase(inMemoryMedicinesVariantsRepository)
   })
   it('shoult be able create a Medicine Variant', async () => {

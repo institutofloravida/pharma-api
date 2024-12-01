@@ -1,3 +1,4 @@
+import type { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
 import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
@@ -40,17 +41,22 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     return medicine
   }
 
-  async findMany({ page }: PaginationParams, content?: string): Promise<Medicine[]> {
-    let medicines = this.items
+  async findMany({ page }: PaginationParams, content?: string): Promise<{ medicines: Medicine[], meta: Meta }> {
+    const medicines = this.items
 
-    if (content && content.trim().length > 0) {
-      medicines = medicines.filter(item => item.content.includes(''))
-    }
-
-    medicines = medicines
+    const medicinesFiltred = medicines
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .filter(item => item.content.includes(content ?? ''))
+
+    const medicinesPaginated = medicinesFiltred
       .slice((page - 1) * 20, page * 20)
 
-    return medicines
+    return {
+      medicines: medicinesPaginated,
+      meta: {
+        page,
+        totalCount: medicinesFiltred.length,
+      },
+    }
   }
 }

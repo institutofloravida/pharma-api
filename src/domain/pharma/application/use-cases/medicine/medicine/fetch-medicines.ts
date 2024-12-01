@@ -25,14 +25,11 @@ export class FetchMedicinesUseCase {
     page,
     content,
   }: FetchMedicinesUseCaseRequest): Promise<FetchMedicinesUseCaseResponse> {
-    const { medicines, totalCount } = await this.MedicinesRepository.findMany({ page }, content)
+    const { medicines, meta } = await this.MedicinesRepository.findMany({ page }, content)
 
     return right({
       medicines,
-      meta: {
-        totalCount,
-        page,
-      },
+      meta,
     })
   }
 }
