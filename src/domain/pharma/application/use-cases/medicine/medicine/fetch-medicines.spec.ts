@@ -59,7 +59,7 @@ describe('Fetch medicines', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 1,
       content: 'ab',
     })
 

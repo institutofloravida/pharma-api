@@ -4,7 +4,7 @@ import { hash } from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function clearDatabase() {
-  console.log('Clearing database...')
+  
 
   await prisma.medicineTherapeuticClass.deleteMany()
   await prisma.medicineVariant.deleteMany()
@@ -18,12 +18,12 @@ async function clearDatabase() {
   await prisma.operator.deleteMany()
   await prisma.institution.deleteMany()
 
-  console.log('Database cleared.')
+  
 }
 
 async function main() {
   await clearDatabase()
-  console.log('Seeding database...')
+  
 
   const institution = await prisma.institution.create({ data: { name: 'Instituto Flora Vida', cnpj: '01.234.567/0001-89', description: '' } })
   const institution2 = await prisma.institution.create({ data: { name: 'Ubs - módulo 20', cnpj: '01.234.567/0001-10', description: '' } })
@@ -476,7 +476,7 @@ async function main() {
     ],
   })
 
-  console.log('Seeding completed.')
+  
 }
 
 main()

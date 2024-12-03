@@ -70,6 +70,10 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
     this.props.updatedAt = new Date()
   }
 
+  public addBatchStockId(value: string) {
+    this.batchesStockIds = [...this.batchesStockIds, value]
+  }
+
   public replenish(value: number) {
     this.props.currentQuantity += value
   }

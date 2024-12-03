@@ -1,11 +1,11 @@
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicinesVariantsRepository } from '@/domain/pharma/application/repositories/medicine-variant-repository'
 import { MedicineVariant } from '@/domain/pharma/enterprise/entities/medicine-variant'
 import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
 import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
-import type { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
-import type { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
-import type { Meta } from '@/core/repositories/meta'
+import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
+import { Meta } from '@/core/repositories/meta'
 
 export class InMemoryMedicinesVariantsRepository implements MedicinesVariantsRepository {
   public items: MedicineVariant[] = []
