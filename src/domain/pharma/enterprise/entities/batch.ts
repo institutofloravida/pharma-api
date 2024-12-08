@@ -7,9 +7,9 @@ export interface BatchProps {
   code: string
 
   expirationDate: Date
-  manufacturingDate?: Date
+  manufacturingDate?: Date | null
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
 export class Batch extends Entity<BatchProps> {

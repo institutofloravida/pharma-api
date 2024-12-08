@@ -4,7 +4,7 @@ import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaUnitMeasureMapper } from '../mappers/prisma-unit-measure-mapper'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {

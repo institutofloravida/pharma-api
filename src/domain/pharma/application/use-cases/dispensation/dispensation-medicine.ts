@@ -2,7 +2,6 @@ import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
 import { MedicinesRepository } from '../../repositories/medicines-repository'
-import { BatchestocksRepository } from '../../repositories/batch-stocks-repository'
 import { BatchesRepository } from '../../repositories/batches-repository'
 import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
 import { InsufficientQuantityInStockError } from '../_errors/insufficient-quantity-in-stock-error'
@@ -15,6 +14,7 @@ import { DispensationsMedicinesRepository } from '../../repositories/dispensatio
 import { MovimentationBatchestock } from '../../../enterprise/entities/batch-stock'
 import { ExpiredMedicineDispenseError } from '../_errors/expired-medicine-dispense-error'
 import { Injectable } from '@nestjs/common'
+import type { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 
 interface DispensationMedicineUseCaseRequest {
   medicineVariantId: string
@@ -43,7 +43,7 @@ export class DispensationMedicineUseCase {
     private medicinesExitsRepository: MedicinesExitsRepository,
     private medicinesRepository: MedicinesRepository,
     private medicinesStockRepository: MedicinesStockRepository,
-    private batchestockskRepository: BatchestocksRepository,
+    private batchestockskRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
   ) { }
 

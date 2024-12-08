@@ -6,7 +6,7 @@ import { PrismaMedicineVariantMapper } from '../mappers/prisma-medicine-variant-
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
 import { PrismaMedicineVariantWithMedicineMapper } from '../mappers/prisma-medicine-variant-with-medicine-mapper'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepository {

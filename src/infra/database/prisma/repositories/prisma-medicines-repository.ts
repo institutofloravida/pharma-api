@@ -3,8 +3,8 @@ import { PrismaService } from '../prisma.service'
 import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
 import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 import { PrismaMedicineMapper } from '../mappers/prisma-medicine-mapper'
-import type { Meta } from '@/core/repositories/meta'
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 
 @Injectable()
 export class PrismaMedicinesRepository implements MedicinesRepository {

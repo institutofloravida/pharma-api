@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
 import { Injectable } from '@nestjs/common'
 import { UnitsMeasureRepository } from '../../../repositories/units-measure-repository'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchUnitsMeasureUseCaseRequest {
   page: number

@@ -1,4 +1,4 @@
-import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ValueObject } from '@/core/entities/value-object'
 
 export interface MedicineVariantWithMedicineProps {

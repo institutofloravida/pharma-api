@@ -7,10 +7,10 @@ export interface MedicineStockProps {
   stockId: UniqueEntityId
   currentQuantity: number
   minimumLevel: number
-  batchesStockIds: string[]
+  batchesStockIds: UniqueEntityId[]
   lastMove?: Date
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
 export class MedicineStock extends AggregateRoot<MedicineStockProps> {
@@ -44,7 +44,7 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
     return this.props.batchesStockIds
   }
 
-  set batchesStockIds(value: string[]) {
+  set batchesStockIds(value: UniqueEntityId[]) {
     this.props.batchesStockIds = value
     this.touch()
   }
@@ -70,7 +70,7 @@ export class MedicineStock extends AggregateRoot<MedicineStockProps> {
     this.props.updatedAt = new Date()
   }
 
-  public addBatchStockId(value: string) {
+  public addBatchStockId(value: UniqueEntityId) {
     this.batchesStockIds = [...this.batchesStockIds, value]
   }
 

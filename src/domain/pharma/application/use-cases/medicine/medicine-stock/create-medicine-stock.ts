@@ -4,13 +4,13 @@ import { MedicineStock } from '../../../../enterprise/entities/medicine-stock'
 import { MedicinesStockRepository } from '../../../repositories/medicines-stock-repository'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { StocksRepository } from '../../../repositories/stocks-repository'
-import { Batchestock } from '../../../../enterprise/entities/batch-stock'
 import { BatchesRepository } from '../../../repositories/batches-repository'
 import { Batch } from '../../../../enterprise/entities/batch'
-import { BatchestocksRepository } from '../../../repositories/batch-stocks-repository'
 import { MedicineStockAlreadyExistsError } from '../../_errors/medicine-stock-already-exists-error'
 import { Injectable } from '@nestjs/common'
 import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
+import type { BatchStocksRepository } from '../../../repositories/batch-stocks-repository'
+import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 
 interface createMedicineStockUseCaseRequest {
   medicineVariantId: string,
@@ -36,7 +36,7 @@ export class CreateMedicineStockUseCase {
     private medicinesVariantsRepository: MedicinesVariantsRepository,
 
     private batchRepository: BatchesRepository,
-    private batcheStockRepository: BatchestocksRepository,
+    private batcheStockRepository: BatchStocksRepository,
     private medicineStockRepository: MedicinesStockRepository,
   ) {}
 
@@ -66,7 +66,7 @@ export class CreateMedicineStockUseCase {
       manufacturingDate,
     })
 
-    const batchestock = Batchestock.create({
+    const batchestock = BatchStock.create({
       medicineVariantId: new UniqueEntityId(medicineVariantId),
       batchId: batch.id,
       currentQuantity: quantity,
@@ -78,7 +78,7 @@ export class CreateMedicineStockUseCase {
       medicineVariantId: new UniqueEntityId(medicineVariantId),
       stockId: new UniqueEntityId(stockId),
       currentQuantity: quantity,
-      batchesStockIds: [batchestock.id.toString()],
+      batchesStockIds: [batchestock.id],
     })
 
     const medicineStockExists = await this.medicineStockRepository.medicineStockExists(medicineStock)

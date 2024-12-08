@@ -164,7 +164,7 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}} 
 
 {
-  "name": "Diabetes"
+  "name": "sei sdasdasd"
 }
 
 ###
@@ -210,3 +210,19 @@ Authorization: Bearer {{authToken}}
 # @name fetch_Variants
 GET {{baseurl}}/medicines-variants?page=1&query=dip
 Authorization: Bearer {{authToken}}
+
+
+###
+
+# @name create_medicine_entry
+POST {{baseurl}}/medicine-variant/e446d87c-7727-428d-b090-b3022c440be5/entry/7d5e7a16-b09f-44b7-bb3b-acca06ee9b8c
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "batches": [{
+    "batchId": "86505961-0112-4635-87ec-726f94b32e2e",
+    "quantityToEntry": 10
+  }],
+  "movementTypeId": "cm4c1g8yq000011wba5g04bae"
+}

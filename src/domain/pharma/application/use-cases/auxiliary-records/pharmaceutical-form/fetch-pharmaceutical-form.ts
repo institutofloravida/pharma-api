@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { PharmaceuticalFormsRepository } from '../../../repositories/pharmaceutical-forms-repository'
 import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchPharmaceuticalFormsUseCaseRequest {
   page: number

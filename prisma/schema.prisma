@@ -27,13 +27,15 @@ model Operator {
 }
 
 model Stock {
-  id            String       @id @default(uuid())
+  id            String          @id @default(uuid())
   name          String
-  status        Boolean      @default(true)
-  institutionId String       @map("institution_id")
-  createdAt     DateTime     @default(now()) @map("created_at")
-  updatedAt     DateTime?    @updatedAt @map("updated_at")
-  Institution   Institution? @relation(fields: [institutionId], references: [id])
+  status        Boolean         @default(true)
+  institutionId String          @map("institution_id")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime?       @updatedAt @map("updated_at")
+  Institution   Institution?    @relation(fields: [institutionId], references: [id])
+  MedicineStock MedicineStock[]
+  Batchestock   Batchestock[]
 
   @@map("stocks")
 }
@@ -68,6 +70,7 @@ model Manufacturer {
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
+  Batch       Batch[]
 
   @@map("manufacturers")
 }
@@ -127,6 +130,8 @@ model MedicineVariant {
   medicine           Medicine           @relation(fields: [medicineId], references: [id])
   pharmaceuticalForm PharmaceuticalForm @relation(fields: [pharmaceuticalFormId], references: [id])
   unitMeasure        UnitMeasure        @relation(fields: [unitMeasureId], references: [id])
+  MedicineStock      MedicineStock[]
+  Batchestock        Batchestock[]
 
   @@map("medicine_variants")
 }
@@ -142,4 +147,92 @@ model MedicineTherapeuticClass {
 
   @@id([medicineId, therapeuticClassId])
   @@map("medicine_therapeutic_class")
+}
+
+enum MovementDirection {
+  ENTRY
+  EXIT
+}
+
+model MovementType {
+  id            String            @id @default(uuid())
+  name          String            @unique
+  direction     MovementDirection
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime?         @updatedAt @map("updated_at")
+  MedicineEntry MedicineEntry[]
+}
+
+model MedicineEntry {
+  id              String    @id @default(cuid())
+  medicineStockId String
+  batcheStockId   String
+  quantity        Int
+  operatorId      String
+  movementTypeId  String
+  entryDate       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+
+  medicineStock MedicineStock @relation(fields: [medicineStockId], references: [id])
+  batcheStock   Batchestock   @relation(fields: [batcheStockId], references: [id])
+  movementType  MovementType  @relation(fields: [movementTypeId], references: [id])
+
+  @@index([medicineStockId])
+  @@index([batcheStockId])
+  @@index([movementTypeId])
+}
+
+model MedicineStock {
+  id                String    @id @default(cuid())
+  medicineVariantId String
+  stockId           String
+  currentQuantity   Int
+  minimumLevel      Int       @default(0)
+  batchesStockIds   String[]
+  lastMove          DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
+  stock           Stock           @relation(fields: [stockId], references: [id])
+  MedicineEntry   MedicineEntry[]
+
+  @@index([medicineVariantId])
+  @@index([stockId])
+}
+
+model Batchestock {
+  id                String    @id @default(cuid())
+  stockId           String
+  batchId           String
+  medicineVariantId String
+  currentQuantity   Int
+  lastMove          DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  stock           Stock           @relation(fields: [stockId], references: [id])
+  batch           Batch           @relation(fields: [batchId], references: [id])
+  medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
+  MedicineEntry   MedicineEntry[]
+
+  @@index([stockId])
+  @@index([batchId])
+  @@index([medicineVariantId])
+}
+
+model Batch {
+  id                String    @id @default(cuid())
+  manufacturerId    String
+  code              String    @unique
+  expirationDate    DateTime
+  manufacturingDate DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  manufacturer Manufacturer  @relation(fields: [manufacturerId], references: [id])
+  Batchestock  Batchestock[]
+
+  @@index([manufacturerId])
 }

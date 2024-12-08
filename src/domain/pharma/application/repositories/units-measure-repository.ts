@@ -1,6 +1,6 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { UnitMeasure } from '../../enterprise/entities/unitMeasure'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 export abstract class UnitsMeasureRepository {
   abstract create(unitMeasure: UnitMeasure): Promise<void>

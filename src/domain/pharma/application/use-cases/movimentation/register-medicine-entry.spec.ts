@@ -1,4 +1,4 @@
-import { RegisterEntryUseCase } from './register-entry'
+import { RegisterMedicineEntryUseCase } from './register-medicine-entry'
 import { InMemoryBatchestocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
 import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
@@ -15,7 +15,10 @@ import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory-medicines-variants-repository'
 import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memory-pharmaceutical-forms'
 import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
+import { makeMovementType } from 'test/factories/make-movement-type'
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 
+let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
@@ -26,10 +29,11 @@ let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchestocksRepository: InMemoryBatchestocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
-let sut: RegisterEntryUseCase
+let sut: RegisterMedicineEntryUseCase
 
 describe('Register Entry', () => {
   beforeEach(() => {
+    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
@@ -51,10 +55,9 @@ describe('Register Entry', () => {
         inMemoryUnitsMeasureRepository,
       )
 
-    sut = new RegisterEntryUseCase(
+    sut = new RegisterMedicineEntryUseCase(
       inMemoryStocksRepository,
       inMemoryMedicinesEntrysRepository,
-      inMemoryMedicinesRepository,
       inMemoryMedicinesStockRepository,
       inMemoryBatchestocksRepository,
       inMemoryBatchesRepository,
@@ -75,11 +78,14 @@ describe('Register Entry', () => {
     })
     await inMemoryMedicinesVariantsRepository.create(medicineVariant)
 
+    const movementType = makeMovementType()
+    await inMemoryMovementTypesRepository.create(movementType)
+
     const result = await sut.execute({
       medicineVariantId: medicineVariant.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      entryType: 'DONATION',
+      movementTypeId: movementType.id.toString(),
       newBatches: [
         {
           code: 'ABCDE',
@@ -90,7 +96,6 @@ describe('Register Entry', () => {
       ],
       batches: [],
     })
-    console.log(inMemoryMedicinesVariantsRepository.items)
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryMedicinesEntrysRepository.items).toHaveLength(1)
@@ -138,6 +143,9 @@ describe('Register Entry', () => {
     await inMemoryMedicinesStockRepository.create(medicineStock)
     await inMemoryBatchestocksRepository.create(batchestock1)
 
+    const movementType = makeMovementType()
+    await inMemoryMovementTypesRepository.create(movementType)
+
     await sut.execute({
       medicineVariantId: medicineVariant.id.toString(),
       batches: [
@@ -148,7 +156,7 @@ describe('Register Entry', () => {
       ],
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      entryType: 'DONATION',
+      movementTypeId: movementType.id.toString(),
     })
     const result = await sut.execute({
       medicineVariantId: medicineVariant.id.toString(),
@@ -162,7 +170,7 @@ describe('Register Entry', () => {
       ],
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      entryType: 'DONATION',
+      movementTypeId: movementType.id.toString(),
       batches: [
         {
           batchId: batch.id.toString(),
@@ -228,6 +236,9 @@ describe('Register Entry', () => {
     await inMemoryBatchestocksRepository.create(batchestock1)
     await inMemoryBatchestocksRepository.create(batchestock2)
 
+    const movementType = makeMovementType()
+    await inMemoryMovementTypesRepository.create(movementType)
+
     const result1 = await sut.execute({
       medicineVariantId: medicineVariant.id.toString(),
       batches: [
@@ -242,7 +253,8 @@ describe('Register Entry', () => {
       ],
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      entryType: 'DONATION',
+      movementTypeId: movementType.id.toString(),
+
     })
     const batch3 = makeBatch()
     const result2 = await sut.execute({
@@ -257,7 +269,7 @@ describe('Register Entry', () => {
       ],
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      entryType: 'DONATION',
+      movementTypeId: movementType.id.toString(),
       batches: [],
     })
 

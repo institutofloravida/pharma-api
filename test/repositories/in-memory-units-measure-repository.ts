@@ -1,4 +1,4 @@
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { UnitsMeasureRepository } from '@/domain/pharma/application/repositories/units-measure-repository'
 import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'

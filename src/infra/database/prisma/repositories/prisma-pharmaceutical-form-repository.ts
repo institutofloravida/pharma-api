@@ -4,7 +4,7 @@ import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmace
 import { PrismaService } from '../prisma.service'
 import { PrismaPharmaceuticalFormMapper } from '../mappers/prisma-pharmaceutical-form'
 import { Injectable } from '@nestjs/common'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsRepository {

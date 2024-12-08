@@ -1,6 +1,6 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Medicine } from '../../enterprise/entities/medicine'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 export abstract class MedicinesRepository {
   abstract create(medicine: Medicine): Promise<void>
