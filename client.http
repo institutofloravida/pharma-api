@@ -220,9 +220,16 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}} 
 
 {
-  "batches": [{
-    "batchId": "86505961-0112-4635-87ec-726f94b32e2e",
+  "newBatches": [{
+    "code": "ABCDE3",
+    "expirationDate": "2025-12-01T03:00:00.000Z",
+    "manufacturerId": "cbc6cd2d-b4b6-454a-9ea1-a44d1f6b348b",
+    "manufacturingDate": "2024-05-01T03:00:00.000Z",
     "quantityToEntry": 10
   }],
-  "movementTypeId": "cm4c1g8yq000011wba5g04bae"
+  # "batches": [{
+  #   "batchId": "f19b35af-2a68-49ae-a2ef-61fb44146042",
+  #   "quantityToEntry": 15
+  # }],
+  "movementTypeId": "033353fa-6a5a-42d7-889f-f1bb3687202e"
 }

@@ -13,9 +13,24 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
   ) {}
 
   async create(batchStock: BatchStock): Promise<void | null> {
-    await this.prisma.batchestock.create({
-      data: PrismaBatchStockMapper.toPrisma(batchStock),
-    })
+    const medicineStock =
+      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
+        batchStock.medicineVariantId.toString(),
+        batchStock.stockId.toString(),
+      )
+
+    if (!medicineStock) {
+      return null
+    }
+    await Promise.all([
+      this.prisma.batchestock.create({
+        data: PrismaBatchStockMapper.toPrisma(batchStock),
+      }),
+      this.medicinesStockRepository.replenish(
+        medicineStock?.id.toString(),
+        batchStock.quantity,
+      ),
+    ])
   }
 
   async save(batchStock: BatchStock): Promise<void | null> {
@@ -75,7 +90,10 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     return PrismaBatchStockMapper.toDomain(batchStock)
   }
 
-  async subtract(batchStockId: string, quantity: number): Promise<BatchStock | null> {
+  async subtract(
+    batchStockId: string,
+    quantity: number,
+  ): Promise<BatchStock | null> {
     const batchStock = await this.prisma.batchestock.update({
       data: {
         currentQuantity: { decrement: quantity },

@@ -16,6 +16,7 @@ import { Batch } from '@/domain/pharma/enterprise/entities/batch'
 import { MedicinesVariantsRepository } from '../../repositories/medicine-variant-repository'
 import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
+import { AtLeastOneMustBePopulatedError } from './_errors/at-least-one-must-be-populated-error'
 
 interface RegisterMedicineEntryUseCaseRequest {
   medicineVariantId: string;
@@ -62,8 +63,9 @@ export class RegisterMedicineEntryUseCase {
     movementTypeId,
   }: RegisterMedicineEntryUseCaseRequest): Promise<RegisterMedicineEntryUseCaseResponse> {
     if ((!batches && !newBatches) || (batches?.length === 0 && newBatches?.length === 0)) {
-      return left(new Error('AHHHHHHHHHHHH'))
+      return left(new AtLeastOneMustBePopulatedError())
     }
+
     const stock = await this.stocksRepository.findById(stockId)
     if (!stock) {
       return left(new ResourceNotFoundError())
