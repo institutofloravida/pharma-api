@@ -1,5 +1,5 @@
 import { RegisterMedicineEntryUseCase } from './register-medicine-entry'
-import { InMemoryBatchestocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
+import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
 import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
 import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository'
@@ -8,7 +8,7 @@ import { makeMedicine } from 'test/factories/make-medicine'
 import { makeStock } from 'test/factories/make-stock'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { makeBatch } from 'test/factories/make-batch'
-import { makeBatchestock } from 'test/factories/make-batch-stock'
+import { makeBatchStock } from 'test/factories/make-batch-stock'
 import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
@@ -26,7 +26,7 @@ let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryMedicinesEntrysRepository: InMemoryMedicinesEntrysRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
-let inMemoryBatchestocksRepository: InMemoryBatchestocksRepository
+let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let sut: RegisterMedicineEntryUseCase
@@ -45,7 +45,7 @@ describe('Register Entry', () => {
     inMemoryMedicinesEntrysRepository = new InMemoryMedicinesEntrysRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchestocksRepository = new InMemoryBatchestocksRepository(
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
       inMemoryMedicinesStockRepository,
     )
     inMemoryMedicinesVariantsRepository =
@@ -59,7 +59,7 @@ describe('Register Entry', () => {
       inMemoryStocksRepository,
       inMemoryMedicinesEntrysRepository,
       inMemoryMedicinesStockRepository,
-      inMemoryBatchestocksRepository,
+      inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
       inMemoryMedicinesVariantsRepository,
     )
@@ -105,7 +105,7 @@ describe('Register Entry', () => {
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
         quantityToEntry,
       )
-      expect(inMemoryBatchestocksRepository.items[0].quantity).toBe(
+      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
         quantityToEntry,
       )
     }
@@ -133,15 +133,15 @@ describe('Register Entry', () => {
     const batch = makeBatch()
     await inMemoryBatchesRepository.create(batch)
 
-    const batchestock1 = makeBatchestock({
+    const batchestock1 = makeBatchStock({
       batchId: batch.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
     })
-    medicineStock.batchesStockIds = [batchestock1.id.toString()]
+    medicineStock.batchesStockIds = [batchestock1.id]
 
     await inMemoryMedicinesStockRepository.create(medicineStock)
-    await inMemoryBatchestocksRepository.create(batchestock1)
+    await inMemoryBatchStocksRepository.create(batchestock1)
 
     const movementType = makeMovementType()
     await inMemoryMovementTypesRepository.create(movementType)
@@ -184,7 +184,7 @@ describe('Register Entry', () => {
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
         quantityToEntry,
       )
-      expect(inMemoryBatchestocksRepository.items[0].quantity).toBe(
+      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
         quantityToEntry,
       )
     }
@@ -214,7 +214,7 @@ describe('Register Entry', () => {
     const batch = makeBatch()
     await inMemoryBatchesRepository.create(batch)
 
-    const batchestock1 = makeBatchestock({
+    const batchestock1 = makeBatchStock({
       batchId: batch.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
@@ -223,18 +223,18 @@ describe('Register Entry', () => {
     const batch2 = makeBatch()
     await inMemoryBatchesRepository.create(batch2)
 
-    const batchestock2 = makeBatchestock({
+    const batchestock2 = makeBatchStock({
       batchId: batch2.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
     })
     medicineStock.batchesStockIds = [
-      batchestock1.id.toString(),
-      batchestock2.id.toString(),
+      batchestock1.id,
+      batchestock2.id,
     ]
     await inMemoryMedicinesStockRepository.create(medicineStock)
-    await inMemoryBatchestocksRepository.create(batchestock1)
-    await inMemoryBatchestocksRepository.create(batchestock2)
+    await inMemoryBatchStocksRepository.create(batchestock1)
+    await inMemoryBatchStocksRepository.create(batchestock2)
 
     const movementType = makeMovementType()
     await inMemoryMovementTypesRepository.create(movementType)
@@ -280,13 +280,13 @@ describe('Register Entry', () => {
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
         quantityToEntryBatch + quantityToEntryBatch2 + quantityToEntryBatch3,
       )
-      expect(inMemoryBatchestocksRepository.items[0].quantity).toBe(
+      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
         quantityToEntryBatch,
       )
-      expect(inMemoryBatchestocksRepository.items[1].quantity).toBe(
+      expect(inMemoryBatchStocksRepository.items[1].quantity).toBe(
         quantityToEntryBatch2,
       )
-      expect(inMemoryBatchestocksRepository.items[2].quantity).toBe(
+      expect(inMemoryBatchStocksRepository.items[2].quantity).toBe(
         quantityToEntryBatch3,
       )
     }

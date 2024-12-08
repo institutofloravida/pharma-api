@@ -2,7 +2,7 @@ import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-me
 import { CreateMedicineStockUseCase } from './create-medicine-stock'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
-import { InMemoryBatchestocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
+import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { makeStock } from 'test/factories/make-stock'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory-medicines-variants-repository'
@@ -18,7 +18,7 @@ let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
-let inMemoryBatchestocksRepository: InMemoryBatchestocksRepository
+let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let sut: CreateMedicineStockUseCase
 
@@ -36,13 +36,13 @@ describe('Medicine Stock', () => {
     )
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchestocksRepository = new InMemoryBatchestocksRepository(inMemoryMedicinesStockRepository)
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(inMemoryMedicinesStockRepository)
 
     sut = new CreateMedicineStockUseCase(
       inMemoryStocksRepository,
       inMemoryMedicinesVariantsRepository,
       inMemoryBatchesRepository,
-      inMemoryBatchestocksRepository,
+      inMemoryBatchStocksRepository,
       inMemoryMedicinesStockRepository,
     )
   })
