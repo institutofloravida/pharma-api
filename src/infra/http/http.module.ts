@@ -47,7 +47,9 @@ import { FetchMedicinesVariantsController } from './controllers/medicine/medicin
 import { FetchMedicinesVariantsUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine-variant/fetch-medicines-variants'
 import { FetchMedicinesController } from './controllers/medicine/medicine/fetch-medicines.controller'
 import { RegisterMedicineEntryController } from './controllers/movimentation/entry/register-medicine-entry.controller'
-import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-cases/movimentation/register-medicine-entry'
+import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/register-medicine-entry'
+import { FetchRegisterMedicinesEntriesUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/fetch-register-medicines-entries'
+import { FetchMedicinesEntriesController } from './controllers/movimentation/entry/fetch-medicines-entries.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -76,6 +78,7 @@ import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-ca
     FetchpathologiesController,
     FetchMedicinesController,
     FetchMedicinesVariantsController,
+    FetchMedicinesEntriesController,
 
   ],
   providers: [
@@ -102,6 +105,7 @@ import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-ca
     FetchPathologiesUseCase,
     FetchMedicinesUseCase,
     FetchMedicinesVariantsUseCase,
+    FetchRegisterMedicinesEntriesUseCase,
   ],
 })
 export class HttpModule {}

@@ -14,14 +14,15 @@ enum OperatorRole {
 }
 
 model Operator {
-  id           String        @id @default(uuid())
-  name         String
-  email        String        @unique
-  passwordHash String        @map("password_hash")
-  institutions Institution[] @relation("OperatorInstitutions")
-  role         OperatorRole  @default(COMMON)
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime?     @updatedAt @map("updated_at")
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  passwordHash  String          @map("password_hash")
+  institutions  Institution[]   @relation("OperatorInstitutions")
+  role          OperatorRole    @default(COMMON)
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime?       @updatedAt @map("updated_at")
+  MedicineEntry MedicineEntry[]
 
   @@map("operators")
 }
@@ -177,6 +178,7 @@ model MedicineEntry {
   medicineStock MedicineStock @relation(fields: [medicineStockId], references: [id])
   batcheStock   Batchestock   @relation(fields: [batcheStockId], references: [id])
   movementType  MovementType  @relation(fields: [movementTypeId], references: [id])
+  operator      Operator      @relation(fields: [operatorId], references: [id])
 
   @@index([medicineStockId])
   @@index([batcheStockId])

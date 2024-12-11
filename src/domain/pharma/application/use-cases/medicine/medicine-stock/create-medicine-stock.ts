@@ -9,7 +9,7 @@ import { Batch } from '../../../../enterprise/entities/batch'
 import { MedicineStockAlreadyExistsError } from '../../_errors/medicine-stock-already-exists-error'
 import { Injectable } from '@nestjs/common'
 import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
-import type { BatchStocksRepository } from '../../../repositories/batch-stocks-repository'
+import  { BatchStocksRepository } from '../../../repositories/batch-stocks-repository'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 
 interface createMedicineStockUseCaseRequest {

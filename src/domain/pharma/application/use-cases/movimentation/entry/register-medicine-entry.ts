@@ -1,22 +1,22 @@
 import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
-import { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
-import { BatchesRepository } from '../../repositories/batches-repository'
-import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
+import { MedicinesStockRepository } from '../../../repositories/medicines-stock-repository'
+import { BatchesRepository } from '../../../repositories/batches-repository'
+import { NoBatchInStockFoundError } from '../../_errors/no-batch-in-stock-found-error'
 import {
   MedicineEntry,
-} from '../../../enterprise/entities/entry'
-import { MedicinesEntriesRepository } from '../../repositories/medicines-entries-repository'
+} from '../../../../enterprise/entities/entry'
+import { MedicinesEntriesRepository } from '../../../repositories/medicines-entries-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { InvalidEntryQuantityError } from '../_errors/invalid-entry-quantity-error'
+import { InvalidEntryQuantityError } from '../../_errors/invalid-entry-quantity-error'
 import { Injectable } from '@nestjs/common'
-import { StocksRepository } from '../../repositories/stocks-repository'
+import { StocksRepository } from '../../../repositories/stocks-repository'
 import { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock'
 import { Batch } from '@/domain/pharma/enterprise/entities/batch'
-import { MedicinesVariantsRepository } from '../../repositories/medicine-variant-repository'
-import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
+import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
+import { BatchStocksRepository } from '../../../repositories/batch-stocks-repository'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
-import { AtLeastOneMustBePopulatedError } from './_errors/at-least-one-must-be-populated-error'
+import { AtLeastOneMustBePopulatedError } from '../_errors/at-least-one-must-be-populated-error'
 
 interface RegisterMedicineEntryUseCaseRequest {
   medicineVariantId: string;

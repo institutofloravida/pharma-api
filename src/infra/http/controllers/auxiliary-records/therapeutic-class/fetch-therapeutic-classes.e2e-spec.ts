@@ -51,7 +51,6 @@ describe('Fetch Therapeutic Classes (E2E)', () => {
 
     expect(response.statusCode).toBe(200)
 
-    
     expect(response.body).toEqual({
       therapeutic_classes: expect.arrayContaining([
         expect.objectContaining({ name: 'therapeutic class 1' }),

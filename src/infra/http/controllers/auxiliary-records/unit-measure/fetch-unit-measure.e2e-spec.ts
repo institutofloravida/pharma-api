@@ -51,8 +51,6 @@ describe('Fetch Units Measure (E2E)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
 
-    
-
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual({
       units_measure: expect.arrayContaining([

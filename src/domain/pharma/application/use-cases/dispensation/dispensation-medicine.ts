@@ -14,7 +14,7 @@ import { DispensationsMedicinesRepository } from '../../repositories/dispensatio
 import { MovimentationBatchestock } from '../../../enterprise/entities/batch-stock'
 import { ExpiredMedicineDispenseError } from '../_errors/expired-medicine-dispense-error'
 import { Injectable } from '@nestjs/common'
-import type { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
+import  { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 
 interface DispensationMedicineUseCaseRequest {
   medicineVariantId: string

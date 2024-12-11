@@ -3,7 +3,6 @@ import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
 import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
 import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository'
-import { InMemoryMedicinesEntrysRepository } from 'test/repositories/in-memory-medicines-entries-repository'
 import { makeMedicine } from 'test/factories/make-medicine'
 import { makeStock } from 'test/factories/make-stock'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
@@ -17,13 +16,16 @@ import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memo
 import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
 import { makeMovementType } from 'test/factories/make-movement-type'
 import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
+import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository'
+import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
 
+let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
-let inMemoryMedicinesEntrysRepository: InMemoryMedicinesEntrysRepository
+let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
@@ -33,6 +35,7 @@ let sut: RegisterMedicineEntryUseCase
 
 describe('Register Entry', () => {
   beforeEach(() => {
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
     inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
@@ -42,22 +45,31 @@ describe('Register Entry', () => {
       inMemoryInstitutionsRepository,
     )
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
-    inMemoryMedicinesEntrysRepository = new InMemoryMedicinesEntrysRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
     inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
       inMemoryMedicinesStockRepository,
     )
     inMemoryMedicinesVariantsRepository =
-      new InMemoryMedicinesVariantsRepository(
-        inMemoryMedicinesRepository,
-        inMemoryPharmaceuticalFormsRepository,
-        inMemoryUnitsMeasureRepository,
-      )
+    new InMemoryMedicinesVariantsRepository(
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+    )
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryBatchStocksRepository,
+      inMemoryBatchesRepository,
+      inMemoryOperatorsRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryStocksRepository,
+    )
 
     sut = new RegisterMedicineEntryUseCase(
       inMemoryStocksRepository,
-      inMemoryMedicinesEntrysRepository,
+      inMemoryMedicinesEntriesRepository,
       inMemoryMedicinesStockRepository,
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
@@ -98,8 +110,8 @@ describe('Register Entry', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryMedicinesEntrysRepository.items).toHaveLength(1)
-      expect(inMemoryMedicinesEntrysRepository.items[0].quantity).toBe(
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(1)
+      expect(inMemoryMedicinesEntriesRepository.items[0].quantity).toBe(
         quantityToEntry,
       )
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
@@ -180,7 +192,7 @@ describe('Register Entry', () => {
     })
     expect(result.isLeft()).toBeTruthy()
     if (result.isLeft()) {
-      expect(inMemoryMedicinesEntrysRepository.items).toHaveLength(1)
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(1)
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
         quantityToEntry,
       )
@@ -228,10 +240,7 @@ describe('Register Entry', () => {
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
     })
-    medicineStock.batchesStockIds = [
-      batchestock1.id,
-      batchestock2.id,
-    ]
+    medicineStock.batchesStockIds = [batchestock1.id, batchestock2.id]
     await inMemoryMedicinesStockRepository.create(medicineStock)
     await inMemoryBatchStocksRepository.create(batchestock1)
     await inMemoryBatchStocksRepository.create(batchestock2)
@@ -254,7 +263,6 @@ describe('Register Entry', () => {
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
       movementTypeId: movementType.id.toString(),
-
     })
     const batch3 = makeBatch()
     const result2 = await sut.execute({
@@ -276,7 +284,7 @@ describe('Register Entry', () => {
     expect(result1.isRight()).toBeTruthy()
     expect(result2.isRight()).toBeTruthy()
     if (result1.isRight()) {
-      expect(inMemoryMedicinesEntrysRepository.items).toHaveLength(3)
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(3)
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
         quantityToEntryBatch + quantityToEntryBatch2 + quantityToEntryBatch3,
       )
