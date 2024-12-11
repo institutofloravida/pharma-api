@@ -22,10 +22,10 @@ implements MedicinesEntriesRepository {
   async findManyByInstitutionId(
     { page }: PaginationParams,
     institutionId: string,
+    operatorId?: string,
+    stockId?: string,
     medicineId?: string,
     medicineVariantId?: string,
-    stockId?: string,
-    operatorId?: string,
   ): Promise<{
     medicinesEntries: MedicineEntryWithMedicineVariantAndBatch[];
     meta: Meta;

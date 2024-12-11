@@ -249,9 +249,9 @@ describe('Fetch Register Medicines Entries', () => {
     const result2 = await sut.execute({
       page: 1,
       institutionId: institution.id.toString(),
-      medicineId: medicine.id.toString(),
       operatorId: operator2.id.toString(),
       stockId: stock.id.toString(),
+      medicineId: medicine.id.toString(),
       medicineVariantId: medicineVariant.id.toString(),
     })
     if (result.isRight() && result2.isRight()) {

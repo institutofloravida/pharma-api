@@ -28,21 +28,21 @@ export class FetchRegisterMedicinesEntriesUseCase {
   ) {}
 
   async execute({
+    page,
     institutionId,
-    medicineId,
-    medicineVariantId,
     operatorId,
     stockId,
-    page,
+    medicineId,
+    medicineVariantId,
   }: FetchRegisterMedicineEntryUseCaseRequest): Promise<FetchRegisterMedicineEntryUseCaseResponse> {
     const { medicinesEntries, meta } =
       await this.medicinesEntriesRepository.findManyByInstitutionId(
         { page },
         institutionId,
-        medicineId,
-        medicineVariantId,
         operatorId,
         stockId,
+        medicineId,
+        medicineVariantId,
       )
 
     return right({
