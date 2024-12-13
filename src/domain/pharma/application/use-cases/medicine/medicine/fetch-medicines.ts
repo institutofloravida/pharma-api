@@ -2,15 +2,18 @@ import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 import { MedicinesRepository } from '../../../repositories/medicines-repository'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchMedicinesUseCaseRequest {
-  page: number
+  page: number,
+  content?: string,
 }
 
 type FetchMedicinesUseCaseResponse = Either<
   null,
   {
-    medicines: Medicine[]
+    medicines: Medicine[],
+    meta: Meta
   }
 >
 
@@ -20,11 +23,13 @@ export class FetchMedicinesUseCase {
 
   async execute({
     page,
+    content,
   }: FetchMedicinesUseCaseRequest): Promise<FetchMedicinesUseCaseResponse> {
-    const medicines = await this.MedicinesRepository.findMany({ page })
+    const { medicines, meta } = await this.MedicinesRepository.findMany({ page }, content)
 
     return right({
       medicines,
+      meta,
     })
   }
 }

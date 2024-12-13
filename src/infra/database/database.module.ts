@@ -21,6 +21,14 @@ import { MedicinesRepository } from '@/domain/pharma/application/repositories/me
 import { PrismaMedicinesRepository } from './prisma/repositories/prisma-medicines-repository'
 import { MedicinesVariantsRepository } from '@/domain/pharma/application/repositories/medicine-variant-repository'
 import { PrismaMedicinesVariantsRepository } from './prisma/repositories/prisma-medicines-variants-repository'
+import { MedicinesEntriesRepository } from '@/domain/pharma/application/repositories/medicines-entries-repository'
+import { PrismaMedicinesEntriesRepository } from './prisma/repositories/prisma-medicines-entries-repository'
+import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
+import { PrismaMedicinesStockRepository } from './prisma/repositories/prisma-medicine-stock-repository'
+import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
+import { PrismaBatchStocksRepository } from './prisma/repositories/prisma-batches-stocks-repository'
+import { BatchesRepository } from '@/domain/pharma/application/repositories/batches-repository'
+import { PrismaBatchesRepository } from './prisma/repositories/prisma-batches-repository'
 
 @Module({
   providers: [
@@ -35,6 +43,10 @@ import { PrismaMedicinesVariantsRepository } from './prisma/repositories/prisma-
     { provide: PathologiesRepository, useClass: PrismaPathologysRepository },
     { provide: MedicinesRepository, useClass: PrismaMedicinesRepository },
     { provide: MedicinesVariantsRepository, useClass: PrismaMedicinesVariantsRepository },
+    { provide: MedicinesEntriesRepository, useClass: PrismaMedicinesEntriesRepository },
+    { provide: MedicinesStockRepository, useClass: PrismaMedicinesStockRepository },
+    { provide: BatchStocksRepository, useClass: PrismaBatchStocksRepository },
+    { provide: BatchesRepository, useClass: PrismaBatchesRepository },
     PrismaUsersRepository],
   exports: [
     PrismaService,
@@ -49,6 +61,10 @@ import { PrismaMedicinesVariantsRepository } from './prisma/repositories/prisma-
     PathologiesRepository,
     MedicinesRepository,
     MedicinesVariantsRepository,
+    MedicinesEntriesRepository,
+    MedicinesStockRepository,
+    BatchStocksRepository,
+    BatchesRepository,
   ],
 })
 export class DatabaseModule {}

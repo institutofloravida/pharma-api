@@ -5,34 +5,41 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine/fetch-medicines'
 import { MedicinePresenter } from '@/infra/http/presenters/medicine-presenter'
 
-const pageQueryParamSchema = z
-  .string()
-  .optional()
-  .default('1')
-  .transform(Number)
-  .pipe(z.number().min(1))
+const queryParamsSchema = z.object({
+  page: z
+    .string()
+    .optional()
+    .default('1')
+    .transform(Number)
+    .pipe(z.number().min(1)),
+  query: z.string().optional().default(''),
+})
 
-const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
-
-type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+type QueryParams = z.infer<typeof queryParamsSchema>
 
 @Controller('/medicines')
-export class FetchmedicinesController {
-  constructor(private fetchmedicines: FetchMedicinesUseCase) {}
+export class FetchMedicinesController {
+  constructor(private fetchMedicines: FetchMedicinesUseCase) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
-    const result = await this.fetchmedicines.execute({
-      page,
-    })
+  async handle(@Query(new ZodValidationPipe(queryParamsSchema)) queryParams: QueryParams) {
+    const { page, query } = queryParams
+
+    const result = await this.fetchMedicines.execute({ page, content: query })
 
     if (result.isLeft()) {
       throw new BadRequestException({})
     }
 
-    const medicines = result.value.medicines
+    const { medicines, meta } = result.value
 
-    return { medicines: medicines.map(MedicinePresenter.toHTTP) }
+    return {
+      medicines: medicines.map(MedicinePresenter.toHTTP),
+      meta: {
+        totalCount: meta.totalCount,
+        page: meta.page,
+      },
+    }
   }
 }

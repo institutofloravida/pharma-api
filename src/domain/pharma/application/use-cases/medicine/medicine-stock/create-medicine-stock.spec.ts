@@ -2,34 +2,47 @@ import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-me
 import { CreateMedicineStockUseCase } from './create-medicine-stock'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
-import { InMemoryBatchestocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
+import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { makeStock } from 'test/factories/make-stock'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory-medicines-variants-repository'
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
+import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
+import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memory-pharmaceutical-forms'
+import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
 
+let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
+let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
+let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
-let inMemoryBatchestocksRepository: InMemoryBatchestocksRepository
+let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let sut: CreateMedicineStockUseCase
 
 describe('Medicine Stock', () => {
   beforeEach(() => {
+    inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
+    inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
-    inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository()
+    inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository(
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+    )
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchestocksRepository = new InMemoryBatchestocksRepository(inMemoryMedicinesStockRepository)
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(inMemoryMedicinesStockRepository)
 
     sut = new CreateMedicineStockUseCase(
       inMemoryStocksRepository,
       inMemoryMedicinesVariantsRepository,
       inMemoryBatchesRepository,
-      inMemoryBatchestocksRepository,
+      inMemoryBatchStocksRepository,
       inMemoryMedicinesStockRepository,
     )
   })

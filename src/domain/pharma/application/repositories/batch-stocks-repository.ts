@@ -1,10 +1,10 @@
-import { Batchestock } from '../../enterprise/entities/batch-stock'
+import { BatchStock } from '../../enterprise/entities/batch-stock'
 
-export abstract class BatchestocksRepository {
-  abstract create(batchestock: Batchestock): Promise<void | null>
-  abstract save(batchestock: Batchestock): Promise<void | null>
-  abstract replenish(batchestockId: string, quantity: number): Promise<Batchestock | null>
-  abstract subtract(batchestockId: string, quantity: number): Promise<Batchestock | null>
-  abstract findByBatchIdAndStockId(batchId: string, stockId: string): Promise<Batchestock | null>
-  abstract findById(id:string): Promise<Batchestock | null>
+export abstract class BatchStocksRepository {
+  abstract create(batchStock: BatchStock): Promise<void | null>
+  abstract save(batchStock: BatchStock): Promise<void | null>
+  abstract replenish(batchStockId: string, quantity: number): Promise<BatchStock | null>
+  abstract subtract(batchStockId: string, quantity: number): Promise<BatchStock | null>
+  abstract findByBatchIdAndStockId(batchId: string, stockId: string): Promise<BatchStock | null>
+  abstract findById(id:string): Promise<BatchStock | null>
 }

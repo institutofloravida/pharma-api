@@ -14,12 +14,12 @@ export interface BatchestockProps {
   medicineVariantId: UniqueEntityId
 
   currentQuantity: number
-  lastMove?: Date
+  lastMove?: Date | null
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
-export class Batchestock extends Entity<BatchestockProps> {
+export class BatchStock extends Entity<BatchestockProps> {
   get stockId(): UniqueEntityId {
     return this.props.stockId
   }
@@ -54,7 +54,7 @@ export class Batchestock extends Entity<BatchestockProps> {
     this.props.currentQuantity -= value
   }
 
-  get lastMove(): Date | undefined {
+  get lastMove(): Date | null | undefined {
     return this.props.lastMove
   }
 
@@ -79,7 +79,7 @@ export class Batchestock extends Entity<BatchestockProps> {
     props: Optional< BatchestockProps, 'createdAt'>,
     id?: UniqueEntityId,
   ) {
-    const batchestock = new Batchestock({
+    const batchestock = new BatchStock({
       ...props,
       createdAt: props.createdAt ?? new Date(),
     }, id)

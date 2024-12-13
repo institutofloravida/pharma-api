@@ -4,6 +4,7 @@ import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaUnitMeasureMapper } from '../mappers/prisma-unit-measure-mapper'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {
@@ -50,13 +51,61 @@ export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {
     return PrismaUnitMeasureMapper.toDomain(unitMeasure)
   }
 
-  async findMany({ page }: PaginationParams): Promise<UnitMeasure[]> {
-    const unitsMeasure = await this.prisma.unitMeasure.findMany({
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * 20,
-      take: 20,
-    })
+  async findMany({ page }: PaginationParams, content?: string): Promise<{
+    unitsMeasure: UnitMeasure[]
+    meta: Meta
+  }> {
+    const pageSize = 20
+    const [unitsMeasure, totalCount] = await Promise.all([
+      this.prisma.unitMeasure.findMany({
+        where: {
+          OR: [
+            {
+              acronym: {
+                contains: content ?? '',
+                mode: 'insensitive',
+              },
+            },
+            {
+              name: {
+                contains: content ?? '',
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.unitMeasure.count({
+        where: {
+          OR: [
+            {
+              acronym: {
+                contains: content ?? '',
+                mode: 'insensitive',
+              },
+            },
+            {
+              name: {
+                contains: content ?? '',
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+      }),
+    ])
 
-    return unitsMeasure.map(PrismaUnitMeasureMapper.toDomain)
+    const unitsMeasureMappered = unitsMeasure.map(PrismaUnitMeasureMapper.toDomain)
+
+    return {
+      unitsMeasure: unitsMeasureMappered,
+      meta: {
+        page,
+        totalCount,
+      },
+    }
   }
 }

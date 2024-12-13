@@ -2,15 +2,18 @@ import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { PharmaceuticalFormsRepository } from '../../../repositories/pharmaceutical-forms-repository'
 import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchPharmaceuticalFormsUseCaseRequest {
   page: number
+  content?: string
 }
 
 type FetchPharmaceuticalFormsUseCaseResponse = Either<
   null,
   {
     pharmaceuticalForms: PharmaceuticalForm[]
+    meta: Meta
   }
 >
 
@@ -20,11 +23,13 @@ export class FetchPharmaceuticalFormsUseCase {
 
   async execute({
     page,
+    content,
   }: FetchPharmaceuticalFormsUseCaseRequest): Promise<FetchPharmaceuticalFormsUseCaseResponse> {
-    const pharmaceuticalForms = await this.pharmaceuticalFormsRepository.findMany({ page })
+    const { pharmaceuticalForms, meta } = await this.pharmaceuticalFormsRepository.findMany({ page }, content)
 
     return right({
       pharmaceuticalForms,
+      meta,
     })
   }
 }

@@ -1,3 +1,4 @@
+import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { UnitsMeasureRepository } from '@/domain/pharma/application/repositories/units-measure-repository'
 import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
@@ -27,11 +28,25 @@ export class InMemoryUnitsMeasureRepository implements UnitsMeasureRepository {
     return unitMeasure
   }
 
-  async findMany({ page }: PaginationParams): Promise<UnitMeasure[]> {
+  async findMany({ page }: PaginationParams, content?: string): Promise<{
+    unitsMeasure: UnitMeasure[]
+    meta: Meta
+  }> {
     const unitsMeasure = this.items
+
+    const unitsMeasureFiltered = unitsMeasure
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .filter(item => item.content.includes(content ?? ''))
+
+    const unitsMeasurePaginated = unitsMeasureFiltered
       .slice((page - 1) * 20, page * 20)
 
-    return unitsMeasure
+    return {
+      unitsMeasure: unitsMeasurePaginated,
+      meta: {
+        page,
+        totalCount: unitsMeasureFiltered.length,
+      },
+    }
   }
 }

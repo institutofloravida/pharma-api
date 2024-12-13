@@ -1,7 +1,8 @@
 import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
 import { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock'
 
-export class InMemoryMedicinesStockRepository implements MedicinesStockRepository {
+export class InMemoryMedicinesStockRepository
+implements MedicinesStockRepository {
   public items: MedicineStock[] = []
 
   async create(medicinestock: MedicineStock) {
@@ -9,7 +10,9 @@ export class InMemoryMedicinesStockRepository implements MedicinesStockRepositor
   }
 
   async save(medicinestock: MedicineStock) {
-    const index = this.items.findIndex(item => item.id.toString() === medicinestock.id.toString())
+    const index = this.items.findIndex(
+      (item) => item.id.toString() === medicinestock.id.toString(),
+    )
 
     if (index === -1) {
       return null
@@ -18,7 +21,10 @@ export class InMemoryMedicinesStockRepository implements MedicinesStockRepositor
     this.items[index] = medicinestock
   }
 
-  async replenish(medicineStockId: string, quantity: number): Promise<MedicineStock | null> {
+  async replenish(
+    medicineStockId: string,
+    quantity: number,
+  ): Promise<MedicineStock | null> {
     const medicineStock = await this.findById(medicineStockId)
     if (!medicineStock) {
       return null
@@ -29,7 +35,10 @@ export class InMemoryMedicinesStockRepository implements MedicinesStockRepositor
     return medicineStock
   }
 
-  async subtract(medicineStockId: string, quantity: number): Promise<MedicineStock | null> {
+  async subtract(
+    medicineStockId: string,
+    quantity: number,
+  ): Promise<MedicineStock | null> {
     const medicineStock = await this.findById(medicineStockId)
     if (!medicineStock) {
       return null
@@ -41,7 +50,7 @@ export class InMemoryMedicinesStockRepository implements MedicinesStockRepositor
   }
 
   async findById(id: string): Promise<MedicineStock | null> {
-    const medicinestock = this.items.find(item => item.id.toString() === id)
+    const medicinestock = this.items.find((item) => item.id.toString() === id)
     if (!medicinestock) {
       return null
     }
@@ -49,8 +58,15 @@ export class InMemoryMedicinesStockRepository implements MedicinesStockRepositor
     return medicinestock
   }
 
-  async findByMedicineVariantIdAndStockId(medicineVariantId: string, stockId: string): Promise<MedicineStock | null> {
-    const medicinestock = this.items.find(item => item.medicineVariantId.toString() === medicineVariantId && item.stockId.toString() === stockId)
+  async findByMedicineVariantIdAndStockId(
+    medicineVariantId: string,
+    stockId: string,
+  ): Promise<MedicineStock | null> {
+    const medicinestock = this.items.find(
+      (item) =>
+        item.medicineVariantId.toString() === medicineVariantId &&
+        item.stockId.toString() === stockId,
+    )
     if (!medicinestock) {
       return null
     }
@@ -58,8 +74,10 @@ export class InMemoryMedicinesStockRepository implements MedicinesStockRepositor
     return medicinestock
   }
 
-  async medicineStockExists(medicineStock: MedicineStock): Promise<MedicineStock | null> {
-    const medicineStockExists = this.items.find(item => {
+  async medicineStockExists(
+    medicineStock: MedicineStock,
+  ): Promise<MedicineStock | null> {
+    const medicineStockExists = this.items.find((item) => {
       return medicineStock.equals(item)
     })
 

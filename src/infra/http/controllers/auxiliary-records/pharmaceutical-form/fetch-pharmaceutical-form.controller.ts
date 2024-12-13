@@ -5,16 +5,17 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchPharmaceuticalFormsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/fetch-pharmaceutical-form'
 import { PharmaceuticalFormPresenter } from '../../../presenters/pharmaceutical-form-presenter'
 
-const pageQueryParamSchema = z
-  .string()
-  .optional()
-  .default('1')
-  .transform(Number)
-  .pipe(z.number().min(1))
+const queryParamsSchema = z.object({
+  page: z
+    .string()
+    .optional()
+    .default('1')
+    .transform(Number)
+    .pipe(z.number().min(1)),
+  query: z.string().optional().default(''),
+})
 
-const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
-
-type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+type PageQueryParamSchema = z.infer<typeof queryParamsSchema>
 
 @Controller('/pharmaceutical-form')
 export class FetchPharmaceuticalFormController {
@@ -22,9 +23,11 @@ export class FetchPharmaceuticalFormController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
+  async handle(@Query(new ZodValidationPipe(queryParamsSchema)) queryParams: PageQueryParamSchema) {
+    const { page, query } = queryParams
     const result = await this.fetchPharmaceuticalForms.execute({
       page,
+      content: query,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})

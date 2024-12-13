@@ -64,7 +64,6 @@ describe('Fetch medicines variants', () => {
       medicineId: medicine.id.toString(),
       page: 1,
     })
-    console.log(result.value?.medicinesVariants)
     expect(result.value?.medicinesVariants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ createdAt: new Date(2024, 0, 29) }),

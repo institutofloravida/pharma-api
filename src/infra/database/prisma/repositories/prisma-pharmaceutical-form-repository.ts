@@ -4,6 +4,7 @@ import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmace
 import { PrismaService } from '../prisma.service'
 import { PrismaPharmaceuticalFormMapper } from '../mappers/prisma-pharmaceutical-form'
 import { Injectable } from '@nestjs/common'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsRepository {
@@ -35,14 +36,44 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
     return PrismaPharmaceuticalFormMapper.toDomain(pharmaceuticalForm)
   }
 
-  async findMany({ page }: PaginationParams): Promise<PharmaceuticalForm[]> {
-    const pharmaceuticalFormes = await this.prisma.pharmaceuticalForm.findMany({
+  async findMany({ page }: PaginationParams, content?: string): Promise<{
+    pharmaceuticalForms: PharmaceuticalForm[]
+    meta: Meta
+  }> {
+    const pageSize = 20
+
+    const pharmaceuticalForms = await this.prisma.pharmaceuticalForm.findMany({
+      where: {
+        name: {
+          contains: content ?? '',
+          mode: 'insensitive',
+
+        },
+      },
       orderBy: {
         createdAt: 'desc',
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: pageSize,
+      skip: (page - 1) * pageSize,
     })
-    return pharmaceuticalFormes.map(PrismaPharmaceuticalFormMapper.toDomain)
+
+    const totalCount = await this.prisma.pharmaceuticalForm.count({
+      where: {
+        name: {
+          contains: content ?? '',
+          mode: 'insensitive',
+        },
+      },
+    })
+
+    const pharmaceuticalFormMappered = pharmaceuticalForms.map(PrismaPharmaceuticalFormMapper.toDomain)
+
+    return {
+      pharmaceuticalForms: pharmaceuticalFormMappered,
+      meta: {
+        page,
+        totalCount,
+      },
+    }
   }
 }

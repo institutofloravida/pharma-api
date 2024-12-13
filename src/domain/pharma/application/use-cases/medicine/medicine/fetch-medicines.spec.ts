@@ -44,4 +44,25 @@ describe('Fetch medicines', () => {
 
     expect(result.value?.medicines).toHaveLength(2)
   })
+
+  it('should be able to fetch filtered medicines', async () => {
+    for (let i = 1; i <= 20; i++) {
+      await inMemoryMedicinesRepository.create(makeMedicine({
+        content: 'teste',
+      }))
+    }
+
+    for (let i = 1; i <= 5; i++) {
+      await inMemoryMedicinesRepository.create(makeMedicine({
+        content: 'abcde',
+      }))
+    }
+
+    const result = await sut.execute({
+      page: 1,
+      content: 'ab',
+    })
+
+    expect(result.value?.medicines).toHaveLength(5)
+  })
 })

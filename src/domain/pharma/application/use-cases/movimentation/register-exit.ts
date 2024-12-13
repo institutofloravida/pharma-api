@@ -2,7 +2,6 @@ import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
 import { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
 import { MedicinesRepository } from '../../repositories/medicines-repository'
-import { BatchestocksRepository } from '../../repositories/batch-stocks-repository'
 import { BatchesRepository } from '../../repositories/batches-repository'
 import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
 import { MedicineExit, type ExitType } from '../../../enterprise/entities/exit'
@@ -11,6 +10,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { InvalidExitQuantityError } from '../_errors/invalid-exit-quantity-error'
 import { InsufficientQuantityBatchInStockError } from '../_errors/insufficient-quantity-batch-in-stock-error'
 import { Injectable } from '@nestjs/common'
+import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 
 interface RegisterExitUseCaseRequest {
   medicineVariantId: string
@@ -36,7 +36,7 @@ export class RegisterExitUseCase {
     private medicineExitRepository: MedicinesExitsRepository,
     private medicinesRepository: MedicinesRepository,
     private medicinesStockRepository: MedicinesStockRepository,
-    private batchestockskRepository: BatchestocksRepository,
+    private batchestockskRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
   ) {}
 

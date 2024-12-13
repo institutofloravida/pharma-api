@@ -2,17 +2,15 @@ import { Entity } from '@/core/entities/entity'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 
-export type EntryType = 'DONATION' | 'TRANSFER' | 'RETURN' | 'GOVERNMENT_SUPPLY' | 'INVENTORY' | 'OTHER'
-
 export interface MedicineEntryProps {
   medicineStockId: UniqueEntityId
   batcheStockId: UniqueEntityId
   quantity: number
-  operatorId: string
-  entryType: EntryType
+  operatorId: UniqueEntityId
+  movementTypeId: UniqueEntityId
   entryDate: Date
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
 export class MedicineEntry extends Entity<MedicineEntryProps> {
@@ -36,13 +34,12 @@ export class MedicineEntry extends Entity<MedicineEntryProps> {
     this.touch()
   }
 
-  get entryType() {
-    return this.props.entryType
+  get operatorId() {
+    return this.props.operatorId
   }
 
-  set entryType(value: EntryType) {
-    this.props.entryType = value
-    this.touch()
+  get movementTypeId() {
+    return this.props.movementTypeId
   }
 
   get entryDate() {
