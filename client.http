@@ -83,6 +83,13 @@ Authorization: Bearer {{authToken}}
 GET {{baseurl}}/stocks?page=1
 Authorization: Bearer {{authToken}}
 
+
+###
+
+# @name fetch_batches
+GET {{baseurl}}/batches
+Authorization: Bearer {{authToken}}
+
 ###
 
 # @name create_therapeutic_class

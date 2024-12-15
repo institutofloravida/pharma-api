@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaInstitutionMapper } from '../mappers/prisma-institution-mapper'
 import { PaginationParams } from '@/core/repositories/pagination-params'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaInstitutionsRepository implements InstitutionsRepository {

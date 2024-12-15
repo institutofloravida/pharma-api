@@ -50,6 +50,8 @@ import { RegisterMedicineEntryController } from './controllers/movimentation/ent
 import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/register-medicine-entry'
 import { FetchRegisterMedicinesEntriesUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/fetch-register-medicines-entries'
 import { FetchMedicinesEntriesController } from './controllers/movimentation/entry/fetch-medicines-entries.controller'
+import { FetchBatchesController } from './controllers/auxiliary-records/batch/fetch-batches.controller'
+import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/batch/fetch-batches'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -79,6 +81,7 @@ import { FetchMedicinesEntriesController } from './controllers/movimentation/ent
     FetchMedicinesController,
     FetchMedicinesVariantsController,
     FetchMedicinesEntriesController,
+    FetchBatchesController,
 
   ],
   providers: [
@@ -106,6 +109,7 @@ import { FetchMedicinesEntriesController } from './controllers/movimentation/ent
     FetchMedicinesUseCase,
     FetchMedicinesVariantsUseCase,
     FetchRegisterMedicinesEntriesUseCase,
+    FetchBatchesUseCase,
   ],
 })
 export class HttpModule {}
