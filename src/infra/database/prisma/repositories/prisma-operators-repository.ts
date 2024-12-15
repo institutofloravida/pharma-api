@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaOperatorMapper } from '../mappers/prisma-operator-mapper'
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaOperatorsRepository implements OperatorsRepository {
@@ -58,8 +59,17 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
     return PrismaOperatorMapper.toDomain(operator)
   }
 
-  async findMany({ page }: PaginationParams): Promise<Operator[]> {
-    const operators = await this.prisma.operator.findMany({
+  async findMany(
+    { page }: PaginationParams,
+    content?: string,
+  ): Promise<{ operators: Operator[]; meta: Meta }> {
+    const operatorsPaginated = await this.prisma.operator.findMany({
+      where: {
+        name: {
+          contains: content ?? '',
+          mode: 'insensitive',
+        },
+      },
       include: {
         institutions: {
           select: {
@@ -74,6 +84,21 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       skip: (page - 1) * 20,
     })
 
-    return operators.map(PrismaOperatorMapper.toDomain)
+    const operatorsTotalCount = await this.prisma.operator.count({
+      where: {
+        name: {
+          contains: content ?? '',
+          mode: 'insensitive',
+        },
+      },
+    })
+
+    return {
+      operators: operatorsPaginated.map(PrismaOperatorMapper.toDomain),
+      meta: {
+        page,
+        totalCount: operatorsTotalCount,
+      },
+    }
   }
 }

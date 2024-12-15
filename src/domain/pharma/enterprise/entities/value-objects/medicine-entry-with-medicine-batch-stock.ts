@@ -2,6 +2,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ValueObject } from '@/core/entities/value-object'
 
 export interface MedicineEntryWithMedicineVariantAndBatchProps {
+  medicineEntryId: UniqueEntityId
   medicineId: UniqueEntityId;
   medicine: string;
   medicineVariantId: UniqueEntityId;
@@ -22,6 +23,10 @@ export interface MedicineEntryWithMedicineVariantAndBatchProps {
 }
 
 export class MedicineEntryWithMedicineVariantAndBatch extends ValueObject<MedicineEntryWithMedicineVariantAndBatchProps> {
+  get medicineEntryId() {
+    return this.props.medicineEntryId
+  }
+
   get medicineId() {
     return this.props.medicineId
   }

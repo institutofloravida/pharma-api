@@ -1,22 +1,16 @@
-import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { z } from 'zod'
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { OperatorPresenter } from '../../../presenters/operator-presenter'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/role-decorator'
-
-const pageQueryParamSchema = z
-  .string()
-  .optional()
-  .default('1')
-  .transform(Number)
-  .pipe(z.number().min(1))
-
-const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
-
-type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+import { FetchOperatorsDto } from './dtos/fetch-operator.dto'
 
 @Controller('/operators')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -25,16 +19,18 @@ export class FetchOperatorsController {
   constructor(private fetchOperators: FethOperatorsUseCase) {}
 
   @Get()
-  async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
+  async handle(@Query() queryParams: FetchOperatorsDto) {
+    const { page, query } = queryParams
     const result = await this.fetchOperators.execute({
       page,
+      content: query,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})
     }
 
-    const operators = result.value.operators
+    const { operators, meta } = result.value
 
-    return { operators: operators.map(OperatorPresenter.toHTTP) }
+    return { operators: operators.map(OperatorPresenter.toHTTP), meta }
   }
 }

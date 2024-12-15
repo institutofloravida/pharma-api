@@ -3,6 +3,7 @@ import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities
 export class MedicineVariantWithMedicinePresenter {
   static toHTTP(medicineVariantWithMedicine: MedicineVariantWithMedicine) {
     return {
+      id: medicineVariantWithMedicine.medicineVariantId.toString(),
       medicineId: medicineVariantWithMedicine.medicineId.toString(),
       medicine: medicineVariantWithMedicine.medicine,
       dosage: medicineVariantWithMedicine.dosage,

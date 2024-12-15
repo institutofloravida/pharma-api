@@ -11,6 +11,7 @@ type PrismaMedicineVariantWithMedicine = PrismaMedicineVariant & {
 export class PrismaMedicineVariantWithMedicineMapper {
   static toDomain(raw: PrismaMedicineVariantWithMedicine): MedicineVariantWithMedicine {
     return MedicineVariantWithMedicine.create({
+      medicineVariantId: new UniqueEntityId(raw.id),
       medicine: raw.medicine.name,
       pharmaceuticalForm: raw.pharmaceuticalForm.name,
       unitMeasure: raw.unitMeasure.acronym,

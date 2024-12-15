@@ -26,6 +26,7 @@ export class PrismaMedicineEntryWithMedicineVariantAndBatchMapper {
     raw: PrismaMedicineEntryWithMedicineVariantAndBatch,
   ): MedicineEntryWithMedicineVariantAndBatch {
     return MedicineEntryWithMedicineVariantAndBatch.create({
+      medicineEntryId: new UniqueEntityId(raw.id),
       batch: raw.batch.code,
       batchId: new UniqueEntityId(raw.batch.id),
       medicineVariantId: new UniqueEntityId(raw.medicineVariant.id),

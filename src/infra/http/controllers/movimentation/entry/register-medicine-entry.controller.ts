@@ -12,7 +12,7 @@ import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt-strategy'
 import { RegisterMedicineEntryDto } from './dtos/register-medicine-entry.dto'
 
-@Controller('/medicine-variant/:medicineVariantId/entry/:stockId')
+@Controller('entry/stock/:stockId/medicine-variant/:medicineVariantId')
 @UseGuards(JwtAuthGuard)
 export class RegisterMedicineEntryController {
   constructor(private registerMedicineEntry: RegisterMedicineEntryUseCase) {}

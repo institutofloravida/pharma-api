@@ -38,7 +38,8 @@ describe('Fetch Medicines (E2E)', () => {
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
-    const therapeuticClass = await therapeuticClassFactory.makePrismaTherapeuticClass()
+    const therapeuticClass =
+      await therapeuticClassFactory.makePrismaTherapeuticClass()
 
     await Promise.all([
       medicineFactory.makePrismaMedicine({
@@ -57,11 +58,13 @@ describe('Fetch Medicines (E2E)', () => {
       .send()
 
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
-      medicines: expect.arrayContaining([
-        expect.objectContaining({ name: 'medicine 1' }),
-        expect.objectContaining({ name: 'medicine 2' }),
-      ]),
-    })
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        medicines: expect.arrayContaining([
+          expect.objectContaining({ name: 'medicine 1' }),
+          expect.objectContaining({ name: 'medicine 2' }),
+        ]),
+      }),
+    )
   })
 })

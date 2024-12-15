@@ -1,3 +1,4 @@
+import type { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'
@@ -38,11 +39,20 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
     return institution
   }
 
-  async findMany({ page }: PaginationParams): Promise<Institution[]> {
+  async findMany({ page }: PaginationParams, content?: string): Promise<{ institutions: Institution[]; meta: Meta }> {
     const institutions = this.items
+      .filter(item => item.content.includes(content ?? ''))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+
+    const institutionsPaginated = institutions
       .slice((page - 1) * 20, page * 20)
 
-    return institutions
+    return {
+      institutions: institutionsPaginated,
+      meta: {
+        page,
+        totalCount: institutions.length,
+      },
+    }
   }
 }

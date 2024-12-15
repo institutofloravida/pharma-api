@@ -49,7 +49,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_institutions
-GET  {{baseurl}}/institutions?page=1
+GET  {{baseurl}}/institutions?query=ubs
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 

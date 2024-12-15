@@ -52,11 +52,13 @@ describe('Fetch Units Measure (E2E)', () => {
       .send()
 
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
-      units_measure: expect.arrayContaining([
-        expect.objectContaining({ name: 'box' }),
-        expect.objectContaining({ name: 'bottle' }),
-      ]),
-    })
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        units_measure: expect.arrayContaining([
+          expect.objectContaining({ name: 'box' }),
+          expect.objectContaining({ name: 'bottle' }),
+        ]),
+      }),
+    )
   })
 })

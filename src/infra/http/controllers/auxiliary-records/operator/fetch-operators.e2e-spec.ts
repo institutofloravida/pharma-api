@@ -4,57 +4,65 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { InstitutionFactory } from 'test/factories/make-insitution'
 import { OperatorFactory } from 'test/factories/make-operator'
+import { MedicineFactory } from 'test/factories/make-medicine'
+import { TherapeuticClassFactory } from 'test/factories/make-therapeutic-class'
 
-describe('Fetch institutions (E2E)', () => {
+describe('Fetch Operators (E2E)', () => {
   let app: INestApplication
+  let therapeuticClassFactory: TherapeuticClassFactory
   let operatorFactory: OperatorFactory
-  let institutionFactory: InstitutionFactory
+  let medicineFactory: MedicineFactory
   let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [OperatorFactory, InstitutionFactory],
+      providers: [MedicineFactory, OperatorFactory, TherapeuticClassFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
+    therapeuticClassFactory = moduleRef.get(TherapeuticClassFactory)
 
     operatorFactory = moduleRef.get(OperatorFactory)
-    institutionFactory = moduleRef.get(InstitutionFactory)
+    medicineFactory = moduleRef.get(MedicineFactory)
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
-  test('[GET] /institutions', async () => {
+  test('[GET] /operators', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'SUPER_ADMIN',
+      role: 'MANAGER',
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
+    const therapeuticClass =
+      await therapeuticClassFactory.makePrismaTherapeuticClass()
+
     await Promise.all([
-      institutionFactory.makePrismaInstitution({
-        cnpj: '12345678901234',
+      medicineFactory.makePrismaMedicine({
+        content: 'medicine 1',
+        therapeuticClassesIds: [therapeuticClass.id],
       }),
-      institutionFactory.makePrismaInstitution({
-        cnpj: '12345678912345',
+      medicineFactory.makePrismaMedicine({
+        content: 'medicine 2',
+        therapeuticClassesIds: [],
       }),
     ])
 
     const response = await request(app.getHttpServer())
-      .get('/institutions')
+      .get('/medicines')
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual(
       expect.objectContaining({
-        institutions: expect.arrayContaining([
-          expect.objectContaining({ cnpj: '12345678901234' }),
-          expect.objectContaining({ cnpj: '12345678912345' }),
+        medicines: expect.arrayContaining([
+          expect.objectContaining({ name: 'medicine 1' }),
+          expect.objectContaining({ name: 'medicine 2' }),
         ]),
       }),
     )

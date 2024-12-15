@@ -6,6 +6,8 @@ import { JwtService } from '@nestjs/jwt'
 export class JwtEncrypter implements Encrypter {
   constructor(private jwtService: JwtService) {}
   async encrypter(payload: Record<string, unknown>): Promise<string> {
-    return this.jwtService.signAsync(payload)
+    return this.jwtService.signAsync(payload, {
+      expiresIn: '1d',
+    })
   }
 }
