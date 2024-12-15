@@ -1,6 +1,10 @@
-import { BadRequestException, Controller, Get, ParseArrayPipe, Query, UseGuards } from '@nestjs/common'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { z } from 'zod'
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/role-decorator'
@@ -8,17 +12,7 @@ import { StockPresenter } from '../../../presenters/stock-presenter'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt-strategy'
 import { FetchStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
-
-const pageQueryParamSchema = z
-  .string()
-  .optional()
-  .default('1')
-  .transform(Number)
-  .pipe(z.number().min(1))
-
-const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
-
-type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+import { FetchStocksDto } from './dtos/fetch-stocks.dto'
 
 @Controller('/stocks')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -29,18 +23,24 @@ export class FetchStocksController {
   @Get()
   async handle(
     @CurrentUser() user: UserPayload,
-    @Query('page', queryValidationPipe) page: PageQueryParamSchema,
-    @Query('institutionsIds', new ParseArrayPipe({ items: String, optional: true })) institutionsIds: string[],
+    @Query() queryParams: FetchStocksDto,
   ) {
     const userId = user.sub
+    const { page, query, institutionsIds } = queryParams
 
-    const result = await this.fetchStocks.execute({ page, institutionsIds, operatorId: userId })
+    const result = await this.fetchStocks.execute({
+      page,
+      institutionsIds,
+      content: query,
+      operatorId: userId,
+    })
+
     if (result.isLeft()) {
       throw new BadRequestException({})
     }
 
-    const stocks = result.value.stocks
+    const { stocks, meta } = result.value
 
-    return { stocks: stocks.map(StockPresenter.toHTTP) }
+    return { stocks: stocks.map(StockPresenter.toHTTP), meta }
   }
 }
