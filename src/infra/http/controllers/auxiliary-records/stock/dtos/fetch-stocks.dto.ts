@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsOptional, IsString, IsNumber, Min, IsArray } from 'class-validator'
-import { Type } from 'class-transformer'
+import { Transform, Type } from 'class-transformer'
 
 export class FetchStocksDto {
   @ApiProperty({
@@ -23,12 +23,23 @@ export class FetchStocksDto {
   @Min(1)
   page: number = 1
 
-  @ApiProperty({
-    description: 'Lista de IDs das instituições para filtro',
-    example: ['123e4567-e89b-12d3-a456-426614174000', '456e1237-e89b-34d3-a789-426614178900'],
-    required: false,
-  })
+  // @ApiProperty({
+  //   description: 'Lista de IDs das instituições para filtro',
+  //   example: [
+  //     '123e4567-e89b-12d3-a456-426614174000',
+  //     '456e1237-e89b-34d3-a789-426614178900',
+  //   ],
+  //   required: false,
+  // })
+  @ApiProperty({ type: [Number], format: 'form' })
   @IsOptional()
   @IsArray()
+  @IsString({ each: true })
+  @Transform(({ value }) =>
+    value
+      .trim()
+      .split(',')
+      .map((id) => String(id)),
+  )
   institutionsIds?: string[]
 }

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  ForbiddenException,
   Get,
   Query,
   UseGuards,
@@ -27,7 +28,6 @@ export class FetchStocksController {
   ) {
     const userId = user.sub
     const { page, query, institutionsIds } = queryParams
-
     const result = await this.fetchStocks.execute({
       page,
       institutionsIds,
@@ -36,7 +36,14 @@ export class FetchStocksController {
     })
 
     if (result.isLeft()) {
-      throw new BadRequestException({})
+      const error = result.value
+
+      switch (error.constructor) {
+        case ForbiddenException:
+          throw new ForbiddenException(error.message)
+        default:
+          throw new BadRequestException(error.message)
+      }
     }
 
     const { stocks, meta } = result.value
