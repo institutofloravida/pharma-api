@@ -1,12 +1,12 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { User, type UserProps } from '@/domain/pharma/enterprise/entities/user'
+import { Patient, type PatientProps } from '@/domain/pharma/enterprise/entities/patient'
 import { faker } from '@faker-js/faker'
 
-export function makeUser(
-  override: Partial<UserProps> = {},
+export function makePatient(
+  override: Partial<PatientProps> = {},
   id?: UniqueEntityId,
 ) {
-  const user = User.create({
+  const patient = Patient.create({
     name: faker.person.fullName(),
     cpf: faker.string.numeric({ length: 11 }),
     sus: faker.string.numeric({ length: 15 }),
@@ -19,5 +19,5 @@ export function makeUser(
   },
   id)
 
-  return user
+  return patient
 }

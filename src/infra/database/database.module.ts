@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaOperatorsRepository } from './prisma/repositories/prisma-operators-repository'
-import { PrismaUsersRepository } from './prisma/repositories/prisma-users-repository'
+import { PrismaPatientsRepository } from './prisma/repositories/prisma-patients-repository'
 import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
 import { TherapeuticClassesRepository } from '@/domain/pharma/application/repositories/therapeutic-classes-repository'
 import { PrismaTherapeuticClassesRepository } from './prisma/repositories/prisma-therapeutic-classes-repository'
@@ -47,11 +47,11 @@ import { PrismaBatchesRepository } from './prisma/repositories/prisma-batches-re
     { provide: MedicinesStockRepository, useClass: PrismaMedicinesStockRepository },
     { provide: BatchStocksRepository, useClass: PrismaBatchStocksRepository },
     { provide: BatchesRepository, useClass: PrismaBatchesRepository },
-    PrismaUsersRepository],
+    PrismaPatientsRepository],
   exports: [
     PrismaService,
     OperatorsRepository,
-    PrismaUsersRepository,
+    PrismaPatientsRepository,
     TherapeuticClassesRepository,
     InstitutionsRepository,
     StocksRepository,

@@ -5,7 +5,7 @@ import { AggregateRoot } from '@/core/entities/aggregate-root'
 export type Gender = 'M' | 'F' | 'O'
 export type Race = 'black' | 'white' | 'yellow' | 'mixed' | 'undeclared' | 'indigenous'
 
-export interface UserProps {
+export interface PatientProps {
   name: string
   cpf: string
   sus: string
@@ -19,7 +19,7 @@ export interface UserProps {
   updatedAt?: Date | null
 }
 
-export class User extends AggregateRoot<UserProps> {
+export class Patient extends AggregateRoot<PatientProps> {
   get name() {
     return this.props.name
   }
@@ -129,15 +129,15 @@ export class User extends AggregateRoot<UserProps> {
   }
 
   static create(
-    props: Optional<UserProps, 'createdAt'>,
+    props: Optional<PatientProps, 'createdAt'>,
     id?: UniqueEntityId,
   ) {
-    const user = new User({
+    const patient = new Patient({
       ...props,
       createdAt: props.createdAt ?? new Date(),
       generalRegistration: props.generalRegistration ?? null,
     }, id)
 
-    return user
+    return patient
   }
 }

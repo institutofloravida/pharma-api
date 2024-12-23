@@ -19,7 +19,7 @@ import { BatchStocksRepository } from '../../repositories/batch-stocks-repositor
 interface DispensationMedicineUseCaseRequest {
   medicineVariantId: string
   stockId: string
-  userId: string
+  patientId: string
   operatorId: string
   batchesStocks: MovimentationBatchestock[]
   dispensationDate?: Date
@@ -50,7 +50,7 @@ export class DispensationMedicineUseCase {
   async execute({
     medicineVariantId,
     stockId,
-    userId,
+    patientId,
     operatorId,
     batchesStocks,
     dispensationDate,
@@ -110,7 +110,7 @@ export class DispensationMedicineUseCase {
     }
 
     const dispensation = Dispensation.create({
-      userId: new UniqueEntityId(userId),
+      patientId: new UniqueEntityId(patientId),
       dispensationDate,
       batchesStocks,
     })

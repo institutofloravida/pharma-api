@@ -4,7 +4,7 @@ import { Optional } from '@/core/types/optional'
 import { MovimentationBatchestock } from './batch-stock'
 
 export interface DispensationProps {
-  userId: UniqueEntityId
+  patientId: UniqueEntityId
   dispensationDate: Date
   batchesStocks: MovimentationBatchestock[]
   createdAt: Date
@@ -12,8 +12,8 @@ export interface DispensationProps {
 }
 
 export class Dispensation extends Entity<DispensationProps> {
-  get userId() {
-    return this.props.userId
+  get patientId() {
+    return this.props.patientId
   }
 
   get dispensationDate() {
