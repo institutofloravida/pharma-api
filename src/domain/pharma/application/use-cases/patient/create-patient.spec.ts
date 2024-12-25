@@ -4,18 +4,23 @@ import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-patho
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makePathology } from 'test/factories/make-pathology'
 import { faker } from '@faker-js/faker'
+import { InMemoryAddressRepository } from 'test/repositories/in-memory-address-repository'
 
+let inMemoryAddressRepository: InMemoryAddressRepository
 let inMemoryPathologiesRepository: InMemoryPathologiesRepository
 let inMemoryPatientRepository: InMemoryPatientsRepository
 let sut: CreatePatientUseCase
 
 describe('Patient', () => {
   beforeEach(() => {
+    inMemoryAddressRepository = new InMemoryAddressRepository()
     inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
     inMemoryPatientRepository = new InMemoryPatientsRepository()
     sut = new CreatePatientUseCase(
       inMemoryPatientRepository,
       inMemoryPathologiesRepository,
+      inMemoryAddressRepository,
+
     )
   })
   it('should be able create a patient', async () => {
@@ -43,12 +48,12 @@ describe('Patient', () => {
       birthDate: faker.date.past(),
       gender: faker.helpers.arrayElement(['M', 'F', 'O']),
       race: faker.helpers.arrayElement([
-        'black',
-        'white',
-        'yellow',
-        'mixed',
-        'undeclared',
-        'indigenous',
+        'BLACK',
+        'WHITE',
+        'YELLOW',
+        'MIXED',
+        'UNDECLARED',
+        'INDIGENOUS',
       ]),
       addressPatient: addressFake,
       pathologiesIds: ['1', '2'],
@@ -88,12 +93,12 @@ describe('Patient', () => {
       birthDate: faker.date.past(),
       gender: faker.helpers.arrayElement(['M', 'F', 'O']),
       race: faker.helpers.arrayElement([
-        'black',
-        'white',
-        'yellow',
-        'mixed',
-        'undeclared',
-        'indigenous',
+        'BLACK',
+        'WHITE',
+        'YELLOW',
+        'MIXED',
+        'UNDECLARED',
+        'INDIGENOUS',
       ]),
       addressPatient: addressFake,
       pathologiesIds: ['1', '2'],
@@ -106,12 +111,12 @@ describe('Patient', () => {
       birthDate: faker.date.past(),
       gender: faker.helpers.arrayElement(['M', 'F', 'O']),
       race: faker.helpers.arrayElement([
-        'black',
-        'white',
-        'yellow',
-        'mixed',
-        'undeclared',
-        'indigenous',
+        'BLACK',
+        'WHITE',
+        'YELLOW',
+        'MIXED',
+        'UNDECLARED',
+        'INDIGENOUS',
       ]),
       addressPatient: addressFake,
       pathologiesIds: ['1', '2'],
@@ -150,12 +155,12 @@ describe('Patient', () => {
       birthDate: faker.date.past(),
       gender: faker.helpers.arrayElement(['M', 'F', 'O']),
       race: faker.helpers.arrayElement([
-        'black',
-        'white',
-        'yellow',
-        'mixed',
-        'undeclared',
-        'indigenous',
+        'BLACK',
+        'WHITE',
+        'YELLOW',
+        'MIXED',
+        'UNDECLARED',
+        'INDIGENOUS',
       ]),
       addressPatient: addressFake,
       pathologiesIds: ['1', '2'],
@@ -168,12 +173,12 @@ describe('Patient', () => {
       birthDate: faker.date.past(),
       gender: faker.helpers.arrayElement(['M', 'F', 'O']),
       race: faker.helpers.arrayElement([
-        'black',
-        'white',
-        'yellow',
-        'mixed',
-        'undeclared',
-        'indigenous',
+        'BLACK',
+        'WHITE',
+        'YELLOW',
+        'MIXED',
+        'UNDECLARED',
+        'INDIGENOUS',
       ]),
       addressPatient: addressFake,
       pathologiesIds: ['1', '2'],

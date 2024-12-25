@@ -188,6 +188,7 @@ implements MedicinesEntriesRepository {
           quantityToEntry: medicineEntryMapped.quantity,
           createdAt: medicineEntryMapped.createdAt,
           updatedAt: medicineEntryMapped.updatedAt,
+          medicineEntryId: medicineEntryMapped.id,
         })
       },
     )

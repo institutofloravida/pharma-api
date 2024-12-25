@@ -1,5 +1,5 @@
-import type { Meta } from '@/core/repositories/meta'
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { BatchesRepository } from '@/domain/pharma/application/repositories/batches-repository'
 import { Batch } from '@/domain/pharma/enterprise/entities/batch'
 

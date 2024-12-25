@@ -1,6 +1,6 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Institution } from '../../enterprise/entities/institution'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 export abstract class InstitutionsRepository {
   abstract create(institution: Institution): Promise<void>

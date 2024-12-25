@@ -1,6 +1,6 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Operator } from '../../enterprise/entities/operator'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 export abstract class OperatorsRepository {
   abstract create(operator: Operator): Promise<void>

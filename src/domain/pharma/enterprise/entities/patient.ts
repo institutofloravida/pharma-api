@@ -3,7 +3,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 
 export type Gender = 'M' | 'F' | 'O'
-export type Race = 'black' | 'white' | 'yellow' | 'mixed' | 'undeclared' | 'indigenous'
+export type Race = 'BLACK' | 'WHITE' | 'YELLOW' | 'MIXED' | 'UNDECLARED' | 'INDIGENOUS'
 
 export interface PatientProps {
   name: string

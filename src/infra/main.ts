@@ -16,7 +16,7 @@ async function bootstrap() {
     .setTitle('Pharma API')
     .setDescription('API para gerenciamento de medicamentos e movimentações')
     .setVersion('1.0')
-    .addBearerAuth() // Suporte para autenticação JWT no Swagger
+    .addBearerAuth()
     .build()
 
   const documentFactory = () => SwaggerModule.createDocument(app, config)

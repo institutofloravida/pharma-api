@@ -12,7 +12,7 @@ export function makePatient(
     sus: faker.string.numeric({ length: 15 }),
     birthDate: faker.date.past(),
     gender: faker.helpers.arrayElement(['M', 'F', 'O']),
-    race: faker.helpers.arrayElement(['black', 'white', 'yellow', 'mixed', 'undeclared', 'indigenous']),
+    race: faker.helpers.arrayElement(['BLACK', 'WHITE', 'YELLOW', 'MIXED', 'UNDECLARED', 'INDIGENOUS']),
     addressId: new UniqueEntityId(),
     pathologiesIds: [],
     ...override,

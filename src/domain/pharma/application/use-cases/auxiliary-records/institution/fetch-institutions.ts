@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 import { Injectable } from '@nestjs/common'
 import { InstitutionsRepository } from '../../../repositories/institutions-repository'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchInstitutionsUseCaseRequest {
   page: number

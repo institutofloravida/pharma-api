@@ -238,3 +238,50 @@ model Batch {
 
   @@index([manufacturerId])
 }
+
+model Address {
+  id           String    @id @default(uuid())
+  street       String
+  number       String
+  complement   String?   @db.VarChar(255)
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+
+  @@map("addresses")
+}
+
+enum Gender {
+  M
+  F
+  O
+}
+
+enum Race {
+  BLACK
+  WHITE
+  YELLOW
+  MIXED
+  UNDECLARED
+  INDIGENOUS
+}
+
+model Patient {
+  id                  String    @id @default(uuid())
+  name                String
+  cpf                 String    @unique
+  sus                 String    @unique
+  birthDate           DateTime
+  gender              Gender
+  race                Race
+  pathologiesIds      String[]
+  generalRegistration String?   @db.VarChar(255)
+  addressId           String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime? @updatedAt
+
+  @@map("patients")
+}

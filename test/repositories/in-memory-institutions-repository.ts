@@ -1,4 +1,4 @@
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'

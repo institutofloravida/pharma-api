@@ -12,6 +12,7 @@ import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-er
 import { Injectable } from '@nestjs/common'
 import { Address } from '@/domain/pharma/enterprise/entities/address'
 import { PatientAlreadyExistsError } from './_erros/patient-already-exists-error'
+import { AddresssRepository } from '../../repositories/address-repository'
 
 interface createPatientUseCaseRequest {
   name: string;
@@ -45,6 +46,7 @@ export class CreatePatientUseCase {
   constructor(
     private patientRepository: PatientsRepository,
     private pathologyRepository: PathologiesRepository,
+    private addressRepository: AddresssRepository,
   ) {}
 
   async execute({
@@ -114,7 +116,10 @@ export class CreatePatientUseCase {
       pathologiesIds: pathologiesIds.map((id) => new UniqueEntityId(id)),
     })
 
-    await this.patientRepository.create(patient)
+    await Promise.all([
+      this.addressRepository.create(address),
+      this.patientRepository.create(patient),
+    ])
 
     return right({
       patient,
