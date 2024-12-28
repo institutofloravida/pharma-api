@@ -56,7 +56,7 @@ describe('Fetch Bacthes (E2E)', () => {
         page: 1,
       })
       .send()
-    console.log(response.error)
+
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual(
       expect.objectContaining({

@@ -12,7 +12,7 @@ import { FetchOperatorsController } from './controllers/auxiliary-records/operat
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { FetchInstitutionsController } from './controllers/auxiliary-records/institution/fetch-institutions.controller'
 import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
-import { CreateInstitutionController } from './controllers/auxiliary-records/institution/create-institution.contoller'
+import { CreateInstitutionController } from './controllers/auxiliary-records/institution/create-institution.controller'
 import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/create-institution'
 import { CreateStockController } from './controllers/auxiliary-records/stock/create-stock.controller'
 import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/create-stock'

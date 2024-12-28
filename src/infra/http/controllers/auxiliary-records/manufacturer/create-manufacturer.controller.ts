@@ -1,18 +1,12 @@
-import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common'
-import { z } from 'zod'
+import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { CreateManufacturerUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/create-manufacturer'
 import { ManufacturerPresenter } from '@/infra/http/presenters/manufacturer-presenter'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { CreateManufacturerDTO } from './dtos/create-manufacturer.dto'
 
-const createManufacturerBodySchema = z.object({
-  name: z.string(),
-  cnpj: z.string().min(14).max(14),
-  description: z.string().optional(),
-})
-
-type CreateManufacturerBodySchema = z.infer<typeof createManufacturerBodySchema>
-
+@ApiTags('manufacturer')
+@ApiBearerAuth()
 @Controller('/manufacturer')
 
 @UseGuards(JwtAuthGuard)
@@ -23,8 +17,7 @@ export class CreateManufacturerController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(createManufacturerBodySchema))
-  async handle(@Body() body: CreateManufacturerBodySchema) {
+  async handle(@Body() body: CreateManufacturerDTO) {
     const { name, cnpj, description } = body
 
     const result = await this.createManufacturer.execute({

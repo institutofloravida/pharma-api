@@ -5,7 +5,10 @@ import { RolesGuard } from '@/infra/auth/roles.guard'
 import { GetOperatorDetailsUseCase } from '@/domain/pharma/application/use-cases/operator/get-operator-details'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt-strategy'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
+@ApiTags('operator')
+@ApiBearerAuth()
 @Controller('/me')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class GetOperatorDetailsController {

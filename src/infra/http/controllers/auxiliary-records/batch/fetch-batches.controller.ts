@@ -3,7 +3,10 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchBatchesDto } from './dtos/fetch-batches.dto'
 import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/batch/fetch-batches'
 import { BatchPresenter } from '@/infra/http/presenters/batch-presenter'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Bathes')
+@ApiBearerAuth()
 @Controller('/batches')
 export class FetchBatchesController {
   constructor(private fetchBacthes: FetchBatchesUseCase) {}
@@ -12,7 +15,7 @@ export class FetchBatchesController {
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchBatchesDto) {
     const { page, query } = queryParams
-    console.log(page)
+
     const result = await this.fetchBacthes.execute({
       page,
       content: query,

@@ -3,7 +3,10 @@ import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/a
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { InstitutionPresenter } from '../../../presenters/institution-presenter'
 import { FetchInstitutionsDto } from './dtos/fetch-institutions.dto'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
+@ApiTags('institution')
+@ApiBearerAuth()
 @Controller('/institutions')
 export class FetchInstitutionsController {
   constructor(private fetchInstitutions: FethInstitutionsUseCase) {}

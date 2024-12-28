@@ -47,6 +47,9 @@ describe('Fetch Pathologies (E2E)', () => {
     const response = await request(app.getHttpServer())
       .get('/pathologies')
       .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+      })
       .send()
 
     expect(response.statusCode).toBe(200)

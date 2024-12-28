@@ -1,9 +1,10 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common'
 import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/register-operator'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { CreateAccountOperatorDTO } from './dtos/create-account-operator.dto'
 
 @ApiTags('auth')
+@ApiBearerAuth()
 @Controller('/accounts')
 export class CreateAccountOperatorController {
   constructor(

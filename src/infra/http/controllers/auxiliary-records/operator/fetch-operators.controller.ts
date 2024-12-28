@@ -11,7 +11,10 @@ import { OperatorPresenter } from '../../../presenters/operator-presenter'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/role-decorator'
 import { FetchOperatorsDto } from './dtos/fetch-operator.dto'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
+@ApiTags('operator')
+@ApiBearerAuth()
 @Controller('/operators')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('SUPER_ADMIN', 'MANAGER')
