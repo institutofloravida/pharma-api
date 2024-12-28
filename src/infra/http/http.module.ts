@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
-import { CreateAccountOperatorController } from './controllers/auxiliary-records/operator/create-account-operator.controler'
-import { AuthenticateOperatorController } from './controllers/auxiliary-records/operator/authenticate-operator.controller'
+import { CreateAccountOperatorController } from './controllers/auth/create-account-operator.controller'
+import { AuthenticateOperatorController } from './controllers/auth/authenticate-operator.controller'
 import { CreateTherapeuticClassController } from './controllers/auxiliary-records/therapeutic-class/create-therapeutic-class.controller'
 import { DatabaseModule } from '../database/database.module'
 import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/register-operator'

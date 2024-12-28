@@ -1,26 +1,20 @@
-import { BadRequestException, Body, Controller, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
-import { z } from 'zod'
-import { ZodValidationPipe } from '../../../pipes/zod-validation-pipe'
+import { BadRequestException, Body, Controller, HttpCode, Post, UnauthorizedException } from '@nestjs/common'
 
 import { AuthenticateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/authenticate-operator'
 import { WrongCredentialsError } from '@/domain/pharma/application/use-cases/_errors/wrong-credentials-error'
+import { ApiTags } from '@nestjs/swagger'
+import { AuthenticateOperatorDTO } from './dtos/authenticate-operator.dto'
 
-const authenticateOperatorBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-})
-
-type AuthenticateOperatorBodySchema = z.infer<typeof authenticateOperatorBodySchema>
-
+@ApiTags('auth')
 @Controller('/sessions')
 export class AuthenticateOperatorController {
   constructor(
     private authenticateOperator: AuthenticateOperatorUseCase,
   ) {}
 
+  @HttpCode(200)
   @Post()
-  @UsePipes(new ZodValidationPipe(authenticateOperatorBodySchema))
-  async handle(@Body() body: AuthenticateOperatorBodySchema) {
+  async handle(@Body() body: AuthenticateOperatorDTO) {
     const { email, password } = body
 
     const result = await this.authenticateOperator.execute({
