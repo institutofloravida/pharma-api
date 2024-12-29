@@ -1,18 +1,13 @@
-import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common'
-import { z } from 'zod'
-import { ZodValidationPipe } from '../../../pipes/zod-validation-pipe'
+import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreatePharmaceuticalFormUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/create-pharmaceutical-form'
 import { PharmaceuticalFormPresenter } from '../../../presenters/pharmaceutical-form-presenter'
+import { CreatePharmaceuticalFormDto } from './dtos/create-pharmaceutical-form.dto'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
-const createPharmaceuticalFormBodySchema = z.object({
-  name: z.string(),
-})
-
-type CreatePharmaceuticalFormBodySchema = z.infer<typeof createPharmaceuticalFormBodySchema>
-
+@ApiTags('pharmaceutical-form')
+@ApiBearerAuth()
 @Controller('/pharmaceutical-form')
-
 @UseGuards(JwtAuthGuard)
 export class CreatePharmaceuticalFormController {
   constructor(
@@ -21,8 +16,7 @@ export class CreatePharmaceuticalFormController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(createPharmaceuticalFormBodySchema))
-  async handle(@Body() body: CreatePharmaceuticalFormBodySchema) {
+  async handle(@Body() body: CreatePharmaceuticalFormDto) {
     const { name } = body
 
     const result = await this.createPharmaceuticalForm.execute({

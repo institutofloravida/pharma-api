@@ -47,6 +47,9 @@ describe('Fetch Pharmaceutical Forms (E2E)', () => {
     const response = await request(app.getHttpServer())
       .get('/pharmaceutical-form')
       .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+      })
       .send()
 
     expect(response.statusCode).toBe(200)

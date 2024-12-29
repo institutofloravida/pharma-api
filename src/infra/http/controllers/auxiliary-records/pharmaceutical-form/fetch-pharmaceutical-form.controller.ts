@@ -1,30 +1,21 @@
 import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchPharmaceuticalFormsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/fetch-pharmaceutical-form'
 import { PharmaceuticalFormPresenter } from '../../../presenters/pharmaceutical-form-presenter'
+import { FetchPharmaceuticalFormDto } from './dtos/fetch-pharmaceutical-form.dto'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
-const queryParamsSchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .default('1')
-    .transform(Number)
-    .pipe(z.number().min(1)),
-  query: z.string().optional().default(''),
-})
-
-type PageQueryParamSchema = z.infer<typeof queryParamsSchema>
-
+@ApiTags('pharmaceutical-form')
+@ApiBearerAuth()
 @Controller('/pharmaceutical-form')
 export class FetchPharmaceuticalFormController {
   constructor(private fetchPharmaceuticalForms: FetchPharmaceuticalFormsUseCase) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query(new ZodValidationPipe(queryParamsSchema)) queryParams: PageQueryParamSchema) {
+  async handle(@Query() queryParams: FetchPharmaceuticalFormDto) {
     const { page, query } = queryParams
+    console.log(page)
     const result = await this.fetchPharmaceuticalForms.execute({
       page,
       content: query,
