@@ -31,7 +31,7 @@ describe('Fetch stocks (E2E)', () => {
     await app.init()
   })
 
-  test('[GET] /stocks', async () => {
+  test('[GET] /stock', async () => {
     const insitution = await institutionFactory.makePrismaInstitution()
     const insitution2 = await institutionFactory.makePrismaInstitution()
     const user = await operatorFactory.makePrismaOperator({

@@ -16,7 +16,7 @@ import { CreateInstitutionController } from './controllers/auxiliary-records/ins
 import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/create-institution'
 import { CreateStockController } from './controllers/auxiliary-records/stock/create-stock.controller'
 import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/create-stock'
-import { FetchStocksController } from './controllers/auxiliary-records/stock/fetch-stocks-controller'
+import { FetchStocksController } from './controllers/auxiliary-records/stock/fetch-stocks.controller'
 import { FetchStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 import { FetchTerapeuticClasssController } from './controllers/auxiliary-records/therapeutic-class/fetch-therapeutic-class.controller'
 import { FetchTherapeuticClassesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/fetch-therapeutic-classes'
