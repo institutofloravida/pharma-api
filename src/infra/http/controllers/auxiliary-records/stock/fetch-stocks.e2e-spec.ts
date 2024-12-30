@@ -52,7 +52,7 @@ describe('Fetch stocks (E2E)', () => {
     ])
 
     const response = await request(app.getHttpServer())
-      .get('/stocks')
+      .get('/stock')
       .set('Authorization', `Bearer ${accessToken}`)
       .query({ page: 1 })
       .send()
