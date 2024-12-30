@@ -49,6 +49,9 @@ describe('Fetch Units Measure (E2E)', () => {
     const response = await request(app.getHttpServer())
       .get('/unit-measure')
       .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+      })
       .send()
 
     expect(response.statusCode).toBe(200)

@@ -1,35 +1,22 @@
 import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchUnitsMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/fetch-units-measure'
 import { UnitMeasurePresenter } from '@/infra/http/presenters/unit-measure-presenter'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { FetchUnitsMeasureDto } from './dtos/fetch-units-measure.dto'
 
-const queryParamsSchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .default('1')
-    .transform(Number)
-    .pipe(z.number().min(1)),
-  query: z.string().optional().default(''),
-})
-
-const queryValidationPipe = new ZodValidationPipe(queryParamsSchema)
-
-type QueryParamsSchema = z.infer<typeof queryParamsSchema>
-
+@ApiTags('unit-measure')
+@ApiBearerAuth()
 @Controller('/unit-measure')
 export class FetchUnitsMeasureController {
   constructor(private fetchUnitsMeasure: FetchUnitsMeasureUseCase) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query(queryValidationPipe) queryParams: QueryParamsSchema) {
-    const { page, query } = queryParams
+  async handle(@Query() queryParams: FetchUnitsMeasureDto) {
+    const { page } = queryParams
     const result = await this.fetchUnitsMeasure.execute({
       page,
-      content: query,
     })
 
     if (result.isLeft()) {
