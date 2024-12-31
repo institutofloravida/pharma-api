@@ -1,15 +1,11 @@
-import { Body, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common'
-import { z } from 'zod'
-import { ZodValidationPipe } from '../../../pipes/zod-validation-pipe'
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { CreateTherapeuticClassDto } from './dtos/create-therapeutic-class.dto'
 
-const createTherapeuticClassBodySchema = z.object({
-  name: z.string(),
-})
-
-type CreateTherapeuticClassBodySchema = z.infer<typeof createTherapeuticClassBodySchema>
-
+@ApiTags('therapeutic-class')
+@ApiBearerAuth()
 @Controller('/therapeutic-class')
 @UseGuards(JwtAuthGuard)
 export class CreateTherapeuticClassController {
@@ -19,8 +15,7 @@ export class CreateTherapeuticClassController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(createTherapeuticClassBodySchema))
-  async handle(@Body() body: CreateTherapeuticClassBodySchema) {
+  async handle(@Body() body: CreateTherapeuticClassDto) {
     const { name } = body
 
     const therapeuticClass = await this.prisma.therapeuticClass.create({

@@ -11,13 +11,13 @@ import { DispensationMedicineUseCase } from './dispensation-medicine'
 import { InMemoryMedicinesExitsRepository } from 'test/repositories/in-memory-medicines-exits-repository'
 import { makeBatch } from 'test/factories/make-batch'
 import { makeBatchStock } from 'test/factories/make-batch-stock'
-import { makeUser } from 'test/factories/make-user'
-import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
+import { makePatient } from 'test/factories/make-patient'
+import { InMemoryPatientsRepository } from 'test/repositories/in-memory-patients-repository'
 import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
-let inMemoryUsersRepository: InMemoryUsersRepository
+let inMemoryPatientsRepository: InMemoryPatientsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
@@ -30,7 +30,7 @@ let sut: DispensationMedicineUseCase
 describe('Dispensation Medicine', () => {
   beforeEach(() => {
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
-    inMemoryUsersRepository = new InMemoryUsersRepository()
+    inMemoryPatientsRepository = new InMemoryPatientsRepository()
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
@@ -50,8 +50,8 @@ describe('Dispensation Medicine', () => {
   })
   it('should be able to dispense a medication', async () => {
     const quantityToDispense = 5
-    const user = makeUser()
-    await inMemoryUsersRepository.create(user)
+    const patient = makePatient()
+    await inMemoryPatientsRepository.create(patient)
 
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
@@ -84,7 +84,7 @@ describe('Dispensation Medicine', () => {
       medicineVariantId: medicine.id.toString(),
       operatorId: 'operator-1',
       stockId: stock.id.toString(),
-      userId: user.id.toString(),
+      patientId: patient.id.toString(),
       batchesStocks: [
         {
           batchestockId: batchestock1.id,
@@ -105,8 +105,8 @@ describe('Dispensation Medicine', () => {
     vi.setSystemTime(date)
 
     const quantityToDispense = 5
-    const user = makeUser()
-    await inMemoryUsersRepository.create(user)
+    const patient = makePatient()
+    await inMemoryPatientsRepository.create(patient)
 
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
@@ -141,7 +141,7 @@ describe('Dispensation Medicine', () => {
       medicineVariantId: medicine.id.toString(),
       operatorId: 'operator-1',
       stockId: stock.id.toString(),
-      userId: user.id.toString(),
+      patientId: patient.id.toString(),
       batchesStocks: [
         {
           batchestockId: batchestock1.id,
@@ -156,8 +156,8 @@ describe('Dispensation Medicine', () => {
     }
   })
   it('should be able to dispense quantities of the same medication in different batches', async () => {
-    const user = makeUser()
-    await inMemoryUsersRepository.create(user)
+    const patient = makePatient()
+    await inMemoryPatientsRepository.create(patient)
 
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
@@ -202,7 +202,7 @@ describe('Dispensation Medicine', () => {
       medicineVariantId: medicine.id.toString(),
       operatorId: 'operator-1',
       stockId: stock.id.toString(),
-      userId: user.id.toString(),
+      patientId: patient.id.toString(),
       batchesStocks: [
         {
           batchestockId: batchestock1.id,

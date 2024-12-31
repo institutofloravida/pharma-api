@@ -47,6 +47,9 @@ describe('Fetch Therapeutic Classes (E2E)', () => {
     const response = await request(app.getHttpServer())
       .get('/therapeutic-class')
       .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+      })
       .send()
 
     expect(response.statusCode).toBe(200)

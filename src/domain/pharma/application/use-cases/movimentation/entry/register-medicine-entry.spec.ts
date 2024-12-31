@@ -65,6 +65,7 @@ describe('Register Entry', () => {
       inMemoryPharmaceuticalFormsRepository,
       inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
+      inMemoryMedicinesStockRepository,
     )
 
     sut = new RegisterMedicineEntryUseCase(

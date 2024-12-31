@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
-import  { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
-import  { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock'
+import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
+import { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock'
 import { PrismaMedicineStockMapper } from '../mappers/prisma-medicine-stock-mapper'
 
 @Injectable()

@@ -100,6 +100,7 @@ implements MedicinesVariantsRepository {
           unitMeasureId: medicineVariant.unitMeasureId,
           createdAt: medicineVariant.createdAt,
           updatedAt: medicineVariant.updatedAt,
+          medicineVariantId: medicineVariant.id,
         })
       })
 

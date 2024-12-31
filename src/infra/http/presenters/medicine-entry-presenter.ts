@@ -3,21 +3,23 @@ import { MedicineEntryWithMedicineVariantAndBatch } from '@/domain/pharma/enterp
 export class MedicineEntryWithMedicineVariantAndBatchPresenter {
   static toHTTP(medicineEntry: MedicineEntryWithMedicineVariantAndBatch) {
     return {
+      medicineEntryId: medicineEntry.medicineEntryId.toString(),
       stock: medicineEntry.stock,
-      stockId: medicineEntry.stockId,
+      stockId: medicineEntry.stockId.toString(),
       medicine: medicineEntry.medicine,
-      medicineId: medicineEntry.medicineId,
-      medicineVariantId: medicineEntry.medicineVariantId,
+      medicineId: medicineEntry.medicineId.toString(),
+      medicineVariantId: medicineEntry.medicineVariantId.toString(),
       dosage: medicineEntry.dosage,
       operator: medicineEntry.operator,
-      operatorId: medicineEntry.operatorId,
+      operatorId: medicineEntry.operatorId.toString(),
       pharmaceuticalForm: medicineEntry.pharmaceuticalForm,
-      pharmaceuticalFormId: medicineEntry.pharmaceuticalFormId,
+      pharmaceuticalFormId: medicineEntry.pharmaceuticalFormId.toString(),
       unitMeasure: medicineEntry.unitMeasure,
-      unitMeasureId: medicineEntry.unitMeasureId,
+      unitMeasureId: medicineEntry.unitMeasureId.toString(),
       batch: medicineEntry.batch,
-      batchId: medicineEntry.batchId,
+      batchId: medicineEntry.batchId.toString(),
       quantityToEntry: medicineEntry.quantityToEntry,
+      createdAt: medicineEntry.createdAt,
       updatedAt: medicineEntry.updatedAt,
 
     }

@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaInstitutionMapper } from '../mappers/prisma-institution-mapper'
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaInstitutionsRepository implements InstitutionsRepository {
@@ -59,15 +60,41 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
     return PrismaInstitutionMapper.toDomain(institution)
   }
 
-  async findMany({ page }: PaginationParams): Promise<Institution[]> {
-    const institutions = await this.prisma.institution.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 20,
-      skip: (page - 1) * 20,
-    })
+  async findMany(
+    { page }: PaginationParams,
+    content?: string,
+  ): Promise<{ institutions: Institution[]; meta: Meta }> {
+    const [institutions, institutionsTotalCount] = await Promise.all([
+      this.prisma.institution.findMany({
+        where: {
+          name: {
+            contains: content ?? '',
+            mode: 'insensitive',
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 20,
+        skip: (page - 1) * 20,
+      }),
+      this.prisma.institution.count({
+        where: {
+          name: {
+            contains: content ?? '',
+            mode: 'insensitive',
+          },
+        },
+      }),
 
-    return institutions.map(PrismaInstitutionMapper.toDomain)
+    ])
+
+    return {
+      institutions: institutions.map(PrismaInstitutionMapper.toDomain),
+      meta: {
+        page,
+        totalCount: institutionsTotalCount,
+      },
+    }
   }
 }

@@ -1,30 +1,23 @@
 import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { z } from 'zod'
 import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { InstitutionPresenter } from '../../../presenters/institution-presenter'
+import { FetchInstitutionsDto } from './dtos/fetch-institutions.dto'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
-const pageQueryParamSchema = z
-  .string()
-  .optional()
-  .default('1')
-  .transform(Number)
-  .pipe(z.number().min(1))
-
-const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
-
-type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
-
+@ApiTags('institution')
+@ApiBearerAuth()
 @Controller('/institutions')
 export class FetchInstitutionsController {
   constructor(private fetchInstitutions: FethInstitutionsUseCase) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
+  async handle(@Query() queryParams: FetchInstitutionsDto) {
+    const { page, query } = queryParams
     const result = await this.fetchInstitutions.execute({
       page,
+      content: query,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})

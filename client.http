@@ -49,7 +49,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_institutions
-GET  {{baseurl}}/institutions?page=1
+GET  {{baseurl}}/institutions?query=ubs
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
@@ -81,6 +81,13 @@ Authorization: Bearer {{authToken}}
 
 # @name fetch_stocks
 GET {{baseurl}}/stocks?page=1
+Authorization: Bearer {{authToken}}
+
+
+###
+
+# @name fetch_batches
+GET {{baseurl}}/batches
 Authorization: Bearer {{authToken}}
 
 ###
@@ -236,3 +243,31 @@ Authorization: Bearer {{authToken}}
 # @name fetch_medicines-entries
 GET {{baseurl}}/medicines-entries?page=1&institutionId=1f9d3757-3eb7-4c0f-974b-f59e38b9dc75&medicineVariantId=129b3e69-788f-4d56-9e45-4b22d9dc101b
 Authorization: Bearer {{authToken}}
+
+###
+# @name create_patient
+POST {{baseurl}}/patient
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "name": "John Doe",
+  "cpf": "12345678900",
+  "sus": "123456789012345",
+  "birthDate": "1990-01-01",
+  "gender": "M",
+  "race": "WHITE",
+  "generalRegistration": "123456789",
+  "addressPatient": {
+    "street": "Elm Street",
+    "number": "45B",
+    "complement": "Apartment 3A",
+    "neighborhood": "Downtown",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62704"
+  },
+  "pathologiesIds": [
+    "1da8e82c-fb86-4e8e-960c-fb5168ab2ef5"
+  ]
+}

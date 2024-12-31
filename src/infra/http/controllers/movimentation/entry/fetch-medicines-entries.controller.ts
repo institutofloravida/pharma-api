@@ -9,7 +9,8 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchMedicinesEntriesQueryParamsDto } from './dtos/fetch-medicines-entries.dto'
 import { FetchRegisterMedicinesEntriesUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/fetch-register-medicines-entries'
 import { MedicineEntryWithMedicineVariantAndBatchPresenter } from '@/infra/http/presenters/medicine-entry-presenter'
-
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
+@ApiTags('entry')
 @Controller('/medicines-entries')
 export class FetchMedicinesEntriesController {
   constructor(
@@ -17,6 +18,8 @@ export class FetchMedicinesEntriesController {
   ) {}
 
   @Get()
+  @ApiResponse({ status: 201 })
+  @ApiResponse({ status: 400 })
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchMedicinesEntriesQueryParamsDto) {
     const {
@@ -43,7 +46,6 @@ export class FetchMedicinesEntriesController {
 
     const { medicinesEntries, meta } = result.value
 
-    console.log(medicinesEntries)
     return {
       medicines_entries: medicinesEntries.map(
         MedicineEntryWithMedicineVariantAndBatchPresenter.toHTTP,

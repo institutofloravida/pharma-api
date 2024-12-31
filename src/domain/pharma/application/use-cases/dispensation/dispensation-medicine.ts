@@ -14,12 +14,12 @@ import { DispensationsMedicinesRepository } from '../../repositories/dispensatio
 import { MovimentationBatchestock } from '../../../enterprise/entities/batch-stock'
 import { ExpiredMedicineDispenseError } from '../_errors/expired-medicine-dispense-error'
 import { Injectable } from '@nestjs/common'
-import  { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
+import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 
 interface DispensationMedicineUseCaseRequest {
   medicineVariantId: string
   stockId: string
-  userId: string
+  patientId: string
   operatorId: string
   batchesStocks: MovimentationBatchestock[]
   dispensationDate?: Date
@@ -50,7 +50,7 @@ export class DispensationMedicineUseCase {
   async execute({
     medicineVariantId,
     stockId,
-    userId,
+    patientId,
     operatorId,
     batchesStocks,
     dispensationDate,
@@ -110,7 +110,7 @@ export class DispensationMedicineUseCase {
     }
 
     const dispensation = Dispensation.create({
-      userId: new UniqueEntityId(userId),
+      patientId: new UniqueEntityId(patientId),
       dispensationDate,
       batchesStocks,
     })

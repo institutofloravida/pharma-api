@@ -11,8 +11,10 @@ import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-ca
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt-strategy'
 import { RegisterMedicineEntryDto } from './dtos/register-medicine-entry.dto'
+import { ApiTags } from '@nestjs/swagger'
 
-@Controller('/medicine-variant/:medicineVariantId/entry/:stockId')
+@ApiTags('entry')
+@Controller('entry/stock/:stockId/medicine-variant/:medicineVariantId')
 @UseGuards(JwtAuthGuard)
 export class RegisterMedicineEntryController {
   constructor(private registerMedicineEntry: RegisterMedicineEntryUseCase) {}

@@ -79,14 +79,18 @@ describe('Fetch Medicines (E2E)', () => {
     const response = await request(app.getHttpServer())
       .get('/medicines-variants')
       .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+      })
       .send()
 
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
-      medicines_variants: expect.arrayContaining([
-        expect.objectContaining({ dosage: '500' }),
-        expect.objectContaining({ dosage: '1' }),
-      ]),
-    })
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        medicines_variants: expect.arrayContaining([
+          expect.objectContaining({ dosage: '500' }),
+          expect.objectContaining({ dosage: '1' }),
+        ]),
+      }))
   })
 })

@@ -2,15 +2,18 @@ import { Either, right } from '@/core/either'
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 import { Injectable } from '@nestjs/common'
 import { InstitutionsRepository } from '../../../repositories/institutions-repository'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchInstitutionsUseCaseRequest {
   page: number
+  content?: string
 }
 
 type FetchInstitutionsUseCaseResponse = Either<
   null,
   {
-    institutions: Institution[]
+    institutions: Institution[],
+    meta: Meta
   }
 >
 
@@ -20,11 +23,13 @@ export class FethInstitutionsUseCase {
 
   async execute({
     page,
+    content,
   }: FetchInstitutionsUseCaseRequest): Promise<FetchInstitutionsUseCaseResponse> {
-    const institutions = await this.institutionsRepository.findMany({ page })
+    const { institutions, meta } = await this.institutionsRepository.findMany({ page }, content)
 
     return right({
       institutions,
+      meta,
     })
   }
 }
