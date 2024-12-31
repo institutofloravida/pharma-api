@@ -1,21 +1,13 @@
-import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common'
-import { z } from 'zod'
+import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { CreateMedicineVariantUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine-variant/create-medicine-variant'
 import { MedicineVariantPresenter } from '@/infra/http/presenters/medicine-variant-presenter'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { CreateMedicineVariantDto } from './dtos/create-medicine-variant.dto'
 
-const createMedicineVariantBodySchema = z.object({
-  dosage: z.string(),
-  medicineId: z.string(),
-  pharmaceuticalFormId: z.string(),
-  unitMeasureId: z.string(),
-})
-
-type CreateMedicineVariantBodySchema = z.infer<typeof createMedicineVariantBodySchema>
-
+@ApiTags('medicine-variant')
+@ApiBearerAuth()
 @Controller('/medicine-variant')
-
 @UseGuards(JwtAuthGuard)
 export class CreateMedicineVariantController {
   constructor(
@@ -24,8 +16,7 @@ export class CreateMedicineVariantController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(createMedicineVariantBodySchema))
-  async handle(@Body() body: CreateMedicineVariantBodySchema) {
+  async handle(@Body() body: CreateMedicineVariantDto) {
     const {
       dosage,
       medicineId,

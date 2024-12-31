@@ -79,6 +79,9 @@ describe('Fetch Medicines (E2E)', () => {
     const response = await request(app.getHttpServer())
       .get('/medicines-variants')
       .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+      })
       .send()
 
     expect(response.statusCode).toBe(200)
