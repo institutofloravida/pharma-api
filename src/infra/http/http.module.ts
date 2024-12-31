@@ -54,6 +54,8 @@ import { FetchBatchesController } from './controllers/auxiliary-records/batch/fe
 import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/batch/fetch-batches'
 import { CreatePatientController } from './controllers/patient/create-patient.controller'
 import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/create-patient'
+import { FetchPatientsController } from './controllers/patient/fetch-patients.controller'
+import { FetchPatientsUseCase } from '@/domain/pharma/application/use-cases/patient/fetch-pacients'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -85,6 +87,7 @@ import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/pati
     FetchMedicinesVariantsController,
     FetchMedicinesEntriesController,
     FetchBatchesController,
+    FetchPatientsController,
 
   ],
   providers: [
@@ -114,6 +117,7 @@ import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/pati
     FetchMedicinesVariantsUseCase,
     FetchRegisterMedicinesEntriesUseCase,
     FetchBatchesUseCase,
+    FetchPatientsUseCase,
   ],
 })
 export class HttpModule {}

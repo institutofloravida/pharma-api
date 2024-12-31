@@ -15,7 +15,6 @@ export class FetchPharmaceuticalFormController {
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchPharmaceuticalFormDto) {
     const { page, query } = queryParams
-    console.log(page)
     const result = await this.fetchPharmaceuticalForms.execute({
       page,
       content: query,

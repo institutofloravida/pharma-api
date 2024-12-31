@@ -77,7 +77,9 @@ export class PrismaPatientsRepository implements PatientsRepository {
           ...(cpf && { cpf }),
           ...(sus && { sus }),
           ...(generalRegistration && { generalRegistration }),
-          ...(birthDate && { birthDate }),
+          ...(birthDate && {
+            birthDate: { gte: new Date(birthDate), lte: new Date(birthDate) },
+          }),
         },
         take: 20,
         skip: (page - 1) * 20,
@@ -91,12 +93,16 @@ export class PrismaPatientsRepository implements PatientsRepository {
           ...(cpf && { cpf }),
           ...(sus && { sus }),
           ...(generalRegistration && { generalRegistration }),
-          ...(birthDate && { birthDate }),
+          ...(birthDate && {
+            birthDate: { gte: new Date(birthDate), lte: new Date(birthDate) },
+          }),
         },
       }),
     ])
 
-    const patientsPaginated = patients.map(item => PrismaPatientMapper.toDomain(item))
+    const patientsPaginated = patients.map((item) =>
+      PrismaPatientMapper.toDomain(item),
+    )
     return {
       patients: patientsPaginated,
       meta: {
