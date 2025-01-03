@@ -1,12 +1,14 @@
+import type { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
-import { StocksRepository, type StockWithInstitution } from '@/domain/pharma/application/repositories/stocks-repository'
+import {
+  StocksRepository,
+  type StockWithInstitution,
+} from '@/domain/pharma/application/repositories/stocks-repository'
 import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 
 export class InMemoryStocksRepository implements StocksRepository {
-  constructor(
-    private institutionsRepository: InstitutionsRepository,
-  ) {}
+  constructor(private institutionsRepository: InstitutionsRepository) {}
 
   public items: Stock[] = []
 
@@ -34,7 +36,10 @@ export class InMemoryStocksRepository implements StocksRepository {
     return stock
   }
 
-  async findManyByInstitutionsId({ page }: PaginationParams, institutionsIds: string[]): Promise<Stock[]> {
+  async findManyByInstitutionsId(
+    { page }: PaginationParams,
+    institutionsIds: string[],
+  ): Promise<Stock[]> {
     const stocks = this.items
       .filter((item) => institutionsIds.includes(item.institutionId.toString()))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -43,9 +48,15 @@ export class InMemoryStocksRepository implements StocksRepository {
     return stocks
   }
 
-  async findManyWithInstitution({ page }: PaginationParams, institutionsIds: string[], isSuper = false): Promise<StockWithInstitution[]> {
-    let stocks = this.items
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+  async findManyWithInstitution(
+    { page }: PaginationParams,
+    institutionsIds: string[],
+    content?: string,
+    isSuper = false,
+  ): Promise<{ stocks: StockWithInstitution[]; meta: Meta }> {
+    let stocks = this.items.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
 
     if (!isSuper) {
       stocks = stocks.filter((item) =>
@@ -54,12 +65,16 @@ export class InMemoryStocksRepository implements StocksRepository {
           : false,
       )
     }
-
-    stocks = stocks.slice((page - 1) * 20, page * 20)
+    const stocksFiltered = stocks.filter(item => {
+      return item.content.includes(content ?? '')
+    })
+    const stocksPaginated = stocksFiltered.slice((page - 1) * 20, page * 20)
 
     const stocksWithInstitution = await Promise.all(
-      stocks.map(async (stock) => {
-        const institution = await this.institutionsRepository.findById(stock.institutionId.toString())
+      stocksPaginated.map(async (stock) => {
+        const institution = await this.institutionsRepository.findById(
+          stock.institutionId.toString(),
+        )
 
         return {
           stock,
@@ -70,6 +85,12 @@ export class InMemoryStocksRepository implements StocksRepository {
       }),
     )
 
-    return stocksWithInstitution
+    return {
+      stocks: stocksWithInstitution,
+      meta: {
+        page,
+        totalCount: stocksFiltered.length,
+      },
+    }
   }
 }

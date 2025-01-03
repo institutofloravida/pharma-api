@@ -1,9 +1,13 @@
-import { StocksRepository, type StockWithInstitution } from '@/domain/pharma/application/repositories/stocks-repository'
+import {
+  StocksRepository,
+  StockWithInstitution,
+} from '@/domain/pharma/application/repositories/stocks-repository'
 import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 import { PrismaService } from '../prisma.service'
 import { PrismaStockMapper } from '../mappers/prisma-stock-mapper'
 import { Injectable } from '@nestjs/common'
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaStocksRepository implements StocksRepository {
@@ -16,7 +20,10 @@ export class PrismaStocksRepository implements StocksRepository {
     })
   }
 
-  async findByContent(content: string, institutionId: string): Promise<Stock | null> {
+  async findByContent(
+    content: string,
+    institutionId: string,
+  ): Promise<Stock | null> {
     const stock = await this.prisma.stock.findFirst({
       where: {
         name: {
@@ -25,7 +32,6 @@ export class PrismaStocksRepository implements StocksRepository {
         },
         institutionId,
       },
-
     })
 
     if (!stock) {
@@ -49,7 +55,10 @@ export class PrismaStocksRepository implements StocksRepository {
     return PrismaStockMapper.toDomain(stock)
   }
 
-  async findManyByInstitutionsId({ page }: PaginationParams, institutionsIds: string[]): Promise<Stock[]> {
+  async findManyByInstitutionsId(
+    { page }: PaginationParams,
+    institutionsIds: string[],
+  ): Promise<Stock[]> {
     const stocks = await this.prisma.stock.findMany({
       where: {
         institutionId: {
@@ -68,23 +77,49 @@ export class PrismaStocksRepository implements StocksRepository {
     return stocks.map(PrismaStockMapper.toDomain)
   }
 
-  async findManyWithInstitution({ page }: PaginationParams, institutionsIds: string[], isSuper?: boolean): Promise<StockWithInstitution[]> {
-    const stocks = await this.prisma.stock.findMany({
-      where: !isSuper
-        ? { institutionId: { in: institutionsIds } }
-        : undefined,
-      include: {
-        Institution: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 20,
-      skip: (page - 1) * 20,
-    })
-    return stocks.map((stock) => ({
+  async findManyWithInstitution(
+    { page }: PaginationParams,
+    institutionsIds: string[],
+    content?: string,
+    isSuper?: boolean,
+  ): Promise<{ stocks: StockWithInstitution[]; meta: Meta }> {
+    const [stocks, stocksTotalCount] = await Promise.all([
+      this.prisma.stock.findMany({
+        where: {
+          ...(!isSuper && { institutionId: { in: institutionsIds } }),
+          name: {
+            contains: content ?? '',
+            mode: 'insensitive',
+          },
+        },
+        include: {
+          Institution: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 20,
+        skip: (page - 1) * 20,
+      }),
+      this.prisma.stock.count({
+        where: {
+          ...(!isSuper && { institutionId: { in: institutionsIds } }),
+
+          name: { contains: content ?? '', mode: 'insensitive' },
+        },
+      }),
+    ])
+
+    const stocksMapped = stocks.map((stock) => ({
       stock: PrismaStockMapper.toDomain(stock),
       institutionName: stock.Institution?.name ?? '',
     }))
+    return {
+      stocks: stocksMapped,
+      meta: {
+        page,
+        totalCount: stocksTotalCount,
+      },
+    }
   }
 }

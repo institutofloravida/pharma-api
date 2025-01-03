@@ -67,7 +67,7 @@ model PharmaceuticalForm {
 model Manufacturer {
   id          String    @id @default(uuid())
   name        String
-  cnpj        String
+  cnpj        String    @db.VarChar(14)
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt

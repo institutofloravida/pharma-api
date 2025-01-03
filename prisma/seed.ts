@@ -42,11 +42,11 @@ async function main() {
 
   await prisma.manufacturer.createMany({
     data: [
-      { name: 'Medley', cnpj: '11.111.111/0001-11', description: 'Fabricante de medicamentos genéricos.' },
-      { name: 'Eurofarma', cnpj: '22.222.222/0001-22', description: 'Líder em medicamentos no Brasil.' },
-      { name: 'Pfizer', cnpj: '33.333.333/0001-33', description: 'Empresa global de biotecnologia.' },
-      { name: 'Aché', cnpj: '44.444.444/0001-44', description: 'Especializada em medicamentos e suplementos.' },
-      { name: 'EMS', cnpj: '55.555.555/0001-55', description: 'Maior farmacêutica brasileira.' },
+      { name: 'Medley', cnpj: '11111111111111', description: 'Fabricante de medicamentos genéricos.' },
+      { name: 'Eurofarma', cnpj: '22222222222222', description: 'Líder em medicamentos no Brasil.' },
+      { name: 'Pfizer', cnpj: '33333333333333', description: 'Empresa global de biotecnologia.' },
+      { name: 'Aché', cnpj: '44444444144', description: 'Especializada em medicamentos e suplementos.' },
+      { name: 'EMS', cnpj: '55555555000155', description: 'Maior farmacêutica brasileira.' },
 
     ],
   })

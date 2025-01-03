@@ -20,11 +20,14 @@ export class FetchManufacturersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchManufacturersDto) {
-    const { page } = queryParams
+    const { page, cnpj, query } = queryParams
 
     const result = await this.fetchManufacturers.execute({
       page,
-    })
+      content: query,
+      cnpj,
+    },
+    )
     if (result.isLeft()) {
       throw new BadRequestException({})
     }

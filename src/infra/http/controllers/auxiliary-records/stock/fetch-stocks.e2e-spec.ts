@@ -59,10 +59,12 @@ describe('Fetch stocks (E2E)', () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.body.stocks).toHaveLength(1)
-    expect(response.body).toEqual({
-      stocks: expect.arrayContaining([
-        expect.objectContaining({ name: 'stock-01' }),
-      ]),
-    })
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        stocks: expect.arrayContaining([
+          expect.objectContaining({ name: 'stock-01' }),
+        ]),
+      }),
+    )
   })
 })

@@ -28,7 +28,7 @@ describe('Fetch Manufacturers (E2E)', () => {
     await app.init()
   })
 
-  test('[GET] /manufacturers', async () => {
+  test('[GET] /manufacturer', async () => {
     const user = await operatorFactory.makePrismaOperator({
       role: 'MANAGER',
     })
@@ -52,11 +52,13 @@ describe('Fetch Manufacturers (E2E)', () => {
       })
       .send()
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
-      manufacturers: expect.arrayContaining([
-        expect.objectContaining({ name: 'manufacturer 1' }),
-        expect.objectContaining({ name: 'manufacturer 2' }),
-      ]),
-    })
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        manufacturers: expect.arrayContaining([
+          expect.objectContaining({ name: 'manufacturer 1' }),
+          expect.objectContaining({ name: 'manufacturer 2' }),
+        ]),
+      }),
+    )
   })
 })

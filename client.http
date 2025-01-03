@@ -34,7 +34,7 @@ POST {{baseurl}}/sessions
 Content-Type: application/json
 
 {
-  "email": "floravida@gmail.com",
+  "email": "yurisousaenfer@gmail.com",
   "password": "12345678"
 }
 
@@ -80,7 +80,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_stocks
-GET {{baseurl}}/stocks?page=1
+GET {{baseurl}}/stocks?page=1&institutionsIds=ac96054c-856e-46c0-bdde-7efbe78daba8
 Authorization: Bearer {{authToken}}
 
 
@@ -141,7 +141,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_manufacturers
-GET {{baseurl}}/pharmaceutical-form?page=1
+GET {{baseurl}}/manufacturer?page=1&cnpj=1
 Authorization: Bearer {{authToken}}
 
 ###
