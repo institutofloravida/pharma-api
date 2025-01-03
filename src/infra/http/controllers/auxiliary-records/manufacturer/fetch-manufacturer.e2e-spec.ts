@@ -47,14 +47,20 @@ describe('Fetch Manufacturers (E2E)', () => {
     const response = await request(app.getHttpServer())
       .get('/manufacturer')
       .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+      })
       .send()
 
+    console.log(response.error)
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
-      manufacturers: expect.arrayContaining([
-        expect.objectContaining({ name: 'manufacturer 1' }),
-        expect.objectContaining({ name: 'manufacturer 2' }),
-      ]),
-    })
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        manufacturers: expect.arrayContaining([
+          expect.objectContaining({ name: 'manufacturer 1' }),
+          expect.objectContaining({ name: 'manufacturer 2' }),
+        ]),
+      }),
+    )
   })
 })

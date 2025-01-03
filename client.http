@@ -141,7 +141,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_manufacturers
-GET {{baseurl}}/pharmaceutical-form?page=1
+GET {{baseurl}}/manufacturer?page=1&cnpj=1
 Authorization: Bearer {{authToken}}
 
 ###

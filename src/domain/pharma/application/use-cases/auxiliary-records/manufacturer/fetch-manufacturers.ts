@@ -2,15 +2,19 @@ import { Either, right } from '@/core/either'
 import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 import { Injectable } from '@nestjs/common'
 import { ManufacturersRepository } from '../../../repositories/manufacturers-repository'
+import type { Meta } from '@/core/repositories/meta'
 
 interface FetchManufacturersUseCaseRequest {
-  page: number
+  page: number;
+  content?: string;
+  cnpj?: string;
 }
 
 type FetchManufacturersUseCaseResponse = Either<
   null,
   {
-    manufacturers: Manufacturer[]
+    manufacturers: Manufacturer[];
+    meta: Meta;
   }
 >
 
@@ -20,11 +24,18 @@ export class FetchManufacturersUseCase {
 
   async execute({
     page,
+    content,
+    cnpj,
   }: FetchManufacturersUseCaseRequest): Promise<FetchManufacturersUseCaseResponse> {
-    const manufacturers = await this.ManufacturersRepository.findMany({ page })
+    const { manufacturers, meta } = await this.ManufacturersRepository.findMany(
+      { page },
+      content,
+      cnpj,
+    )
 
     return right({
       manufacturers,
+      meta,
     })
   }
 }

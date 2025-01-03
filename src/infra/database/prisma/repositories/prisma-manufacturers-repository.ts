@@ -4,11 +4,11 @@ import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaManufacturerMapper } from '../mappers/prisma-manufacturer-mapper'
+import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
 export class PrismaManufacturersRepository implements ManufacturersRepository {
-  constructor(private prisma: PrismaService) {
-  }
+  constructor(private prisma: PrismaService) {}
 
   async create(manufacturer: Manufacturer) {
     const data = PrismaManufacturerMapper.toPrisma(manufacturer)
@@ -51,13 +51,46 @@ export class PrismaManufacturersRepository implements ManufacturersRepository {
     return PrismaManufacturerMapper.toDomain(manufacturer)
   }
 
-  async findMany({ page }: PaginationParams): Promise<Manufacturer[]> {
-    const manufacturers = await this.prisma.manufacturer.findMany({
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * 20,
-      take: 20,
-    })
+  async findMany(
+    { page }: PaginationParams,
+    content?: string,
+    cnpj?: string,
+  ): Promise<{ manufacturers: Manufacturer[]; meta: Meta }> {
+    const [manufacturers, manufacturesTotalCount] = await Promise.all([
+      await this.prisma.manufacturer.findMany({
+        where: {
+          name: {
+            contains: content ?? '',
+            mode: 'insensitive',
+          },
+          cnpj: {
+            contains: cnpj ?? '',
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * 20,
+        take: 20,
+      }),
+      await this.prisma.manufacturer.count({
+        where: {
+          name: {
+            contains: content ?? '',
+            mode: 'insensitive',
+          },
+          cnpj: {
+            contains: cnpj ?? '',
+          },
+        },
+      }),
+    ])
 
-    return manufacturers.map(PrismaManufacturerMapper.toDomain)
+    const manufacturersMapped = manufacturers.map(PrismaManufacturerMapper.toDomain)
+    return {
+      manufacturers: manufacturersMapped,
+      meta: {
+        page,
+        totalCount: manufacturesTotalCount,
+      },
+    }
   }
 }

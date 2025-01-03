@@ -1,20 +1,8 @@
 import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { z } from 'zod'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchManufacturersUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/fetch-manufacturers'
 import { ManufacturerPresenter } from '@/infra/http/presenters/manufacturer-presenter'
-
-const pageQueryParamSchema = z
-  .string()
-  .optional()
-  .default('1')
-  .transform(Number)
-  .pipe(z.number().min(1))
-
-const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
-
-type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+import { FetchManufacturersDto } from './dtos/fetch-manufacturers.dto'
 
 @Controller('/manufacturer')
 export class FetchManufacturersController {
@@ -22,10 +10,16 @@ export class FetchManufacturersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
+  async handle(@Query() queryParams: FetchManufacturersDto) {
+    const { page, query, cnpj } = queryParams
+    console.log('controller', page)
+
     const result = await this.fetchManufacturers.execute({
       page,
-    })
+      content: query,
+      cnpj,
+    },
+    )
     if (result.isLeft()) {
       throw new BadRequestException({})
     }
