@@ -1,14 +1,16 @@
-import { IsInt, IsOptional, Min } from 'class-validator'
-import { ApiPropertyOptional } from '@nestjs/swagger'
+import { IsNumber, IsOptional, Min } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 
 export class FetchPathologiesDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
+    description: 'Número da página para a listagem',
     example: 1,
-    description: 'The page number for pagination. Must be an integer greater than or equal to 1.',
-    default: 1,
+    required: false,
   })
   @IsOptional()
-  @IsInt({ message: 'Page must be an integer.' })
-  @Min(1, { message: 'Page must be at least 1.' })
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
   page: number = 1
 }
