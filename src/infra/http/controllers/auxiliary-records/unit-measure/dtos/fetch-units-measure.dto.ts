@@ -1,5 +1,5 @@
-import { IsInt, IsOptional, Min } from 'class-validator'
-import { ApiPropertyOptional } from '@nestjs/swagger'
+import { IsInt, IsOptional, IsString, Min } from 'class-validator'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 
 export class FetchUnitsMeasureDto {
@@ -13,4 +13,13 @@ export class FetchUnitsMeasureDto {
   @IsInt({ message: 'Page must be an integer.' })
   @Min(1, { message: 'Page must be at least 1.' })
   page: number = 1
+
+  @ApiProperty({
+    description: 'Filtro de busca para as unidades de medidas',
+    example: 'cx',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  query?: string
 }
