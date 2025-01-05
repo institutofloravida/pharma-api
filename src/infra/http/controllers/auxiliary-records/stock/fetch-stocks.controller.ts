@@ -18,7 +18,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('stock')
 @ApiBearerAuth()
-@Controller('/stock')
+@Controller('/stocks')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('SUPER_ADMIN', 'MANAGER')
 export class FetchStocksController {
@@ -46,8 +46,11 @@ export class FetchStocksController {
       throw new BadRequestException({})
     }
 
-    const stocks = result.value.stocks
+    const {
+      stocks,
+      meta,
+    } = result.value
 
-    return { stocks: stocks.map(StockPresenter.toHTTP) }
+    return { stocks: stocks.map(StockPresenter.toHTTP), meta }
   }
 }

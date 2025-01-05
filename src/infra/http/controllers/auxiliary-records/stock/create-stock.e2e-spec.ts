@@ -28,7 +28,7 @@ describe('Create Stock (E2E)', () => {
     await app.init()
   })
 
-  test('[POST] /stocks', async () => {
+  test('[POST] /stock', async () => {
     const user = await operatorFactory.makePrismaOperator({
       role: 'SUPER_ADMIN',
     })
@@ -36,7 +36,7 @@ describe('Create Stock (E2E)', () => {
 
     const institution = await institutionFactory.makePrismaInstitution({})
 
-    const response = await request(app.getHttpServer()).post('/stocks')
+    const response = await request(app.getHttpServer()).post('/stock')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'stock test',

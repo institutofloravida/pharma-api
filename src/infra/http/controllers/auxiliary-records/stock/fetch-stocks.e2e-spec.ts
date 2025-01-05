@@ -31,7 +31,7 @@ describe('Fetch stocks (E2E)', () => {
     await app.init()
   })
 
-  test('[GET] /stock', async () => {
+  test('[GET] /stocks', async () => {
     const insitution = await institutionFactory.makePrismaInstitution()
     const insitution2 = await institutionFactory.makePrismaInstitution()
     const user = await operatorFactory.makePrismaOperator({
@@ -52,7 +52,7 @@ describe('Fetch stocks (E2E)', () => {
     ])
 
     const response = await request(app.getHttpServer())
-      .get('/stock')
+      .get('/stocks')
       .set('Authorization', `Bearer ${accessToken}`)
       .query({ page: 1 })
       .send()

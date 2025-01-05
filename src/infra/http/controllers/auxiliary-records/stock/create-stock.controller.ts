@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('stock')
 @ApiBearerAuth()
-@Controller('/stocks')
+@Controller('/stock')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('SUPER_ADMIN')
 export class CreateStockController {
