@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('institution')
 @ApiBearerAuth()
-@Controller('/institutions')
+@Controller('/institution')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('SUPER_ADMIN')
 export class CreateInstitutionController {

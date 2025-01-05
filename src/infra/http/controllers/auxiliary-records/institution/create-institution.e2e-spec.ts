@@ -26,13 +26,13 @@ describe('Create institution (E2E)', () => {
     await app.init()
   })
 
-  test('[POST] /institutions', async () => {
+  test('[POST] /institution', async () => {
     const user = await operatorFactory.makePrismaOperator({
       role: 'SUPER_ADMIN',
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
-    const response = await request(app.getHttpServer()).post('/institutions')
+    const response = await request(app.getHttpServer()).post('/institution')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'institution test',
