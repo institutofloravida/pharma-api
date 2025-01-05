@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsOptional, IsArray, ValidateNested, IsNumber, IsDate, IsISO8601, IsNotEmpty } from 'class-validator'
+import { IsString, IsOptional, IsArray, ValidateNested, IsNumber, IsISO8601, IsNotEmpty } from 'class-validator'
 import { Type } from 'class-transformer'
 
 class BatchDto {
@@ -68,11 +68,11 @@ export class RegisterMedicineEntryDto {
 
   @ApiProperty({
     description: 'Data de entrada',
-    required: false,
+    example: '2025-12-01T03:00:00.000Z',
   })
-  @IsOptional()
-  @IsDate()
-  entryDate?: Date
+  @IsISO8601({ strict: true })
+  @IsNotEmpty()
+  entryDate: Date
 
   @ApiProperty({
     description: 'Lista de novos lotes para entrada',
