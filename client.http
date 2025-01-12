@@ -23,8 +23,9 @@ Content-Type: application/json
 
 {
   "name": "fulano de tal",
-  "email": "floravida@gmail.com",
-  "password": "12345678"
+  "email": "testewithinstitution@gmail.com",
+  "password": "12345678",
+  "institutionsIds": ["1f9d3757-3eb7-4c0f-974b-f59e38b9dc75"]
 }
 
 ###

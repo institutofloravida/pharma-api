@@ -1,5 +1,13 @@
 import { OperatorRole } from '@prisma/client'
-import { IsArray, IsEmail, IsEnum, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator'
+import {
+  IsArray,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MinLength,
+  ArrayNotEmpty,
+} from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 
 export class CreateAccountOperatorDTO {
@@ -39,6 +47,7 @@ export class CreateAccountOperatorDTO {
   })
   @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  @ArrayNotEmpty({ message: 'InstitutionsIds cannot be empty' })
+  @IsString({ each: true })
   institutionsIds: string[]
 }
