@@ -38,7 +38,6 @@ describe('Fetch stocks (E2E)', () => {
       role: 'MANAGER',
       institutionsIds: [insitution.id],
     })
-
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
     await Promise.all([
       stockFactory.makePrismaStock({

@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Controller,
   Get,
-  ParseArrayPipe,
   Query,
   UseGuards,
 } from '@nestjs/common'
@@ -28,19 +27,15 @@ export class FetchStocksController {
   async handle(
     @CurrentUser() user: UserPayload,
     @Query() queryParams: FetchStocksDto,
-    @Query(
-      'institutionsIds',
-      new ParseArrayPipe({ items: String, optional: true }),
-    )
-    institutionsIds: string[],
   ) {
     const userId = user.sub
-    const { page } = queryParams
+    const { page, query, institutionsIds } = queryParams
 
     const result = await this.fetchStocks.execute({
       page,
-      institutionsIds,
       operatorId: userId,
+      content: query,
+      institutionsIds,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})

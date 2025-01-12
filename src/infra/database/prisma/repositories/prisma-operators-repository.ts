@@ -19,44 +19,34 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
 
   async findById(id: string): Promise<Operator | null> {
     const operator = await this.prisma.operator.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
       include: {
-        institutions: {
-          select: {
-            id: true,
-          },
-        },
+        institutions: true, // Carrega as instituições relacionadas
       },
     })
 
-    if (!operator) {
-      return null
-    }
+    if (!operator) return null
 
-    return PrismaOperatorMapper.toDomain(operator)
+    return PrismaOperatorMapper.toDomain({
+      ...operator,
+      institutions: operator.institutions.map((inst) => ({ id: inst.id })),
+    })
   }
 
   async findByEmail(email: string): Promise<Operator | null> {
     const operator = await this.prisma.operator.findUnique({
-      where: {
-        email,
-      },
+      where: { email },
       include: {
-        institutions: {
-          select: {
-            id: true,
-          },
-        },
+        institutions: true,
       },
     })
 
-    if (!operator) {
-      return null
-    }
+    if (!operator) return null
 
-    return PrismaOperatorMapper.toDomain(operator)
+    return PrismaOperatorMapper.toDomain({
+      ...operator,
+      institutions: operator.institutions.map((inst) => ({ id: inst.id })),
+    })
   }
 
   async findMany(
@@ -72,14 +62,10 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       },
       include: {
         institutions: {
-          select: {
-            id: true,
-          },
+          select: { id: true },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
       take: 20,
       skip: (page - 1) * 20,
     })
@@ -94,7 +80,12 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
     })
 
     return {
-      operators: operatorsPaginated.map(PrismaOperatorMapper.toDomain),
+      operators: operatorsPaginated.map((operator) =>
+        PrismaOperatorMapper.toDomain({
+          ...operator,
+          institutions: operator.institutions.map((inst) => ({ id: inst.id })),
+        }),
+      ),
       meta: {
         page,
         totalCount: operatorsTotalCount,

@@ -13,7 +13,7 @@ export function makeOperator(
     name: faker.person.fullName(),
     email: faker.internet.email(),
     passwordHash: faker.internet.password(),
-    institutionsIds: [new UniqueEntityId()],
+    institutionsIds: [],
     role: 'COMMON',
     ...override,
   },

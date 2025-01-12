@@ -1,5 +1,5 @@
 import { OperatorRole } from '@prisma/client'
-import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator'
+import { IsArray, IsEmail, IsEnum, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 
 export class CreateAccountOperatorDTO {
@@ -32,4 +32,13 @@ export class CreateAccountOperatorDTO {
   @IsOptional()
   @IsEnum(OperatorRole, { message: 'Role must be a valid OperatorRole' })
   role?: OperatorRole
+
+  @ApiProperty({
+    example: ['institutionId1', 'institutionId2'],
+    description: 'List of institution IDs that the operator has access to.',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  institutionsIds: string[]
 }

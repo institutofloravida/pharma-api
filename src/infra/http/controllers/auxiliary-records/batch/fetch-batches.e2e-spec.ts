@@ -5,11 +5,14 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { BatchFactory } from 'test/factories/make-batch'
+import { InstitutionFactory } from 'test/factories/make-insitution'
 import { ManufacturerFactory } from 'test/factories/make-manufacturer'
 import { OperatorFactory } from 'test/factories/make-operator'
 
 describe('Fetch Bacthes (E2E)', () => {
   let app: INestApplication
+  let institutionFactory: InstitutionFactory
+
   let manufacturerFactory: ManufacturerFactory
   let batchFactory: BatchFactory
   let operatorFactory: OperatorFactory
@@ -18,21 +21,27 @@ describe('Fetch Bacthes (E2E)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [OperatorFactory, BatchFactory, ManufacturerFactory],
+      providers: [OperatorFactory, BatchFactory, ManufacturerFactory, InstitutionFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
     manufacturerFactory = moduleRef.get(ManufacturerFactory)
     operatorFactory = moduleRef.get(OperatorFactory)
     batchFactory = moduleRef.get(BatchFactory)
+    institutionFactory = moduleRef.get(InstitutionFactory)
+
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
   test('[GET] /batches', async () => {
+    const insitution = await institutionFactory.makePrismaInstitution()
+
     const user = await operatorFactory.makePrismaOperator({
       role: 'SUPER_ADMIN',
+      institutionsIds: [insitution.id],
+
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

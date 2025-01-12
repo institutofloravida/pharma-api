@@ -18,14 +18,64 @@ model Operator {
   name          String
   email         String          @unique
   passwordHash  String          @map("password_hash")
-  institutions  Institution[]   @relation("OperatorInstitutions")
   role          OperatorRole    @default(COMMON)
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime?       @updatedAt @map("updated_at")
+  institutions  Institution[]   @relation("OperatorInstitutions")
   MedicineEntry MedicineEntry[]
 
   @@map("operators")
 }
+
+model Institution {
+  id          String     @id @default(uuid())
+  name        String
+  cnpj        String     @unique
+  description String?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime?  @updatedAt @map("updated_at")
+  operators   Operator[] @relation("OperatorInstitutions")
+  Stock       Stock[]
+
+  @@map("institutions")
+}
+
+// model Operator {
+//   id            String                    @id @default(uuid())
+//   name          String
+//   email         String                    @unique
+//   passwordHash  String                    @map("password_hash")
+//   role          OperatorRole              @default(COMMON)
+//   createdAt     DateTime                  @default(now()) @map("created_at")
+//   updatedAt     DateTime?                 @updatedAt @map("updated_at")
+//   MedicineEntry MedicineEntry[]
+//   institutions  OperatorsOnInstitutions[]
+
+//   @@map("operators")
+// }
+
+// model Institution {
+//   id          String                    @id @default(uuid())
+//   name        String
+//   cnpj        String                    @unique
+//   description String?
+//   createdAt   DateTime                  @default(now()) @map("created_at")
+//   updatedAt   DateTime?                 @updatedAt @map("updated_at")
+//   stocks      Stock[]
+//   operators   OperatorsOnInstitutions[]
+
+//   @@map("institutions")
+// }
+
+// model OperatorsOnInstitutions {
+//   operatorId    String
+//   institutionId String
+
+//   operator    Operator    @relation(fields: [operatorId], references: [id])
+//   institution Institution @relation(fields: [institutionId], references: [id])
+
+//   @@id([operatorId, institutionId])
+// }
 
 model Stock {
   id            String          @id @default(uuid())
@@ -39,19 +89,6 @@ model Stock {
   Batchestock   Batchestock[]
 
   @@map("stocks")
-}
-
-model Institution {
-  id          String     @id @default(uuid())
-  name        String
-  cnpj        String     @unique
-  description String?
-  operators   Operator[] @relation("OperatorInstitutions")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime?  @updatedAt @map("updated_at")
-  stocks      Stock[]
-
-  @@map("institutions")
 }
 
 model PharmaceuticalForm {

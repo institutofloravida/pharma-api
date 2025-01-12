@@ -14,13 +14,14 @@ export class CreateAccountOperatorController {
   @Post()
   @HttpCode(201)
   async handle(@Body() body: CreateAccountOperatorDTO) {
-    const { name, email, password, role } = body
+    const { name, email, password, role, institutionsIds } = body
 
     const result = await this.registerOperator.execute({
       name,
       email,
       password,
       role,
+      institutionsIds,
     })
 
     if (result.isLeft()) {
