@@ -1,8 +1,8 @@
 import { Either, right } from '@/core/either'
-import { Operator } from '@/domain/pharma/enterprise/entities/operator'
 import { Injectable } from '@nestjs/common'
 import { OperatorsRepository } from '../../repositories/operators-repository'
 import { Meta } from '@/core/repositories/meta'
+import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
 
 interface FetchOperatorsUseCaseRequest {
   page: number
@@ -12,7 +12,7 @@ interface FetchOperatorsUseCaseRequest {
 type FetchOperatorsUseCaseResponse = Either<
   null,
   {
-    operators: Operator[]
+    operators: OperatorWithInstitution[]
     meta: Meta
   }
 >

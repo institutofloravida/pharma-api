@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common'
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { OperatorPresenter } from '../../../presenters/operator-presenter'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/role-decorator'
 import { FetchOperatorsDto } from './dtos/fetch-operator.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { OperatorWithInstitutionPresenter } from '@/infra/http/presenters/operator-with-institution-presenter'
 
 @ApiTags('operator')
 @ApiBearerAuth()
@@ -34,6 +34,6 @@ export class FetchOperatorsController {
 
     const { operators, meta } = result.value
 
-    return { operators: operators.map(OperatorPresenter.toHTTP), meta }
+    return { operators: operators.map(OperatorWithInstitutionPresenter.toHTTP), meta }
   }
 }

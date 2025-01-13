@@ -5,6 +5,8 @@ import { PrismaService } from '../prisma.service'
 import { PrismaOperatorMapper } from '../mappers/prisma-operator-mapper'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
+import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
+import { PrismaOperatorWithInstitutionsMapper } from '../mappers/prisma-operator-with-institution-mapper'
 
 @Injectable()
 export class PrismaOperatorsRepository implements OperatorsRepository {
@@ -29,7 +31,7 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
 
     return PrismaOperatorMapper.toDomain({
       ...operator,
-      institutions: operator.institutions.map((inst) => ({ id: inst.id })),
+      institutions: operator.institutions.map((inst) => ({ id: inst.id, name: inst.name })),
     })
   }
 
@@ -52,7 +54,7 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
   async findMany(
     { page }: PaginationParams,
     content?: string,
-  ): Promise<{ operators: Operator[]; meta: Meta }> {
+  ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }> {
     const operatorsPaginated = await this.prisma.operator.findMany({
       where: {
         name: {
@@ -62,7 +64,7 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       },
       include: {
         institutions: {
-          select: { id: true },
+          select: { id: true, name: true },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -81,9 +83,9 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
 
     return {
       operators: operatorsPaginated.map((operator) =>
-        PrismaOperatorMapper.toDomain({
+        PrismaOperatorWithInstitutionsMapper.toDomain({
           ...operator,
-          institutions: operator.institutions.map((inst) => ({ id: inst.id })),
+          institutions: operator.institutions.map((inst) => ({ id: inst.id, name: inst.name })),
         }),
       ),
       meta: {

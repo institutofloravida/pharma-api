@@ -1,6 +1,7 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Operator } from '../../enterprise/entities/operator'
 import { Meta } from '@/core/repositories/meta'
+import { OperatorWithInstitution } from '../../enterprise/entities/value-objects/operator-with-institution'
 
 export abstract class OperatorsRepository {
   abstract create(operator: Operator): Promise<void>
@@ -9,5 +10,5 @@ export abstract class OperatorsRepository {
   abstract findMany(
     params: PaginationParams,
     content?: string,
-  ): Promise<{ operators: Operator[]; meta: Meta }>
+  ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }>
 }

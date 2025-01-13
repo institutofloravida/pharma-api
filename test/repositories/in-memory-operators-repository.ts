@@ -2,9 +2,15 @@ import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
 import { Operator } from '@/domain/pharma/enterprise/entities/operator'
+import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
+import { InMemoryInstitutionsRepository } from './in-memory-institutions-repository'
 
 export class InMemoryOperatorsRepository implements OperatorsRepository {
   public items: Operator[] = []
+
+  constructor(
+    private institutionsRepository: InMemoryInstitutionsRepository,
+  ) {}
 
   async create(operator: Operator) {
     this.items.push(operator)
@@ -33,19 +39,47 @@ export class InMemoryOperatorsRepository implements OperatorsRepository {
   async findMany(
     { page }: PaginationParams,
     content?: string,
-  ): Promise<{ operators: Operator[]; meta: Meta }> {
-    const operators = this.items
+  ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }> {
+    const filteredOperators = this.items
       .filter(item => item.name.includes(content ?? ''))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
-    const operatorsPaginated = operators
-      .slice((page - 1) * 20, page * 20)
+    const paginatedOperators = filteredOperators.slice((page - 1) * 20, page * 20)
+
+    const operatorsWithInstitutions = await Promise.all(
+      paginatedOperators.map(async operator => {
+        const institutions = await Promise.all(
+          operator.institutionsIds.map(async institutionId => {
+            const institution = await this.institutionsRepository.findById(institutionId.toString())
+
+            if (!institution) {
+              throw new Error(`Institution with ID ${institutionId} does not exist.`)
+            }
+
+            return {
+              id: institution.id,
+              name: institution.content,
+            }
+          }),
+        )
+
+        return OperatorWithInstitution.create({
+          id: operator.id,
+          email: operator.email,
+          name: operator.name,
+          role: operator.role,
+          createdAt: operator.createdAt,
+          updatedAt: operator.updatedAt,
+          institutions,
+        })
+      }),
+    )
 
     return {
-      operators: operatorsPaginated,
+      operators: operatorsWithInstitutions,
       meta: {
         page,
-        totalCount: operators.length,
+        totalCount: filteredOperators.length,
       },
     }
   }

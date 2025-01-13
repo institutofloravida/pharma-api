@@ -5,27 +5,24 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { OperatorFactory } from 'test/factories/make-operator'
-import { MedicineFactory } from 'test/factories/make-medicine'
-import { TherapeuticClassFactory } from 'test/factories/make-therapeutic-class'
+import { InstitutionFactory } from 'test/factories/make-insitution'
 
 describe('Fetch Operators (E2E)', () => {
   let app: INestApplication
-  let therapeuticClassFactory: TherapeuticClassFactory
+  let institutionFactory: InstitutionFactory
   let operatorFactory: OperatorFactory
-  let medicineFactory: MedicineFactory
   let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [MedicineFactory, OperatorFactory, TherapeuticClassFactory],
+      providers: [OperatorFactory, InstitutionFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
-    therapeuticClassFactory = moduleRef.get(TherapeuticClassFactory)
+    institutionFactory = moduleRef.get(InstitutionFactory)
 
     operatorFactory = moduleRef.get(OperatorFactory)
-    medicineFactory = moduleRef.get(MedicineFactory)
     jwt = moduleRef.get(JwtService)
 
     await app.init()
@@ -38,22 +35,21 @@ describe('Fetch Operators (E2E)', () => {
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
-    const therapeuticClass =
-      await therapeuticClassFactory.makePrismaTherapeuticClass()
+    const institution = await institutionFactory.makePrismaInstitution()
 
     await Promise.all([
-      medicineFactory.makePrismaMedicine({
-        content: 'medicine 1',
-        therapeuticClassesIds: [therapeuticClass.id],
+      operatorFactory.makePrismaOperator({
+        name: 'joão',
+        institutionsIds: [institution.id],
       }),
-      medicineFactory.makePrismaMedicine({
-        content: 'medicine 2',
-        therapeuticClassesIds: [],
+      operatorFactory.makePrismaOperator({
+        name: 'maria',
+        institutionsIds: [institution.id],
       }),
     ])
 
     const response = await request(app.getHttpServer())
-      .get('/medicines')
+      .get('/operators')
       .set('Authorization', `Bearer ${accessToken}`)
       .query({
         page: 1,
@@ -63,9 +59,9 @@ describe('Fetch Operators (E2E)', () => {
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual(
       expect.objectContaining({
-        medicines: expect.arrayContaining([
-          expect.objectContaining({ name: 'medicine 1' }),
-          expect.objectContaining({ name: 'medicine 2' }),
+        operators: expect.arrayContaining([
+          expect.objectContaining({ name: 'joão' }),
+          expect.objectContaining({ name: 'maria' }),
         ]),
       }),
     )
