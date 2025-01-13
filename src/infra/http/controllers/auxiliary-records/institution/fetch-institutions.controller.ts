@@ -1,4 +1,10 @@
-import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { InstitutionPresenter } from '../../../presenters/institution-presenter'
@@ -23,8 +29,11 @@ export class FetchInstitutionsController {
       throw new BadRequestException({})
     }
 
-    const institutions = result.value.institutions
+    const { institutions, meta } = result.value
 
-    return { institutions: institutions.map(InstitutionPresenter.toHTTP) }
+    return {
+      institutions: institutions.map(InstitutionPresenter.toHTTP),
+      meta,
+    }
   }
 }
