@@ -9,7 +9,7 @@ export class PatientPresenter {
       sus: patient.sus,
       race: patient.race,
       gender: patient.gender,
-      birhDate: patient.birthDate,
+      birthDate: patient.birthDate,
       generalRegistration: patient.generalRegistration,
     }
   }
