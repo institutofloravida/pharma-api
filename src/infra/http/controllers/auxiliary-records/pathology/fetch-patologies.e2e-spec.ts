@@ -49,6 +49,7 @@ describe('Fetch Pathologies (E2E)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .query({
         page: 1,
+        content: 'patho',
       })
       .send()
 

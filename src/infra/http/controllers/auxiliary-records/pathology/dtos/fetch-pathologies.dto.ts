@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, Min } from 'class-validator'
+import { IsNumber, IsOptional, Min, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 
@@ -13,4 +13,13 @@ export class FetchPathologiesDto {
   @IsNumber()
   @Min(1)
   page: number = 1
+
+  @ApiProperty({
+    description: 'Filtro de conteúdo baseado no nome',
+    example: 'asma',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  query?: string
 }

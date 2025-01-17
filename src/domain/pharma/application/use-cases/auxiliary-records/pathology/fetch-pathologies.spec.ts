@@ -35,13 +35,20 @@ describe('Fetch manufatureres', () => {
 
   it('should be able to fetch paginated pathologies', async () => {
     for (let i = 1; i <= 22; i++) {
-      await inMemoryPathologiesRepository.create(makePathology())
+      await inMemoryPathologiesRepository.create(makePathology({
+        content: `pathology ${i}`,
+      }))
     }
 
     const result = await sut.execute({
       page: 2,
     })
+    const result2 = await sut.execute({
+      page: 1,
+      content: 'pathology 9',
+    })
 
     expect(result.value?.pathologies).toHaveLength(2)
+    expect(result2.value?.pathologies).toHaveLength(1)
   })
 })

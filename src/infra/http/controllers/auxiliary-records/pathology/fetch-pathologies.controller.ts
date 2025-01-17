@@ -14,10 +14,11 @@ export class FetchpathologiesController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchPathologiesDto) {
-    const { page } = queryParams
+    const { page, query } = queryParams
 
     const result = await this.fetchpathologies.execute({
       page,
+      content: query,
     })
 
     if (result.isLeft()) {
