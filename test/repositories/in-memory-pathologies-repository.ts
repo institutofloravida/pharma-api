@@ -1,10 +1,12 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
 import { Pathology } from '@/domain/pharma/enterprise/entities/pathology'
 
 export class InMemoryPathologiesRepository implements PathologiesRepository {
-  
+
+
   public items: Pathology[] = []
 
   async create(pathology: Pathology) {
@@ -14,6 +16,12 @@ export class InMemoryPathologiesRepository implements PathologiesRepository {
     const itemIndex = this.items.findIndex(item => item.id.equal(pathology.id))
 
     this.items[itemIndex] = pathology
+  }
+
+  async delete(pathology: Pathology): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(pathology.id))      
+
+    this.items.splice(itemIndex)
   }
 
   async findById(id: string) {

@@ -11,6 +11,7 @@ interface FetchPatientsUseCaseRequest {
   sus?: string;
   birthDate?: Date;
   generalRegistration?: string;
+  pathologyId?: string
 }
 
 type FetchPatientsUseCaseResponse = Either<
@@ -32,14 +33,18 @@ export class FetchPatientsUseCase {
     sus,
     birthDate,
     generalRegistration,
+    pathologyId
   }: FetchPatientsUseCaseRequest): Promise<FetchPatientsUseCaseResponse> {
     const { patients, meta } = await this.patientsRepository.findMany(
       { page },
-      content,
-      cpf,
-      sus,
-      birthDate,
-      generalRegistration,
+      {
+        birthDate,
+        cpf,
+        generalRegistration,
+        name: content,
+        pathologyId,
+        sus
+      }
     )
 
     return right({

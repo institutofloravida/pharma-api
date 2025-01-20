@@ -9,10 +9,13 @@ export abstract class PatientsRepository {
   abstract findBySus(sus: string): Promise<Patient | null>
   abstract findMany(
     params: PaginationParams,
-    name?: string,
-    cpf?: string,
-    sus?: string,
-    birthDate?: Date,
-    generalRegistration?: string,
+    filters: {
+      name?: string,
+      cpf?: string,
+      sus?: string,
+      birthDate?: Date,
+      generalRegistration?: string,
+      pathologyId?: string
+    }
   ): Promise<{ patients: Patient[]; meta: Meta }>
 }
