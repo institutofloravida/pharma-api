@@ -4,10 +4,16 @@ import { PathologiesRepository } from '@/domain/pharma/application/repositories/
 import { Pathology } from '@/domain/pharma/enterprise/entities/pathology'
 
 export class InMemoryPathologiesRepository implements PathologiesRepository {
+  
   public items: Pathology[] = []
 
   async create(pathology: Pathology) {
     this.items.push(pathology)
+  }
+  async save(pathology: Pathology): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(pathology.id))
+
+    this.items[itemIndex] = pathology
   }
 
   async findById(id: string) {

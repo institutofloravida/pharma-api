@@ -4,6 +4,7 @@ import type { Meta } from '@/core/repositories/meta'
 
 export abstract class PathologiesRepository {
   abstract create(pathology: Pathology): Promise<void>
+  abstract save(pathology: Pathology): Promise<void>
   abstract findById(id: string): Promise<Pathology | null>
   abstract findByContent(content: string): Promise<Pathology | null>
   abstract findMany(

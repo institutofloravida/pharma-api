@@ -3,6 +3,7 @@ import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Pathology } from '../../../../enterprise/entities/pathology'
 import { Injectable } from '@nestjs/common'
 import { PathologiesRepository } from '../../../repositories/pathologies-repository'
+import { PathologyAlreadyExistsError } from './_erros/pathology-already-exists-error'
 
 interface createPathologyUseCaseRequest {
   content: string,
@@ -25,7 +26,7 @@ export class CreatePathologyUseCase {
 
     const contentExists = await this.pathologyRepository.findByContent(content)
     if (contentExists) {
-      return left(new ConflictError())
+      return left(new PathologyAlreadyExistsError(content))
     }
 
     await this.pathologyRepository.create(pathology)
