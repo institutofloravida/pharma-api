@@ -40,43 +40,6 @@ model Institution {
   @@map("institutions")
 }
 
-// model Operator {
-//   id            String                    @id @default(uuid())
-//   name          String
-//   email         String                    @unique
-//   passwordHash  String                    @map("password_hash")
-//   role          OperatorRole              @default(COMMON)
-//   createdAt     DateTime                  @default(now()) @map("created_at")
-//   updatedAt     DateTime?                 @updatedAt @map("updated_at")
-//   MedicineEntry MedicineEntry[]
-//   institutions  OperatorsOnInstitutions[]
-
-//   @@map("operators")
-// }
-
-// model Institution {
-//   id          String                    @id @default(uuid())
-//   name        String
-//   cnpj        String                    @unique
-//   description String?
-//   createdAt   DateTime                  @default(now()) @map("created_at")
-//   updatedAt   DateTime?                 @updatedAt @map("updated_at")
-//   stocks      Stock[]
-//   operators   OperatorsOnInstitutions[]
-
-//   @@map("institutions")
-// }
-
-// model OperatorsOnInstitutions {
-//   operatorId    String
-//   institutionId String
-
-//   operator    Operator    @relation(fields: [operatorId], references: [id])
-//   institution Institution @relation(fields: [institutionId], references: [id])
-
-//   @@id([operatorId, institutionId])
-// }
-
 model Stock {
   id            String          @id @default(uuid())
   name          String
@@ -129,6 +92,7 @@ model Pathology {
   name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  patients  Patient[]
 
   @@map("pathology")
 }
@@ -307,18 +271,18 @@ enum Race {
 }
 
 model Patient {
-  id                  String    @id @default(uuid())
+  id                  String      @id @default(uuid())
   name                String
-  cpf                 String    @unique
-  sus                 String    @unique
+  cpf                 String      @unique
+  sus                 String      @unique
   birthDate           DateTime
   gender              Gender
   race                Race
-  pathologiesIds      String[]
-  generalRegistration String?   @db.VarChar(255)
+  pathologies         Pathology[]
+  generalRegistration String?     @db.VarChar(255)
   addressId           String
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime? @updatedAt
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime?   @updatedAt
 
   @@map("patients")
 }

@@ -22,6 +22,13 @@ export class PrismaPatientsRepository implements PatientsRepository {
       where: {
         id,
       },
+      include: {
+        pathologies: {
+          select: {
+            id: true,
+          },
+        },
+      },
     })
 
     if (!patient) {
@@ -35,6 +42,13 @@ export class PrismaPatientsRepository implements PatientsRepository {
     const patient = await this.prisma.patient.findUnique({
       where: {
         cpf,
+      },
+      include: {
+        pathologies: {
+          select: {
+            id: true,
+          },
+        },
       },
     })
 
@@ -50,6 +64,13 @@ export class PrismaPatientsRepository implements PatientsRepository {
       where: {
         sus,
       },
+      include: {
+        pathologies: {
+          select: {
+            id: true,
+          },
+        },
+      },
     })
 
     if (!patient) {
@@ -61,12 +82,18 @@ export class PrismaPatientsRepository implements PatientsRepository {
 
   async findMany(
     { page }: PaginationParams,
-    name?: string,
-    cpf?: string,
-    sus?: string,
-    birthDate?: Date,
-    generalRegistration?: string,
+    filters: {
+      name?: string;
+      cpf?: string;
+      sus?: string;
+      birthDate?: Date;
+      generalRegistration?: string;
+      pathologyId?: string;
+    },
   ): Promise<{ patients: Patient[]; meta: Meta }> {
+    const { birthDate, cpf, generalRegistration, name, pathologyId, sus } =
+      filters
+
     const [patients, patientsTotalCount] = await Promise.all([
       await this.prisma.patient.findMany({
         where: {
@@ -80,6 +107,20 @@ export class PrismaPatientsRepository implements PatientsRepository {
           ...(birthDate && {
             birthDate: { gte: new Date(birthDate), lte: new Date(birthDate) },
           }),
+          ...(pathologyId && {
+            pathologies: {
+              some: {
+                id: pathologyId,
+              },
+            },
+          }),
+        },
+        include: {
+          pathologies: {
+            select: {
+              id: true,
+            },
+          },
         },
         take: 20,
         skip: (page - 1) * 20,

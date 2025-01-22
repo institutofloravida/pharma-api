@@ -4,7 +4,6 @@ import { PatientsRepository } from '@/domain/pharma/application/repositories/pat
 import { Patient } from '@/domain/pharma/enterprise/entities/patient'
 
 export class InMemoryPatientsRepository implements PatientsRepository {
-
   public items: Patient[] = []
 
   async create(patient: Patient) {
@@ -82,7 +81,6 @@ export class InMemoryPatientsRepository implements PatientsRepository {
   }
 
   private findManyByPathologyId(pathologyId: string): Patient[] {
-    
     const patients = this.items.filter((patient) => {
       const pathologiesIds = patient.pathologiesIds.map(item => item.toString())
       return pathologiesIds.includes(pathologyId)
@@ -92,7 +90,7 @@ export class InMemoryPatientsRepository implements PatientsRepository {
   }
 
   async findMany(
-    {page}: PaginationParams,
+    { page }: PaginationParams,
     filters: {
       name?: string,
       cpf?: string,
@@ -100,10 +98,10 @@ export class InMemoryPatientsRepository implements PatientsRepository {
       birthDate?: Date,
       generalRegistration?: string,
       pathologyId?: string
-    }
+    },
   ): Promise<{ patients: Patient[]; meta: Meta }> {
     let patients = this.items
-    const { birthDate,cpf,generalRegistration,name,pathologyId,sus} = filters
+    const { birthDate, cpf, generalRegistration, name, pathologyId, sus } = filters
     console.log('name', name)
 
     if (name) {

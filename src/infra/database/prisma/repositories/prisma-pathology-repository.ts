@@ -18,6 +18,27 @@ export class PrismaPathologysRepository implements PathologiesRepository {
     })
   }
 
+  async save(pathology: Pathology): Promise<void> {
+    const data = PrismaPathologyMapper.toPrisma(pathology)
+
+    await this.prisma.pathology.update({
+      where: {
+        id: pathology.id.toString(),
+      },
+      data,
+    })
+  }
+
+  async delete(pathology: Pathology): Promise<void> {
+    const data = PrismaPathologyMapper.toPrisma(pathology)
+
+    await this.prisma.pathology.delete({
+      where: {
+        id: data.id,
+      },
+    })
+  }
+
   async findById(id: string): Promise<Pathology | null> {
     const pathology = await this.prisma.pathology.findFirst({
       where: {

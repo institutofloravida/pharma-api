@@ -33,7 +33,7 @@ export class FetchPatientsUseCase {
     sus,
     birthDate,
     generalRegistration,
-    pathologyId
+    pathologyId,
   }: FetchPatientsUseCaseRequest): Promise<FetchPatientsUseCaseResponse> {
     const { patients, meta } = await this.patientsRepository.findMany(
       { page },
@@ -43,8 +43,8 @@ export class FetchPatientsUseCase {
         generalRegistration,
         name: content,
         pathologyId,
-        sus
-      }
+        sus,
+      },
     )
 
     return right({
