@@ -4,6 +4,8 @@ import type { Meta } from '@/core/repositories/meta'
 
 export abstract class ManufacturersRepository {
   abstract create(manufacturer: Manufacturer): Promise<void>
+  abstract save(manufacturer: Manufacturer): Promise<void>
+  abstract findById(manufacturerId: string): Promise<Manufacturer | null>
   abstract findByContent(content: string): Promise<Manufacturer | null>
   abstract findByCnpj(cnpj: string): Promise<Manufacturer | null>
   abstract findMany(

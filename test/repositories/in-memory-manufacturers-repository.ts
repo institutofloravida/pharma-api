@@ -1,10 +1,26 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { ManufacturersRepository } from '@/domain/pharma/application/repositories/manufacturers-repository'
 import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 
 export class InMemoryManufacturersRepository
-implements ManufacturersRepository {
+  implements ManufacturersRepository {
+  async save(manufacturer: Manufacturer): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(manufacturer.id))
+
+    this.items[itemIndex] = manufacturer
+  }
+  async findById(manufacturerId: string): Promise<Manufacturer | null> {
+    const manufacturer = this.items.find(item => item.id.equal(new UniqueEntityId(manufacturerId)))
+
+    if (!manufacturer) {
+      return null
+    }
+
+    return manufacturer
+
+  }
   public items: Manufacturer[] = []
 
   async create(manufacturer: Manufacturer) {
