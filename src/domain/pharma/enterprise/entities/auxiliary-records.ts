@@ -12,7 +12,7 @@ export abstract class AuxiliaryRecord<Props extends AuxiliaryRecordProps>
   }
 
   set content(value: string) {
-    this.content = value
+    this.props.content = value
     this.touch()
   }
 

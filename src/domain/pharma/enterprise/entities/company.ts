@@ -19,4 +19,9 @@ export abstract class Company<Props extends CompanyProps>
   get description() {
     return this.props.description
   }
+
+  set description(value: string | null | undefined) {
+    this.props.description = value
+    this.touch()
+  }
 }

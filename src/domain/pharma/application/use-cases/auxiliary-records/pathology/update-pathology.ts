@@ -31,7 +31,7 @@ export class UpdatePathologyUseCase {
     if(pathologyWithSameContent){
         return left(new PathologyAlreadyExistsError(content))
     }
-
+    
     await this.pathologyRepository.save(pathology)
 
     return right({

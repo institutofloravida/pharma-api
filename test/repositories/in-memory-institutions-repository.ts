@@ -4,6 +4,7 @@ import { InstitutionsRepository } from '@/domain/pharma/application/repositories
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 
 export class InMemoryInstitutionsRepository implements InstitutionsRepository {
+  
   public items: Institution[] = []
 
   async findById(id: string): Promise<Institution | null> {
@@ -18,6 +19,12 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
 
   async create(institution: Institution) {
     this.items.push(institution)
+  }
+
+  async save(institution: Institution): Promise<void> {
+    const itemIndex = await this.items.findIndex(item => item.id.equal(institution.id))
+
+    this.items[itemIndex] = institution
   }
 
   async findByContent(content: string) {
