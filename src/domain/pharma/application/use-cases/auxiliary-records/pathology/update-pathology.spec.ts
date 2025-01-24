@@ -25,7 +25,7 @@ describe('Pathology', () => {
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryPathologysRepository.items).toHaveLength(1)
-      expect(inMemoryPathologysRepository.items[0].content).toBe(result.value?.pathology.content)
+      expect(inMemoryPathologysRepository.items[0].content).toBe('pathology 2')
     }
   })
 
