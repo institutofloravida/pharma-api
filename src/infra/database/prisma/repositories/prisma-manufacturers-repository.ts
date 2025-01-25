@@ -17,6 +17,31 @@ export class PrismaManufacturersRepository implements ManufacturersRepository {
     })
   }
 
+  async save(manufacturer: Manufacturer): Promise<void> {
+    const data = PrismaManufacturerMapper.toPrisma(manufacturer)
+
+    await this.prisma.manufacturer.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    })
+  }
+
+  async findById(manufacturerId: string): Promise<Manufacturer | null> {
+    const manufacturer = await this.prisma.manufacturer.findFirst({
+      where: {
+        id: manufacturerId,
+      },
+    })
+
+    if (!manufacturer) {
+      return null
+    }
+
+    return PrismaManufacturerMapper.toDomain(manufacturer)
+  }
+
   async findByContent(content: string) {
     const manufacturer = await this.prisma.manufacturer.findFirst({
       where: {

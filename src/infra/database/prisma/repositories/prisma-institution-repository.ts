@@ -9,6 +9,16 @@ import { Meta } from '@/core/repositories/meta'
 @Injectable()
 export class PrismaInstitutionsRepository implements InstitutionsRepository {
   constructor(private prisma: PrismaService) {}
+  async save(institution: Institution): Promise<void> {
+    const data = PrismaInstitutionMapper.toPrisma(institution)
+
+    await this.prisma.institution.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    })
+  }
 
   async create(institution: Institution): Promise<void> {
     const data = PrismaInstitutionMapper.toPrisma(institution)
