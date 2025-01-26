@@ -30,9 +30,9 @@ export class MedicineEntryFactory {
   constructor(private prisma: PrismaService) {}
 
   async makePrismaMedicineEntry(data: Partial<MedicineEntryProps> = {}): Promise<MedicineEntry> {
-    const medicineentry = makeMedicineEntry({
-      ...data,
-    })
+    const medicineentry = makeMedicineEntry(
+      data,
+    )
 
     await this.prisma.medicineEntry.create({
       data: PrismaMedicineEntryMapper.toPrisma(medicineentry),

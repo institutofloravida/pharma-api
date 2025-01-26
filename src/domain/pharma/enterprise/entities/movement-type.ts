@@ -9,6 +9,10 @@ export interface MovementTypeProps extends AuxiliaryRecordProps {
 }
 
 export class MovementType extends AuxiliaryRecord<MovementTypeProps> {
+  get direction() {
+    return this.props.direction
+  }
+
   static create(
     props: Optional<MovementTypeProps, 'createdAt'>,
     id?: UniqueEntityId,

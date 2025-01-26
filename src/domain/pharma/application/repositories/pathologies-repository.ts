@@ -1,6 +1,6 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Pathology } from '../../enterprise/entities/pathology'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 export abstract class PathologiesRepository {
   abstract create(pathology: Pathology): Promise<void>

@@ -87,7 +87,7 @@ export class RegisterExitUseCase {
       batchestockId: new UniqueEntityId(batcheStockId),
       exitType,
       medicineStockId: medicineStock.id,
-      operatorId,
+      operatorId: new UniqueEntityId(operatorId),
       quantity,
       exitDate,
     })

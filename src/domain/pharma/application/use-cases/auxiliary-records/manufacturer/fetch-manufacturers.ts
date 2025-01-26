@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
 import { Injectable } from '@nestjs/common'
 import { ManufacturersRepository } from '../../../repositories/manufacturers-repository'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchManufacturersUseCaseRequest {
   page: number;

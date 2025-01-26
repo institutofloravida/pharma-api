@@ -102,7 +102,6 @@ export class InMemoryPatientsRepository implements PatientsRepository {
   ): Promise<{ patients: Patient[]; meta: Meta }> {
     let patients = this.items
     const { birthDate, cpf, generalRegistration, name, pathologyId, sus } = filters
-    console.log('name', name)
 
     if (name) {
       patients = this.findManyByName(name)

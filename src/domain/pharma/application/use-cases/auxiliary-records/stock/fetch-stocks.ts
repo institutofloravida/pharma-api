@@ -5,7 +5,7 @@ import { StocksRepository } from '../../../repositories/stocks-repository'
 import { OperatorsRepository } from '../../../repositories/operators-repository'
 import { ForbiddenError } from '@/core/erros/errors/forbidden-error'
 import { InstitutionsRepository } from '../../../repositories/institutions-repository'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchStocksUseCaseRequest {
   page: number

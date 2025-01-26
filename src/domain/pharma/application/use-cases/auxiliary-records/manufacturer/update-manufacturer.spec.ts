@@ -19,14 +19,13 @@ describe('Update Manufacturer', () => {
 
     })
     await inMemoryManufacturersRepository.create(manufacturer)
-    
+
     const result = await sut.execute({
       manufacturerId: manufacturer.id.toString(),
       content: 'Manufacturer 2',
-      cnpj:  '12345678902344',
-      description: 'some description'
+      cnpj: '12345678902344',
+      description: 'some description',
     })
-
 
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
@@ -38,27 +37,25 @@ describe('Update Manufacturer', () => {
   it('not should allowed duplicity', async () => {
     const manufacturer = makeManufacturer({
       content: 'Manufacturer 1',
-      cnpj: '12345678912345'
+      cnpj: '12345678912345',
     })
     const manufacturer2 = makeManufacturer({
       content: 'Manufacturer 2',
-      cnpj: '12345678912344'
+      cnpj: '12345678912344',
     })
     await inMemoryManufacturersRepository.create(manufacturer)
     await inMemoryManufacturersRepository.create(manufacturer2)
-    
+
     const result = await sut.execute({
       manufacturerId: manufacturer.id.toString(),
       content: 'Manufacturer 2',
       cnpj: manufacturer.cnpj,
       description: manufacturer.description,
     })
-    console.log(result.value)
-    
+
     expect(result.isLeft()).toBeTruthy()
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(ManufacturerWithSameContentAlreadyExistsError)
     }
   })
-
 })

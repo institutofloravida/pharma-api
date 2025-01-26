@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { ManufacturersRepository } from '@/domain/pharma/application/repositories/manufacturers-repository'
 import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'

@@ -8,9 +8,10 @@ export interface MedicineExitProps {
   medicineStockId: UniqueEntityId
   batchestockId: UniqueEntityId
   quantity: number
-  operatorId: string
+  operatorId: UniqueEntityId
   exitType: ExitType
   exitDate: Date
+  dispensationId?: UniqueEntityId | null
   createdAt: Date
   updatedAt?: Date
 }
@@ -36,6 +37,10 @@ export class MedicineExit extends Entity<MedicineExitProps> {
     this.touch()
   }
 
+  get operatorId() {
+    return this.props.operatorId
+  }
+
   get exitType() {
     return this.props.exitType
   }
@@ -52,6 +57,10 @@ export class MedicineExit extends Entity<MedicineExitProps> {
   set exitDate(value: Date) {
     this.props.exitDate = value
     this.touch()
+  }
+
+  get dispensationId() {
+    return this.props.dispensationId
   }
 
   get createdAt() {

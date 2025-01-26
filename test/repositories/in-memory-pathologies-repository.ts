@@ -1,4 +1,4 @@
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
 import { Pathology } from '@/domain/pharma/enterprise/entities/pathology'

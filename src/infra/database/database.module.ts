@@ -32,6 +32,10 @@ import { PrismaBatchesRepository } from './prisma/repositories/prisma-batches-re
 import { PatientsRepository } from '@/domain/pharma/application/repositories/patients-repository'
 import { AddresssRepository } from '@/domain/pharma/application/repositories/address-repository'
 import { PrismaAddressRepository } from './prisma/repositories/prisma-address-repository'
+import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository'
+import { PrismaDispensationsMedicinesRepository } from './prisma/repositories/prisma-dispensations-medicines-repository'
+import { PrismaMedicinesExitsRepository } from './prisma/repositories/prisma-medicines-exits-repository'
+import { MedicinesExitsRepository } from '@/domain/pharma/application/repositories/medicines-exits-repository'
 
 @Module({
   providers: [
@@ -70,6 +74,8 @@ import { PrismaAddressRepository } from './prisma/repositories/prisma-address-re
     { provide: BatchesRepository, useClass: PrismaBatchesRepository },
     { provide: PatientsRepository, useClass: PrismaPatientsRepository },
     { provide: AddresssRepository, useClass: PrismaAddressRepository },
+    { provide: MedicinesExitsRepository, useClass: PrismaMedicinesExitsRepository },
+    { provide: DispensationsMedicinesRepository, useClass: PrismaDispensationsMedicinesRepository },
   ],
   exports: [
     PrismaService,
@@ -89,6 +95,8 @@ import { PrismaAddressRepository } from './prisma/repositories/prisma-address-re
     BatchesRepository,
     PatientsRepository,
     AddresssRepository,
+    MedicinesExitsRepository,
+    DispensationsMedicinesRepository,
   ],
 })
 export class DatabaseModule {}

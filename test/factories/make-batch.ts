@@ -29,7 +29,6 @@ export class BatchFactory {
 
   async makePrismaBatch(data: Partial<BatchProps> = {}): Promise<Batch> {
     const batch = makeBatch(data)
-
     await this.prisma.batch.create({
       data: PrismaBatchMapper.toPrisma(batch),
     })

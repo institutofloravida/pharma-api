@@ -1,6 +1,6 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Manufacturer } from '../../enterprise/entities/manufacturer'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 export abstract class ManufacturersRepository {
   abstract create(manufacturer: Manufacturer): Promise<void>

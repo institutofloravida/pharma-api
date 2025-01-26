@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { PathologiesRepository } from '../../../repositories/pathologies-repository'
 import { Pathology } from '@/domain/pharma/enterprise/entities/pathology'
-import type { Meta } from '@/core/repositories/meta'
+import { Meta } from '@/core/repositories/meta'
 
 interface FetchPathologiesUseCaseRequest {
   page: number

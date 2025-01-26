@@ -56,6 +56,8 @@ import { CreatePatientController } from './controllers/patient/create-patient.co
 import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/create-patient'
 import { FetchPatientsController } from './controllers/patient/fetch-patients.controller'
 import { FetchPatientsUseCase } from '@/domain/pharma/application/use-cases/patient/fetch-pacients'
+import { DispensationController } from './controllers/dispensation/create-dispensation.controller'
+import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cases/dispensation/dispensation-medicine'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -74,6 +76,7 @@ import { FetchPatientsUseCase } from '@/domain/pharma/application/use-cases/pati
     CreateMedicineController,
     CreateMedicineVariantController,
     CreatePatientController,
+    DispensationController,
     RegisterMedicineEntryController,
     FetchOperatorsController,
     FetchInstitutionsController,
@@ -104,6 +107,7 @@ import { FetchPatientsUseCase } from '@/domain/pharma/application/use-cases/pati
     CreateMedicineUseCase,
     CreateMedicineVariantUseCase,
     CreatePatientUseCase,
+    DispensationMedicineUseCase,
     RegisterMedicineEntryUseCase,
     FethOperatorsUseCase,
     FethInstitutionsUseCase,

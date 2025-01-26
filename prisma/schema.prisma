@@ -23,6 +23,7 @@ model Operator {
   updatedAt     DateTime?       @updatedAt @map("updated_at")
   institutions  Institution[]   @relation("OperatorInstitutions")
   MedicineEntry MedicineEntry[]
+  Exit          Exit[]
 
   @@map("operators")
 }
@@ -200,6 +201,7 @@ model MedicineStock {
   medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
   stock           Stock           @relation(fields: [stockId], references: [id])
   MedicineEntry   MedicineEntry[]
+  Exit            Exit[]
 
   @@index([medicineVariantId])
   @@index([stockId])
@@ -219,6 +221,7 @@ model Batchestock {
   batch           Batch           @relation(fields: [batchId], references: [id])
   medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
   MedicineEntry   MedicineEntry[]
+  Exit            Exit[]
 
   @@index([stockId])
   @@index([batchId])
@@ -271,18 +274,53 @@ enum Race {
 }
 
 model Patient {
-  id                  String      @id @default(uuid())
+  id                  String         @id @default(uuid())
   name                String
-  cpf                 String      @unique
-  sus                 String      @unique
+  cpf                 String         @unique
+  sus                 String         @unique
   birthDate           DateTime
   gender              Gender
   race                Race
   pathologies         Pathology[]
-  generalRegistration String?     @db.VarChar(255)
+  generalRegistration String?        @db.VarChar(255)
   addressId           String
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime?   @updatedAt
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime?      @updatedAt
+  Dispensation        Dispensation[]
 
   @@map("patients")
+}
+
+model Dispensation {
+  id               String    @id @default(uuid())
+  patientId        String
+  dispensationDate DateTime
+  patient          Patient   @relation(fields: [patientId], references: [id])
+  exitRecords      Exit[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt()
+}
+
+enum ExitType {
+  DISPENSATION
+  EXPIRATION
+  OTHER
+}
+
+model Exit {
+  id              String    @id @default(uuid())
+  medicineStockId String
+  batchestockId   String
+  operatorId      String
+  quantity        Int
+  exitType        ExitType
+  exitDate        DateTime  @default(now())
+  dispensationId  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+
+  operator      Operator      @relation(fields: [operatorId], references: [id])
+  batchestock   Batchestock   @relation(fields: [batchestockId], references: [id])
+  medicineStock MedicineStock @relation(fields: [medicineStockId], references: [id])
+  Dispensation  Dispensation? @relation(fields: [dispensationId], references: [id])
 }
