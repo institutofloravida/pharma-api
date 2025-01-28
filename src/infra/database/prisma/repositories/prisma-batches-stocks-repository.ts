@@ -143,7 +143,6 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         id,
       },
     })
-
     if (!batchStock) {
       return null
     }

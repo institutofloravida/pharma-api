@@ -80,15 +80,28 @@ export class InMemoryPatientsRepository implements PatientsRepository {
     return patients
   }
 
+  private findManyByPathologyId(pathologyId: string): Patient[] {
+    const patients = this.items.filter((patient) => {
+      const pathologiesIds = patient.pathologiesIds.map(item => item.toString())
+      return pathologiesIds.includes(pathologyId)
+    })
+
+    return patients
+  }
+
   async findMany(
     { page }: PaginationParams,
-    name?: string,
-    cpf?: string,
-    sus?: string,
-    birthDate?: Date,
-    generalRegistration?: string,
+    filters: {
+      name?: string,
+      cpf?: string,
+      sus?: string,
+      birthDate?: Date,
+      generalRegistration?: string,
+      pathologyId?: string
+    },
   ): Promise<{ patients: Patient[]; meta: Meta }> {
     let patients = this.items
+    const { birthDate, cpf, generalRegistration, name, pathologyId, sus } = filters
 
     if (name) {
       patients = this.findManyByName(name)
@@ -108,6 +121,10 @@ export class InMemoryPatientsRepository implements PatientsRepository {
 
     if (birthDate) {
       patients = this.findManyByBirthDate(birthDate)
+    }
+
+    if (pathologyId) {
+      patients = this.findManyByPathologyId(pathologyId)
     }
 
     const patientsPaginated = patients

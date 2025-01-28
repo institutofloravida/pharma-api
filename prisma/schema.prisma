@@ -23,6 +23,7 @@ model Operator {
   updatedAt     DateTime?       @updatedAt @map("updated_at")
   institutions  Institution[]   @relation("OperatorInstitutions")
   MedicineEntry MedicineEntry[]
+  Exit          Exit[]
 
   @@map("operators")
 }
@@ -39,43 +40,6 @@ model Institution {
 
   @@map("institutions")
 }
-
-// model Operator {
-//   id            String                    @id @default(uuid())
-//   name          String
-//   email         String                    @unique
-//   passwordHash  String                    @map("password_hash")
-//   role          OperatorRole              @default(COMMON)
-//   createdAt     DateTime                  @default(now()) @map("created_at")
-//   updatedAt     DateTime?                 @updatedAt @map("updated_at")
-//   MedicineEntry MedicineEntry[]
-//   institutions  OperatorsOnInstitutions[]
-
-//   @@map("operators")
-// }
-
-// model Institution {
-//   id          String                    @id @default(uuid())
-//   name        String
-//   cnpj        String                    @unique
-//   description String?
-//   createdAt   DateTime                  @default(now()) @map("created_at")
-//   updatedAt   DateTime?                 @updatedAt @map("updated_at")
-//   stocks      Stock[]
-//   operators   OperatorsOnInstitutions[]
-
-//   @@map("institutions")
-// }
-
-// model OperatorsOnInstitutions {
-//   operatorId    String
-//   institutionId String
-
-//   operator    Operator    @relation(fields: [operatorId], references: [id])
-//   institution Institution @relation(fields: [institutionId], references: [id])
-
-//   @@id([operatorId, institutionId])
-// }
 
 model Stock {
   id            String          @id @default(uuid())
@@ -129,6 +93,7 @@ model Pathology {
   name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  patients  Patient[]
 
   @@map("pathology")
 }
@@ -223,19 +188,20 @@ model MedicineEntry {
 }
 
 model MedicineStock {
-  id                String    @id @default(cuid())
+  id                String        @id @default(cuid())
   medicineVariantId String
   stockId           String
   currentQuantity   Int
-  minimumLevel      Int       @default(0)
-  batchesStockIds   String[]
+  minimumLevel      Int           @default(0)
+  batchesStocks     Batchestock[]
   lastMove          DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime? @updatedAt
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime?     @updatedAt
 
   medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
   stock           Stock           @relation(fields: [stockId], references: [id])
   MedicineEntry   MedicineEntry[]
+  Exit            Exit[]
 
   @@index([medicineVariantId])
   @@index([stockId])
@@ -246,6 +212,7 @@ model Batchestock {
   stockId           String
   batchId           String
   medicineVariantId String
+  medicineStockId   String
   currentQuantity   Int
   lastMove          DateTime?
   createdAt         DateTime  @default(now())
@@ -255,6 +222,9 @@ model Batchestock {
   batch           Batch           @relation(fields: [batchId], references: [id])
   medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
   MedicineEntry   MedicineEntry[]
+  Exit            Exit[]
+
+  MedicineStock MedicineStock? @relation(fields: [medicineStockId], references: [id])
 
   @@index([stockId])
   @@index([batchId])
@@ -307,18 +277,53 @@ enum Race {
 }
 
 model Patient {
-  id                  String    @id @default(uuid())
+  id                  String         @id @default(uuid())
   name                String
-  cpf                 String    @unique
-  sus                 String    @unique
+  cpf                 String         @unique
+  sus                 String         @unique
   birthDate           DateTime
   gender              Gender
   race                Race
-  pathologiesIds      String[]
-  generalRegistration String?   @db.VarChar(255)
+  pathologies         Pathology[]
+  generalRegistration String?        @db.VarChar(255)
   addressId           String
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime? @updatedAt
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime?      @updatedAt
+  Dispensation        Dispensation[]
 
   @@map("patients")
+}
+
+model Dispensation {
+  id               String    @id @default(uuid())
+  patientId        String
+  dispensationDate DateTime
+  patient          Patient   @relation(fields: [patientId], references: [id])
+  exitRecords      Exit[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt()
+}
+
+enum ExitType {
+  DISPENSATION
+  EXPIRATION
+  OTHER
+}
+
+model Exit {
+  id              String    @id @default(uuid())
+  medicineStockId String
+  batchestockId   String
+  operatorId      String
+  quantity        Int
+  exitType        ExitType
+  exitDate        DateTime  @default(now())
+  dispensationId  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+
+  operator      Operator      @relation(fields: [operatorId], references: [id])
+  batchestock   Batchestock   @relation(fields: [batchestockId], references: [id])
+  medicineStock MedicineStock @relation(fields: [medicineStockId], references: [id])
+  Dispensation  Dispensation? @relation(fields: [dispensationId], references: [id])
 }

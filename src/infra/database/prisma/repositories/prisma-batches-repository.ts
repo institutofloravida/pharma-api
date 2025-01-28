@@ -9,7 +9,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 @Injectable()
 export class PrismaBatchesRepository implements BatchesRepository {
   constructor(private prisma: PrismaService) {}
-
+  
   async create(batch: Batch): Promise<void> {
     await this.prisma.batch.create({
       data: PrismaBatchMapper.toPrisma(batch),
@@ -62,4 +62,33 @@ export class PrismaBatchesRepository implements BatchesRepository {
       },
     }
   }
+
+  async findManyByManufacturerId({page}: PaginationParams, manufactrurerId: string): Promise<{ batches: Batch[]; meta: Meta }> {
+    const whereClause = {
+      id: manufactrurerId
+    }
+
+    const [batches, batchesTotalCount] = await this.prisma.$transaction([
+      this.prisma.batch.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 20,
+        skip: (page - 1) * 20,
+      }),
+      this.prisma.batch.count({
+        where: whereClause
+      })
+    ])
+
+    return {
+      batches: batches.map(PrismaBatchMapper.toDomain),
+      meta: {
+        page,
+        totalCount: batchesTotalCount,
+      },
+    }
+  }
+
 }

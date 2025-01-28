@@ -14,7 +14,7 @@ let sut: RegisterOperatorUseCase
 describe('Register Operator', () => {
   beforeEach(() => {
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
-    inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
     fakeHasher = new FakerHasher()
     sut = new RegisterOperatorUseCase(inMemoryOperatorsRepository, fakeHasher)
   })

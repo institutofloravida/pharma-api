@@ -3,7 +3,9 @@ import { FakerHasher } from 'test/cryptography/fake-hasher'
 import { AuthenticateOperatorUseCase } from './authenticate-operator'
 import { FakeEncrypter } from 'test/cryptography/fake-encrypter'
 import { makeOperator } from 'test/factories/make-operator'
+import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 
+let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let fakeHasher: FakerHasher
 let fakeEncrypter: FakeEncrypter
@@ -11,7 +13,8 @@ let sut: AuthenticateOperatorUseCase
 
 describe('Authenticate Operator', () => {
   beforeEach(() => {
-    inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
     fakeHasher = new FakerHasher()
     fakeEncrypter = new FakeEncrypter()
     sut = new AuthenticateOperatorUseCase(inMemoryOperatorsRepository, fakeHasher, fakeEncrypter)

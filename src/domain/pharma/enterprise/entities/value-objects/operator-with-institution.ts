@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ValueObject } from '@/core/entities/value-object'
-import type { OperatorRole } from '../operator'
+import { OperatorRole } from '../operator'
 
 export interface OperatorWithInstitutionProps {
   id: UniqueEntityId

@@ -66,20 +66,23 @@ export class CreateMedicineStockUseCase {
       manufacturingDate,
     })
 
+    const medicineStock = MedicineStock.create({
+      medicineVariantId: new UniqueEntityId(medicineVariantId),
+      stockId: new UniqueEntityId(stockId),
+      currentQuantity: quantity,
+      batchesStockIds: [],
+    })
+
     const batchestock = BatchStock.create({
       medicineVariantId: new UniqueEntityId(medicineVariantId),
       batchId: batch.id,
+      medicineStockId: medicineStock.id,
       currentQuantity: quantity,
       stockId: new UniqueEntityId(stockId),
       lastMove: new Date(),
     })
 
-    const medicineStock = MedicineStock.create({
-      medicineVariantId: new UniqueEntityId(medicineVariantId),
-      stockId: new UniqueEntityId(stockId),
-      currentQuantity: quantity,
-      batchesStockIds: [batchestock.id],
-    })
+    medicineStock.addBatchStockId(batchestock.id)
 
     const medicineStockExists = await this.medicineStockRepository.medicineStockExists(medicineStock)
 

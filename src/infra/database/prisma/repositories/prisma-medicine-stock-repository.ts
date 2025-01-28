@@ -38,6 +38,13 @@ implements MedicinesStockRepository {
       data: {
         currentQuantity: { increment: quantity },
       },
+      include: {
+        batchesStocks: {
+          select: {
+            id: true,
+          },
+        },
+      },
     })
 
     if (!medicineStock) {
@@ -58,6 +65,13 @@ implements MedicinesStockRepository {
       data: {
         currentQuantity: { decrement: quantity },
       },
+      include: {
+        batchesStocks: {
+          select: {
+            id: true,
+          },
+        },
+      },
     })
 
     if (!medicineStock) {
@@ -71,6 +85,13 @@ implements MedicinesStockRepository {
     const medicineStock = await this.prisma.medicineStock.findUnique({
       where: {
         id,
+      },
+      include: {
+        batchesStocks: {
+          select: {
+            id: true,
+          },
+        },
       },
     })
 
@@ -89,6 +110,13 @@ implements MedicinesStockRepository {
       where: {
         medicineVariantId,
         stockId,
+      },
+      include: {
+        batchesStocks: {
+          select: {
+            id: true,
+          },
+        },
       },
     })
 

@@ -272,3 +272,22 @@ Authorization: Bearer {{authToken}}
     "1da8e82c-fb86-4e8e-960c-fb5168ab2ef5"
   ]
 }
+
+###
+# @name create_dispensation
+POST {{baseurl}}/dispensation
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+{
+  "medicineVariantId": "e446d87c-7727-428d-b090-b3022c440be5",
+  "stockId": "7d5e7a16-b09f-44b7-bb3b-acca06ee9b8c",
+  "patientId": "d8092162-fa1a-4dcd-aace-cb3cf2eaac8f",
+  "batchesStocks": [
+    {
+      "batchStockId": "2eac69ea-f04e-4817-ad31-862a1bfac2ad",
+      "quantity": 20
+    }
+  ],
+  "dispensationDate": "2025-12-01"
+}

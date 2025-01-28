@@ -12,8 +12,8 @@ let inMemoryStocksRepository:InMemoryStocksRepository
 let sut: FetchStocksUseCase
 describe('Fetch Stocks', () => {
   beforeEach(() => {
-    inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
     inMemoryInstitutionRepository = new InMemoryInstitutionsRepository()
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionRepository)
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionRepository)
 
     sut = new FetchStocksUseCase(inMemoryStocksRepository, inMemoryOperatorsRepository, inMemoryInstitutionRepository)

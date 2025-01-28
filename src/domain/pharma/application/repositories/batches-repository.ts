@@ -9,4 +9,8 @@ export abstract class BatchesRepository {
     params: PaginationParams,
     content?: string,
   ): Promise<{ batches: Batch[]; meta: Meta }>
+  abstract findManyByManufacturerId(
+    params: PaginationParams,
+    manufactrurerId: string
+  ): Promise<{ batches: Batch[], meta: Meta }>
 }

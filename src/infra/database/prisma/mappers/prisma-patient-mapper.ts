@@ -3,7 +3,7 @@ import { Patient } from '@/domain/pharma/enterprise/entities/patient'
 import { Patient as PrismaPatient, Prisma } from '@prisma/client'
 
 export class PrismaPatientMapper {
-  static toDomain(raw: PrismaPatient): Patient {
+  static toDomain(raw: PrismaPatient & { pathologies: { id: string }[] }): Patient {
     return Patient.create({
       addressId: new UniqueEntityId(raw.addressId),
       createdAt: raw.createdAt,
@@ -11,11 +11,11 @@ export class PrismaPatientMapper {
       cpf: raw.cpf,
       gender: raw.gender,
       name: raw.name,
-      pathologiesIds: raw.pathologiesIds.map(item => new UniqueEntityId(item)),
       race: raw.race,
       sus: raw.sus,
       generalRegistration: raw.generalRegistration,
       updatedAt: raw.updatedAt,
+      pathologiesIds: raw.pathologies.map(item => new UniqueEntityId(item.id)),
     },
     new UniqueEntityId(raw.id),
     )
@@ -32,7 +32,11 @@ export class PrismaPatientMapper {
       race: patient.race,
       sus: patient.sus,
       generalRegistration: patient.generalRegistration,
-      pathologiesIds: patient.pathologiesIds.map(item => item.toString()),
+      pathologies: {
+        connect: patient.pathologiesIds.map(item => {
+          return { id: item.toString() }
+        }),
+      },
       createdAt: patient.createdAt,
       updatedAt: patient.updatedAt,
     }

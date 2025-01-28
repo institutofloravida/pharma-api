@@ -4,16 +4,38 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaPathologyMapper } from '../mappers/prisma-pathology-mapper'
 import { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
+import { Meta } from '@/core/repositories/meta'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class PrismaPathologysRepository implements PathologiesRepository {
-  constructor(private prisma: PrismaService) {
-  }
+  constructor(private prisma: PrismaService) {}
 
   async create(pathology: Pathology) {
     const data = PrismaPathologyMapper.toPrisma(pathology)
     await this.prisma.pathology.create({
       data,
+    })
+  }
+
+  async save(pathology: Pathology): Promise<void> {
+    const data = PrismaPathologyMapper.toPrisma(pathology)
+
+    await this.prisma.pathology.update({
+      where: {
+        id: pathology.id.toString(),
+      },
+      data,
+    })
+  }
+
+  async delete(pathology: Pathology): Promise<void> {
+    const data = PrismaPathologyMapper.toPrisma(pathology)
+
+    await this.prisma.pathology.delete({
+      where: {
+        id: data.id,
+      },
     })
   }
 
@@ -48,13 +70,34 @@ export class PrismaPathologysRepository implements PathologiesRepository {
     return PrismaPathologyMapper.toDomain(pathology)
   }
 
-  async findMany({ page }: PaginationParams): Promise<Pathology[]> {
-    const pathologys = await this.prisma.pathology.findMany({
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * 20,
-      take: 20,
-    })
+  async findMany(
+    { page }: PaginationParams,
+    content?: string,
+  ): Promise<{ pathologies: Pathology[]; meta: Meta }> {
+    const pageSize = 20
+    const whereClause: Prisma.PathologyWhereInput = {
+      name: {
+        contains: content ?? '',
+        mode: Prisma.QueryMode.insensitive,
+      },
+    }
 
-    return pathologys.map(PrismaPathologyMapper.toDomain)
+    const [pathologies, totalCount] = await this.prisma.$transaction([
+      this.prisma.pathology.findMany({
+        where: whereClause,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.pathology.count({ where: whereClause }),
+    ])
+
+    return {
+      pathologies: pathologies.map(PrismaPathologyMapper.toDomain),
+      meta: {
+        page,
+        totalCount,
+      },
+    }
   }
 }

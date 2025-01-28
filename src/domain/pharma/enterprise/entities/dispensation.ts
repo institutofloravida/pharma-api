@@ -1,14 +1,14 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
-import { MovimentationBatchestock } from './batch-stock'
+import { MedicineExit } from './exit'
 
 export interface DispensationProps {
   patientId: UniqueEntityId
   dispensationDate: Date
-  batchesStocks: MovimentationBatchestock[]
+  exitsRecords: MedicineExit[]
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
 export class Dispensation extends Entity<DispensationProps> {
@@ -20,12 +20,12 @@ export class Dispensation extends Entity<DispensationProps> {
     return this.props.dispensationDate
   }
 
-  get batchesStocks() {
-    return this.props.batchesStocks
+  get exitsRecords() {
+    return this.props.exitsRecords
   }
 
   get totalQuantity() {
-    return this.batchesStocks.reduce(
+    return this.exitsRecords.reduce(
       (acc, dispenseBatchestock) => acc + dispenseBatchestock.quantity,
       0,
     )

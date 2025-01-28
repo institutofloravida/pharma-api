@@ -3,23 +3,22 @@ import { UniqueEntityId } from '../../../../core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 
 export interface MovimentationBatchestock {
-  batchestockId: UniqueEntityId
+  batcheStockId: UniqueEntityId
   quantity: number
 }
 
-export interface BatchestockProps {
+export interface BatcheStockProps {
   stockId: UniqueEntityId
   batchId: UniqueEntityId
-
   medicineVariantId: UniqueEntityId
-
   currentQuantity: number
+  medicineStockId: UniqueEntityId
   lastMove?: Date | null
   createdAt: Date
   updatedAt?: Date | null
 }
 
-export class BatchStock extends Entity<BatchestockProps> {
+export class BatchStock extends Entity<BatcheStockProps> {
   get stockId(): UniqueEntityId {
     return this.props.stockId
   }
@@ -39,6 +38,10 @@ export class BatchStock extends Entity<BatchestockProps> {
   set quantity(value: number) {
     this.props.currentQuantity = value
     this.touch()
+  }
+
+  get medicineStockId() {
+    return this.props.medicineStockId
   }
 
   public replenish(value: number) {
@@ -76,7 +79,7 @@ export class BatchStock extends Entity<BatchestockProps> {
   }
 
   static create(
-    props: Optional< BatchestockProps, 'createdAt'>,
+    props: Optional< BatcheStockProps, 'createdAt'>,
     id?: UniqueEntityId,
   ) {
     const batchestock = new BatchStock({

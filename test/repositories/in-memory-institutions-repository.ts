@@ -20,6 +20,12 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
     this.items.push(institution)
   }
 
+  async save(institution: Institution): Promise<void> {
+    const itemIndex = await this.items.findIndex(item => item.id.equal(institution.id))
+
+    this.items[itemIndex] = institution
+  }
+
   async findByContent(content: string) {
     const institution = this.items.find(item => item.content.toLowerCase() === content.toLowerCase().trim())
     if (!institution) {
