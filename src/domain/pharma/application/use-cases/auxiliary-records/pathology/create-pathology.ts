@@ -10,7 +10,7 @@ interface createPathologyUseCaseRequest {
 }
 
 type createPathologyUseCaseResponse = Either<
-  ConflictError,
+ PathologyAlreadyExistsError,
   {
     pathology: Pathology
   }

@@ -11,7 +11,7 @@ interface deletePathologyUseCaseRequest {
 }
 
 type deletePathologyUseCaseResponse = Either<
-  ResourceNotFoundError,
+  ResourceNotFoundError | PathologyHasDependencyError,
   null
 >
 
