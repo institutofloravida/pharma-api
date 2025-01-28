@@ -21,22 +21,21 @@ type updatePathologyUseCaseResponse = Either<
 export class UpdatePathologyUseCase {
   constructor(private pathologyRepository: PathologiesRepository) {}
   async execute({ content, pathologyId }: updatePathologyUseCaseRequest): Promise<updatePathologyUseCaseResponse> {
-    
     const pathology = await this.pathologyRepository.findById(pathologyId)
     if (!pathology) {
       return left(new ResourceNotFoundError())
     }
 
     const pathologyWithSameContent = await this.pathologyRepository.findByContent(content)
-    if(pathologyWithSameContent){
-        return left(new PathologyAlreadyExistsError(content))
+    if (pathologyWithSameContent) {
+      return left(new PathologyAlreadyExistsError(content))
     }
-    
+
     pathology.content = content
     await this.pathologyRepository.save(pathology)
 
     return right({
-      pathology: pathology,
+      pathology,
     })
   }
 }

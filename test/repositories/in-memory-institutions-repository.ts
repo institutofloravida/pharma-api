@@ -4,7 +4,6 @@ import { InstitutionsRepository } from '@/domain/pharma/application/repositories
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'
 
 export class InMemoryInstitutionsRepository implements InstitutionsRepository {
-  
   public items: Institution[] = []
 
   async findById(id: string): Promise<Institution | null> {

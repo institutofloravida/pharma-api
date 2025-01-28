@@ -1,3 +1,4 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { BatchesRepository } from '@/domain/pharma/application/repositories/batches-repository'
@@ -28,6 +29,26 @@ export class InMemoryBatchesRepository implements BatchesRepository {
     const batchesFiltered = batches.filter((item) =>
       item.code.includes(content ?? ''),
     )
+
+    const batchesPaginated = batchesFiltered
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20)
+
+    return {
+      batches: batchesPaginated,
+      meta: {
+        page,
+        totalCount: batchesFiltered.length,
+      },
+    }
+  }
+
+  async findManyByManufacturerId({ page }: PaginationParams, manufactrurerId: string): Promise<{ batches: Batch[], meta: Meta }> {
+    const batches = this.items
+
+    const batchesFiltered = batches.filter((item) => {
+      return item.manufacturerId.equal(new UniqueEntityId(manufactrurerId))
+    })
 
     const batchesPaginated = batchesFiltered
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())

@@ -1,5 +1,4 @@
 import { left, right, type Either } from '@/core/either'
-import { Pathology } from '../../../../enterprise/entities/pathology'
 import { Injectable } from '@nestjs/common'
 import { PathologiesRepository } from '../../../repositories/pathologies-repository'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
@@ -18,20 +17,20 @@ type deletePathologyUseCaseResponse = Either<
 @Injectable()
 export class DeletePathologyUseCase {
   constructor(private pathologyRepository: PathologiesRepository,
-    private patientsRepository: PatientsRepository
+    private patientsRepository: PatientsRepository,
   ) {}
+
   async execute({ pathologyId }: deletePathologyUseCaseRequest): Promise<deletePathologyUseCaseResponse> {
-    
     const pathology = await this.pathologyRepository.findById(pathologyId)
     if (!pathology) {
       return left(new ResourceNotFoundError())
     }
 
     const {
-      meta
-    } = await this.patientsRepository.findMany({page: 1}, {pathologyId})
+      meta,
+    } = await this.patientsRepository.findMany({ page: 1 }, { pathologyId })
     const pathologyHasDependency = meta.totalCount
-    if(pathologyHasDependency > 0){
+    if (pathologyHasDependency > 0) {
       return left(new PathologyHasDependencyError())
     }
 

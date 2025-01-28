@@ -1,5 +1,4 @@
 import { left, right, type Either } from '@/core/either'
-import { ConflictError } from '@/core/erros/errors/conflict-error'
 import { Pathology } from '../../../../enterprise/entities/pathology'
 import { Injectable } from '@nestjs/common'
 import { PathologiesRepository } from '../../../repositories/pathologies-repository'
