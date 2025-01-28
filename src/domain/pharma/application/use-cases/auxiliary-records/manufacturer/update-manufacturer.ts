@@ -6,7 +6,6 @@ import { ManufacturersRepository } from '../../../repositories/manufacturers-rep
 import { ManufacturerWithSameCnpjAlreadyExistsError } from './_errors/manufacturer-with-same-cnpj-already-exists-error'
 import { ManufacturerWithSameContentAlreadyExistsError } from './_errors/manufacturer-with-same-content-already-exists-error'
 
-
 interface updateManufacturerUseCaseRequest {
   manufacturerId: string
   content: string,
@@ -25,32 +24,29 @@ type updateManufacturerUseCaseResponse = Either<
 export class UpdateManufacturerUseCase {
   constructor(private manufacturerRepository: ManufacturersRepository) { }
   async execute({ content, manufacturerId, cnpj, description }: updateManufacturerUseCaseRequest): Promise<updateManufacturerUseCaseResponse> {
-    
-        const manufacturer = await this.manufacturerRepository.findById(manufacturerId)
-        if (!manufacturer) {
-          return left(new ResourceNotFoundError())
-        }
-    
-        const manufacturerWithSameCnpj = await this.manufacturerRepository.findByCnpj(cnpj)
-        if (manufacturerWithSameCnpj && manufacturerWithSameCnpj.cnpj !== cnpj) {
-          return left(new ManufacturerWithSameCnpjAlreadyExistsError(cnpj))
-        }
-    
-    
-        const manufacturerWithSameContent = await this.manufacturerRepository.findByContent(content)
-        if (manufacturerWithSameContent) {
-          return left(new ManufacturerWithSameContentAlreadyExistsError(content))
-        }
-    
-        manufacturer.cnpj = cnpj
-        manufacturer.content = content
-        manufacturer.description = description
-    
-        await this.manufacturerRepository.save(manufacturer)
-    
-        return right({
-          manufacturer: manufacturer,
-        })
+    const manufacturer = await this.manufacturerRepository.findById(manufacturerId)
+    if (!manufacturer) {
+      return left(new ResourceNotFoundError())
+    }
 
+    const manufacturerWithSameCnpj = await this.manufacturerRepository.findByCnpj(cnpj)
+    if (manufacturerWithSameCnpj && manufacturerWithSameCnpj.cnpj !== cnpj) {
+      return left(new ManufacturerWithSameCnpjAlreadyExistsError(cnpj))
+    }
+
+    const manufacturerWithSameContent = await this.manufacturerRepository.findByContent(content)
+    if (manufacturerWithSameContent) {
+      return left(new ManufacturerWithSameContentAlreadyExistsError(content))
+    }
+
+    manufacturer.cnpj = cnpj
+    manufacturer.content = content
+    manufacturer.description = description
+
+    await this.manufacturerRepository.save(manufacturer)
+
+    return right({
+      manufacturer,
+    })
   }
 }

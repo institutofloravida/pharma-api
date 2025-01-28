@@ -116,6 +116,7 @@ export class RegisterMedicineEntryUseCase {
             currentQuantity: batch.quantityToEntry,
             medicineVariantId: medicineVariant.id,
             stockId: new UniqueEntityId(stockId),
+            medicineStockId: medicineStock.id,
           })
 
           await this.batchestocksRepository.create(batchStock)
@@ -170,6 +171,7 @@ export class RegisterMedicineEntryUseCase {
           currentQuantity: quantityToEntry,
           medicineVariantId: medicineVariant.id,
           stockId: new UniqueEntityId(stockId),
+          medicineStockId: medicineStock.id,
         })
 
         medicineStock.addBatchStockId(batchStock.id)

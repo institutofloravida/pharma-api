@@ -37,9 +37,7 @@ export class MedicineStockFactory {
   async makePrismaMedicineStock(
     data: Partial<MedicineStockProps> = {},
   ): Promise<MedicineStock> {
-    const medicineStock = makeMedicineStock({
-      ...data,
-    })
+    const medicineStock = makeMedicineStock(data)
 
     await this.prisma.medicineStock.create({
       data: PrismaMedicineStockMapper.toPrisma(medicineStock),

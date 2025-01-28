@@ -9,7 +9,7 @@ let inMemoryPatientsRepository: InMemoryPatientsRepository
 let sut: FetchPatientsUseCase
 describe('Fetch Patients', () => {
   beforeEach(() => {
-    inMemoryPathologiesRepository= new InMemoryPathologiesRepository()
+    inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
     inMemoryPatientsRepository = new InMemoryPatientsRepository()
 
     sut = new FetchPatientsUseCase(inMemoryPatientsRepository)
@@ -27,7 +27,7 @@ describe('Fetch Patients', () => {
         cpf: '12345678910',
         birthDate: new Date('2020-01-01'),
         generalRegistration: '1234567',
-        pathologiesIds: [pathology.id]
+        pathologiesIds: [pathology.id],
       }),
     )
     await inMemoryPatientsRepository.create(
@@ -48,7 +48,7 @@ describe('Fetch Patients', () => {
       birthDate: new Date('2020-01-01'),
       cpf: '12345678910',
       generalRegistration: '12345678910',
-      pathologyId: pathology.id.toString() 
+      pathologyId: pathology.id.toString(),
     })
 
     expect(result.value?.patients).toEqual([

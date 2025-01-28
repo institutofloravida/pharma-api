@@ -188,15 +188,15 @@ model MedicineEntry {
 }
 
 model MedicineStock {
-  id                String    @id @default(cuid())
+  id                String        @id @default(cuid())
   medicineVariantId String
   stockId           String
   currentQuantity   Int
-  minimumLevel      Int       @default(0)
-  batchesStockIds   String[]
+  minimumLevel      Int           @default(0)
+  batchesStocks     Batchestock[]
   lastMove          DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime? @updatedAt
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime?     @updatedAt
 
   medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
   stock           Stock           @relation(fields: [stockId], references: [id])
@@ -212,6 +212,7 @@ model Batchestock {
   stockId           String
   batchId           String
   medicineVariantId String
+  medicineStockId   String
   currentQuantity   Int
   lastMove          DateTime?
   createdAt         DateTime  @default(now())
@@ -222,6 +223,8 @@ model Batchestock {
   medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
   MedicineEntry   MedicineEntry[]
   Exit            Exit[]
+
+  MedicineStock MedicineStock? @relation(fields: [medicineStockId], references: [id])
 
   @@index([stockId])
   @@index([batchId])

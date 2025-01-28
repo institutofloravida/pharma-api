@@ -10,10 +10,9 @@ export interface MovimentationBatchestock {
 export interface BatcheStockProps {
   stockId: UniqueEntityId
   batchId: UniqueEntityId
-
   medicineVariantId: UniqueEntityId
-
   currentQuantity: number
+  medicineStockId: UniqueEntityId
   lastMove?: Date | null
   createdAt: Date
   updatedAt?: Date | null
@@ -39,6 +38,10 @@ export class BatchStock extends Entity<BatcheStockProps> {
   set quantity(value: number) {
     this.props.currentQuantity = value
     this.touch()
+  }
+
+  get medicineStockId() {
+    return this.props.medicineStockId
   }
 
   public replenish(value: number) {

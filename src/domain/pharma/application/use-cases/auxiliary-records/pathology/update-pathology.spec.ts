@@ -13,13 +13,13 @@ describe('Pathology', () => {
   })
   it('shoult be able update a Pathology', async () => {
     const pathology = makePathology({
-      content: 'pathology 1'
+      content: 'pathology 1',
     })
     await inMemoryPathologysRepository.create(pathology)
-    
+
     const result = await sut.execute({
       content: 'pathology 2',
-      pathologyId: pathology.id.toString()
+      pathologyId: pathology.id.toString(),
     })
 
     expect(result.isRight()).toBeTruthy()
@@ -31,23 +31,22 @@ describe('Pathology', () => {
 
   it('not should allowed duplicity', async () => {
     const pathology = makePathology({
-      content: 'pathology 1'
+      content: 'pathology 1',
     })
     const pathology2 = makePathology({
-      content: 'pathology 2'
+      content: 'pathology 2',
     })
     await inMemoryPathologysRepository.create(pathology)
     await inMemoryPathologysRepository.create(pathology2)
-    
+
     const result = await sut.execute({
       pathologyId: pathology.id.toString(),
       content: 'pathology 2',
     })
-    
+
     expect(result.isLeft()).toBeTruthy()
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(PathologyAlreadyExistsError)
     }
   })
-
 })

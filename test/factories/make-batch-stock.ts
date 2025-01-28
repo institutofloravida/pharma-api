@@ -18,6 +18,7 @@ export function makeBatchStock(
       stockId: new UniqueEntityId(),
       batchId: new UniqueEntityId(),
       currentQuantity: 0,
+      medicineStockId: new UniqueEntityId(),
       lastMove: faker.date.recent(),
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),

@@ -1,12 +1,15 @@
 import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
 import { makeOperator } from 'test/factories/make-operator'
 import { GetOperatorDetailsUseCase } from './get-operator-details'
+import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 
+let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryOperatorsRepository:InMemoryOperatorsRepository
 let sut: GetOperatorDetailsUseCase
 describe('Get Operator Details', () => {
   beforeEach(() => {
-    inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
 
     sut = new GetOperatorDetailsUseCase(inMemoryOperatorsRepository)
   })

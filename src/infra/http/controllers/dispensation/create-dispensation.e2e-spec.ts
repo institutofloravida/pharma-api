@@ -6,12 +6,12 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { BatchFactory } from 'test/factories/make-batch'
-import { BatchStockFactory } from 'test/factories/make-batch-stock'
+import { BatchStockFactory, makeBatchStock } from 'test/factories/make-batch-stock'
 import { InstitutionFactory } from 'test/factories/make-insitution'
 import { ManufacturerFactory } from 'test/factories/make-manufacturer'
 import { MedicineFactory } from 'test/factories/make-medicine'
 import { MedicineEntryFactory } from 'test/factories/make-medicine-entry'
-import { MedicineStockFactory } from 'test/factories/make-medicine-stock'
+import { makeMedicineStock, MedicineStockFactory } from 'test/factories/make-medicine-stock'
 import { MedicineVariantFactory } from 'test/factories/make-medicine-variant'
 import { MovementTypeFactory } from 'test/factories/make-movement-type'
 import { OperatorFactory } from 'test/factories/make-operator'
@@ -115,18 +115,24 @@ describe('Create Dispensation (E2E)', () => {
     })
     const batch = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
 
-    const batchStock = await batchStockFactory.makePrismaBatchStock({
+    const medicineStock = makeMedicineStock({
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      currentQuantity: 40,
+    })
+
+    const batchStock = makeBatchStock({
       batchId: batch.id,
+      medicineStockId: medicineStock.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
       currentQuantity: 40,
     })
-    await medicineStockFactory.makePrismaMedicineStock({
-      batchesStockIds: [batchStock.id],
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-      currentQuantity: 40,
-    })
+
+    medicineStock.addBatchStockId(batchStock.id)
+
+    await medicineStockFactory.makePrismaMedicineStock(medicineStock)
+    await batchStockFactory.makePrismaBatchStock(batchStock)
 
     await movementTypeFactory.makePrismaMovementType({
       content: 'DONATION',

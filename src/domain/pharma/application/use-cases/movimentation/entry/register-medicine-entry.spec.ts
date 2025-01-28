@@ -35,12 +35,12 @@ let sut: RegisterMedicineEntryUseCase
 
 describe('Register Entry', () => {
   beforeEach(() => {
-    inMemoryOperatorsRepository = new InMemoryOperatorsRepository()
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
     inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
-    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryStocksRepository = new InMemoryStocksRepository(
       inMemoryInstitutionsRepository,
     )
