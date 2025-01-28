@@ -6,12 +6,12 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { BatchFactory } from 'test/factories/make-batch'
-import { BatchStockFactory, makeBatchStock } from 'test/factories/make-batch-stock'
+import { BatchStockFactory } from 'test/factories/make-batch-stock'
 import { InstitutionFactory } from 'test/factories/make-insitution'
 import { ManufacturerFactory } from 'test/factories/make-manufacturer'
 import { MedicineFactory } from 'test/factories/make-medicine'
 import { MedicineEntryFactory } from 'test/factories/make-medicine-entry'
-import { makeMedicineStock, MedicineStockFactory } from 'test/factories/make-medicine-stock'
+import { MedicineStockFactory } from 'test/factories/make-medicine-stock'
 import { MedicineVariantFactory } from 'test/factories/make-medicine-variant'
 import { MovementTypeFactory } from 'test/factories/make-movement-type'
 import { OperatorFactory } from 'test/factories/make-operator'
@@ -113,26 +113,32 @@ describe('Create Dispensation (E2E)', () => {
     const stock = await stockFactory.makePrismaStock({
       institutionId: institution.id,
     })
-    const batch = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
 
-    const medicineStock = makeMedicineStock({
-      medicineVariantId: medicineVariant.id,
+    const batch = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
+    const batch2 = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
+
+    const medicineStock = await medicineStockFactory.makePrismaMedicineStock({
+      batchesStockIds: [],
+      currentQuantity: 50,
       stockId: stock.id,
-      currentQuantity: 40,
+      medicineVariantId: medicineVariant.id,
     })
 
-    const batchStock = makeBatchStock({
+    const batchStock = await batchStockFactory.makePrismaBatchStock({
       batchId: batch.id,
+      currentQuantity: 40,
       medicineStockId: medicineStock.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
-      currentQuantity: 40,
     })
 
-    medicineStock.addBatchStockId(batchStock.id)
-
-    await medicineStockFactory.makePrismaMedicineStock(medicineStock)
-    await batchStockFactory.makePrismaBatchStock(batchStock)
+    const batchStock2 = await batchStockFactory.makePrismaBatchStock({
+      batchId: batch2.id,
+      currentQuantity: 10,
+      medicineStockId: medicineStock.id,
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+    })
 
     await movementTypeFactory.makePrismaMovementType({
       content: 'DONATION',
@@ -151,6 +157,10 @@ describe('Create Dispensation (E2E)', () => {
             batchStockId: batchStock.id.toString(),
             quantity: 20,
           },
+          {
+            batchStockId: batchStock2.id.toString(),
+            quantity: 5,
+          },
         ],
         dispensationDate: new Date(),
       })
@@ -164,10 +174,20 @@ describe('Create Dispensation (E2E)', () => {
     })
 
     const quantityOnMedicineStock = await prisma.medicineStock.findFirst()
-    const quantityOnBatchStock = await prisma.batchestock.findFirst()
+    const quantityOnBatchStock = await prisma.batchestock.findUnique({
+      where: {
+        id: batchStock.id.toString(),
+      },
+    })
+    const quantityOnBatchStock2 = await prisma.batchestock.findUnique({
+      where: {
+        id: batchStock2.id.toString(),
+      },
+    })
 
     expect(dispensationOnDatabase).toBeTruthy()
-    expect(quantityOnMedicineStock?.currentQuantity).toEqual(20)
+    expect(quantityOnMedicineStock?.currentQuantity).toEqual(25)
     expect(quantityOnBatchStock?.currentQuantity).toEqual(20)
+    expect(quantityOnBatchStock2?.currentQuantity).toEqual(5)
   })
 })

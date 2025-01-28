@@ -37,9 +37,7 @@ export class BatchStockFactory {
   async makePrismaBatchStock(
     data: Partial<BatcheStockProps> = {},
   ): Promise<BatchStock> {
-    const batchStock = makeBatchStock({
-      ...data,
-    })
+    const batchStock = makeBatchStock(data)
     await this.prisma.batchestock.create({
       data: PrismaBatchStockMapper.toPrisma(batchStock),
     })

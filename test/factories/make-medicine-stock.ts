@@ -38,8 +38,24 @@ export class MedicineStockFactory {
     data: Partial<MedicineStockProps> = {},
   ): Promise<MedicineStock> {
     const medicineStock = makeMedicineStock(data)
+    // console.log('data:', medicineStock)
 
     await this.prisma.medicineStock.create({
+      data: PrismaMedicineStockMapper.toPrisma(medicineStock),
+    })
+
+    return medicineStock
+  }
+
+  async updatePrismaMedicineStock(medicineStockId: string,
+    data: Partial<MedicineStockProps> = {},
+  ): Promise<MedicineStock> {
+    const medicineStock = makeMedicineStock(data)
+
+    await this.prisma.medicineStock.update({
+      where: {
+        id: medicineStockId,
+      },
       data: PrismaMedicineStockMapper.toPrisma(medicineStock),
     })
 
