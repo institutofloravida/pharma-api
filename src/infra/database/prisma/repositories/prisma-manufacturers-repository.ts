@@ -9,7 +9,6 @@ import { Meta } from '@/core/repositories/meta'
 @Injectable()
 export class PrismaManufacturersRepository implements ManufacturersRepository {
   constructor(private prisma: PrismaService) {}
-  
 
   async create(manufacturer: Manufacturer) {
     const data = PrismaManufacturerMapper.toPrisma(manufacturer)
@@ -120,11 +119,11 @@ export class PrismaManufacturersRepository implements ManufacturersRepository {
     }
   }
 
-  async delete(id: string): Promise<null> {
+  async delete(id: string): Promise<void> {
     await this.prisma.manufacturer.delete({
       where: {
-        id
-      }
+        id,
+      },
     })
   }
 }

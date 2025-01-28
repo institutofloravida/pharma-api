@@ -13,5 +13,5 @@ export abstract class ManufacturersRepository {
     content?: string,
     cnpj?: string,
   ): Promise<{ manufacturers: Manufacturer[]; meta: Meta }>
-  abstract delete(id: string): Promise<null>
+  abstract delete(id: string): Promise<void>
 }
