@@ -46,10 +46,12 @@ describe('Fetch Dispensations (E2E)', () => {
       dispensationFactory.makePrismaDispensation({
         dispensationDate: new Date(2025, 0, 1),
         patientId: patient.id,
+        operatorId: user.id,
       }),
       dispensationFactory.makePrismaDispensation({
         dispensationDate: addDays(new Date(2025, 0, 1), 1),
         patientId: patient.id,
+        operatorId: user.id,
       }),
     ])
 

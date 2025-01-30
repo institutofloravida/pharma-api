@@ -174,12 +174,12 @@ describe('Create Dispensation (E2E)', () => {
     })
 
     const quantityOnMedicineStock = await prisma.medicineStock.findFirst()
-    const quantityOnBatchStock = await prisma.batchestock.findUnique({
+    const quantityOnBatchStock = await prisma.batcheStock.findUnique({
       where: {
         id: batchStock.id.toString(),
       },
     })
-    const quantityOnBatchStock2 = await prisma.batchestock.findUnique({
+    const quantityOnBatchStock2 = await prisma.batcheStock.findUnique({
       where: {
         id: batchStock2.id.toString(),
       },

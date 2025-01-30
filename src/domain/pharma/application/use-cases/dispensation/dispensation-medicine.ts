@@ -146,6 +146,7 @@ export class DispensationMedicineUseCase {
       patientId: new UniqueEntityId(patientId),
       dispensationDate,
       exitsRecords,
+      operatorId: new UniqueEntityId(operatorId),
     })
 
     await this.dispensationsMedicinesRepository.create(dispensation)

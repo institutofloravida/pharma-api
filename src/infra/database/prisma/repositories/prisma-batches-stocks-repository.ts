@@ -23,7 +23,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
       return null
     }
     await Promise.all([
-      this.prisma.batchestock.create({
+      this.prisma.batcheStock.create({
         data: PrismaBatchStockMapper.toPrisma(batchStock),
       }),
       this.medicinesStockRepository.replenish(
@@ -34,7 +34,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
   }
 
   async save(batchStock: BatchStock): Promise<void | null> {
-    const batchStockUpdated = await this.prisma.batchestock.update({
+    const batchStockUpdated = await this.prisma.batcheStock.update({
       data: PrismaBatchStockMapper.toPrisma(batchStock),
       where: {
         id: batchStock.id.toString(),
@@ -65,7 +65,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     batchStockId: string,
     quantity: number,
   ): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.update({
+    const batchStock = await this.prisma.batcheStock.update({
       data: {
         currentQuantity: { increment: quantity },
       },
@@ -94,7 +94,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     batchStockId: string,
     quantity: number,
   ): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.update({
+    const batchStock = await this.prisma.batcheStock.update({
       data: {
         currentQuantity: { decrement: quantity },
       },
@@ -123,7 +123,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     batchId: string,
     stockId: string,
   ): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.findFirst({
+    const batchStock = await this.prisma.batcheStock.findFirst({
       where: {
         batchId,
         stockId,
@@ -138,7 +138,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
   }
 
   async findById(id: string): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.findUnique({
+    const batchStock = await this.prisma.batcheStock.findUnique({
       where: {
         id,
       },

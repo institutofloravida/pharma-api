@@ -1,18 +1,18 @@
 import { InMemoryDispensationsMedicinesRepository } from 'test/repositories/in-memory-dispensations-medicines-repository'
 import { makeDispensation } from 'test/factories/make-dispensation'
-import { FethDispensationsUseCase } from './fetch-dispensation'
+import { FetchDispensationsUseCase } from './fetch-dispensation'
 import { makePatient } from 'test/factories/make-patient'
 import { InMemoryPatientsRepository } from 'test/repositories/in-memory-patients-repository'
 
 let inMemoryPatientsRepository: InMemoryPatientsRepository
 let inMemoryDispensationsRepository:InMemoryDispensationsMedicinesRepository
-let sut: FethDispensationsUseCase
+let sut: FetchDispensationsUseCase
 describe('Fetch Dispensations', () => {
   beforeEach(() => {
     inMemoryPatientsRepository = new InMemoryPatientsRepository()
     inMemoryDispensationsRepository = new InMemoryDispensationsMedicinesRepository()
 
-    sut = new FethDispensationsUseCase(inMemoryDispensationsRepository)
+    sut = new FetchDispensationsUseCase(inMemoryDispensationsRepository)
   })
 
   it('should be able to fetch dispensations', async () => {
