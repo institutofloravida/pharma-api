@@ -31,9 +31,7 @@ describe('Register Exit', () => {
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
-      inMemoryMedicinesStockRepository,
-    )
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository()
     sut = new RegisterExitUseCase(
       inMemoryMedicinesExitsRepository,
       inMemoryMedicinesRepository,

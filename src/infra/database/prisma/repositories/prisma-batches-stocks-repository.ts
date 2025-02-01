@@ -3,34 +3,17 @@ import { PrismaService } from '../prisma.service'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 import { PrismaBatchStockMapper } from '../mappers/prisma-batch-stock-mapper'
 import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
-import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
 
 @Injectable()
 export class PrismaBatchStocksRepository implements BatchStocksRepository {
   constructor(
     private prisma: PrismaService,
-    private medicinesStockRepository: MedicinesStockRepository,
   ) {}
 
   async create(batchStock: BatchStock): Promise<void | null> {
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId.toString(),
-        batchStock.stockId.toString(),
-      )
-
-    if (!medicineStock) {
-      return null
-    }
-    await Promise.all([
-      this.prisma.batcheStock.create({
-        data: PrismaBatchStockMapper.toPrisma(batchStock),
-      }),
-      this.medicinesStockRepository.replenish(
-        medicineStock?.id.toString(),
-        batchStock.quantity,
-      ),
-    ])
+    await this.prisma.batcheStock.create({
+      data: PrismaBatchStockMapper.toPrisma(batchStock),
+    })
   }
 
   async save(batchStock: BatchStock): Promise<void | null> {
@@ -44,21 +27,6 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     if (!batchStockUpdated) {
       return null
     }
-
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId.toString(),
-        batchStock.stockId.toString(),
-      )
-
-    if (!medicineStock) {
-      return null
-    }
-
-    await this.medicinesStockRepository.replenish(
-      medicineStock.id.toString(),
-      batchStock.quantity,
-    )
   }
 
   async replenish(
@@ -73,20 +41,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         id: batchStockId,
       },
     })
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId,
-        batchStock.stockId,
-      )
 
-    if (!medicineStock) {
-      return null
-    }
-
-    await this.medicinesStockRepository.replenish(
-      medicineStock.id.toString(),
-      quantity,
-    )
     return PrismaBatchStockMapper.toDomain(batchStock)
   }
 
@@ -102,20 +57,6 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         id: batchStockId,
       },
     })
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId,
-        batchStock.stockId,
-      )
-
-    if (!medicineStock) {
-      return null
-    }
-
-    await this.medicinesStockRepository.subtract(
-      medicineStock.id.toString(),
-      quantity,
-    )
     return PrismaBatchStockMapper.toDomain(batchStock)
   }
 

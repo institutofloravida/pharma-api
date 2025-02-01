@@ -4,9 +4,8 @@ import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
+import { addYears, subYears } from 'date-fns'
 import request from 'supertest'
-import { BatchFactory } from 'test/factories/make-batch'
-import { BatchStockFactory } from 'test/factories/make-batch-stock'
 import { InstitutionFactory } from 'test/factories/make-insitution'
 import { ManufacturerFactory } from 'test/factories/make-manufacturer'
 import { MedicineFactory } from 'test/factories/make-medicine'
@@ -15,27 +14,22 @@ import { MedicineStockFactory } from 'test/factories/make-medicine-stock'
 import { MedicineVariantFactory } from 'test/factories/make-medicine-variant'
 import { MovementTypeFactory } from 'test/factories/make-movement-type'
 import { OperatorFactory } from 'test/factories/make-operator'
-import { PatientFactory } from 'test/factories/make-patient'
 import { PharmaceuticalFormFactory } from 'test/factories/make-pharmaceutical-form'
 import { StockFactory } from 'test/factories/make-stock'
 import { TherapeuticClassFactory } from 'test/factories/make-therapeutic-class'
 import { UnitMeasureFactory } from 'test/factories/make-unit-measure'
 
-describe('Create Dispensation (E2E)', () => {
+describe('Register Medicine Entry (E2E)', () => {
   let app: INestApplication
   let manufacturerFactory: ManufacturerFactory
-  let patientFactory: PatientFactory
   let institutionFactory: InstitutionFactory
   let stockFactory: StockFactory
-  let batchFactory: BatchFactory
-  let batchStockFactory: BatchStockFactory
-  let medicineStockFactory: MedicineStockFactory
-  let medicineVariantFactory: MedicineVariantFactory
-  let movementTypeFactory: MovementTypeFactory
+  let therapeuticClassFactory: TherapeuticClassFactory
   let unitMeasureFactory: UnitMeasureFactory
   let pharmaceuticalFormFactory: PharmaceuticalFormFactory
+  let medicineVariantFactory: MedicineVariantFactory
+  let movementTypeFactory: MovementTypeFactory
   let medicineFactory: MedicineFactory
-  let therapeuticClassFactory: TherapeuticClassFactory
   let operatorFactory: OperatorFactory
   let prisma: PrismaService
   let jwt: JwtService
@@ -44,17 +38,14 @@ describe('Create Dispensation (E2E)', () => {
       imports: [AppModule, DatabaseModule],
       providers: [
         OperatorFactory,
-        TherapeuticClassFactory,
         MedicineFactory,
-        PharmaceuticalFormFactory,
-        UnitMeasureFactory,
         InstitutionFactory,
+        TherapeuticClassFactory,
         MedicineVariantFactory,
         StockFactory,
-        PatientFactory,
+        PharmaceuticalFormFactory,
+        UnitMeasureFactory,
         MedicineEntryFactory,
-        BatchStockFactory,
-        BatchFactory,
         MedicineStockFactory,
         MovementTypeFactory,
         ManufacturerFactory,
@@ -64,24 +55,20 @@ describe('Create Dispensation (E2E)', () => {
     app = moduleRef.createNestApplication()
     institutionFactory = moduleRef.get(InstitutionFactory)
     manufacturerFactory = moduleRef.get(ManufacturerFactory)
-    patientFactory = moduleRef.get(PatientFactory)
     medicineVariantFactory = moduleRef.get(MedicineVariantFactory)
-    batchFactory = moduleRef.get(BatchFactory)
-    batchStockFactory = moduleRef.get(BatchStockFactory)
-    medicineStockFactory = moduleRef.get(MedicineStockFactory)
     stockFactory = moduleRef.get(StockFactory)
     movementTypeFactory = moduleRef.get(MovementTypeFactory)
+    medicineFactory = moduleRef.get(MedicineFactory)
     unitMeasureFactory = moduleRef.get(UnitMeasureFactory)
     pharmaceuticalFormFactory = moduleRef.get(PharmaceuticalFormFactory)
-    medicineFactory = moduleRef.get(MedicineFactory)
-    therapeuticClassFactory = moduleRef.get(TherapeuticClassFactory)
     operatorFactory = moduleRef.get(OperatorFactory)
+    therapeuticClassFactory = moduleRef.get(TherapeuticClassFactory)
     prisma = moduleRef.get(PrismaService)
     jwt = moduleRef.get(JwtService)
     await app.init()
   })
 
-  test('[POST] /dispensation', async () => {
+  test('[POST] /medicine-entry', async () => {
     const institution = await institutionFactory.makePrismaInstitution()
     const manufacturer = await manufacturerFactory.makePrismaManufacturer()
     const operator = await operatorFactory.makePrismaOperator({
@@ -94,8 +81,6 @@ describe('Create Dispensation (E2E)', () => {
       role: operator.role,
     })
 
-    const patient = await patientFactory.makePrismaPatient({})
-
     const unitMeasure = await unitMeasureFactory.makePrismaUnitMeasure()
     const pharmaceuticalForm =
       await pharmaceuticalFormFactory.makePrismaPharmaceuticalForm()
@@ -104,90 +89,84 @@ describe('Create Dispensation (E2E)', () => {
     const medicine = await medicineFactory.makePrismaMedicine({
       therapeuticClassesIds: [therapeuticClass.id],
     })
-    const medicineVariant = await medicineVariantFactory.makePrismaMedicineVariant({
-      medicineId: medicine.id,
-      pharmaceuticalFormId: pharmaceuticalForm.id,
-      unitMeasureId: unitMeasure.id,
-    })
-
+    const medicineVariant =
+      await medicineVariantFactory.makePrismaMedicineVariant({
+        medicineId: medicine.id,
+        pharmaceuticalFormId: pharmaceuticalForm.id,
+        unitMeasureId: unitMeasure.id,
+      })
     const stock = await stockFactory.makePrismaStock({
       institutionId: institution.id,
     })
 
-    const batch = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
-    const batch2 = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
-
-    const medicineStock = await medicineStockFactory.makePrismaMedicineStock({
-      batchesStockIds: [],
-      currentQuantity: 50,
-      stockId: stock.id,
-      medicineVariantId: medicineVariant.id,
-    })
-
-    const batchStock = await batchStockFactory.makePrismaBatchStock({
-      batchId: batch.id,
-      currentQuantity: 40,
-      medicineStockId: medicineStock.id,
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-    })
-
-    const batchStock2 = await batchStockFactory.makePrismaBatchStock({
-      batchId: batch2.id,
-      currentQuantity: 10,
-      medicineStockId: medicineStock.id,
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-    })
-
-    await movementTypeFactory.makePrismaMovementType({
+    const movementType = await movementTypeFactory.makePrismaMovementType({
       content: 'DONATION',
       direction: 'ENTRY',
     })
 
     const response = await request(app.getHttpServer())
-      .post('/dispensation')
+      .post(`/medicine-entry/stock/${stock.id.toString()}/medicine-variant/${medicineVariant.id.toString()}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
+        movementTypeId: movementType.id.toString(),
         medicineVariantId: medicineVariant.id.toString(),
+        operatorId: operator.id.toString(),
         stockId: stock.id.toString(),
-        patientId: patient.id.toString(),
-        batchesStocks: [
+        entryDate: new Date(),
+        newBatches: [
           {
-            batchStockId: batchStock.id.toString(),
-            quantity: 20,
+            code: 'ABCD1',
+            expirationDate: addYears(new Date(), 1),
+            manufacturerId: manufacturer.id.toString(),
+            manufacturingDate: subYears(new Date(), 1),
+            quantityToEntry: 40,
           },
           {
-            batchStockId: batchStock2.id.toString(),
-            quantity: 5,
+            code: 'ABCD2',
+            expirationDate: addYears(new Date(), 1),
+            manufacturerId: manufacturer.id.toString(),
+            manufacturingDate: subYears(new Date(), 1),
+            quantityToEntry: 40,
           },
         ],
-        dispensationDate: new Date(),
       })
 
     expect(response.statusCode).toBe(201)
 
-    const dispensationOnDatabase = await prisma.dispensation.findFirst({
-      where: {
-        patientId: patient.id.toString(),
-      },
-    })
+    const [
+      medicineEntryOnDatabase,
+      quantityOnMedicineStock,
+      quantityOnBatchStock1,
+      quantityOnBatchStock2,
+    ] = await prisma.$transaction([
+      prisma.medicineEntry.findFirst(),
+      prisma.medicineStock.findFirst(),
+      prisma.batcheStock.findFirst({
+        where: {
+          batch: {
+            code: 'ABCD1',
+          },
+        },
+      }),
+      prisma.batcheStock.findFirst({
+        where: {
+          batch: {
+            code: 'ABCD1',
+          },
+        },
+      }),
+      prisma.batcheStock.findFirst({
+        where: {
+          batch: {
+            code: 'ABCD2',
+          },
+        },
+      }),
+    ])
 
-    const quantityOnMedicineStock = await prisma.medicineStock.findFirst()
-    const quantityOnBatchStock = await prisma.batcheStock.findUnique({
-      where: {
-        id: batchStock.id.toString(),
-      },
-    })
-    const quantityOnBatchStock2 = await prisma.batcheStock.findUnique({
-      where: {
-        id: batchStock2.id.toString(),
-      },
-    })
-
-    expect(dispensationOnDatabase).toBeTruthy()
-    expect(quantityOnMedicineStock?.currentQuantity).toEqual(25)
-    expect(quantityOnBatchStock?.currentQuantity).toEqual(20)
-    expect(quantityOnBatchStock2?.currentQuantity).toEqual(5)
+    expect(medicineEntryOnDatabase).toBeTruthy()
+    expect(quantityOnMedicineStock?.currentQuantity).toEqual(80)
+    expect(quantityOnBatchStock1?.currentQuantity).toEqual(40)
+    expect(quantityOnBatchStock2?.currentQuantity).toEqual(40)
   })
 })
