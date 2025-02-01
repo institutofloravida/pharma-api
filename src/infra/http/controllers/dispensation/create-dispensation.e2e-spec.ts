@@ -81,7 +81,7 @@ describe('Create Dispensation (E2E)', () => {
     await app.init()
   })
 
-  test('[POST] /dispensation', async () => {
+  test.only('[POST] /dispensation', async () => {
     const institution = await institutionFactory.makePrismaInstitution()
     const manufacturer = await manufacturerFactory.makePrismaManufacturer()
     const operator = await operatorFactory.makePrismaOperator({
@@ -94,7 +94,7 @@ describe('Create Dispensation (E2E)', () => {
       role: operator.role,
     })
 
-    const patient = await patientFactory.makePrismaPatient({})
+    const patient = await patientFactory.makePrismaPatient()
 
     const unitMeasure = await unitMeasureFactory.makePrismaUnitMeasure()
     const pharmaceuticalForm =
@@ -138,6 +138,20 @@ describe('Create Dispensation (E2E)', () => {
       medicineStockId: medicineStock.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
+    })
+
+    await prisma.medicineStock.update({
+      where: {
+        id: medicineStock.id.toString(),
+      },
+      data: {
+        batchesStocks: {
+          connect: [
+            { id: batchStock.id.toString() },
+            { id: batchStock2.id.toString() },
+          ],
+        },
+      },
     })
 
     await movementTypeFactory.makePrismaMovementType({
@@ -186,8 +200,8 @@ describe('Create Dispensation (E2E)', () => {
     })
 
     expect(dispensationOnDatabase).toBeTruthy()
-    expect(quantityOnMedicineStock?.currentQuantity).toEqual(25)
     expect(quantityOnBatchStock?.currentQuantity).toEqual(20)
     expect(quantityOnBatchStock2?.currentQuantity).toEqual(5)
+    expect(quantityOnMedicineStock?.currentQuantity).toEqual(25)
   })
 })
