@@ -60,6 +60,8 @@ import { DispensationController } from './controllers/dispensation/create-dispen
 import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cases/dispensation/dispensation-medicine'
 import { FetchDispensationsController } from './controllers/dispensation/fetch-dispensations.controller'
 import { FetchDispensationsUseCase } from '@/domain/pharma/application/use-cases/dispensation/fetch-dispensation'
+import { CreateMovementTypeController } from './controllers/auxiliary-records/movement-type/create-movement-type.controller'
+import { CreateMovementTypeUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/movement-type/create-movement-type'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -78,6 +80,7 @@ import { FetchDispensationsUseCase } from '@/domain/pharma/application/use-cases
     CreateMedicineController,
     CreateMedicineVariantController,
     CreatePatientController,
+    CreateMovementTypeController,
     DispensationController,
     RegisterMedicineEntryController,
     FetchOperatorsController,
@@ -110,6 +113,7 @@ import { FetchDispensationsUseCase } from '@/domain/pharma/application/use-cases
     CreateMedicineUseCase,
     CreateMedicineVariantUseCase,
     CreatePatientUseCase,
+    CreateMovementTypeUseCase,
     DispensationMedicineUseCase,
     RegisterMedicineEntryUseCase,
     FethOperatorsUseCase,

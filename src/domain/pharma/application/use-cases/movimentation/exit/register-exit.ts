@@ -7,17 +7,13 @@ import type { ExitType } from '@prisma/client'
 import type { BatchStocksRepository } from '../../../repositories/batch-stocks-repository'
 import type { BatchesRepository } from '../../../repositories/batches-repository'
 import type { MedicinesExitsRepository } from '../../../repositories/medicines-exits-repository'
-import type { MedicinesRepository } from '../../../repositories/medicines-repository'
 import type { MedicinesStockRepository } from '../../../repositories/medicines-stock-repository'
 import { InsufficientQuantityBatchInStockError } from '../../_errors/insufficient-quantity-batch-in-stock-error'
 import { InvalidExitQuantityError } from '../../_errors/invalid-exit-quantity-error'
 import { NoBatchInStockFoundError } from '../../_errors/no-batch-in-stock-found-error'
-import { MedicineNotFoundError } from '../../medicine/medicine/_errors/medicine-not-found-error'
-import type { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
+import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
 import { MedicineVariantNotFoundError } from '../../medicine/medicine-variant/_errors/medicine-variant-not-found-error'
-import { MedicineStockNotFoundError } from '../../medicine/medicine-stock/_errors/medicine-stock-not-found-error'
 import { MedicineStockNotExistsError } from '../../medicine/medicine-stock/_errors/medicine-stock-not-exists-error'
-import { promise } from 'zod'
 
 interface RegisterExitUseCaseRequest {
   medicineVariantId: string;
