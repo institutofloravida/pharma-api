@@ -5,11 +5,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { InstitutionPresenter } from '../../../presenters/institution-presenter'
 import { FetchInstitutionsDto } from './dtos/fetch-institutions.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/institution/fetch-institutions'
 
 @ApiTags('institution')
 @ApiBearerAuth()

@@ -16,7 +16,7 @@ import { BatchStocksRepository } from '../../../repositories/batch-stocks-reposi
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 import { AtLeastOneMustBePopulatedError } from '../_errors/at-least-one-must-be-populated-error'
 import { StockNotFoundError } from '../../auxiliary-records/stock/_errors/stock-not-found-error'
-import { MedicineVariantNotFoundError } from '../../medicine/medicine-variant/_errors/medicine-variant-not-found-error'
+import { MedicineVariantNotFoundError } from '../../auxiliary-records/medicine-variant/_errors/medicine-variant-not-found-error'
 
 interface RegisterMedicineEntryUseCaseRequest {
   medicineVariantId: string;

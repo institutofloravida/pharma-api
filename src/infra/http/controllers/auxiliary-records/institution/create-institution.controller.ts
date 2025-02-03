@@ -1,12 +1,12 @@
 import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/create-institution'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/role-decorator'
-import { InstitutionWithSameCnpjAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/_errors/institution-with-same-cnpj-already-exists-error'
-import { InstitutionWithSameContentAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/_errors/institution-with-same-content-already-exists-error'
 import { CreateInstitutionDTO } from './dtos/create-institution.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/institution/create-institution'
+import { InstitutionWithSameCnpjAlreadyExistsError } from '@/domain/pharma/application/use-cases/institution/_errors/institution-with-same-cnpj-already-exists-error'
+import { InstitutionWithSameContentAlreadyExistsError } from '@/domain/pharma/application/use-cases/institution/_errors/institution-with-same-content-already-exists-error'
 
 @ApiTags('institution')
 @ApiBearerAuth()

@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { Meta } from '@/core/repositories/meta'
-import type { PaginationParams } from '@/core/repositories/pagination-params'
+import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository'
 import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation'
 
