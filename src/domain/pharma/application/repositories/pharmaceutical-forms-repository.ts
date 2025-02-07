@@ -4,6 +4,7 @@ import { Meta } from '@/core/repositories/meta'
 
 export abstract class PharmaceuticalFormsRepository {
   abstract create(pharmaceuticalForm: PharmaceuticalForm): Promise<void>
+  abstract findById(id: string): Promise<PharmaceuticalForm | null>
   abstract findByContent(content: string): Promise<PharmaceuticalForm | null>
   abstract findMany(params: PaginationParams, content?: string): Promise<{
     pharmaceuticalForms: PharmaceuticalForm[]

@@ -18,7 +18,7 @@ export function makeMedicineStock(
       stockId: new UniqueEntityId(),
       currentQuantity: 0,
       minimumLevel: faker.number.int({ min: 1, max: 100 }),
-      batchesStockIds: Array.from({ length: 3 }, () => new UniqueEntityId()),
+      batchesStockIds: [],
       lastMove: faker.date.recent(),
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
@@ -38,8 +38,6 @@ export class MedicineStockFactory {
     data: Partial<MedicineStockProps> = {},
   ): Promise<MedicineStock> {
     const medicineStock = makeMedicineStock(data)
-    // console.log('data:', medicineStock)
-
     await this.prisma.medicineStock.create({
       data: PrismaMedicineStockMapper.toPrisma(medicineStock),
     })

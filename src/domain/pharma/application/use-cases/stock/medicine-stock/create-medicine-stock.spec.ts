@@ -25,18 +25,30 @@ let sut: CreateMedicineStockUseCase
 describe('Medicine Stock', () => {
   beforeEach(() => {
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
-    inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
+    inMemoryPharmaceuticalFormsRepository =
+      new InMemoryPharmaceuticalFormsRepository()
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
-    inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
-    inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository(
-      inMemoryMedicinesRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
+    inMemoryStocksRepository = new InMemoryStocksRepository(
+      inMemoryInstitutionsRepository,
     )
+    inMemoryMedicinesVariantsRepository =
+      new InMemoryMedicinesVariantsRepository(
+        inMemoryMedicinesRepository,
+        inMemoryPharmaceuticalFormsRepository,
+        inMemoryUnitsMeasureRepository,
+      )
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
 
     sut = new CreateMedicineStockUseCase(
       inMemoryStocksRepository,
@@ -64,7 +76,9 @@ describe('Medicine Stock', () => {
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryMedicinesStockRepository.items).toHaveLength(1)
-      expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(result.value?.medicineStock.quantity)
+      expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
+        result.value?.medicineStock.quantity,
+      )
     }
   })
   it('not should allowed duplicity', async () => {
@@ -93,7 +107,9 @@ describe('Medicine Stock', () => {
     expect(result2.isLeft()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryMedicinesStockRepository.items).toHaveLength(1)
-      expect(inMemoryMedicinesStockRepository.items[0].id).toBe(result.value?.medicineStock.id)
+      expect(inMemoryMedicinesStockRepository.items[0].id).toBe(
+        result.value?.medicineStock.id,
+      )
     }
   })
 })

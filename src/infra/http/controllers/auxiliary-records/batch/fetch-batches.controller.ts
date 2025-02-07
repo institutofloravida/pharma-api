@@ -9,14 +9,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 @ApiBearerAuth()
 @Controller('/batches')
 export class FetchBatchesController {
-  constructor(private fetchBacthes: FetchBatchesUseCase) {}
+  constructor(private fetchBatches: FetchBatchesUseCase) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchBatchesDto) {
     const { page, query } = queryParams
 
-    const result = await this.fetchBacthes.execute({
+    const result = await this.fetchBatches.execute({
       page,
       content: query,
     })

@@ -58,7 +58,15 @@ describe('Register Entry', () => {
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
     inMemoryMedicinesVariantsRepository =
       new InMemoryMedicinesVariantsRepository(
         inMemoryMedicinesRepository,

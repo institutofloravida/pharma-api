@@ -41,7 +41,15 @@ describe('Register Exit', () => {
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
     inMemoryMedicinesVariantsRepository =
       new InMemoryMedicinesVariantsRepository(
         inMemoryMedicinesRepository,
@@ -103,7 +111,6 @@ describe('Register Exit', () => {
       quantity: quantityToExit,
     })
 
-    console.log(result.value)
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryMedicinesExitsRepository.items).toHaveLength(1)
@@ -148,7 +155,10 @@ describe('Register Exit', () => {
       medicineStock.id.toString(),
       batchestock1.id.toString(),
     )
-    await inMemoryMedicinesStockRepository.replenish(medicineStock.id.toString(), 50)
+    await inMemoryMedicinesStockRepository.replenish(
+      medicineStock.id.toString(),
+      50,
+    )
 
     await sut.execute({
       medicineVariantId: medicineVariant.id.toString(),
@@ -219,7 +229,10 @@ describe('Register Exit', () => {
       medicineStock.id.toString(),
       batchestock2.id.toString(),
     )
-    await inMemoryMedicinesStockRepository.replenish(medicineStock.id.toString(), 55)
+    await inMemoryMedicinesStockRepository.replenish(
+      medicineStock.id.toString(),
+      55,
+    )
 
     const result1 = await sut.execute({
       medicineVariantId: medicineVariant.id.toString(),

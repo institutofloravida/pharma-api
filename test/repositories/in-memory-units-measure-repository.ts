@@ -1,3 +1,4 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { UnitsMeasureRepository } from '@/domain/pharma/application/repositories/units-measure-repository'
@@ -8,6 +9,16 @@ export class InMemoryUnitsMeasureRepository implements UnitsMeasureRepository {
 
   async create(unitMeasure: UnitMeasure) {
     this.items.push(unitMeasure)
+  }
+
+  async findById(id: string): Promise<UnitMeasure | null> {
+    const unitMeasure = this.items.find((unitMeasure) =>
+      unitMeasure.id.equal(new UniqueEntityId(id)),
+    )
+
+    if (!unitMeasure) return null
+
+    return unitMeasure
   }
 
   async findByContent(content: string) {

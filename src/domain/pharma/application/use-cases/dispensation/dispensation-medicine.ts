@@ -73,7 +73,6 @@ export class DispensationMedicineUseCase {
         stockId,
       )
     if (!medicineStock) {
-      console.log('')
       return left(new NoBatchInStockFoundError(medicine?.content))
     }
 

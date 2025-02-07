@@ -54,7 +54,15 @@ describe('Fetch Register Medicines Entries', () => {
     )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
     inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,

@@ -1,4 +1,7 @@
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { BatchStock } from '../../enterprise/entities/batch-stock'
+import { Meta } from '@/core/repositories/meta'
+import { BatchStockWithBatch } from '../../enterprise/entities/value-objects/batch-stock-with-batch'
 
 export abstract class BatchStocksRepository {
   abstract create(batchStock: BatchStock): Promise<void | null>
@@ -7,4 +10,9 @@ export abstract class BatchStocksRepository {
   abstract subtract(batchStockId: string, quantity: number): Promise<BatchStock | null>
   abstract findByBatchIdAndStockId(batchId: string, stockId: string): Promise<BatchStock | null>
   abstract findById(id:string): Promise<BatchStock | null>
+  abstract findMany(params: PaginationParams, filters: {
+    stockId: string,
+    medicineStockId: string
+    code?: string
+  }): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }>
 }
