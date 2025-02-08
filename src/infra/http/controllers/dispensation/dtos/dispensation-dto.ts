@@ -26,15 +26,7 @@ export class DispensationDto {
   })
   @IsUUID()
   @IsNotEmpty()
-  medicineVariantId: string
-
-  @ApiProperty({
-    description: 'ID único do estoque',
-    example: 'a4f89d2b-23de-4e8b-8b45-d1b67e5bc2b3',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  stockId: string
+  medicineStockId: string
 
   @ApiProperty({
     description: 'ID único do paciente',

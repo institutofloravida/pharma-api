@@ -15,10 +15,10 @@ import { ExpiredMedicineDispenseError } from '../_errors/expired-medicine-dispen
 import { Injectable } from '@nestjs/common'
 import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 import { MedicinesVariantsRepository } from '../../repositories/medicine-variant-repository'
+import { MedicineStockNotFoundError } from '../stock/medicine-stock/_errors/medicine-stock-not-found-error'
 
 interface DispensationMedicineUseCaseRequest {
-  medicineVariantId: string;
-  stockId: string;
+  medicineStockId: string;
   patientId: string;
   operatorId: string;
   batchesStocks: { batchStockId: string, quantity: number }[];
@@ -49,15 +49,21 @@ export class DispensationMedicineUseCase {
   ) {}
 
   async execute({
-    medicineVariantId,
-    stockId,
+    medicineStockId,
     patientId,
     operatorId,
     batchesStocks,
     dispensationDate,
   }: DispensationMedicineUseCaseRequest): Promise<DispensationMedicineUseCaseResponse> {
+    const medicineStock =
+      await this.medicinesStockRepository.findById(
+        medicineStockId,
+      )
+    if (!medicineStock) {
+      return left(new MedicineStockNotFoundError(medicineStockId))
+    }
     const medicineVariant =
-      await this.medicinesVariantsRepository.findById(medicineVariantId)
+      await this.medicinesVariantsRepository.findById(medicineStock.medicineVariantId.toString())
     if (!medicineVariant) {
       return left(new ResourceNotFoundError())
     }
@@ -66,14 +72,6 @@ export class DispensationMedicineUseCase {
     )
     if (!medicine) {
       return left(new ResourceNotFoundError())
-    }
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        medicineVariantId,
-        stockId,
-      )
-    if (!medicineStock) {
-      return left(new NoBatchInStockFoundError(medicine?.content))
     }
 
     let totalQuantityToDispense = 0

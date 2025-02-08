@@ -163,8 +163,7 @@ describe('Create Dispensation (E2E)', () => {
       .post('/dispensation')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        medicineVariantId: medicineVariant.id.toString(),
-        stockId: stock.id.toString(),
+        medicineStockId: medicineStock.id.toString(),
         patientId: patient.id.toString(),
         batchesStocks: [
           {

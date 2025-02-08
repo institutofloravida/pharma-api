@@ -129,9 +129,8 @@ describe('Dispensation Medicine', () => {
     await inMemoryMedicinesStockRepository.create(medicineStock)
 
     const result = await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       operatorId: 'operator-1',
-      stockId: stock.id.toString(),
       patientId: patient.id.toString(),
       batchesStocks: [
         {
@@ -199,9 +198,8 @@ describe('Dispensation Medicine', () => {
     await inMemoryMedicinesStockRepository.create(medicineStock)
 
     const result = await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       operatorId: 'operator-1',
-      stockId: stock.id.toString(),
       patientId: patient.id.toString(),
       batchesStocks: [
         {
@@ -265,9 +263,8 @@ describe('Dispensation Medicine', () => {
     await inMemoryMedicinesStockRepository.create(medicineStock)
 
     const result = await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       operatorId: 'operator-1',
-      stockId: stock.id.toString(),
       patientId: patient.id.toString(),
       batchesStocks: [
         {

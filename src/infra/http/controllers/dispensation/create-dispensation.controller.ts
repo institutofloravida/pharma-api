@@ -26,12 +26,11 @@ export class DispensationController {
     @CurrentUser() user: UserPayload,
     @Body() body: DispensationDto,
   ) {
-    const { batchesStocks, dispensationDate, medicineVariantId, patientId, stockId } = body
+    const { batchesStocks, dispensationDate, medicineStockId, patientId } = body
     const result = await this.dispensation.execute({
       operatorId: user.sub,
-      medicineVariantId,
+      medicineStockId,
       patientId,
-      stockId,
       dispensationDate,
       batchesStocks,
     })
