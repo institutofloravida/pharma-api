@@ -6,7 +6,7 @@ import { StocksRepository } from '../../../repositories/stocks-repository'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { InstitutionsRepository } from '../../../repositories/institutions-repository'
-import { InstitutionNotExistsError } from '../institution/_errors/institution-not-exists-error'
+import { InstitutionNotExistsError } from '../../institution/_errors/institution-not-exists-error'
 
 interface createStockUseCaseRequest {
   content: string

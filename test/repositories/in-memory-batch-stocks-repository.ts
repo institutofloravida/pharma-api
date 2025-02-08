@@ -1,26 +1,32 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
-import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
+import { InMemoryBatchesRepository } from './in-memory-batches-repository'
+import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-objects/batch-stock-with-batch'
+import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
+import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-repository'
+import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
+import { InMemoryStocksRepository } from './in-memory-stocks-repository'
+import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
+import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
 
 export class InMemoryBatchStocksRepository implements BatchStocksRepository {
-  public items: BatchStock[] = []
+  constructor(
+    private batchesRepository: InMemoryBatchesRepository,
+    private medicinesRepository: InMemoryMedicinesRepository,
+    private medicinesStocksRepository: InMemoryMedicinesStockRepository,
+    private medicinesVariantsRepository: InMemoryMedicinesVariantsRepository,
+    private stocksRepository: InMemoryStocksRepository,
+    private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
+    private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
+  ) {}
 
-  constructor(private medicineStockRepository: MedicinesStockRepository) {}
+  public items: BatchStock[] = []
 
   async create(batchstock: BatchStock) {
     this.items.push(batchstock)
-    const medicineStock =
-      await this.medicineStockRepository.findByMedicineVariantIdAndStockId(
-        batchstock.medicineVariantId.toString(),
-        batchstock.stockId.toString(),
-      )
-
-    if (!medicineStock) {
-      return null
-    }
-
-    medicineStock.replenish(batchstock.quantity)
-    await this.medicineStockRepository.save(medicineStock)
   }
 
   async replenish(batchstockId: string, quantity: number) {
@@ -28,22 +34,10 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
     if (!batchstock) {
       return null
     }
-    const medicineStock =
-      await this.medicineStockRepository.findByMedicineVariantIdAndStockId(
-        batchstock.medicineVariantId.toString(),
-        batchstock.stockId.toString(),
-      )
-    if (!medicineStock) {
-      return null
-    }
 
     batchstock.replenish(quantity)
-    medicineStock.replenish(quantity)
 
-    await Promise.all([
-      this.save(batchstock),
-      this.medicineStockRepository.save(medicineStock),
-    ])
+    await this.save(batchstock)
 
     return batchstock
   }
@@ -56,19 +50,6 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
 
     batchstock.subtract(quantity)
     await this.save(batchstock)
-
-    const medicineStock =
-      await this.medicineStockRepository.findByMedicineVariantIdAndStockId(
-        batchstock.medicineVariantId.toString(),
-        batchstock.stockId.toString(),
-      )
-    if (!medicineStock) {
-      throw new Error('Medicine stock not found')
-    }
-
-    medicineStock.subtract(quantity)
-    await this.medicineStockRepository.save(medicineStock)
-
     return batchstock
   }
 
@@ -104,5 +85,114 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
     }
 
     this.items[index] = batchstock
+  }
+
+  async findMany(
+    { page }: PaginationParams,
+    filters: { stockId: string; medicineStockId: string; code?: string },
+  ): Promise<{ batchesStock: BatchStockWithBatch[]; meta: Meta }> {
+    const { medicineStockId, stockId, code } = filters
+
+    const batchesStock = this.items
+    const batchesStocksFiltered: BatchStockWithBatch[] = []
+
+    const medicineStock =
+      await this.medicinesStocksRepository.findById(medicineStockId)
+    if (!medicineStock) {
+      throw new Error(
+        `O estoque de medicamento com id ${medicineStockId} não foi encontrado!`,
+      )
+    }
+
+    const stock = await this.stocksRepository.findById(stockId)
+    if (!stock) throw new Error(`Estoque com Id ${stockId} não foi encontrado`)
+    const medicine = await this.medicinesRepository.findByMedicineVariantId(
+      medicineStock.medicineVariantId.toString(),
+    )
+    if (!medicine) {
+      throw new Error()
+    }
+
+    const medicineVariant = await this.medicinesVariantsRepository.findById(
+      medicineStock.medicineVariantId.toString(),
+    )
+    if (!medicineVariant) {
+      throw new Error(
+        `variant com id ${medicineStock.medicineVariantId} não foi encontrada`,
+      )
+    }
+
+    const pharmaceuticalForm =
+      await this.pharmaceuticalFormsRepository.findById(
+        medicineVariant?.pharmaceuticalFormId.toString(),
+      )
+    if (!pharmaceuticalForm) {
+      throw new Error(
+        `forma farmacêutica com id ${medicineVariant.pharmaceuticalFormId} não foi encontrada`,
+      )
+    }
+
+    const unitMeasure = await this.unitsMeasureRepository.findById(
+      medicineVariant?.unitMeasureId.toString(),
+    )
+    if (!unitMeasure) {
+      throw new Error(
+        `unidade de medida com id ${medicineVariant.unitMeasureId} não foi encontrada`,
+      )
+    }
+
+    for (const batchStock of batchesStock) {
+      if (!batchStock.stockId.equal(new UniqueEntityId(stockId))) continue
+
+      if (
+        !batchStock.medicineStockId.equal(new UniqueEntityId(medicineStockId))
+      ) { continue }
+
+      const batch = await this.batchesRepository.findById(
+        batchStock.batchId.toString(),
+      )
+
+      if (!batch) {
+        throw new Error(
+          `Lote com id ${batchStock.batchId.toString()} não encontrado!`,
+        )
+      }
+
+      if (
+        code &&
+        !batch.code.toLowerCase().includes(code.toLowerCase().trim())
+      ) {
+        continue
+      }
+
+      const batchStockWithBatch = BatchStockWithBatch.create({
+        stock: stock.content,
+        stockId: stock.id,
+        batch: batch.code,
+        batchId: batch.id,
+        medicine: medicine.content,
+        currentQuantity: batchStock.quantity,
+        medicineVariantId: medicineVariant.id,
+        medicineStockId: medicineStock.id,
+        dosage: medicineVariant.dosage,
+        pharmaceuticalForm: pharmaceuticalForm.content,
+        unitMeasure: unitMeasure.acronym,
+        createdAt: batchStock.createdAt,
+        updatedAt: batchStock.updatedAt,
+      })
+      batchesStocksFiltered.push(batchStockWithBatch)
+    }
+    const batchesStockPaginated = batchesStocksFiltered.slice(
+      (page - 1) * 20,
+      page * 20,
+    )
+
+    return {
+      batchesStock: batchesStockPaginated,
+      meta: {
+        page,
+        totalCount: batchesStocksFiltered.length,
+      },
+    }
   }
 }

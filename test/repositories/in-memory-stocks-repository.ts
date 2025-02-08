@@ -1,3 +1,4 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
@@ -29,7 +30,7 @@ export class InMemoryStocksRepository implements StocksRepository {
   }
 
   async findById(id: string) {
-    const stock = this.items.find((item) => item.id.toString() === id)
+    const stock = this.items.find((item) => item.id.equal(new UniqueEntityId(id)))
     if (!stock) {
       return null
     }

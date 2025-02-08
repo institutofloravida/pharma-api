@@ -3,38 +3,24 @@ import { PrismaService } from '../prisma.service'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 import { PrismaBatchStockMapper } from '../mappers/prisma-batch-stock-mapper'
 import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
-import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
+import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
+import { Prisma } from '@prisma/client'
+import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-objects/batch-stock-with-batch'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 @Injectable()
 export class PrismaBatchStocksRepository implements BatchStocksRepository {
-  constructor(
-    private prisma: PrismaService,
-    private medicinesStockRepository: MedicinesStockRepository,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(batchStock: BatchStock): Promise<void | null> {
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId.toString(),
-        batchStock.stockId.toString(),
-      )
-
-    if (!medicineStock) {
-      return null
-    }
-    await Promise.all([
-      this.prisma.batchestock.create({
-        data: PrismaBatchStockMapper.toPrisma(batchStock),
-      }),
-      this.medicinesStockRepository.replenish(
-        medicineStock?.id.toString(),
-        batchStock.quantity,
-      ),
-    ])
+    await this.prisma.batcheStock.create({
+      data: PrismaBatchStockMapper.toPrisma(batchStock),
+    })
   }
 
   async save(batchStock: BatchStock): Promise<void | null> {
-    const batchStockUpdated = await this.prisma.batchestock.update({
+    const batchStockUpdated = await this.prisma.batcheStock.update({
       data: PrismaBatchStockMapper.toPrisma(batchStock),
       where: {
         id: batchStock.id.toString(),
@@ -44,28 +30,13 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     if (!batchStockUpdated) {
       return null
     }
-
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId.toString(),
-        batchStock.stockId.toString(),
-      )
-
-    if (!medicineStock) {
-      return null
-    }
-
-    await this.medicinesStockRepository.replenish(
-      medicineStock.id.toString(),
-      batchStock.quantity,
-    )
   }
 
   async replenish(
     batchStockId: string,
     quantity: number,
   ): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.update({
+    const batchStock = await this.prisma.batcheStock.update({
       data: {
         currentQuantity: { increment: quantity },
       },
@@ -73,20 +44,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         id: batchStockId,
       },
     })
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId,
-        batchStock.stockId,
-      )
 
-    if (!medicineStock) {
-      return null
-    }
-
-    await this.medicinesStockRepository.replenish(
-      medicineStock.id.toString(),
-      quantity,
-    )
     return PrismaBatchStockMapper.toDomain(batchStock)
   }
 
@@ -94,7 +52,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     batchStockId: string,
     quantity: number,
   ): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.update({
+    const batchStock = await this.prisma.batcheStock.update({
       data: {
         currentQuantity: { decrement: quantity },
       },
@@ -102,20 +60,6 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         id: batchStockId,
       },
     })
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        batchStock.medicineVariantId,
-        batchStock.stockId,
-      )
-
-    if (!medicineStock) {
-      return null
-    }
-
-    await this.medicinesStockRepository.subtract(
-      medicineStock.id.toString(),
-      quantity,
-    )
     return PrismaBatchStockMapper.toDomain(batchStock)
   }
 
@@ -123,7 +67,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     batchId: string,
     stockId: string,
   ): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.findFirst({
+    const batchStock = await this.prisma.batcheStock.findFirst({
       where: {
         batchId,
         stockId,
@@ -138,7 +82,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
   }
 
   async findById(id: string): Promise<BatchStock | null> {
-    const batchStock = await this.prisma.batchestock.findUnique({
+    const batchStock = await this.prisma.batcheStock.findUnique({
       where: {
         id,
       },
@@ -148,5 +92,77 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     }
 
     return PrismaBatchStockMapper.toDomain(batchStock)
+  }
+
+  async findMany({ page }: PaginationParams, filters: {
+    stockId: string,
+    medicineStockId: string
+    code?: string
+  }): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }> {
+    const { medicineStockId, stockId, code } = filters
+
+    const whereClause: Prisma.BatcheStockWhereInput = {
+      ...(code && {
+        batch: {
+          code: {
+            contains: code,
+            mode: 'insensitive',
+          },
+        },
+      }),
+      medicineStockId,
+      stockId,
+    }
+
+    const [batchesStock, totalCount] = await this.prisma.$transaction([
+      this.prisma.batcheStock.findMany({
+        where: whereClause,
+        take: 20,
+        skip: (page - 1) * 20,
+        include: {
+          stock: true,
+          batch: true,
+          medicineStock: true,
+          medicineVariant: {
+            include: {
+              medicine: true,
+              pharmaceuticalForm: true,
+              unitMeasure: true,
+            },
+          },
+
+        },
+      }),
+      this.prisma.batcheStock.count({
+        where: whereClause,
+      }),
+
+    ])
+
+    const batchesStockMapped = batchesStock.map(batchStock => {
+      return BatchStockWithBatch.create({
+        batch: batchStock.batch.code,
+        batchId: new UniqueEntityId(batchStock.batchId),
+        medicine: batchStock.medicineVariant.medicine.name,
+        medicineStockId: new UniqueEntityId(batchStock.medicineStockId),
+        medicineVariantId: new UniqueEntityId(batchStock.medicineVariantId),
+        pharmaceuticalForm: batchStock.medicineVariant.pharmaceuticalForm.name,
+        stockId: new UniqueEntityId(batchStock.stockId),
+        stock: batchStock.stock.name,
+        unitMeasure: batchStock.medicineVariant.unitMeasure.acronym,
+        dosage: batchStock.medicineVariant.dosage,
+        currentQuantity: batchStock.currentQuantity,
+        createdAt: batchStock.createdAt,
+        updatedAt: batchStock.updatedAt,
+
+      })
+    })
+    return {
+      batchesStock: batchesStockMapped,
+      meta: {
+        page,
+        totalCount,
+      },
+    }
   }
 }

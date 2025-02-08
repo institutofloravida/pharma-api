@@ -1,9 +1,9 @@
 import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine/fetch-medicines'
 import { MedicinePresenter } from '@/infra/http/presenters/medicine-presenter'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { FetchMedicinesDto } from './dtos/fetch-medicines.dto'
+import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/fetch-medicines'
 
 @ApiTags('medicine')
 @ApiBearerAuth()

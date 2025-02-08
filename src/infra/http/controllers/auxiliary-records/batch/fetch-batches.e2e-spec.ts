@@ -9,7 +9,7 @@ import { InstitutionFactory } from 'test/factories/make-insitution'
 import { ManufacturerFactory } from 'test/factories/make-manufacturer'
 import { OperatorFactory } from 'test/factories/make-operator'
 
-describe('Fetch Bacthes (E2E)', () => {
+describe('Fetch Batches (E2E)', () => {
   let app: INestApplication
   let institutionFactory: InstitutionFactory
 

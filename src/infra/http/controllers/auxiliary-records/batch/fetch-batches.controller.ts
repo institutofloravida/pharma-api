@@ -1,7 +1,7 @@
 import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchBatchesDto } from './dtos/fetch-batches.dto'
-import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/batch/fetch-batches'
+import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/stock/batch/fetch-batches'
 import { BatchPresenter } from '@/infra/http/presenters/batch-presenter'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
@@ -9,14 +9,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 @ApiBearerAuth()
 @Controller('/batches')
 export class FetchBatchesController {
-  constructor(private fetchBacthes: FetchBatchesUseCase) {}
+  constructor(private fetchBatches: FetchBatchesUseCase) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchBatchesDto) {
     const { page, query } = queryParams
 
-    const result = await this.fetchBacthes.execute({
+    const result = await this.fetchBatches.execute({
       page,
       content: query,
     })

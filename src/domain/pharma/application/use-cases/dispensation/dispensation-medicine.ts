@@ -135,17 +135,25 @@ export class DispensationMedicineUseCase {
       })
 
       exitsRecords.push(medicineExit)
-      await this.medicinesExitsRepository.create(medicineExit)
-      await this.batchestockskRepository.subtract(
-        item.batchStockId.toString(),
-        item.quantity,
-      )
+
+      await Promise.all([
+        this.medicinesExitsRepository.create(medicineExit),
+        this.batchestockskRepository.subtract(
+          item.batchStockId.toString(),
+          item.quantity,
+        ),
+        this.medicinesStockRepository.subtract(
+          medicineStock.id.toString(),
+          item.quantity,
+        ),
+      ])
     }
 
     const dispensation = Dispensation.create({
       patientId: new UniqueEntityId(patientId),
       dispensationDate,
       exitsRecords,
+      operatorId: new UniqueEntityId(operatorId),
     })
 
     await this.dispensationsMedicinesRepository.create(dispensation)

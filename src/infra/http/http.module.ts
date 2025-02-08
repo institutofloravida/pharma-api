@@ -11,9 +11,7 @@ import { ValidateTokenController } from './controllers/auth/validate-token'
 import { FetchOperatorsController } from './controllers/auxiliary-records/operator/fetch-operators.controller'
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { FetchInstitutionsController } from './controllers/auxiliary-records/institution/fetch-institutions.controller'
-import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/fetch-institutions'
 import { CreateInstitutionController } from './controllers/auxiliary-records/institution/create-institution.controller'
-import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/institution/create-institution'
 import { CreateStockController } from './controllers/auxiliary-records/stock/create-stock.controller'
 import { CreateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/create-stock'
 import { FetchStocksController } from './controllers/auxiliary-records/stock/fetch-stocks.controller'
@@ -39,25 +37,35 @@ import { CreatePathologyUseCase } from '@/domain/pharma/application/use-cases/au
 import { FetchpathologiesController } from './controllers/auxiliary-records/pathology/fetch-pathologies.controller'
 import { FetchPathologiesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/fetch-pathologies'
 import { CreateMedicineController } from './controllers/medicine/medicine/create-medicine.controller'
-import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine/create-medicine'
-import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine/fetch-medicines'
 import { CreateMedicineVariantController } from './controllers/medicine/medicine-variant/create-medicine-variant.controller'
-import { CreateMedicineVariantUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine-variant/create-medicine-variant'
 import { FetchMedicinesVariantsController } from './controllers/medicine/medicine-variant/fetch-medicine-variant.controller'
-import { FetchMedicinesVariantsUseCase } from '@/domain/pharma/application/use-cases/medicine/medicine-variant/fetch-medicines-variants'
 import { FetchMedicinesController } from './controllers/medicine/medicine/fetch-medicines.controller'
 import { RegisterMedicineEntryController } from './controllers/movimentation/entry/register-medicine-entry.controller'
 import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/register-medicine-entry'
 import { FetchRegisterMedicinesEntriesUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/fetch-register-medicines-entries'
 import { FetchMedicinesEntriesController } from './controllers/movimentation/entry/fetch-medicines-entries.controller'
 import { FetchBatchesController } from './controllers/auxiliary-records/batch/fetch-batches.controller'
-import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/batch/fetch-batches'
+import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/stock/batch/fetch-batches'
 import { CreatePatientController } from './controllers/patient/create-patient.controller'
 import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/create-patient'
 import { FetchPatientsController } from './controllers/patient/fetch-patients.controller'
 import { FetchPatientsUseCase } from '@/domain/pharma/application/use-cases/patient/fetch-pacients'
 import { DispensationController } from './controllers/dispensation/create-dispensation.controller'
 import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cases/dispensation/dispensation-medicine'
+import { FetchDispensationsController } from './controllers/dispensation/fetch-dispensations.controller'
+import { FetchDispensationsUseCase } from '@/domain/pharma/application/use-cases/dispensation/fetch-dispensation'
+import { CreateMovementTypeController } from './controllers/auxiliary-records/movement-type/create-movement-type.controller'
+import { CreateMovementTypeUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/movement-type/create-movement-type'
+import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/institution/create-institution'
+import { CreateMedicineVariantUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/create-medicine-variant'
+import { FetchMedicinesVariantsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/fetch-medicines-variants'
+import { CreateMedicineUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/create-medicine'
+import { FetchMedicinesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/fetch-medicines'
+import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/institution/fetch-institutions'
+import { FetchBatchesStockController } from './controllers/stock/batch-stock/fetch-batches-stock.controller'
+import { FetchBatchesStockUseCase } from '@/domain/pharma/application/use-cases/stock/batch-stock/fetch-batches-stock'
+import { FetchMedicinesStockController } from './controllers/stock/medicine-stock/fetch-medicines-stock.controller'
+import { FetchMedicinesStockUseCase } from '@/domain/pharma/application/use-cases/stock/medicine-stock/fetch-medicine-stock'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -76,6 +84,7 @@ import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cas
     CreateMedicineController,
     CreateMedicineVariantController,
     CreatePatientController,
+    CreateMovementTypeController,
     DispensationController,
     RegisterMedicineEntryController,
     FetchOperatorsController,
@@ -91,6 +100,9 @@ import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cas
     FetchMedicinesEntriesController,
     FetchBatchesController,
     FetchPatientsController,
+    FetchDispensationsController,
+    FetchBatchesStockController,
+    FetchMedicinesStockController,
 
   ],
   providers: [
@@ -107,6 +119,7 @@ import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cas
     CreateMedicineUseCase,
     CreateMedicineVariantUseCase,
     CreatePatientUseCase,
+    CreateMovementTypeUseCase,
     DispensationMedicineUseCase,
     RegisterMedicineEntryUseCase,
     FethOperatorsUseCase,
@@ -122,6 +135,9 @@ import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cas
     FetchRegisterMedicinesEntriesUseCase,
     FetchBatchesUseCase,
     FetchPatientsUseCase,
+    FetchDispensationsUseCase,
+    FetchBatchesStockUseCase,
+    FetchMedicinesStockUseCase,
   ],
 })
 export class HttpModule {}

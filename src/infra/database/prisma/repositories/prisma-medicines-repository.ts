@@ -34,6 +34,38 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     return PrismaMedicineMapper.toDomain(medicine)
   }
 
+  async addMedicinesVariantsId(
+    medicineId: string,
+    medicineVariantId: string,
+  ): Promise<void> {
+    await this.prisma.medicine.update({
+      where: {
+        id: medicineId,
+      },
+      data: {
+        medicineVariants: {
+          connect: {
+            id: medicineVariantId,
+          },
+        },
+      },
+    })
+  }
+
+  async findByMedicineVariantId(medicineVariantid: string): Promise<Medicine | null> {
+    const medicineVariant = await this.prisma.medicineVariant.findFirst({
+      where: {
+        id: medicineVariantid,
+      },
+      include: {
+        medicine: true,
+      },
+    })
+    if (!medicineVariant) return null
+
+    return PrismaMedicineMapper.toDomain(medicineVariant.medicine)
+  }
+
   async medicineExists(medicine: Medicine): Promise<Medicine | null> {
     const medicineRecord = await this.prisma.medicine.findFirst({
       where: {
@@ -60,7 +92,10 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     return PrismaMedicineMapper.toDomain(medicine)
   }
 
-  async findMany({ page }: PaginationParams, content?: string): Promise<{ medicines: Medicine[], meta: Meta }> {
+  async findMany(
+    { page }: PaginationParams,
+    content?: string,
+  ): Promise<{ medicines: Medicine[]; meta: Meta }> {
     const medicines = await this.prisma.medicine.findMany({
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * 20,

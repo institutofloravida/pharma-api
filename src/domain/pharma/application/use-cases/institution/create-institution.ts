@@ -1,9 +1,9 @@
 import { left, right, type Either } from '@/core/either'
-import { Institution } from '../../../../enterprise/entities/institution'
-import { InstitutionsRepository } from '../../../repositories/institutions-repository'
 import { Injectable } from '@nestjs/common'
 import { InstitutionWithSameContentAlreadyExistsError } from './_errors/institution-with-same-content-already-exists-error'
 import { InstitutionWithSameCnpjAlreadyExistsError } from './_errors/institution-with-same-cnpj-already-exists-error'
+import { Institution } from '@/domain/pharma/enterprise/entities/institution'
+import { InstitutionsRepository } from '../../repositories/institutions-repository'
 
 interface createInstitutionUseCaseRequest {
   content: string,

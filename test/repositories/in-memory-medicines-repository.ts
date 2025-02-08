@@ -1,3 +1,4 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
@@ -8,6 +9,18 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
 
   async create(medicine: Medicine) {
     this.items.push(medicine)
+  }
+
+  async addMedicinesVariantsId(medicineId: string, medicineVariantId: string): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(new UniqueEntityId(medicineId)))
+
+    const medicine = await this.items.find(item => item.id.equal(new UniqueEntityId(medicineId)))
+    if (!medicine) {
+      throw new Error(`medicamento com id ${medicineId} não foi encontrado!`)
+    }
+    medicine.medicinesVariantsIds = [...medicine.medicinesVariantsIds, new UniqueEntityId(medicineVariantId)]
+
+    this.items[itemIndex] = medicine
   }
 
   async findByContent(content: string) {
@@ -34,6 +47,19 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
 
   async findById(id: string) {
     const medicine = this.items.find(item => item.id.toString() === id)
+    if (!medicine) {
+      return null
+    }
+
+    return medicine
+  }
+
+  async findByMedicineVariantId(medicineVariantId: string): Promise<Medicine | null> {
+    const medicine = this.items.find(item => {
+      const medicinesVariantsIds = item.medicinesVariantsIds.map(item => item.toString())
+      return medicinesVariantsIds.includes(medicineVariantId)
+    })
+
     if (!medicine) {
       return null
     }

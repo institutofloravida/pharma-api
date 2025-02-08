@@ -17,6 +17,18 @@ export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {
     })
   }
 
+  async findById(id: string): Promise<UnitMeasure | null> {
+    const unitMeasure = await this.prisma.unitMeasure.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!unitMeasure) return null
+
+    return PrismaUnitMeasureMapper.toDomain(unitMeasure)
+  }
+
   async findByContent(content: string) {
     const unitMeasure = await this.prisma.unitMeasure.findFirst({
       where: {
