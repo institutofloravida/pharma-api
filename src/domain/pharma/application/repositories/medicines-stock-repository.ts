@@ -1,4 +1,7 @@
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineStock } from '../../enterprise/entities/medicine-stock'
+import { MedicineStockDetails } from '../../enterprise/entities/value-objects/medicine-stock-details'
+import { Meta } from '@/core/repositories/meta'
 
 export abstract class MedicinesStockRepository {
   abstract create(medicinestock: MedicineStock): Promise<void>
@@ -23,4 +26,8 @@ export abstract class MedicinesStockRepository {
   abstract medicineStockExists(
     medicineStock: MedicineStock,
   ): Promise<MedicineStock | null>
+  abstract findMany(params: PaginationParams, filters: {
+    stockId: string
+    medicineName?: string,
+  }):Promise<{ medicinesStock: MedicineStockDetails[], meta: Meta }>
 }

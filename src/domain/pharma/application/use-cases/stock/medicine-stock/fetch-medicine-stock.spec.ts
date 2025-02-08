@@ -1,8 +1,3 @@
-import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
-import { FetchBatchesStockUseCase } from './fetch-batches-stock'
-import { makeBatchStock } from 'test/factories/make-batch-stock'
-import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
-import { makeBatch } from 'test/factories/make-batch'
 import { makeStock } from 'test/factories/make-stock'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
@@ -17,6 +12,7 @@ import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
+import { FetchMedicinesStockUseCase } from './fetch-medicine-stock'
 
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
@@ -25,15 +21,23 @@ let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
-let inMemoryBatchesRepository: InMemoryBatchesRepository
-let inMemoryBatchesStockRepository: InMemoryBatchStocksRepository
-let sut: FetchBatchesStockUseCase
-describe('Fetch Batches on Stock', () => {
+let sut: FetchMedicinesStockUseCase
+describe('Fetch Medicines on Stock', () => {
   beforeEach(() => {
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryStocksRepository = new InMemoryStocksRepository(
+      inMemoryInstitutionsRepository,
+    )
+    inMemoryMedicinesVariantsRepository =
+    new InMemoryMedicinesVariantsRepository(
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+    )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryStocksRepository,
       inMemoryMedicinesRepository,
@@ -41,30 +45,11 @@ describe('Fetch Batches on Stock', () => {
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
     )
-    inMemoryMedicinesVariantsRepository =
-      new InMemoryMedicinesVariantsRepository(
-        inMemoryMedicinesRepository,
-        inMemoryPharmaceuticalFormsRepository,
-        inMemoryUnitsMeasureRepository,
-      )
-    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
-    inMemoryStocksRepository = new InMemoryStocksRepository(
-      inMemoryInstitutionsRepository,
-    )
-    inMemoryBatchesRepository = new InMemoryBatchesRepository()
-    inMemoryBatchesStockRepository = new InMemoryBatchStocksRepository(
-      inMemoryBatchesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesStockRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryStocksRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryPharmaceuticalFormsRepository,
-    )
-    sut = new FetchBatchesStockUseCase(inMemoryBatchesStockRepository)
+
+    sut = new FetchMedicinesStockUseCase(inMemoryMedicinesStockRepository)
   })
 
-  it('should be able to fetch batches on stock', async () => {
+  it('should be able to fetch medicines on stock', async () => {
     const institution = makeInstitution()
     await inMemoryInstitutionsRepository.create(institution)
 
@@ -94,56 +79,39 @@ describe('Fetch Batches on Stock', () => {
       medicineVariant.id.toString(),
     )
 
+    const medicineVariant2 = makeMedicineVariant({
+      medicineId: medicine.id,
+      pharmaceuticalFormId: pharmaceuticalForm.id,
+      unitMeasureId: unitMeasure.id,
+    })
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant2)
+
+    await inMemoryMedicinesRepository.addMedicinesVariantsId(
+      medicine.id.toString(),
+      medicineVariant2.id.toString(),
+    )
+
     const medicineStock = makeMedicineStock({
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
+      currentQuantity: 80,
+      createdAt: new Date(2024, 0, 20),
     })
     await inMemoryMedicinesStockRepository.create(medicineStock)
 
-    const batch = makeBatch({
-      code: 'ABC01',
-    })
-    await inMemoryBatchesRepository.create(batch)
-
-    const batch2 = makeBatch({
-      code: 'ABC02',
-    })
-    await inMemoryBatchesRepository.create(batch2)
-
-    const batchStock = makeBatchStock({
-      batchId: batch.id,
-      medicineStockId: medicineStock.id,
-      medicineVariantId: medicineVariant.id,
+    const medicineStock2 = makeMedicineStock({
+      medicineVariantId: medicineVariant2.id,
       stockId: stock.id,
+      currentQuantity: 50,
       createdAt: new Date(2024, 0, 29),
     })
-    await inMemoryBatchesStockRepository.create(batchStock)
-    const batchStock2 = makeBatchStock({
-      batchId: batch2.id,
-      medicineStockId: medicineStock.id,
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-      createdAt: new Date(2024, 0, 20),
-    })
-    await inMemoryBatchesStockRepository.create(batchStock2)
-
-    await inMemoryMedicinesStockRepository.addBatchStock(
-      medicineStock.id.toString(),
-      batchStock.id.toString(),
-    )
-    await inMemoryMedicinesStockRepository.addBatchStock(
-      medicineStock.id.toString(),
-      batchStock2.id.toString(),
-    )
-
+    await inMemoryMedicinesStockRepository.create(medicineStock2)
     const result = await sut.execute({
       page: 1,
       stockId: stock.id.toString(),
-      medicineStockId: medicineStock.id.toString(),
-      code: 'ABC',
     })
 
-    expect(result.value?.batchesStock).toEqual(
+    expect(result.value?.medicinesStock).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ createdAt: new Date(2024, 0, 29) }),
         expect.objectContaining({ createdAt: new Date(2024, 0, 20) }),
@@ -151,7 +119,7 @@ describe('Fetch Batches on Stock', () => {
     )
   })
 
-  it('should be able to fetch paginated batches on stock', async () => {
+  it('should be able to fetch paginated medicines on stock', async () => {
     const institution = makeInstitution()
     await inMemoryInstitutionsRepository.create(institution)
 
@@ -166,53 +134,41 @@ describe('Fetch Batches on Stock', () => {
     const unitMeasure = makeUnitMeasure()
     await inMemoryUnitsMeasureRepository.create(unitMeasure)
 
-    const medicine = makeMedicine()
+    const medicine = makeMedicine({
+      content: 'Medicine x',
+    })
     await inMemoryMedicinesRepository.create(medicine)
-
-    const medicineVariant = makeMedicineVariant({
-      medicineId: medicine.id,
-      pharmaceuticalFormId: pharmaceuticalForm.id,
-      unitMeasureId: unitMeasure.id,
-    })
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
-
-    await inMemoryMedicinesRepository.addMedicinesVariantsId(
-      medicine.id.toString(),
-      medicineVariant.id.toString(),
-    )
-
-    const medicineStock = makeMedicineStock({
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-    })
-    await inMemoryMedicinesStockRepository.create(medicineStock)
 
     await Promise.all(
       Array.from({ length: 22 }).map(async () => {
-        const batch = makeBatch()
-        await inMemoryBatchesRepository.create(batch)
-
-        const batchStock = makeBatchStock({
-          batchId: batch.id,
-          medicineVariantId: medicineVariant.id,
-          medicineStockId: medicineStock.id,
-          stockId: stock.id,
+        const medicineVariant = makeMedicineVariant({
+          medicineId: medicine.id,
+          pharmaceuticalFormId: pharmaceuticalForm.id,
+          unitMeasureId: unitMeasure.id,
         })
-        await inMemoryBatchesStockRepository.create(batchStock)
+        await inMemoryMedicinesVariantsRepository.create(medicineVariant)
 
-        await inMemoryMedicinesStockRepository.addBatchStock(
-          medicineStock.id.toString(),
-          batchStock.id.toString(),
+        await inMemoryMedicinesRepository.addMedicinesVariantsId(
+          medicine.id.toString(),
+          medicineVariant.id.toString(),
         )
+
+        const medicineStock = makeMedicineStock({
+          medicineVariantId: medicineVariant.id,
+          stockId: stock.id,
+          currentQuantity: 80,
+          createdAt: new Date(2024, 0, 20),
+        })
+        await inMemoryMedicinesStockRepository.create(medicineStock)
       }),
     )
 
     const result = await sut.execute({
       page: 2,
-      medicineStockId: medicineStock.id.toString(),
       stockId: stock.id.toString(),
+      medicineName: 'x',
     })
 
-    expect(result.value?.batchesStock).toHaveLength(2)
+    expect(result.value?.medicinesStock).toHaveLength(2)
   })
 })

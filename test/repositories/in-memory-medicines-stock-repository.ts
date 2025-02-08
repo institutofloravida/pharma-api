@@ -1,9 +1,25 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
 import { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock'
+import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details'
+import { InMemoryStocksRepository } from './in-memory-stocks-repository'
+import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
+import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
+import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
 
 export class InMemoryMedicinesStockRepository
 implements MedicinesStockRepository {
+  constructor(
+    private stocksRepository: InMemoryStocksRepository,
+    private medicinesRepository: InMemoryMedicinesRepository,
+    private medicinesVariantsRepository: InMemoryMedicinesVariantsRepository,
+    private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
+    private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
+  ) {}
+
   public items: MedicineStock[] = []
 
   async create(medicinestock: MedicineStock) {
@@ -111,5 +127,93 @@ implements MedicinesStockRepository {
     }
 
     return null
+  }
+
+  async findMany(
+    { page }: PaginationParams,
+    filters: { stockId: string; medicineName?: string },
+  ): Promise<{ medicinesStock: MedicineStockDetails[]; meta: Meta }> {
+    const { stockId, medicineName } = filters
+
+    const medicinesStock = this.items
+
+    const medicinesStockFiltered: MedicineStockDetails[] = []
+    const stock = await this.stocksRepository.findById(stockId)
+    if (!stock) {
+      throw new Error(`Estoque com Id ${stockId} não foi encontrado!`)
+    }
+
+    for (const medicineStock of medicinesStock) {
+      if (!medicineStock.stockId.equal(new UniqueEntityId(stockId))) continue
+
+      const medicine = await this.medicinesRepository.findByMedicineVariantId(
+        medicineStock.medicineVariantId.toString(),
+      )
+
+      if (!medicine) {
+        throw new Error(
+          `Medicamento contendo variant id ${medicineStock.medicineVariantId.toString()} não foi encontrado`,
+        )
+      }
+
+      if (!medicine.content.toLowerCase().includes(medicineName?.toLowerCase() ?? '')) continue
+
+      const medicineVariant = await this.medicinesVariantsRepository.findById(
+        medicineStock.medicineVariantId.toString(),
+      )
+
+      if (!medicineVariant) {
+        throw new Error(
+          `Variante de medicamento com id ${medicineStock.medicineVariantId.toString()} não foi encontrada`,
+        )
+      }
+
+      const pharmaceuticalForm =
+      await this.pharmaceuticalFormsRepository.findById(
+        medicineVariant?.pharmaceuticalFormId.toString(),
+      )
+      if (!pharmaceuticalForm) {
+        throw new Error(
+        `forma farmacêutica com id ${medicineVariant.pharmaceuticalFormId} não foi encontrada`,
+        )
+      }
+
+      const unitMeasure = await this.unitsMeasureRepository.findById(
+        medicineVariant?.unitMeasureId.toString(),
+      )
+      if (!unitMeasure) {
+        throw new Error(
+        `unidade de medida com id ${medicineVariant.unitMeasureId} não foi encontrada`,
+        )
+      }
+
+      const medicineStockDetails = MedicineStockDetails.create({
+        id: medicineStock.id,
+        stock: stock.content,
+        stockId: stock.id,
+        medicine: medicine.content,
+        currentQuantity: medicineStock.quantity,
+        medicineVariantId: medicineVariant.id,
+        dosage: medicineVariant.dosage,
+        pharmaceuticalForm: pharmaceuticalForm.content,
+        unitMeasure: unitMeasure.acronym,
+        createdAt: medicineStock.createdAt,
+        updatedAt: medicineStock.updatedAt,
+      })
+      medicinesStockFiltered.push(medicineStockDetails)
+    }
+    const medicinesStockPaginatedAndOrdered = medicinesStockFiltered
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(
+        (page - 1) * 20,
+        page * 20,
+      )
+    return {
+      medicinesStock: medicinesStockPaginatedAndOrdered,
+      meta: {
+        page,
+        totalCount: medicinesStockFiltered.length,
+      },
+    }
   }
 }
