@@ -123,7 +123,7 @@ export class PrismaPatientsRepository implements PatientsRepository {
           },
         },
         take: 10,
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
       }),
       await this.prisma.patient.count({
         where: {

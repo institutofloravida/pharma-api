@@ -118,7 +118,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
       this.prisma.batcheStock.findMany({
         where: whereClause,
         take: 10,
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
         include: {
           stock: true,
           batch: true,

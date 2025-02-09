@@ -86,7 +86,7 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
           createdAt: 'desc',
         },
         take: 10,
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
       }),
       this.prisma.institution.count({
         where: {

@@ -50,7 +50,7 @@ export class InMemoryUnitsMeasureRepository implements UnitsMeasureRepository {
       .filter(item => item.content.includes(content ?? ''))
 
     const unitsMeasurePaginated = unitsMeasureFiltered
-      .slice((page -1) * 10, page * 10)
+      .slice((page - 1) * 10, page * 10)
 
     return {
       unitsMeasure: unitsMeasurePaginated,

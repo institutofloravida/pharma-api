@@ -199,7 +199,7 @@ implements MedicinesStockRepository {
           },
           stock: true,
         },
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
         take: 10,
       }),
       this.prisma.medicineStock.count({

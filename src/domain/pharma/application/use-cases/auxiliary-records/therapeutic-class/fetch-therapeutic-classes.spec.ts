@@ -35,11 +35,12 @@ describe('Fetch TherapeuticClasses', () => {
 
   it('should be able to fetch paginated therapeutic classes', async () => {
     for (let i = 1; i <= 22; i++) {
-      await inMemoryTherapeuticClassesRepository.create(makeTherapeuticClass())
+      await inMemoryTherapeuticClassesRepository.create(makeTherapeuticClass({ content: `therapeutic class ${i}` }))
     }
 
     const result = await sut.execute({
       page: 3,
+      content: 'therapeutic class',
     })
 
     expect(result.value?.therapeuticClasses).toHaveLength(2)

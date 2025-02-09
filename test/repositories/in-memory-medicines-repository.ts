@@ -75,7 +75,7 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
       .filter(item => item.content.includes(content ?? ''))
 
     const medicinesPaginated = medicinesFiltred
-      .slice((page -1) * 10, page * 10)
+      .slice((page - 1) * 10, page * 10)
 
     return {
       medicines: medicinesPaginated,

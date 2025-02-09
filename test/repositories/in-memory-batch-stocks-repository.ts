@@ -166,6 +166,7 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
       }
 
       const batchStockWithBatch = BatchStockWithBatch.create({
+        id: batchStock.id,
         stock: stock.content,
         stockId: stock.id,
         batch: batch.code,
@@ -183,7 +184,7 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
       batchesStocksFiltered.push(batchStockWithBatch)
     }
     const batchesStockPaginated = batchesStocksFiltered.slice(
-      (page -1) * 10,
+      (page - 1) * 10,
       page * 10,
     )
 

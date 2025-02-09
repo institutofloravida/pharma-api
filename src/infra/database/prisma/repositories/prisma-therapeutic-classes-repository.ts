@@ -4,9 +4,12 @@ import { PrismaService } from '../prisma.service'
 import { PrismaTherapeuticClassMapper } from '../mappers/prisma-therapeutic-class.mapper'
 import { Injectable } from '@nestjs/common'
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import type { Meta } from '@/core/repositories/meta'
+import type { Prisma } from '@prisma/client'
 
 @Injectable()
-export class PrismaTherapeuticClassesRepository implements TherapeuticClassesRepository {
+export class PrismaTherapeuticClassesRepository
+implements TherapeuticClassesRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(therapeuticClass: TherapeuticClass) {
@@ -23,7 +26,6 @@ export class PrismaTherapeuticClassesRepository implements TherapeuticClassesRep
           mode: 'insensitive',
         },
       },
-
     })
 
     if (!therapeuticClass) {
@@ -33,14 +35,38 @@ export class PrismaTherapeuticClassesRepository implements TherapeuticClassesRep
     return PrismaTherapeuticClassMapper.toDomain(therapeuticClass)
   }
 
-  async findMany({ page }: PaginationParams): Promise<TherapeuticClass[]> {
-    const therapeuticClasses = await this.prisma.therapeuticClass.findMany({
-      orderBy: {
-        createdAt: 'desc',
+  async findMany(
+    { page }: PaginationParams,
+    filters: { content?: string },
+  ): Promise<{ therapeuticClasses: TherapeuticClass[]; meta: Meta }> {
+    const { content } = filters
+
+    const whereClause: Prisma.TherapeuticClassWhereInput = {
+      name: {
+        contains: content,
+        mode: 'insensitive',
       },
-      take: 10,
-      skip: (page -1) * 10,
-    })
-    return therapeuticClasses.map(PrismaTherapeuticClassMapper.toDomain)
+    }
+
+    const [therapeuticClasses, totalCount] = await this.prisma.$transaction([
+      this.prisma.therapeuticClass.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 10,
+        skip: (page - 1) * 10,
+      }),
+      this.prisma.therapeuticClass.count({
+        where: whereClause,
+      }),
+    ])
+
+    return {
+      therapeuticClasses: therapeuticClasses.map(PrismaTherapeuticClassMapper.toDomain),
+      meta: {
+        page, totalCount,
+      },
+    }
   }
 }

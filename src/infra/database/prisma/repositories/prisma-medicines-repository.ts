@@ -98,7 +98,7 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
   ): Promise<{ medicines: Medicine[]; meta: Meta }> {
     const medicines = await this.prisma.medicine.findMany({
       orderBy: { createdAt: 'desc' },
-      skip: (page -1) * 10,
+      skip: (page - 1) * 10,
       take: 10,
       where: {
         name: {

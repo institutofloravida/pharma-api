@@ -47,7 +47,7 @@ implements PharmaceuticalFormsRepository {
       .filter((item) => item.content.includes(content ?? ''))
 
     const pharmaceuticalFormsPaginated = pharmaceuticalFormsFiltred.slice(
-      (page -1) * 10,
+      (page - 1) * 10,
       page * 10,
     )
 

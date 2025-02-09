@@ -93,7 +93,7 @@ export class PrismaManufacturersRepository implements ManufacturersRepository {
           },
         },
         orderBy: { createdAt: 'desc' },
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
         take: 10,
       }),
       await this.prisma.manufacturer.count({

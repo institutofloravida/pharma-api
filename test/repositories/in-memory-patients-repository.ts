@@ -129,7 +129,7 @@ export class InMemoryPatientsRepository implements PatientsRepository {
 
     const patientsPaginated = patients
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page -1) * 10, page * 10)
+      .slice((page - 1) * 10, page * 10)
 
     return {
       patients: patientsPaginated,

@@ -72,7 +72,7 @@ export class PrismaStocksRepository implements StocksRepository {
         createdAt: 'desc',
       },
       take: 10,
-      skip: (page -1) * 10,
+      skip: (page - 1) * 10,
     })
     return stocks.map(PrismaStockMapper.toDomain)
   }
@@ -103,7 +103,7 @@ export class PrismaStocksRepository implements StocksRepository {
           createdAt: 'desc',
         },
         take: 10,
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
       }),
       this.prisma.stock.count({
         where: {

@@ -32,7 +32,7 @@ implements DispensationsMedicinesRepository {
       this.prisma.dispensation.findMany({
         where: whereClause,
         take: 10,
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
         orderBy: {
           createdAt: 'desc',
         },
@@ -43,7 +43,7 @@ implements DispensationsMedicinesRepository {
       this.prisma.dispensation.count({
         where: whereClause,
         take: 10,
-        skip: (page -1) * 10,
+        skip: (page - 1) * 10,
         orderBy: {
           createdAt: 'desc',
         },

@@ -32,7 +32,7 @@ export class InMemoryBatchesRepository implements BatchesRepository {
 
     const batchesPaginated = batchesFiltered
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page -1) * 10, page * 10)
+      .slice((page - 1) * 10, page * 10)
 
     return {
       batches: batchesPaginated,
@@ -52,7 +52,7 @@ export class InMemoryBatchesRepository implements BatchesRepository {
 
     const batchesPaginated = batchesFiltered
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page -1) * 10, page * 10)
+      .slice((page - 1) * 10, page * 10)
 
     return {
       batches: batchesPaginated,

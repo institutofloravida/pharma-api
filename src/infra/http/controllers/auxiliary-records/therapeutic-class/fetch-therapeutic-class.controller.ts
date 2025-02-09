@@ -22,21 +22,23 @@ export class FetchTerapeuticClasssController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchTherapeuticClassDto) {
-    const { page } = queryParams
+    const { page, query } = queryParams
 
     const result = await this.fetchTherapeuticClasses.execute({
       page,
+      content: query,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})
     }
 
-    const therapeuticClasses = result.value.therapeuticClasses
+    const { therapeuticClasses, meta } = result.value
 
     return {
       therapeutic_classes: therapeuticClasses.map(
         TherapeuticClassPresenter.toHTTP,
       ),
+      meta,
     }
   }
 }

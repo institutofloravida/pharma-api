@@ -73,7 +73,7 @@ implements ManufacturersRepository {
       )
 
     const manufacturersPaginated = manufacturersFiltered.slice(
-      (page -1) * 10,
+      (page - 1) * 10,
       page * 10,
     )
 

@@ -54,7 +54,7 @@ export class InMemoryPathologiesRepository implements PathologiesRepository {
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
     const pathologiesPaginated = pathologiesFiltered.slice(
-      (page -1) * 10,
+      (page - 1) * 10,
       page * 10,
     )
 
