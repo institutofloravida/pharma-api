@@ -199,8 +199,8 @@ implements MedicinesStockRepository {
           },
           stock: true,
         },
-        skip: (page - 1) * 20,
-        take: 20,
+        skip: (page -1) * 10,
+        take: 10,
       }),
       this.prisma.medicineStock.count({
         where: whereClause,

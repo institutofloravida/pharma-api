@@ -39,7 +39,7 @@ describe('Fetch Batches', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
     })
 
     expect(result.value?.batches).toHaveLength(2)

@@ -67,7 +67,7 @@ export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {
     unitsMeasure: UnitMeasure[]
     meta: Meta
   }> {
-    const pageSize = 20
+    const pageSize = 10
     const [unitsMeasure, totalCount] = await Promise.all([
       this.prisma.unitMeasure.findMany({
         where: {

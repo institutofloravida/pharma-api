@@ -44,8 +44,8 @@ export class PrismaBatchesRepository implements BatchesRepository {
       orderBy: {
         createdAt: 'desc',
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 10,
+      skip: (page - 1) * 10,
     })
 
     const batchesTotalCount = await this.prisma.batch.count({
@@ -74,8 +74,8 @@ export class PrismaBatchesRepository implements BatchesRepository {
         orderBy: {
           createdAt: 'desc',
         },
-        take: 20,
-        skip: (page - 1) * 20,
+        take: 10,
+        skip: (page - 1) * 10,
       }),
       this.prisma.batch.count({
         where: whereClause,

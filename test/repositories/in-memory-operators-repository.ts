@@ -44,7 +44,7 @@ export class InMemoryOperatorsRepository implements OperatorsRepository {
       .filter(item => item.name.includes(content ?? ''))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
-    const paginatedOperators = filteredOperators.slice((page - 1) * 20, page * 20)
+    const paginatedOperators = filteredOperators.slice((page -1) * 10, page * 10)
 
     const operatorsWithInstitutions = await Promise.all(
       paginatedOperators.map(async operator => {

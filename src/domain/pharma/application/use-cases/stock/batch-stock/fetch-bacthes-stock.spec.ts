@@ -208,7 +208,7 @@ describe('Fetch Batches on Stock', () => {
     )
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
       medicineStockId: medicineStock.id.toString(),
       stockId: stock.id.toString(),
     })

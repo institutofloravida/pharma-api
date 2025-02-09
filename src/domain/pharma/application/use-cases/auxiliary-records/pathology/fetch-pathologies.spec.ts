@@ -41,7 +41,7 @@ describe('Fetch manufatureres', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
     })
     const result2 = await sut.execute({
       page: 1,

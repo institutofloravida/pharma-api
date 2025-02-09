@@ -71,8 +71,8 @@ export class PrismaStocksRepository implements StocksRepository {
       orderBy: {
         createdAt: 'desc',
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 10,
+      skip: (page -1) * 10,
     })
     return stocks.map(PrismaStockMapper.toDomain)
   }
@@ -102,8 +102,8 @@ export class PrismaStocksRepository implements StocksRepository {
         orderBy: {
           createdAt: 'desc',
         },
-        take: 20,
-        skip: (page - 1) * 20,
+        take: 10,
+        skip: (page -1) * 10,
       }),
       this.prisma.stock.count({
         where: {

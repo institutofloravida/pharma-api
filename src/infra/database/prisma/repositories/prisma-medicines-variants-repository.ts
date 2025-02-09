@@ -58,7 +58,7 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
     medicinesVariants: MedicineVariantWithMedicine[],
     meta: Meta
   }> {
-    const pageSize = 20
+    const pageSize = 10
     const medicineVariants = await this.prisma.medicineVariant.findMany({
       where: {
         medicineId,

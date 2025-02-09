@@ -57,15 +57,15 @@ describe('Fetch Dispensations', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 4,
     })
 
     const resultByPatientId = await sut.execute({
-      page: 2,
+      page: 3,
       patientId: patient1.id.toString(),
     })
 
-    expect(result.value?.dispensations).toHaveLength(13)
+    expect(result.value?.dispensations).toHaveLength(3)
     expect(resultByPatientId.value?.dispensations).toHaveLength(2)
   })
 })

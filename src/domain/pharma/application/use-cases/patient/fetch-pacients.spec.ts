@@ -67,7 +67,7 @@ describe('Fetch Patients', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
     })
 
     expect(result.value?.patients).toHaveLength(2)

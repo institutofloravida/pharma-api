@@ -52,7 +52,7 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
     pharmaceuticalForms: PharmaceuticalForm[]
     meta: Meta
   }> {
-    const pageSize = 20
+    const pageSize = 10
 
     const pharmaceuticalForms = await this.prisma.pharmaceuticalForm.findMany({
       where: {

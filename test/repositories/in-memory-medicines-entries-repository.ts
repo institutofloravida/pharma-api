@@ -220,7 +220,7 @@ implements MedicinesEntriesRepository {
     })
 
     const medicinesEntriesFilteredAndPaginated =
-      medicinesEntriesByFilters.slice((page - 1) * 20, page * 20)
+      medicinesEntriesByFilters.slice((page -1) * 10, page * 10)
 
     return {
       medicinesEntries: medicinesEntriesFilteredAndPaginated,

@@ -39,7 +39,7 @@ describe('Fetch TherapeuticClasses', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
     })
 
     expect(result.value?.therapeuticClasses).toHaveLength(2)

@@ -39,7 +39,7 @@ describe('Fetch Pharmaceutical Forms', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
     })
 
     expect(result.value?.pharmaceuticalForms).toHaveLength(2)

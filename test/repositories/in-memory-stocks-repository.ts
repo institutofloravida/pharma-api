@@ -44,7 +44,7 @@ export class InMemoryStocksRepository implements StocksRepository {
     const stocks = this.items
       .filter((item) => institutionsIds.includes(item.institutionId.toString()))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 20, page * 20)
+      .slice((page - 1) * 10, page * 10)
 
     return stocks
   }
@@ -69,7 +69,7 @@ export class InMemoryStocksRepository implements StocksRepository {
     const stocksFiltered = stocks.filter(item => {
       return item.content.includes(content ?? '')
     })
-    const stocksPaginated = stocksFiltered.slice((page - 1) * 20, page * 20)
+    const stocksPaginated = stocksFiltered.slice((page - 1) * 10, page * 10)
 
     const stocksWithInstitution = await Promise.all(
       stocksPaginated.map(async (stock) => {

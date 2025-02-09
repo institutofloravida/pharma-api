@@ -95,7 +95,7 @@ describe('Fetch Stocks', () => {
       ])
     }
     const result = await sut.execute({
-      page: 3,
+      page: 5,
       institutionsIds: [institution.id.toString()],
       operatorId: operator.id.toString(),
     })

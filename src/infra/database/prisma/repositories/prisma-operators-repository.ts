@@ -68,8 +68,8 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
         },
       },
       orderBy: { createdAt: 'desc' },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 10,
+      skip: (page -1) * 10,
     })
 
     const operatorsTotalCount = await this.prisma.operator.count({

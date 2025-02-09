@@ -39,7 +39,7 @@ describe('Fetch Institutions', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
     })
 
     expect(result.value?.institutions).toHaveLength(2)

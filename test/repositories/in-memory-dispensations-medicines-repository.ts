@@ -26,7 +26,7 @@ implements DispensationsMedicinesRepository {
     }).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
     const dispensationsPaginated = dispensationsFiltered
-      .slice((page - 1) * 20, page * 20)
+      .slice((page -1) * 10, page * 10)
 
     return {
       dispensations: dispensationsPaginated,

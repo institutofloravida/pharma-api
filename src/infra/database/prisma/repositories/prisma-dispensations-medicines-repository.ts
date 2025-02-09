@@ -31,8 +31,8 @@ implements DispensationsMedicinesRepository {
     const [dispensations, totalCount] = await this.prisma.$transaction([
       this.prisma.dispensation.findMany({
         where: whereClause,
-        take: 20,
-        skip: (page - 1) * 20,
+        take: 10,
+        skip: (page -1) * 10,
         orderBy: {
           createdAt: 'desc',
         },
@@ -42,8 +42,8 @@ implements DispensationsMedicinesRepository {
       }),
       this.prisma.dispensation.count({
         where: whereClause,
-        take: 20,
-        skip: (page - 1) * 20,
+        take: 10,
+        skip: (page -1) * 10,
         orderBy: {
           createdAt: 'desc',
         },

@@ -51,7 +51,7 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
     const institutionsPaginated = institutions
-      .slice((page - 1) * 20, page * 20)
+      .slice((page -1) * 10, page * 10)
 
     return {
       institutions: institutionsPaginated,

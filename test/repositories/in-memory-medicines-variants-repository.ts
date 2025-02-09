@@ -106,7 +106,7 @@ implements MedicinesVariantsRepository {
 
     const medicinesVariantsWithMedicineFiltred = medicinesVariantsWithMedicine
       .filter((item) => item.medicine.includes(content ?? ''))
-      .slice((page - 1) * 20, page * 20)
+      .slice((page -1) * 10, page * 10)
 
     return {
       medicinesVariants: medicinesVariantsWithMedicineFiltred,

@@ -257,7 +257,7 @@ describe('Fetch Register Medicines Entries', () => {
     }
 
     const result = await sut.execute({
-      page: 2,
+      page: 3,
       institutionId: institution.id.toString(),
     })
     const result2 = await sut.execute({

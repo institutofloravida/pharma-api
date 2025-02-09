@@ -117,8 +117,8 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     const [batchesStock, totalCount] = await this.prisma.$transaction([
       this.prisma.batcheStock.findMany({
         where: whereClause,
-        take: 20,
-        skip: (page - 1) * 20,
+        take: 10,
+        skip: (page -1) * 10,
         include: {
           stock: true,
           batch: true,

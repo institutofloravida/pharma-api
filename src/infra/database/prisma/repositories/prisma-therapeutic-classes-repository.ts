@@ -38,8 +38,8 @@ export class PrismaTherapeuticClassesRepository implements TherapeuticClassesRep
       orderBy: {
         createdAt: 'desc',
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 10,
+      skip: (page -1) * 10,
     })
     return therapeuticClasses.map(PrismaTherapeuticClassMapper.toDomain)
   }

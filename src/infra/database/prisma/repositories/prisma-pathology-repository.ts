@@ -74,7 +74,7 @@ export class PrismaPathologysRepository implements PathologiesRepository {
     { page }: PaginationParams,
     content?: string,
   ): Promise<{ pathologies: Pathology[]; meta: Meta }> {
-    const pageSize = 20
+    const pageSize = 10
     const whereClause: Prisma.PathologyWhereInput = {
       name: {
         contains: content ?? '',
