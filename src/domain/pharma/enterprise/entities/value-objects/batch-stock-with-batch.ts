@@ -2,6 +2,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ValueObject } from '@/core/entities/value-object'
 
 export interface BatchStockWithBatchProps {
+  id: UniqueEntityId
   stockId: UniqueEntityId
   stock: string
   batchId: UniqueEntityId
@@ -18,6 +19,10 @@ export interface BatchStockWithBatchProps {
 }
 
 export class BatchStockWithBatch extends ValueObject<BatchStockWithBatchProps> {
+  get id() {
+    return this.props.id
+  }
+
   get stockId() {
     return this.props.stockId
   }

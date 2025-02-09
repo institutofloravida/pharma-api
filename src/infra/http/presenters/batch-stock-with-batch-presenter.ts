@@ -3,6 +3,7 @@ import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-o
 export class BatchStockWithBatchPresenter {
   static toHTTP(batchStockWithBatch: BatchStockWithBatch) {
     return {
+      id: batchStockWithBatch.id.toString(),
       stockId: batchStockWithBatch.stockId.toString(),
       stock: batchStockWithBatch.stock,
       batchId: batchStockWithBatch.batchId.toString(),

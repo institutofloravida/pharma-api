@@ -141,6 +141,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
 
     const batchesStockMapped = batchesStock.map(batchStock => {
       return BatchStockWithBatch.create({
+        id: new UniqueEntityId(batchStock.id),
         batch: batchStock.batch.code,
         batchId: new UniqueEntityId(batchStock.batchId),
         medicine: batchStock.medicineVariant.medicine.name,

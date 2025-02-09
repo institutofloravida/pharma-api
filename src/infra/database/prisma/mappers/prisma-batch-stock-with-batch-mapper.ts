@@ -24,6 +24,7 @@ export class PrismaBatchStockWithBatchMapper {
   static toDomain(raw: PrismaBatchStockWithBatch): BatchStockWithBatch {
     return BatchStockWithBatch.create(
       {
+        id: new UniqueEntityId(raw.id),
         batchId: new UniqueEntityId(raw.batchId),
         batch: raw.batch.code,
         dosage: raw.medicineVariant.dosage,
