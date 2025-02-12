@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { OperatorFactory } from 'test/factories/make-operator'
-import { MovementDirection } from './dtos/create-movement-type-dto'
+import { MovementDirection } from './dtos/create-movement-type.dto'
 
 describe('Create Movement Type (E2E)', () => {
   let app: INestApplication

@@ -1,7 +1,7 @@
 import { BadRequestException, Body, ConflictException, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { CreateMovementTypeDto } from './dtos/create-movement-type-dto'
+import { CreateMovementTypeDto } from './dtos/create-movement-type.dto'
 import { CreateMovementTypeUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/movement-type/create-movement-type'
 
 @ApiTags('movement-type')
