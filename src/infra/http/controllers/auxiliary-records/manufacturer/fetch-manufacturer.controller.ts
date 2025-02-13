@@ -32,8 +32,8 @@ export class FetchManufacturersController {
       throw new BadRequestException({})
     }
 
-    const manufacturers = result.value.manufacturers
+    const { manufacturers, meta } = result.value
 
-    return { manufacturers: manufacturers.map(ManufacturerPresenter.toHTTP) }
+    return { manufacturers: manufacturers.map(ManufacturerPresenter.toHTTP), meta }
   }
 }

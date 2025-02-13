@@ -23,8 +23,8 @@ export class FetchPharmaceuticalFormController {
       throw new BadRequestException({})
     }
 
-    const pharmaceuticalForms = result.value.pharmaceuticalForms
+    const { pharmaceuticalForms, meta } = result.value
 
-    return { pharmaceutical_forms: pharmaceuticalForms.map(PharmaceuticalFormPresenter.toHTTP) }
+    return { pharmaceutical_forms: pharmaceuticalForms.map(PharmaceuticalFormPresenter.toHTTP), meta }
   }
 }
