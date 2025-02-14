@@ -8,8 +8,8 @@ import { InstitutionsRepository } from '../../repositories/institutions-reposito
 
 interface updateInstitutionUseCaseRequest {
   institutionId: string
-  content: string,
-  cnpj: string,
+  content?: string,
+  cnpj?: string,
   description?: string | null,
 }
 
@@ -28,20 +28,24 @@ export class UpdateInstitutionUseCase {
     if (!institution) {
       return left(new ResourceNotFoundError())
     }
-
-    const institutionWithSameCnpj = await this.institutionRepository.findByCnpj(cnpj)
-    if (institutionWithSameCnpj && institutionWithSameCnpj.cnpj !== cnpj) {
-      return left(new InstitutionWithSameCnpjAlreadyExistsError(cnpj))
+    if (cnpj) {
+      const institutionWithSameCnpj = await this.institutionRepository.findByCnpj(cnpj)
+      if (institutionWithSameCnpj && institutionWithSameCnpj.id.toString() !== institutionId) {
+        return left(new InstitutionWithSameCnpjAlreadyExistsError(cnpj))
+      }
+      institution.cnpj = cnpj
     }
 
-    const institutionWithSameContent = await this.institutionRepository.findByContent(content)
-    if (institutionWithSameContent) {
-      return left(new InstitutionWithSameContentAlreadyExistsError(content))
+    if (content) {
+      const institutionWithSameContent = await this.institutionRepository.findByContent(content)
+      if (institutionWithSameContent && institutionWithSameContent.id.toString() !== institutionId) {
+        return left(new InstitutionWithSameContentAlreadyExistsError(content))
+      }
+      institution.content = content
     }
-
-    institution.cnpj = cnpj
-    institution.content = content
-    institution.description = description
+    if (description) {
+      institution.description = description
+    }
 
     await this.institutionRepository.save(institution)
 

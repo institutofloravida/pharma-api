@@ -48,7 +48,7 @@ describe('Update Institution', () => {
 
     const result = await sut.execute({
       institutionId: institution.id.toString(),
-      content: 'Institution 2',
+      content: institution2.content,
       cnpj: institution.cnpj,
       description: institution.description,
     })

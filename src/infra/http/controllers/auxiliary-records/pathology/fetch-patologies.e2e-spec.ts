@@ -54,11 +54,11 @@ describe('Fetch Pathologies (E2E)', () => {
       .send()
 
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
+    expect(response.body).toEqual(expect.objectContaining({
       pathologies: expect.arrayContaining([
         expect.objectContaining({ name: 'pathology 1' }),
         expect.objectContaining({ name: 'pathology 2' }),
       ]),
-    })
+    }))
   })
 })

@@ -68,6 +68,8 @@ import { FetchMedicinesStockController } from './controllers/stock/medicine-stoc
 import { FetchMedicinesStockUseCase } from '@/domain/pharma/application/use-cases/stock/medicine-stock/fetch-medicine-stock'
 import { FetchmovementTypesController } from './controllers/auxiliary-records/movement-type/fetch-movement-types.controller'
 import { FetchMovementTypesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/movement-type/fetch-movement-type'
+import { UpdateInstitutionController } from './controllers/auxiliary-records/institution/update-institution.controller'
+import { UpdateInstitutionUseCase } from '@/domain/pharma/application/use-cases/institution/update-institution'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -106,6 +108,7 @@ import { FetchMovementTypesUseCase } from '@/domain/pharma/application/use-cases
     FetchBatchesStockController,
     FetchMedicinesStockController,
     FetchmovementTypesController,
+    UpdateInstitutionController,
 
   ],
   providers: [
@@ -142,6 +145,7 @@ import { FetchMovementTypesUseCase } from '@/domain/pharma/application/use-cases
     FetchBatchesStockUseCase,
     FetchMedicinesStockUseCase,
     FetchMovementTypesUseCase,
+    UpdateInstitutionUseCase,
   ],
 })
 export class HttpModule {}

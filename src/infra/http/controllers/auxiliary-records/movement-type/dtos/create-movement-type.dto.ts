@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { IsEnum, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 

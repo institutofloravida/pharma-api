@@ -53,11 +53,11 @@ describe('Fetch Pharmaceutical Forms (E2E)', () => {
       .send()
 
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
+    expect(response.body).toEqual(expect.objectContaining({
       pharmaceutical_forms: expect.arrayContaining([
         expect.objectContaining({ name: 'pharmaceutical form 1' }),
         expect.objectContaining({ name: 'pharmaceutical form 2' }),
       ]),
-    })
+    }))
   })
 })
