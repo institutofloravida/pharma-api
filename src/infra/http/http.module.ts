@@ -70,13 +70,16 @@ import { FetchmovementTypesController } from './controllers/auxiliary-records/mo
 import { FetchMovementTypesUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/movement-type/fetch-movement-type'
 import { UpdateInstitutionController } from './controllers/auxiliary-records/institution/update-institution.controller'
 import { UpdateInstitutionUseCase } from '@/domain/pharma/application/use-cases/institution/update-institution'
+import { GetInstitutionController } from './controllers/auxiliary-records/institution/get-institution.controller'
+import { GetInstitutionUseCase } from '@/domain/pharma/application/use-cases/institution/get-institution'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
-    GetOperatorDetailsController,
     AuthenticateOperatorController,
     ValidateTokenController,
+    GetOperatorDetailsController,
+    GetInstitutionController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
     CreateInstitutionController,
@@ -112,8 +115,9 @@ import { UpdateInstitutionUseCase } from '@/domain/pharma/application/use-cases/
 
   ],
   providers: [
-    GetOperatorDetailsUseCase,
     AuthenticateOperatorUseCase,
+    GetOperatorDetailsUseCase,
+    GetInstitutionUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
     CreateInstitutionUseCase,
