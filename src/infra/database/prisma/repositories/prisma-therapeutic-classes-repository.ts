@@ -18,6 +18,17 @@ implements TherapeuticClassesRepository {
     })
   }
 
+  async save(therapeuticClass: TherapeuticClass): Promise<void> {
+    const data = PrismaTherapeuticClassMapper.toPrisma(therapeuticClass)
+
+    await this.prisma.therapeuticClass.update({
+      where: {
+        id: therapeuticClass.id.toString(),
+      },
+      data,
+    })
+  }
+
   async findById(id: string): Promise<TherapeuticClass | null> {
     const therapeuticClass = await this.prisma.therapeuticClass.findUnique({
       where: {

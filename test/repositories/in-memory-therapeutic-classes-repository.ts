@@ -12,6 +12,14 @@ implements TherapeuticClassesRepository {
     this.items.push(therapeuticClass)
   }
 
+  async save(therapeuticClass: TherapeuticClass): Promise<void> {
+    const itemIndex = this.items.findIndex((item) =>
+      item.id.equal(therapeuticClass.id),
+    )
+
+    this.items[itemIndex] = therapeuticClass
+  }
+
   async findById(id: string): Promise<TherapeuticClass | null> {
     const therapeuticClass = this.items.find((item) =>
       item.id.equal(new UniqueEntityId(id)),

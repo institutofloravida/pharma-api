@@ -78,6 +78,8 @@ import { UpdatePathologyUseCase } from '@/domain/pharma/application/use-cases/au
 import { UpdatePathologyController } from './controllers/auxiliary-records/pathology/update-pathology.controller'
 import { GetTherapeuticClassController } from './controllers/auxiliary-records/therapeutic-class/get-therapeutic-class.controller'
 import { GetTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/get-therapeutic-class'
+import { UpdateTherapeuticClassController } from './controllers/auxiliary-records/therapeutic-class/update-therapeutic-class.controller'
+import { UpdateTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/update-therapeutic-class'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -121,6 +123,7 @@ import { GetTherapeuticClassUseCase } from '@/domain/pharma/application/use-case
     FetchmovementTypesController,
     UpdateInstitutionController,
     UpdatePathologyController,
+    UpdateTherapeuticClassController,
 
   ],
   providers: [
@@ -162,6 +165,7 @@ import { GetTherapeuticClassUseCase } from '@/domain/pharma/application/use-case
     FetchMovementTypesUseCase,
     UpdateInstitutionUseCase,
     UpdatePathologyUseCase,
+    UpdateTherapeuticClassUseCase,
   ],
 })
 export class HttpModule {}
