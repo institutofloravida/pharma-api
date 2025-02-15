@@ -5,6 +5,8 @@ export class PharmaceuticalFormPresenter {
     return {
       id: pharmaceuticalForm.id.toString(),
       name: pharmaceuticalForm.content,
+      createdAt: pharmaceuticalForm.createdAt,
+      updatedAt: pharmaceuticalForm.updatedAt,
     }
   }
 }
