@@ -46,7 +46,7 @@ describe('Get Therapeutic Class (E2E)', () => {
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual(
       expect.objectContaining({
-        therapeuticclass: expect.objectContaining({
+        therapeutic_class: expect.objectContaining({
           name: therapeuticclass.content,
           description: therapeuticclass.description,
         }),

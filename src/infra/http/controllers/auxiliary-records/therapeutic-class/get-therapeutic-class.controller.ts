@@ -29,7 +29,7 @@ export class GetTherapeuticClassController {
     const therapeuticclass = result.value
 
     return {
-      therapeuticclass: TherapeuticClassPresenter.toHTTP(therapeuticclass),
+      therapeutic_class: TherapeuticClassPresenter.toHTTP(therapeuticclass),
     }
   }
 }
