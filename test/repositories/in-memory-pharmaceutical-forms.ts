@@ -12,6 +12,14 @@ implements PharmaceuticalFormsRepository {
     this.items.push(pharmaceuticalForm)
   }
 
+  async save(pharmaceuticalForm: PharmaceuticalForm): Promise<void> {
+    const itemIndex = this.items.findIndex((item) =>
+      item.id.equal(pharmaceuticalForm.id),
+    )
+
+    this.items[itemIndex] = pharmaceuticalForm
+  }
+
   async findById(id: string): Promise<PharmaceuticalForm | null> {
     const pharmaceuticalForm = this.items.find((pharmaceuticalForm) =>
       pharmaceuticalForm.id.equal(new UniqueEntityId(id)),

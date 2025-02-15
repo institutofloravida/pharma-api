@@ -18,6 +18,16 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
     })
   }
 
+  async save(pharmaceuticalForm: PharmaceuticalForm): Promise<void> {
+    const data = PrismaPharmaceuticalFormMapper.toPrisma(pharmaceuticalForm)
+    await this.prisma.pharmaceuticalForm.update({
+      where: {
+        id: pharmaceuticalForm.id.toString(),
+      },
+      data,
+    })
+  }
+
   async findById(id: string): Promise<PharmaceuticalForm | null> {
     const pharmaceuticalForm = await this.prisma.pharmaceuticalForm.findUnique({
       where: {
