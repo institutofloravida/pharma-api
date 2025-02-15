@@ -12,6 +12,7 @@ export function makeTherapeuticClass(
 ) {
   const therapeuticclass = TherapeuticClass.create({
     content: faker.lorem.sentence(),
+    description: faker.lorem.paragraph(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     ...override,

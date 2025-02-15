@@ -5,6 +5,7 @@ export class TherapeuticClassPresenter {
     return {
       id: therapeuticClass.id.toString(),
       name: therapeuticClass.content,
+      description: therapeuticClass.description,
       createdAt: therapeuticClass.createdAt,
       updatedAt: therapeuticClass.updatedAt,
     }

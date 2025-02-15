@@ -76,6 +76,8 @@ import { GetPathologyController } from './controllers/auxiliary-records/patholog
 import { GetPathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/get-pathology'
 import { UpdatePathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/update-pathology'
 import { UpdatePathologyController } from './controllers/auxiliary-records/pathology/update-pathology.controller'
+import { GetTherapeuticClassController } from './controllers/auxiliary-records/therapeutic-class/get-therapeutic-class.controller'
+import { GetTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/get-therapeutic-class'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -85,6 +87,7 @@ import { UpdatePathologyController } from './controllers/auxiliary-records/patho
     GetOperatorDetailsController,
     GetInstitutionController,
     GetPathologyController,
+    GetTherapeuticClassController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
     CreateInstitutionController,
@@ -125,6 +128,7 @@ import { UpdatePathologyController } from './controllers/auxiliary-records/patho
     GetOperatorDetailsUseCase,
     GetInstitutionUseCase,
     GetPathologyUseCase,
+    GetTherapeuticClassUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
     CreateInstitutionUseCase,

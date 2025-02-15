@@ -6,6 +6,7 @@ export class PrismaTherapeuticClassMapper {
   static toDomain(raw: PrismaTherapeuticClass): TherapeuticClass {
     return TherapeuticClass.create({
       content: raw.name,
+      description: raw.description,
       createdAt: raw.createdAt,
     },
     new UniqueEntityId(raw.id),
@@ -16,6 +17,7 @@ export class PrismaTherapeuticClassMapper {
     return {
       id: therapeuticClass.id.toString(),
       name: therapeuticClass.content,
+      description: therapeuticClass.description,
       createdAt: therapeuticClass.createdAt,
     }
   }

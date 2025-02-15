@@ -18,6 +18,18 @@ implements TherapeuticClassesRepository {
     })
   }
 
+  async findById(id: string): Promise<TherapeuticClass | null> {
+    const therapeuticClass = await this.prisma.therapeuticClass.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!therapeuticClass) return null
+
+    return PrismaTherapeuticClassMapper.toDomain(therapeuticClass)
+  }
+
   async findByContent(content: string): Promise<TherapeuticClass | null> {
     const therapeuticClass = await this.prisma.therapeuticClass.findFirst({
       where: {

@@ -1,3 +1,4 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { TherapeuticClassesRepository } from '@/domain/pharma/application/repositories/therapeutic-classes-repository'
@@ -9,6 +10,16 @@ implements TherapeuticClassesRepository {
 
   async create(therapeuticClass: TherapeuticClass) {
     this.items.push(therapeuticClass)
+  }
+
+  async findById(id: string): Promise<TherapeuticClass | null> {
+    const therapeuticClass = this.items.find((item) =>
+      item.id.equal(new UniqueEntityId(id)),
+    )
+
+    if (!therapeuticClass) return null
+
+    return therapeuticClass
   }
 
   async findByContent(content: string) {
