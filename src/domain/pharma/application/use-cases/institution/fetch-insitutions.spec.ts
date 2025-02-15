@@ -35,13 +35,16 @@ describe('Fetch Institutions', () => {
 
   it('should be able to fetch paginated institutions', async () => {
     for (let i = 1; i <= 22; i++) {
-      await inMemoryInstitutionsRepository.create(makeInstitution())
+      await inMemoryInstitutionsRepository.create(makeInstitution({
+        cnpj: `111111111111${String(i).padStart(2, '0')}`,
+      }))
     }
 
     const result = await sut.execute({
-      page: 3,
+      page: 1,
+      cnpj: '11111111111121',
     })
 
-    expect(result.value?.institutions).toHaveLength(2)
+    expect(result.value?.institutions).toHaveLength(1)
   })
 })

@@ -13,6 +13,15 @@ export class FetchInstitutionsDto {
   query?: string
 
   @ApiProperty({
+    description: 'Filtro de busca para as instituições',
+    example: '11111222223333',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  cnpj?: string
+
+  @ApiProperty({
     description: 'Número da página para a listagem',
     example: 1,
     required: false,

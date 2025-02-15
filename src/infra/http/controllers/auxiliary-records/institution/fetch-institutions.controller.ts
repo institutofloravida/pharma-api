@@ -20,10 +20,11 @@ export class FetchInstitutionsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchInstitutionsDto) {
-    const { page, query } = queryParams
+    const { page, query, cnpj } = queryParams
     const result = await this.fetchInstitutions.execute({
       page,
       content: query,
+      cnpj,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})

@@ -49,6 +49,7 @@ describe('Fetch institutions (E2E)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .query({
         page: 1,
+        cnpj: '12345678912345',
       })
       .send()
 
@@ -56,7 +57,6 @@ describe('Fetch institutions (E2E)', () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         institutions: expect.arrayContaining([
-          expect.objectContaining({ cnpj: '12345678901234' }),
           expect.objectContaining({ cnpj: '12345678912345' }),
         ]),
       }),

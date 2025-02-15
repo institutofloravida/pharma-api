@@ -5,15 +5,16 @@ import { Meta } from '@/core/repositories/meta'
 import { InstitutionsRepository } from '../../repositories/institutions-repository'
 
 interface FetchInstitutionsUseCaseRequest {
-  page: number
-  content?: string
+  page: number;
+  cnpj?: string;
+  content?: string;
 }
 
 type FetchInstitutionsUseCaseResponse = Either<
   null,
   {
-    institutions: Institution[],
-    meta: Meta
+    institutions: Institution[];
+    meta: Meta;
   }
 >
 
@@ -24,8 +25,15 @@ export class FethInstitutionsUseCase {
   async execute({
     page,
     content,
+    cnpj,
   }: FetchInstitutionsUseCaseRequest): Promise<FetchInstitutionsUseCaseResponse> {
-    const { institutions, meta } = await this.institutionsRepository.findMany({ page }, content)
+    const { institutions, meta } = await this.institutionsRepository.findMany(
+      { page },
+      {
+        content,
+        cnpj,
+      },
+    )
 
     return right({
       institutions,

@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma.service'
 import { PrismaInstitutionMapper } from '../mappers/prisma-institution-mapper'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
+import type { Prisma } from '@prisma/client'
 
 @Injectable()
 export class PrismaInstitutionsRepository implements InstitutionsRepository {
@@ -71,16 +72,22 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
 
   async findMany(
     { page }: PaginationParams,
-    content?: string,
+    filters: { content?: string, cnpj?: string },
   ): Promise<{ institutions: Institution[]; meta: Meta }> {
-    const [institutions, institutionsTotalCount] = await Promise.all([
+    const { cnpj, content } = filters
+
+    const whereClause: Prisma.InstitutionWhereInput = {
+      name: {
+        contains: content ?? '',
+        mode: 'insensitive',
+      },
+      ...(cnpj && {
+        cnpj,
+      }),
+    }
+    const [institutions, totalCount] = await Promise.all([
       this.prisma.institution.findMany({
-        where: {
-          name: {
-            contains: content ?? '',
-            mode: 'insensitive',
-          },
-        },
+        where: whereClause,
         orderBy: {
           createdAt: 'desc',
         },
@@ -88,12 +95,7 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
         skip: (page - 1) * 10,
       }),
       this.prisma.institution.count({
-        where: {
-          name: {
-            contains: content ?? '',
-            mode: 'insensitive',
-          },
-        },
+        where: whereClause,
       }),
 
     ])
@@ -102,7 +104,7 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
       institutions: institutions.map(PrismaInstitutionMapper.toDomain),
       meta: {
         page,
-        totalCount: institutionsTotalCount,
+        totalCount,
       },
     }
   }

@@ -7,7 +7,7 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
   public items: Institution[] = []
 
   async findById(id: string): Promise<Institution | null> {
-    const institution = this.items.find(item => item.id.toValue() === id)
+    const institution = this.items.find((item) => item.id.toValue() === id)
 
     if (!institution) {
       return null
@@ -21,13 +21,17 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
   }
 
   async save(institution: Institution): Promise<void> {
-    const itemIndex = await this.items.findIndex(item => item.id.equal(institution.id))
+    const itemIndex = await this.items.findIndex((item) =>
+      item.id.equal(institution.id),
+    )
 
     this.items[itemIndex] = institution
   }
 
   async findByContent(content: string) {
-    const institution = this.items.find(item => item.content.toLowerCase() === content.toLowerCase().trim())
+    const institution = this.items.find(
+      (item) => item.content.toLowerCase() === content.toLowerCase().trim(),
+    )
     if (!institution) {
       return null
     }
@@ -36,7 +40,9 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
   }
 
   async findByCnpj(cnpj: string) {
-    const institution = this.items.find(item => item.cnpj.toLowerCase() === cnpj.toLowerCase().trim())
+    const institution = this.items.find(
+      (item) => item.cnpj.toLowerCase() === cnpj.toLowerCase().trim(),
+    )
 
     if (!institution) {
       return null
@@ -45,13 +51,29 @@ export class InMemoryInstitutionsRepository implements InstitutionsRepository {
     return institution
   }
 
-  async findMany({ page }: PaginationParams, content?: string): Promise<{ institutions: Institution[]; meta: Meta }> {
+  async findMany(
+    { page }: PaginationParams,
+    filters: { content?: string; cnpj?: string },
+  ): Promise<{ institutions: Institution[]; meta: Meta }> {
+    const { cnpj, content } = filters
+
     const institutions = this.items
-      .filter(item => item.content.includes(content ?? ''))
+      .filter((institution) => {
+        if (cnpj && !(institution.cnpj === cnpj)) return false
+
+        if (
+          content &&
+          !institution.content.toLowerCase().includes(content.toLowerCase())
+        ) { return false }
+
+        return institution
+      })
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
-    const institutionsPaginated = institutions
-      .slice((page - 1) * 10, page * 10)
+    const institutionsPaginated = institutions.slice(
+      (page - 1) * 10,
+      page * 10,
+    )
 
     return {
       institutions: institutionsPaginated,
