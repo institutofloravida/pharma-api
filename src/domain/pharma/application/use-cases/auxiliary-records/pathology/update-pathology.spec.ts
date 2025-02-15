@@ -41,7 +41,7 @@ describe('Pathology', () => {
 
     const result = await sut.execute({
       pathologyId: pathology.id.toString(),
-      content: 'pathology 2',
+      content: pathology2.content,
     })
 
     expect(result.isLeft()).toBeTruthy()

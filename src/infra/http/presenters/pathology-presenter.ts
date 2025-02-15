@@ -5,6 +5,8 @@ export class PathologyPresenter {
     return {
       id: pathology.id.toString(),
       name: pathology.content,
+      createdAt: pathology.createdAt,
+      updatedAt: pathology.updatedAt,
     }
   }
 }
