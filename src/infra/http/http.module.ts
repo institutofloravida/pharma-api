@@ -84,6 +84,8 @@ import { GetPharmaceuticalFormController } from './controllers/auxiliary-records
 import { GetPharmaceuticalFormUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/get-pharmaceutical-form'
 import { UpdatePharmaceuticalFormController } from './controllers/auxiliary-records/pharmaceutical-form/update-pharmaceutical-form.controller'
 import { UpdatePharmaceuticalFormUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pharmaceutical-form/update-pharmaceutical-form'
+import { GetManufacturerController } from './controllers/auxiliary-records/manufacturer/get-manufacturer.controller'
+import { GetManufacturerUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/get-manufacturer'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -95,6 +97,7 @@ import { UpdatePharmaceuticalFormUseCase } from '@/domain/pharma/application/use
     GetPathologyController,
     GetTherapeuticClassController,
     GetPharmaceuticalFormController,
+    GetManufacturerController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
     CreateInstitutionController,
@@ -139,6 +142,7 @@ import { UpdatePharmaceuticalFormUseCase } from '@/domain/pharma/application/use
     GetPathologyUseCase,
     GetTherapeuticClassUseCase,
     GetPharmaceuticalFormUseCase,
+    GetManufacturerUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
     CreateInstitutionUseCase,
