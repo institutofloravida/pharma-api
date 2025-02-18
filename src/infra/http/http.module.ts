@@ -90,6 +90,8 @@ import { UpdateManufacturerController } from './controllers/auxiliary-records/ma
 import { UpdateManufacturerUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/update-manufacturer'
 import { GetUnitMeasureController } from './controllers/auxiliary-records/unit-measure/get-unit-measure.controller'
 import { GetUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/get-unit-measure'
+import { UpdateUnitMeasureController } from './controllers/auxiliary-records/unit-measure/update-unit-measure.controller'
+import { UpdateUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/update-unit-measure'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -139,6 +141,7 @@ import { GetUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/aux
     UpdateTherapeuticClassController,
     UpdatePharmaceuticalFormController,
     UpdateManufacturerController,
+    UpdateUnitMeasureController,
 
   ],
   providers: [
@@ -186,6 +189,7 @@ import { GetUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/aux
     UpdateTherapeuticClassUseCase,
     UpdatePharmaceuticalFormUseCase,
     UpdateManufacturerUseCase,
+    UpdateUnitMeasureUseCase,
   ],
 })
 export class HttpModule {}

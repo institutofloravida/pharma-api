@@ -17,6 +17,17 @@ export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {
     })
   }
 
+  async save(unitMeasure: UnitMeasure): Promise<void> {
+    const data = PrismaUnitMeasureMapper.toPrisma(unitMeasure)
+
+    await this.prisma.unitMeasure.update({
+      where: {
+        id: unitMeasure.id.toString(),
+      },
+      data,
+    })
+  }
+
   async findById(id: string): Promise<UnitMeasure | null> {
     const unitMeasure = await this.prisma.unitMeasure.findUnique({
       where: {

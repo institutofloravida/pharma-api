@@ -4,6 +4,8 @@ import { CreateUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/
 import { UnitMeasurePresenter } from '@/infra/http/presenters/unit-measure-presenter'
 import { CreateUnitMeasureDTO } from './dtos/create-unit-measure.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { UnitMeasureWithSameContentAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/_errors/unit-measure-with-content-already-exists-error'
+import { UnitMeasureWithSameAcronymAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/_errors/unit-measure-with-acronym-already-exists-error'
 
 @ApiTags('unit-measure')
 @ApiBearerAuth()
@@ -30,7 +32,8 @@ export class CreateUnitMeasureController {
       const error = result.value
 
       switch (error.constructor) {
-        case ConflictException:
+        case UnitMeasureWithSameContentAlreadyExistsError:
+        case UnitMeasureWithSameAcronymAlreadyExistsError:
           throw new ConflictException(error.message)
         default:
           throw new BadRequestException(error.message)
