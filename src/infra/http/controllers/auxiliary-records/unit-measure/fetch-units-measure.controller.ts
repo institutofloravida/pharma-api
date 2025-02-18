@@ -14,9 +14,10 @@ export class FetchUnitsMeasureController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchUnitsMeasureDto) {
-    const { page } = queryParams
+    const { page, query } = queryParams
     const result = await this.fetchUnitsMeasure.execute({
       page,
+      content: query,
     })
 
     if (result.isLeft()) {
