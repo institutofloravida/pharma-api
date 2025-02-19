@@ -19,11 +19,22 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
     })
   }
 
+  async save(operator: Operator): Promise<void> {
+    const data = PrismaOperatorMapper.toPrisma(operator)
+
+    await this.prisma.operator.update({
+      where: {
+        id: operator.id.toString(),
+      },
+      data,
+    })
+  }
+
   async findById(id: string): Promise<Operator | null> {
     const operator = await this.prisma.operator.findUnique({
       where: { id },
       include: {
-        institutions: true, // Carrega as instituições relacionadas
+        institutions: true,
       },
     })
 

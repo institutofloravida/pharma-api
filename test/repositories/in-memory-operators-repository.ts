@@ -8,12 +8,18 @@ import { InMemoryInstitutionsRepository } from './in-memory-institutions-reposit
 export class InMemoryOperatorsRepository implements OperatorsRepository {
   public items: Operator[] = []
 
-  constructor(
-    private institutionsRepository: InMemoryInstitutionsRepository,
-  ) {}
+  constructor(private institutionsRepository: InMemoryInstitutionsRepository) {}
 
   async create(operator: Operator) {
     this.items.push(operator)
+  }
+
+  async save(operator: Operator): Promise<void> {
+    const itemIndex = this.items.findIndex((item) =>
+      item.id.equal(operator.id),
+    )
+
+    this.items[itemIndex] = operator
   }
 
   async findById(id: string): Promise<Operator | null> {
@@ -41,19 +47,26 @@ export class InMemoryOperatorsRepository implements OperatorsRepository {
     content?: string,
   ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }> {
     const filteredOperators = this.items
-      .filter(item => item.name.includes(content ?? ''))
+      .filter((item) => item.name.includes(content ?? ''))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
-    const paginatedOperators = filteredOperators.slice((page - 1) * 10, page * 10)
+    const paginatedOperators = filteredOperators.slice(
+      (page - 1) * 10,
+      page * 10,
+    )
 
     const operatorsWithInstitutions = await Promise.all(
-      paginatedOperators.map(async operator => {
+      paginatedOperators.map(async (operator) => {
         const institutions = await Promise.all(
-          operator.institutionsIds.map(async institutionId => {
-            const institution = await this.institutionsRepository.findById(institutionId.toString())
+          operator.institutionsIds.map(async (institutionId) => {
+            const institution = await this.institutionsRepository.findById(
+              institutionId.toString(),
+            )
 
             if (!institution) {
-              throw new Error(`Institution with ID ${institutionId} does not exist.`)
+              throw new Error(
+                `Institution with ID ${institutionId} does not exist.`,
+              )
             }
 
             return {

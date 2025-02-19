@@ -92,6 +92,8 @@ import { GetUnitMeasureController } from './controllers/auxiliary-records/unit-m
 import { GetUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/get-unit-measure'
 import { UpdateUnitMeasureController } from './controllers/auxiliary-records/unit-measure/update-unit-measure.controller'
 import { UpdateUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/update-unit-measure'
+import { UpdateOperatorController } from './controllers/operator/update-operator.controller'
+import { UpdateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/update-operator'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -142,6 +144,7 @@ import { UpdateUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/
     UpdatePharmaceuticalFormController,
     UpdateManufacturerController,
     UpdateUnitMeasureController,
+    UpdateOperatorController,
 
   ],
   providers: [
@@ -190,6 +193,7 @@ import { UpdateUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/
     UpdatePharmaceuticalFormUseCase,
     UpdateManufacturerUseCase,
     UpdateUnitMeasureUseCase,
+    UpdateOperatorUseCase,
   ],
 })
 export class HttpModule {}
