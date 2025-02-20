@@ -5,9 +5,11 @@ import { WrongCredentialsError } from '@/domain/pharma/application/use-cases/_er
 import { ApiBadRequestResponse, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { AuthenticateOperatorDTO } from './dtos/authenticate-operator.dto'
 import { AuthenticateResponseDto } from './dtos/authenticate-response-dto'
+import { Public } from '@/infra/auth/public'
 
 @ApiTags('auth')
 @Controller('/sessions')
+@Public()
 export class AuthenticateOperatorController {
   constructor(
     private authenticateOperator: AuthenticateOperatorUseCase,

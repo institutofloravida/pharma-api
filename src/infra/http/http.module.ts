@@ -7,7 +7,7 @@ import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/o
 import { AuthenticateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/authenticate-operator'
 import { CreateTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/create-therapeutic-class'
 import { CryptographyModule } from '../cryptography/cryptography.module'
-import { ValidateTokenController } from './controllers/auth/validate-token'
+import { ValidateTokenController } from './controllers/auth/validate-token.controller'
 import { FetchOperatorsController } from './controllers/auxiliary-records/operator/fetch-operators.controller'
 import { FethOperatorsUseCase } from '@/domain/pharma/application/use-cases/operator/fetch-operators'
 import { FetchInstitutionsController } from './controllers/auxiliary-records/institution/fetch-institutions.controller'

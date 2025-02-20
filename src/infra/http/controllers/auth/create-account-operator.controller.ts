@@ -1,12 +1,18 @@
-import { BadRequestException, Body, Controller, HttpCode, Post } from '@nestjs/common'
+import { BadRequestException, Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { RegisterOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/register-operator'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { CreateAccountOperatorDTO } from './dtos/create-account-operator.dto'
 import { OperatorAlreadyExistsError } from '@/domain/pharma/application/use-cases/operator/_errors/operator-already-exists-error'
+import { RolesGuard } from '@/infra/auth/roles.guard'
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { Roles } from '@/infra/auth/role-decorator'
 
 @ApiTags('auth')
 @ApiBearerAuth()
 @Controller('/accounts')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(OperatorRole.MANAGER, OperatorRole.SUPER_ADMIN)
 export class CreateAccountOperatorController {
   constructor(
     private registerOperator: RegisterOperatorUseCase,
