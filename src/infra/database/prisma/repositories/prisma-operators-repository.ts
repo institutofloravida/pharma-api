@@ -1,5 +1,5 @@
 import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
-import { Operator } from '@/domain/pharma/enterprise/entities/operator'
+import { Operator, type OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaOperatorMapper } from '../mappers/prisma-operator-mapper'
@@ -7,6 +7,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
 import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
 import { PrismaOperatorWithInstitutionsMapper } from '../mappers/prisma-operator-with-institution-mapper'
+import { $Enums, type Prisma } from '@prisma/client'
 
 @Injectable()
 export class PrismaOperatorsRepository implements OperatorsRepository {
@@ -64,34 +65,55 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
 
   async findMany(
     { page }: PaginationParams,
-    content?: string,
+    filters: {
+      name?: string
+      email?: string
+      institutionId?: string
+      role?: OperatorRole
+    },
   ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }> {
-    const operatorsPaginated = await this.prisma.operator.findMany({
-      where: {
-        name: {
-          contains: content ?? '',
+    const { email, institutionId, name, role } = filters
+    const whereClause: Prisma.OperatorWhereInput = {
+      name: {
+        contains: name ?? '',
+        mode: 'insensitive',
+      },
+      ...(email && {
+        email: {
+          equals: email,
           mode: 'insensitive',
         },
-      },
-      include: {
+      }),
+      ...(role && {
+        role: {
+          equals: $Enums.OperatorRole[role as keyof typeof $Enums.OperatorRole],
+        },
+      }),
+      ...(institutionId && {
         institutions: {
-          select: { id: true, name: true },
+          some: {
+            id: institutionId,
+          },
         },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-      skip: (page - 1) * 10,
-    })
-
-    const operatorsTotalCount = await this.prisma.operator.count({
-      where: {
-        name: {
-          contains: content ?? '',
-          mode: 'insensitive',
+      }),
+    }
+    const [operatorsPaginated, operatorsTotalCount] = await this.prisma.$transaction([
+      this.prisma.operator.findMany({
+        where: whereClause,
+        include: {
+          institutions: {
+            select: { id: true, name: true },
+          },
         },
-      },
-    })
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        skip: (page - 1) * 10,
+      }),
+      this.prisma.operator.count({
+        where: whereClause,
+      }),
 
+    ])
     return {
       operators: operatorsPaginated.map((operator) =>
         PrismaOperatorWithInstitutionsMapper.toDomain({

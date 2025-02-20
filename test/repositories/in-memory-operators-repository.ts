@@ -1,9 +1,13 @@
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
-import { Operator } from '@/domain/pharma/enterprise/entities/operator'
+import {
+  Operator,
+  type OperatorRole,
+} from '@/domain/pharma/enterprise/entities/operator'
 import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
 import { InMemoryInstitutionsRepository } from './in-memory-institutions-repository'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 export class InMemoryOperatorsRepository implements OperatorsRepository {
   public items: Operator[] = []
@@ -44,10 +48,36 @@ export class InMemoryOperatorsRepository implements OperatorsRepository {
 
   async findMany(
     { page }: PaginationParams,
-    content?: string,
+    filters: {
+      name?: string;
+      email?: string;
+      institutionId?: string;
+      role?: OperatorRole;
+    },
   ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }> {
+    const { email, institutionId, name, role } = filters
+
     const filteredOperators = this.items
-      .filter((item) => item.name.includes(content ?? ''))
+
+      .filter((operator) => {
+        if (name && !operator.name.toLowerCase().includes(name.toLowerCase())) {
+          return false
+        }
+        if (email && !(operator.email.toLowerCase() === email.toLowerCase())) {
+          return false
+        }
+        if (
+          institutionId &&
+          !operator.includesInstitution(new UniqueEntityId(institutionId))
+        ) {
+          return false
+        }
+        if (role && !(operator.role.toString() === role.toString())) {
+          return false
+        }
+
+        return operator
+      })
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
     const paginatedOperators = filteredOperators.slice(

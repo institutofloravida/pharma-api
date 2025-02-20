@@ -2,6 +2,7 @@ import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operato
 import { FethOperatorsUseCase } from './fetch-operators'
 import { makeOperator } from 'test/factories/make-operator'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 let inMemoryInstitutionsRepository:InMemoryInstitutionsRepository
 let inMemoryOperatorsRepository:InMemoryOperatorsRepository
@@ -28,7 +29,6 @@ describe('Fetch Operators', () => {
 
     const result = await sut.execute({
       page: 1,
-      role: 'COMMON',
     })
 
     expect(result.value?.operators).toEqual([
@@ -39,15 +39,41 @@ describe('Fetch Operators', () => {
   })
 
   it('should be able to fetch paginated operators', async () => {
-    for (let i = 1; i <= 22; i++) {
-      await inMemoryOperatorsRepository.create(makeOperator())
+    for (let i = 1; i <= 11; i++) {
+      await inMemoryOperatorsRepository.create(makeOperator({
+        email: `operatorcommon${i}@gmail.com`,
+        name: `operator common ${i}`,
+        role: OperatorRole.COMMON,
+      }))
+      await inMemoryOperatorsRepository.create(makeOperator({
+        email: `operatormanager${i}@gmail.com`,
+        name: `operator manager ${i}`,
+        role: OperatorRole.MANAGER,
+      }))
+      await inMemoryOperatorsRepository.create(makeOperator({
+        email: `operatorsuper${i}@gmail.com`,
+        name: `operator super ${i}`,
+        role: OperatorRole.SUPER_ADMIN,
+      }))
     }
 
     const result = await sut.execute({
-      page: 3,
-      role: 'MANAGER',
+      page: 2,
+      name: 'operator',
     })
-
-    expect(result.value?.operators).toHaveLength(2)
+    const result2 = await sut.execute({
+      page: 1,
+      email: 'operatorcommon10@gmail.com',
+    })
+    const result3 = await sut.execute({
+      page: 1,
+      role: OperatorRole.MANAGER,
+      name: '1',
+    })
+    if (result.isRight() && result2.isRight() && result3.isRight()) {
+      expect(result.value?.operators).toHaveLength(10)
+      expect(result2.value?.operators).toHaveLength(1)
+      expect(result3.value?.operators).toHaveLength(3)
+    }
   })
 })

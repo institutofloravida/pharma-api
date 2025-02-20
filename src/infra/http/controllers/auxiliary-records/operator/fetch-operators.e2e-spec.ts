@@ -29,7 +29,7 @@ describe('Fetch Operators (E2E)', () => {
     await app.init()
   })
 
-  test('[GET] /operators', async () => {
+  test('[GET] /operator', async () => {
     const user = await operatorFactory.makePrismaOperator({
       role: OperatorRole.MANAGER,
     })
@@ -37,6 +37,7 @@ describe('Fetch Operators (E2E)', () => {
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
     const institution = await institutionFactory.makePrismaInstitution()
+    const institution2 = await institutionFactory.makePrismaInstitution()
 
     await Promise.all([
       operatorFactory.makePrismaOperator({
@@ -44,16 +45,22 @@ describe('Fetch Operators (E2E)', () => {
         institutionsIds: [institution.id],
       }),
       operatorFactory.makePrismaOperator({
+        role: OperatorRole.MANAGER,
         name: 'maria',
-        institutionsIds: [institution.id],
+        institutionsIds: [institution2.id],
+        email: 'maria@gamil.com',
       }),
     ])
 
     const response = await request(app.getHttpServer())
-      .get('/operators')
+      .get('/operator')
       .set('Authorization', `Bearer ${accessToken}`)
       .query({
         page: 1,
+        institutionId: institution2.id.toString(),
+        name: 'ma',
+        email: 'maria@gamil.com',
+        role: OperatorRole.MANAGER,
       })
       .send()
 
@@ -61,7 +68,6 @@ describe('Fetch Operators (E2E)', () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         operators: expect.arrayContaining([
-          expect.objectContaining({ name: 'joão' }),
           expect.objectContaining({ name: 'maria' }),
         ]),
       }),

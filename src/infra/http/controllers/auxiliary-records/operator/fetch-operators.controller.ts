@@ -16,7 +16,7 @@ import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('operator')
 @ApiBearerAuth()
-@Controller('/operators')
+@Controller('/operator')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(OperatorRole.SUPER_ADMIN, OperatorRole.MANAGER)
 export class FetchOperatorsController {
@@ -24,12 +24,13 @@ export class FetchOperatorsController {
 
   @Get()
   async handle(@Query() queryParams: FetchOperatorsDto) {
-    const { page, query } = queryParams
+    const { page, role, email, institutionId, name } = queryParams
     const result = await this.fetchOperators.execute({
       page,
-      name: query,
-      role: 'COMMON',
-
+      name,
+      role,
+      email,
+      institutionId,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})

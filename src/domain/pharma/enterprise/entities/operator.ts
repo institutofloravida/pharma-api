@@ -77,6 +77,10 @@ export class Operator extends Entity<OperatorProps> {
     return this.props.updatedAt
   }
 
+  public includesInstitution(institutionId: UniqueEntityId) {
+    return this.props.institutionsIds.find(item => item.equal(institutionId))
+  }
+
   public isSuperAdmin() {
     return this.role === OperatorRole.SUPER_ADMIN
   }
