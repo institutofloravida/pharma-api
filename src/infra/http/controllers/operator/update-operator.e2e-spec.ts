@@ -1,3 +1,4 @@
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
@@ -36,7 +37,7 @@ describe('Update Operator (E2E)', () => {
 
   test('[PUT] /operator/:id', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
@@ -48,7 +49,7 @@ describe('Update Operator (E2E)', () => {
       name: 'Carlos Augustus',
       email: 'carlosaugustus@gmail.com',
       institutionsIds: [institution.id],
-      role: 'COMMON',
+      role: OperatorRole.COMMON,
       passwordHash: await hash('123456', 8),
     })
 
@@ -62,7 +63,7 @@ describe('Update Operator (E2E)', () => {
           institution.id.toString(),
           institution2.id.toString(),
         ],
-        role: 'MANAGER',
+        role: OperatorRole.MANAGER,
         password: '12345678',
       })
 
@@ -84,7 +85,7 @@ describe('Update Operator (E2E)', () => {
       expect.objectContaining({
         name: 'Carlos Augustus Segundo',
         email: 'carlosaugustus2@gmail.com',
-        role: 'MANAGER',
+        role: OperatorRole.MANAGER,
         institutions: expect.arrayContaining([
           expect.objectContaining({ id: institution.id.toString() }),
           expect.objectContaining({ id: institution2.id.toString() }),

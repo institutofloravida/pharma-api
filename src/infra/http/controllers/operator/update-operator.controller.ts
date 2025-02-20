@@ -15,12 +15,13 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { UpdateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/update-operator'
 import { UpdateOperatorDto } from './dtos/update-operator.dto'
 import { OperatorWithSameEmailAlreadyExistsError } from '@/domain/pharma/application/use-cases/operator/_errors/operator-with-same-email-already-exists-error'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('operator')
 @ApiBearerAuth()
 @Controller('/operator')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('MANAGER')
+@Roles(OperatorRole.MANAGER)
 export class UpdateOperatorController {
   constructor(private updateOperator: UpdateOperatorUseCase) {}
 

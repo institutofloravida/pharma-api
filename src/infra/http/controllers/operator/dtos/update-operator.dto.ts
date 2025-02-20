@@ -32,7 +32,7 @@ export class UpdateOperatorDto {
     example: 'ADMIN',
     description: 'Função do operador',
     required: false,
-    enum: ['COMMON', 'MANAGER', 'SUPER_ADMIN'],
+    enum: [OperatorRole.COMMON, OperatorRole.MANAGER, OperatorRole.SUPER_ADMIN],
   })
   @IsOptional()
   role?: OperatorRole
