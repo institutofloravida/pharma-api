@@ -1,3 +1,4 @@
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
@@ -29,7 +30,7 @@ describe('Create Manufacturer (E2E)', () => {
 
   test('[POST] /manufacturer', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

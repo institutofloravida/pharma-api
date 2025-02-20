@@ -7,12 +7,13 @@ import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-er
 import { CreateStockDTO } from './dtos/create-stock.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { InstitutionNotExistsError } from '@/domain/pharma/application/use-cases/institution/_errors/institution-not-exists-error'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('stock')
 @ApiBearerAuth()
 @Controller('/stock')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('SUPER_ADMIN')
+@Roles(OperatorRole.SUPER_ADMIN)
 export class CreateStockController {
   constructor(
     private createStock: CreateStockUseCase,

@@ -6,6 +6,7 @@ import { JwtAuthGuard } from './jwt-auth.guard'
 import { EnvService } from '../env/env.service'
 import { EnvModule } from '../env/env.module'
 import { JwtStrategy } from './jwt-strategy'
+import { RolesGuard } from './roles.guard'
 
 @Module({
   imports: [
@@ -28,11 +29,14 @@ import { JwtStrategy } from './jwt-strategy'
   ],
   providers: [
     JwtStrategy,
+    JwtAuthGuard,
+    RolesGuard,
     EnvService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
   ],
+  exports: [JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}

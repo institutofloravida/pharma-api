@@ -7,6 +7,7 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { OperatorFactory } from 'test/factories/make-operator'
 import { MovementDirection } from './dtos/create-movement-type.dto'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 describe('Create Movement Type (E2E)', () => {
   let app: INestApplication
@@ -30,7 +31,7 @@ describe('Create Movement Type (E2E)', () => {
 
   test.only('[POST] /movement-type', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

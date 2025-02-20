@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Operator, type OperatorProps } from '@/domain/pharma/enterprise/entities/operator'
+import { Operator, OperatorRole, type OperatorProps } from '@/domain/pharma/enterprise/entities/operator'
 import { PrismaOperatorMapper } from '@/infra/database/prisma/mappers/prisma-operator-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
@@ -14,7 +14,7 @@ export function makeOperator(
     email: faker.internet.email(),
     passwordHash: faker.internet.password(),
     institutionsIds: [],
-    role: 'COMMON',
+    role: OperatorRole.COMMON,
     ...override,
   },
   id)

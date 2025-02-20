@@ -1,8 +1,13 @@
+/* eslint-disable no-unused-vars */
 import { Optional } from '@/core/types/optional'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Entity } from '@/core/entities/entity'
 
-export type OperatorRole = 'COMMON' | 'MANAGER' | 'SUPER_ADMIN'
+export enum OperatorRole {
+  COMMON = 'COMMON',
+  MANAGER = 'MANAGER',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+}
 
 export interface OperatorProps {
   name: string
@@ -73,24 +78,24 @@ export class Operator extends Entity<OperatorProps> {
   }
 
   public isSuperAdmin() {
-    return this.role === 'SUPER_ADMIN'
+    return this.role === OperatorRole.SUPER_ADMIN
   }
 
   public isManager() {
-    return this.role === 'MANAGER'
+    return this.role === OperatorRole.MANAGER
   }
 
   public isCommon() {
-    return this.role === 'COMMON'
+    return this.role === OperatorRole.COMMON
   }
 
   public canManageInstitution(institutionId: UniqueEntityId): boolean {
-    return this.role === 'SUPER_ADMIN' ||
-           (this.role === 'MANAGER' && this.institutionsIds.includes(institutionId))
+    return this.role === OperatorRole.SUPER_ADMIN ||
+           (this.role === OperatorRole.MANAGER && this.institutionsIds.includes(institutionId))
   }
 
   public canManageOperators(): boolean {
-    return this.role === 'SUPER_ADMIN' || this.role === 'MANAGER'
+    return this.role === OperatorRole.SUPER_ADMIN || this.role === OperatorRole.MANAGER
   }
 
   private touch() {
@@ -104,7 +109,7 @@ export class Operator extends Entity<OperatorProps> {
     const operator = new Operator({
       ...props,
       createdAt: props.createdAt ?? new Date(),
-      role: props.role ?? 'COMMON',
+      role: props.role ?? OperatorRole.COMMON,
       institutionsIds: props.institutionsIds ?? [],
     }, id)
 

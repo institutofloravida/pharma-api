@@ -1,4 +1,4 @@
-import type { MovementType } from '@/domain/pharma/enterprise/entities/movement-type'
+import { MovementType } from '@/domain/pharma/enterprise/entities/movement-type'
 
 export class MovementTypePresenter {
   static toHTTP(movementType: MovementType) {

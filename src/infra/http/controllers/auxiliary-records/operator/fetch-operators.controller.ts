@@ -12,12 +12,13 @@ import { Roles } from '@/infra/auth/role-decorator'
 import { FetchOperatorsDto } from './dtos/fetch-operator.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { OperatorWithInstitutionPresenter } from '@/infra/http/presenters/operator-with-institution-presenter'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('operator')
 @ApiBearerAuth()
 @Controller('/operators')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('SUPER_ADMIN', 'MANAGER')
+@Roles(OperatorRole.SUPER_ADMIN, OperatorRole.MANAGER)
 export class FetchOperatorsController {
   constructor(private fetchOperators: FethOperatorsUseCase) {}
 
@@ -26,7 +27,9 @@ export class FetchOperatorsController {
     const { page, query } = queryParams
     const result = await this.fetchOperators.execute({
       page,
-      content: query,
+      name: query,
+      role: 'COMMON',
+
     })
     if (result.isLeft()) {
       throw new BadRequestException({})

@@ -5,6 +5,7 @@ import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-inst
 import { makeInstitution } from 'test/factories/make-insitution'
 import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
 import { makeOperator } from 'test/factories/make-operator'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryInstitutionRepository: InMemoryInstitutionsRepository
@@ -21,7 +22,7 @@ describe('Fetch Stocks', () => {
 
   it('should be able to fetch stocks', async () => {
     const operator = makeOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const institution = makeInstitution()
@@ -70,7 +71,7 @@ describe('Fetch Stocks', () => {
 
   it('should be able to fetch paginated stocks', async () => {
     const operator = makeOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
     const institution = makeInstitution()
     const institution2 = makeInstitution()

@@ -25,6 +25,7 @@ import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 import { addYears } from 'date-fns'
 import { makeManufacturer } from 'test/factories/make-manufacturer'
 import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
@@ -108,7 +109,7 @@ describe('Register Entry', () => {
 
     const operator = makeOperator({
       institutionsIds: [institution.id],
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const manufacturer = makeManufacturer()
@@ -168,7 +169,7 @@ describe('Register Entry', () => {
 
     const operator = makeOperator({
       institutionsIds: [institution.id],
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const manufacturer = makeManufacturer()
@@ -258,7 +259,7 @@ describe('Register Entry', () => {
 
     const operator = makeOperator({
       institutionsIds: [institution.id],
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     await inMemoryOperatorsRepository.create(operator)

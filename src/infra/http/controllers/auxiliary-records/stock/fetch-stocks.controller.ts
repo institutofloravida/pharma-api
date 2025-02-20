@@ -14,12 +14,13 @@ import { UserPayload } from '@/infra/auth/jwt-strategy'
 import { FetchStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 import { FetchStocksDto } from './dtos/fetch-stocks.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('stock')
 @ApiBearerAuth()
 @Controller('/stocks')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('SUPER_ADMIN', 'MANAGER')
+@Roles(OperatorRole.SUPER_ADMIN, OperatorRole.MANAGER)
 export class FetchStocksController {
   constructor(private fetchStocks: FetchStocksUseCase) {}
 

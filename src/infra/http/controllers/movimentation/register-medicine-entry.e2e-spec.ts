@@ -1,3 +1,4 @@
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
@@ -72,7 +73,7 @@ describe('Register Medicine Entry (E2E)', () => {
     const institution = await institutionFactory.makePrismaInstitution()
     const manufacturer = await manufacturerFactory.makePrismaManufacturer()
     const operator = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
       institutionsIds: [institution.id],
     })
 

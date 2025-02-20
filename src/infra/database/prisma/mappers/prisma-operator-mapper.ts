@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Operator } from '@/domain/pharma/enterprise/entities/operator'
-import { Operator as PrismaOperator, type Prisma } from '@prisma/client'
+import { Operator, OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { $Enums, Operator as PrismaOperator, type Prisma } from '@prisma/client'
 
 export class PrismaOperatorMapper {
   static toDomain(
@@ -12,7 +12,7 @@ export class PrismaOperatorMapper {
         email: raw.email,
         passwordHash: raw.passwordHash,
         institutionsIds: raw.institutions.map(inst => new UniqueEntityId(inst.id)),
-        role: raw.role,
+        role: OperatorRole[raw.role],
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -26,7 +26,7 @@ export class PrismaOperatorMapper {
       name: operator.name,
       email: operator.email,
       passwordHash: operator.passwordHash,
-      role: operator.role,
+      role: $Enums.OperatorRole[operator.role],
       createdAt: operator.createdAt,
       updatedAt: operator.updatedAt,
       institutions: {

@@ -7,12 +7,13 @@ import { InstitutionWithSameCnpjAlreadyExistsError } from '@/domain/pharma/appli
 import { InstitutionWithSameContentAlreadyExistsError } from '@/domain/pharma/application/use-cases/institution/_errors/institution-with-same-content-already-exists-error'
 import { UpdateInstitutionUseCase } from '@/domain/pharma/application/use-cases/institution/update-institution'
 import { UpdateInstitutionDto } from './dtos/update-institution.dto'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('institution')
 @ApiBearerAuth()
 @Controller('/institution')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('SUPER_ADMIN')
+@Roles(OperatorRole.SUPER_ADMIN)
 export class UpdateInstitutionController {
   constructor(
     private updateInstitution: UpdateInstitutionUseCase,

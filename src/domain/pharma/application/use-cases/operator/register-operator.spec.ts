@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker'
 import { NoAssociatedInstitutionError } from './_errors/no-associated-institution-error'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { makeInstitution } from 'test/factories/make-insitution'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
@@ -26,7 +27,7 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: faker.internet.email(),
       password: faker.internet.password(),
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
       institutionsIds: [institution.id.toString()],
     })
     expect(result.isRight()).toBeTruthy()
@@ -44,7 +45,7 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: faker.internet.email(),
       password: '123456',
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
       institutionsIds: [institution.id.toString()],
     })
 
@@ -61,7 +62,7 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: 'teste@gmail.com',
       password: faker.internet.password(),
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
       institutionsIds: [institution.id.toString()],
 
     })
@@ -70,7 +71,7 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: 'teste@gmail.com',
       password: faker.internet.password(),
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
       institutionsIds: [],
 
     })
@@ -87,7 +88,7 @@ describe('Register Operator', () => {
       name: faker.person.firstName(),
       email: 'teste@gmail.com',
       password: faker.internet.password(),
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
       institutionsIds: [],
     })
 

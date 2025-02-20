@@ -28,6 +28,7 @@ describe('Fetch Operators', () => {
 
     const result = await sut.execute({
       page: 1,
+      role: 'COMMON',
     })
 
     expect(result.value?.operators).toEqual([
@@ -44,6 +45,7 @@ describe('Fetch Operators', () => {
 
     const result = await sut.execute({
       page: 3,
+      role: 'MANAGER',
     })
 
     expect(result.value?.operators).toHaveLength(2)

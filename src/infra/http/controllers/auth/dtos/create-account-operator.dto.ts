@@ -1,4 +1,3 @@
-import { OperatorRole } from '@prisma/client'
 import {
   IsArray,
   IsEmail,
@@ -9,6 +8,7 @@ import {
   ArrayNotEmpty,
 } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 export class CreateAccountOperatorDTO {
   @ApiProperty({

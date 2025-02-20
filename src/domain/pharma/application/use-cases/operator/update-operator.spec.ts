@@ -5,6 +5,7 @@ import { makeOperator } from 'test/factories/make-operator'
 import { makeInstitution } from 'test/factories/make-insitution'
 import { FakerHasher } from 'test/cryptography/fake-hasher'
 import { OperatorWithSameEmailAlreadyExistsError } from './_errors/operator-with-same-email-already-exists-error'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
@@ -27,7 +28,7 @@ describe('Update Operator', () => {
     const operator = makeOperator({
       name: 'Operator 1',
       email: 'operator@gmail.com',
-      role: 'COMMON',
+      role: OperatorRole.COMMON,
       institutionsIds: [institution.id],
     })
     await inMemoryOperatorsRepository.create(operator)

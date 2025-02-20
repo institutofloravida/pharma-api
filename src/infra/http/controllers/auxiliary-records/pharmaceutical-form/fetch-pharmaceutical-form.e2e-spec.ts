@@ -1,3 +1,4 @@
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { INestApplication } from '@nestjs/common'
@@ -30,7 +31,7 @@ describe('Fetch Pharmaceutical Forms (E2E)', () => {
 
   test('[GET] /pharmaceutical-form', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

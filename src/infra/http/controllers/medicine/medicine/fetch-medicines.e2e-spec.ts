@@ -7,6 +7,7 @@ import request from 'supertest'
 import { OperatorFactory } from 'test/factories/make-operator'
 import { MedicineFactory } from 'test/factories/make-medicine'
 import { TherapeuticClassFactory } from 'test/factories/make-therapeutic-class'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 describe('Fetch Medicines (E2E)', () => {
   let app: INestApplication
@@ -33,7 +34,7 @@ describe('Fetch Medicines (E2E)', () => {
 
   test('[GET] /medicines', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

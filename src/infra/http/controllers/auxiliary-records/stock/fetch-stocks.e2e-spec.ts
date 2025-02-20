@@ -7,6 +7,7 @@ import request from 'supertest'
 import { StockFactory } from 'test/factories/make-stock'
 import { OperatorFactory } from 'test/factories/make-operator'
 import { InstitutionFactory } from 'test/factories/make-insitution'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 describe('Fetch stocks (E2E)', () => {
   let app: INestApplication
@@ -35,7 +36,7 @@ describe('Fetch stocks (E2E)', () => {
     const insitution = await institutionFactory.makePrismaInstitution()
     const insitution2 = await institutionFactory.makePrismaInstitution()
     const user = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
       institutionsIds: [insitution.id],
     })
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

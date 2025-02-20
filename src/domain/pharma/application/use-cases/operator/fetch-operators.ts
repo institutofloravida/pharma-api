@@ -3,10 +3,15 @@ import { Injectable } from '@nestjs/common'
 import { OperatorsRepository } from '../../repositories/operators-repository'
 import { Meta } from '@/core/repositories/meta'
 import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
+import { OperatorRole } from '@prisma/client'
 
 interface FetchOperatorsUseCaseRequest {
   page: number
-  content?: string
+  name?: string
+  email?: string
+  institutionId?: string
+  role: OperatorRole
+
 }
 
 type FetchOperatorsUseCaseResponse = Either<
@@ -23,7 +28,7 @@ export class FethOperatorsUseCase {
 
   async execute({
     page,
-    content,
+    name: content,
   }: FetchOperatorsUseCaseRequest): Promise<FetchOperatorsUseCaseResponse> {
     const { operators, meta } = await this.operatorsRepository.findMany({ page }, content)
 

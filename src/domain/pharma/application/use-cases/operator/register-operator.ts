@@ -38,7 +38,7 @@ export class RegisterOperatorUseCase {
     name,
     email,
     password,
-    role = 'COMMON',
+    role = OperatorRole.COMMON,
     institutionsIds,
   }: createOperatorUseCaseRequest): Promise<createOperatorUseCaseResponse> {
     if (institutionsIds.length < 1) {

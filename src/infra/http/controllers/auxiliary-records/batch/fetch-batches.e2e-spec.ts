@@ -1,3 +1,4 @@
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { INestApplication } from '@nestjs/common'
@@ -39,7 +40,7 @@ describe('Fetch Batches (E2E)', () => {
     const insitution = await institutionFactory.makePrismaInstitution()
 
     const user = await operatorFactory.makePrismaOperator({
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
       institutionsIds: [insitution.id],
 
     })

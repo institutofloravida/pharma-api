@@ -6,6 +6,7 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { OperatorFactory } from 'test/factories/make-operator'
 import { ManufacturerFactory } from 'test/factories/make-manufacturer'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 describe('Get Manufacturer (E2E)', () => {
   let app: INestApplication
@@ -30,7 +31,7 @@ describe('Get Manufacturer (E2E)', () => {
 
   test('[GET] /manufacturer/:id', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'COMMON',
+      role: OperatorRole.COMMON,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

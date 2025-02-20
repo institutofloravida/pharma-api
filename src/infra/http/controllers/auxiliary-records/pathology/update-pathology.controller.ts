@@ -6,12 +6,13 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { UpdatePathologyDto } from '../pathology/dtos/update-pathology.dto'
 import { UpdatePathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/update-pathology'
 import { PathologyAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/_erros/pathology-already-exists-error'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('pathology')
 @ApiBearerAuth()
 @Controller('/pathology')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('MANAGER')
+@Roles(OperatorRole.MANAGER)
 export class UpdatePathologyController {
   constructor(
     private updatePathology: UpdatePathologyUseCase,

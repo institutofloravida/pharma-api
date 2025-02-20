@@ -8,6 +8,7 @@ import { OperatorFactory } from 'test/factories/make-operator'
 import { DispensationFactory } from 'test/factories/make-dispensation'
 import { PatientFactory } from 'test/factories/make-patient'
 import { addDays } from 'date-fns'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 describe('Fetch Dispensations (E2E)', () => {
   let app: INestApplication
@@ -34,7 +35,7 @@ describe('Fetch Dispensations (E2E)', () => {
 
   test('[GET] /dispensations', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

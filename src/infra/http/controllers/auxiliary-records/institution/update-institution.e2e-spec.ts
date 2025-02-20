@@ -1,3 +1,4 @@
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
@@ -30,7 +31,7 @@ describe('Update institution (E2E)', () => {
 
   test('[PUT] /institution/:id', async () => {
     const user = await operatorFactory.makePrismaOperator({
-      role: 'SUPER_ADMIN',
+      role: OperatorRole.SUPER_ADMIN,
     })
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })

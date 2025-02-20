@@ -9,12 +9,13 @@ import { DispensationDto } from './dtos/dispensation-dto'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt-strategy'
 import { InstitutionNotExistsError } from '@/domain/pharma/application/use-cases/institution/_errors/institution-not-exists-error'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('dispensation')
 @ApiBearerAuth()
 @Controller('/dispensation')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('MANAGER', 'COMMON')
+@Roles(OperatorRole.MANAGER, OperatorRole.COMMON)
 export class DispensationController {
   constructor(
     private dispensation: DispensationMedicineUseCase,

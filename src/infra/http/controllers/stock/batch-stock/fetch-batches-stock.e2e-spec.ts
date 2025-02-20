@@ -18,6 +18,7 @@ import { StockFactory } from 'test/factories/make-stock'
 import { BatchFactory } from 'test/factories/make-batch'
 import { InstitutionFactory } from 'test/factories/make-insitution'
 import { ManufacturerFactory } from 'test/factories/make-manufacturer'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 describe('Fetch Batches Stock (E2E)', () => {
   let app: INestApplication
@@ -76,7 +77,7 @@ describe('Fetch Batches Stock (E2E)', () => {
     const institution = await institutionFactory.makePrismaInstitution()
 
     const user = await operatorFactory.makePrismaOperator({
-      role: 'MANAGER',
+      role: OperatorRole.MANAGER,
       institutionsIds: [institution.id],
     })
 
