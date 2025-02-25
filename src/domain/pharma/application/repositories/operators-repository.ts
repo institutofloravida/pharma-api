@@ -6,7 +6,8 @@ import { OperatorWithInstitution } from '../../enterprise/entities/value-objects
 export abstract class OperatorsRepository {
   abstract create(operator: Operator): Promise<void>
   abstract save(operator: Operator): Promise<void>
-  abstract findById(id: string): Promise<Operator | null>
+  abstract findById(id: string,): Promise<Operator | null>
+  abstract findByIdWithDetails(id: string): Promise<OperatorWithInstitution | null>
   abstract findByEmail(email: string): Promise<Operator | null>
   abstract findMany(
     params: PaginationParams,

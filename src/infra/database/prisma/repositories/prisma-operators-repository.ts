@@ -1,5 +1,5 @@
 import { OperatorsRepository } from '@/domain/pharma/application/repositories/operators-repository'
-import { Operator, type OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { Operator, OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaOperatorMapper } from '../mappers/prisma-operator-mapper'
@@ -8,6 +8,7 @@ import { Meta } from '@/core/repositories/meta'
 import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
 import { PrismaOperatorWithInstitutionsMapper } from '../mappers/prisma-operator-with-institution-mapper'
 import { $Enums, type Prisma } from '@prisma/client'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 @Injectable()
 export class PrismaOperatorsRepository implements OperatorsRepository {
@@ -45,6 +46,33 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       ...operator,
       institutions: operator.institutions.map((inst) => ({ id: inst.id, name: inst.name })),
     })
+  }
+
+  async findByIdWithDetails(id: string): Promise<OperatorWithInstitution | null> {
+    const operator = await this.prisma.operator.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        institutions: true,
+      },
+    })
+
+    if (!operator) return null
+
+    const operatorMapped = OperatorWithInstitution.create({
+      ...operator,
+      id: new UniqueEntityId(operator.id),
+      role: OperatorRole[operator.role],
+      institutions: operator.institutions.map(institution => {
+        return {
+          id: new UniqueEntityId(institution.id),
+          name: institution.name,
+        }
+      }),
+    })
+
+    return operatorMapped
   }
 
   async findByEmail(email: string): Promise<Operator | null> {

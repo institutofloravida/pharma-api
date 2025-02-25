@@ -36,6 +36,42 @@ export class InMemoryOperatorsRepository implements OperatorsRepository {
     return operator
   }
 
+  async findByIdWithDetails(id: string): Promise<OperatorWithInstitution | null> {
+    const operator = this.items.find((item) => item.id.toString() === id)
+
+    if (!operator) {
+      return null
+    }
+
+    const operatorInstitutionsMapped = await Promise.all(operator.institutionsIds.map(async (institutionId) => {
+      const institution = await this.institutionsRepository.findById(
+        institutionId.toString(),
+      )
+
+      if (!institution) {
+        throw new Error(
+          `Institution with ID ${institutionId} does not exist.`,
+        )
+      }
+
+      return {
+        id: institution.id,
+        name: institution.content,
+      }
+    }))
+
+    const operatorMapped = OperatorWithInstitution.create({
+      id: operator.id,
+      email: operator.email,
+      name: operator.name,
+      role: operator.role,
+      createdAt: operator.createdAt,
+      institutions: operatorInstitutionsMapped,
+    })
+
+    return operatorMapped
+  }
+
   async findByEmail(email: string) {
     const operator = this.items.find((item) => item.email === email)
 

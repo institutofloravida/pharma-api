@@ -1,6 +1,6 @@
 import { Controller, Get, NotFoundException, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { OperatorPresenter } from '../../../presenters/operator-presenter'
+import { OperatorPresenter } from '../../presenters/operator-presenter'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { GetOperatorDetailsUseCase } from '@/domain/pharma/application/use-cases/operator/get-operator-details'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
