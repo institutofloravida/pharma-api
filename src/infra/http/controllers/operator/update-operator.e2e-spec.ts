@@ -44,11 +44,12 @@ describe('Update Operator (E2E)', () => {
 
     const institution = await institutionFactory.makePrismaInstitution()
     const institution2 = await institutionFactory.makePrismaInstitution()
+    const institution3 = await institutionFactory.makePrismaInstitution()
 
     const operator = await operatorFactory.makePrismaOperator({
       name: 'Carlos Augustus',
       email: 'carlosaugustus@gmail.com',
-      institutionsIds: [institution.id],
+      institutionsIds: [institution.id, institution2.id],
       role: OperatorRole.COMMON,
       passwordHash: await hash('123456', 8),
     })
@@ -61,7 +62,7 @@ describe('Update Operator (E2E)', () => {
         email: 'carlosaugustus2@gmail.com',
         institutionsIds: [
           institution.id.toString(),
-          institution2.id.toString(),
+          institution3.id.toString(),
         ],
         role: OperatorRole.MANAGER,
         password: '12345678',
@@ -81,6 +82,25 @@ describe('Update Operator (E2E)', () => {
         },
       },
     })
+
+    const operatorWithInstitutionExists = await prisma.operator.findUnique({
+      where: {
+        id: operator.id.toString(),
+        institutions: {
+          some: {
+            id: institution2.id.toString(),
+          },
+        },
+      },
+      include: {
+        institutions: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    })
+    expect(operatorWithInstitutionExists).toBeFalsy()
     expect(operatorOnDataBase).toEqual(
       expect.objectContaining({
         name: 'Carlos Augustus Segundo',
@@ -88,7 +108,7 @@ describe('Update Operator (E2E)', () => {
         role: OperatorRole.MANAGER,
         institutions: expect.arrayContaining([
           expect.objectContaining({ id: institution.id.toString() }),
-          expect.objectContaining({ id: institution2.id.toString() }),
+          expect.objectContaining({ id: institution3.id.toString() }),
         ]),
       }),
     )

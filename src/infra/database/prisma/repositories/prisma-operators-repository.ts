@@ -28,7 +28,12 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       where: {
         id: operator.id.toString(),
       },
-      data,
+      data: {
+        ...data,
+        institutions: {
+          set: operator.institutionsIds.map(item => ({ id: item.toString() })),
+        },
+      },
     })
   }
 

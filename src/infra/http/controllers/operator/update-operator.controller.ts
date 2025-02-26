@@ -32,7 +32,6 @@ export class UpdateOperatorController {
     @Body() body: UpdateOperatorDto,
   ) {
     const { name, email, institutionsIds, password, role } = body
-
     const result = await this.updateOperator.execute({
       operatorId,
       name,
