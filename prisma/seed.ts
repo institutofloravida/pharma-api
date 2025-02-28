@@ -4,7 +4,8 @@ import { hash } from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function clearDatabase() {
-  await prisma.medicineTherapeuticClass.deleteMany()
+  await prisma.exit.deleteMany()
+  await prisma.dispensation.deleteMany()
   await prisma.medicineEntry.deleteMany()
   await prisma.batcheStock.deleteMany()
   await prisma.medicineStock.deleteMany()
@@ -172,23 +173,22 @@ async function main() {
     },
   })
 
-  const medicine1 = await prisma.medicine.create({
-    data: {
-      name: 'Paracetamol',
-    },
-  })
-
   const therapeuticClasse01 = await prisma.therapeuticClass.create({
     data: {
       name: 'Analgésicos',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine1 = await prisma.medicine.create({
     data: {
-      medicineId: medicine1.id,
-      therapeuticClassId: therapeuticClasse01.id,
+      name: 'Paracetamol',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse01.id,
+        },
+      },
     },
+
   })
 
   await prisma.movementType.createMany(
@@ -217,22 +217,20 @@ async function main() {
     ],
   })
 
-  const medicine2 = await prisma.medicine.create({
-    data: {
-      name: 'Ibuprofeno',
-    },
-  })
-
   const therapeuticClasse02 = await prisma.therapeuticClass.create({
     data: {
       name: 'Anti-inflamatórios',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine2 = await prisma.medicine.create({
     data: {
-      medicineId: medicine2.id,
-      therapeuticClassId: therapeuticClasse02.id,
+      name: 'Ibuprofeno',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse02.id,
+        },
+      },
     },
   })
 
@@ -253,22 +251,20 @@ async function main() {
     ],
   })
 
-  const medicine3 = await prisma.medicine.create({
-    data: {
-      name: 'Amoxicilina',
-    },
-  })
-
   const therapeuticClasse03 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antibióticos',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine3 = await prisma.medicine.create({
     data: {
-      medicineId: medicine3.id,
-      therapeuticClassId: therapeuticClasse03.id,
+      name: 'Amoxicilina',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse03.id,
+        },
+      },
     },
   })
 
@@ -289,24 +285,23 @@ async function main() {
     ],
   })
 
-  const medicine4 = await prisma.medicine.create({
-    data: {
-      name: 'Fluconazol',
-    },
-  })
-
   const therapeuticClasse04 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antifúngicos',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine4 = await prisma.medicine.create({
     data: {
-      medicineId: medicine4.id,
-      therapeuticClassId: therapeuticClasse04.id,
+      name: 'Fluconazol',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse04.id,
+        },
+      },
     },
   })
+
   await prisma.medicineVariant.createMany({
     data: [
       {
@@ -324,24 +319,23 @@ async function main() {
     ],
   })
 
-  const medicine5 = await prisma.medicine.create({
-    data: {
-      name: 'Oseltamivir',
-    },
-  })
-
   const therapeuticClasse05 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antivirais',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine5 = await prisma.medicine.create({
     data: {
-      medicineId: medicine5.id,
-      therapeuticClassId: therapeuticClasse05.id,
+      name: 'Oseltamivir',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse05.id,
+        },
+      },
     },
   })
+
   await prisma.medicineVariant.createMany({
     data: [
       {
@@ -359,22 +353,20 @@ async function main() {
     ],
   })
 
-  const medicine6 = await prisma.medicine.create({
-    data: {
-      name: 'Losartana',
-    },
-  })
-
   const therapeuticClasse06 = await prisma.therapeuticClass.create({
     data: {
       name: 'Anti-hipertensivos',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine6 = await prisma.medicine.create({
     data: {
-      medicineId: medicine6.id,
-      therapeuticClassId: therapeuticClasse06.id,
+      name: 'Losartana',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse06.id,
+        },
+      },
     },
   })
 
@@ -395,22 +387,20 @@ async function main() {
     ],
   })
 
-  const medicine7 = await prisma.medicine.create({
-    data: {
-      name: 'Metformina',
-    },
-  })
-
   const therapeuticClasse07 = await prisma.therapeuticClass.create({
     data: {
       name: 'Hipoglicemiantes',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine7 = await prisma.medicine.create({
     data: {
-      medicineId: medicine7.id,
-      therapeuticClassId: therapeuticClasse07.id,
+      name: 'Metformina',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse07.id,
+        },
+      },
     },
   })
 
@@ -431,22 +421,20 @@ async function main() {
     ],
   })
 
-  const medicine8 = await prisma.medicine.create({
-    data: {
-      name: 'Varfarina',
-    },
-  })
-
   const therapeuticClasse08 = await prisma.therapeuticClass.create({
     data: {
       name: 'Anticoagulantes',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine8 = await prisma.medicine.create({
     data: {
-      medicineId: medicine8.id,
-      therapeuticClassId: therapeuticClasse08.id,
+      name: 'Varfarina',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse08.id,
+        },
+      },
     },
   })
 
@@ -467,22 +455,20 @@ async function main() {
     ],
   })
 
-  const medicine9 = await prisma.medicine.create({
-    data: {
-      name: 'Diazepam',
-    },
-  })
-
   const therapeuticClasse09 = await prisma.therapeuticClass.create({
     data: {
       name: 'Ansiolíticos',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine9 = await prisma.medicine.create({
     data: {
-      medicineId: medicine9.id,
-      therapeuticClassId: therapeuticClasse09.id,
+      name: 'Diazepam',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse09.id,
+        },
+      },
     },
   })
 
@@ -503,24 +489,23 @@ async function main() {
     ],
   })
 
-  const medicine10 = await prisma.medicine.create({
-    data: {
-      name: 'Fluoxetina',
-    },
-  })
-
-  const therapeuticClasse010 = await prisma.therapeuticClass.create({
+  const therapeuticClasse10 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antidepressivos',
     },
   })
 
-  await prisma.medicineTherapeuticClass.create({
+  const medicine10 = await prisma.medicine.create({
     data: {
-      medicineId: medicine10.id,
-      therapeuticClassId: therapeuticClasse010.id,
+      name: 'Fluoxetina',
+      therapeuticClasses: {
+        connect: {
+          id: therapeuticClasse10.id,
+        },
+      },
     },
   })
+
   await prisma.medicineVariant.createMany({
     data: [
       {
