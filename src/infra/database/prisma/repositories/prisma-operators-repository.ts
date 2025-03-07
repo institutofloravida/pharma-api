@@ -16,8 +16,20 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
 
   async create(operator: Operator): Promise<void> {
     const data = PrismaOperatorMapper.toPrisma(operator)
+
+    const institutionsToConnect = operator.isSuperAdmin()
+      ? await this.prisma.institution.findMany({ select: { id: true } })
+      : []
+
     await this.prisma.operator.create({
-      data,
+      data: {
+        ...data,
+        ...(operator.isSuperAdmin() && {
+          institutions: {
+            connect: institutionsToConnect,
+          },
+        }),
+      },
     })
   }
 

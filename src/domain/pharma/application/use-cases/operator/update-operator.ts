@@ -43,7 +43,7 @@ export class UpdateOperatorUseCase {
   }: updateOperatorUseCaseRequest): Promise<updateOperatorUseCaseResponse> {
     const operator = await this.operatorRepository.findById(operatorId)
     if (!operator) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Operador não encontrado'))
     }
     if (email) {
       const operatorWithSameEmail =
@@ -56,11 +56,13 @@ export class UpdateOperatorUseCase {
       }
       operator.email = email
     }
-    if (institutionsIds) {
-      if (institutionsIds && institutionsIds.length < 1) {
-        return left(new NoAssociatedInstitutionError())
+    if (!operator.isSuperAdmin()) {
+      if (institutionsIds) {
+        if (institutionsIds && institutionsIds.length < 1) {
+          return left(new NoAssociatedInstitutionError())
+        }
+        operator.institutionsIds = institutionsIds.map(item => new UniqueEntityId(item))
       }
-      operator.institutionsIds = institutionsIds.map(item => new UniqueEntityId(item))
     }
 
     if (name) operator.name = name

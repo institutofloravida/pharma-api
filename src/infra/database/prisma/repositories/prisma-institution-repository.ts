@@ -73,6 +73,8 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
   async findMany(
     { page }: PaginationParams,
     filters: { content?: string, cnpj?: string },
+    operatorId: string,
+    isSuper = false,
   ): Promise<{ institutions: Institution[]; meta: Meta }> {
     const { cnpj, content } = filters
 
@@ -84,10 +86,18 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
       ...(cnpj && {
         cnpj,
       }),
+      operators: {
+        ...(!isSuper && {
+          some: {
+            id: operatorId,
+          },
+        }),
+      },
     }
     const [institutions, totalCount] = await Promise.all([
       this.prisma.institution.findMany({
         where: whereClause,
+
         orderBy: {
           createdAt: 'desc',
         },

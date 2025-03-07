@@ -21,7 +21,7 @@ import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 @ApiBearerAuth()
 @Controller('/operator')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(OperatorRole.MANAGER)
+@Roles(OperatorRole.MANAGER, OperatorRole.SUPER_ADMIN)
 export class UpdateOperatorController {
   constructor(private updateOperator: UpdateOperatorUseCase) {}
 

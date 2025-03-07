@@ -10,6 +10,8 @@ import { InstitutionPresenter } from '../../../presenters/institution-presenter'
 import { FetchInstitutionsDto } from './dtos/fetch-institutions.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/institution/fetch-institutions'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import type { UserPayload } from '@/infra/auth/jwt-strategy'
 
 @ApiTags('institution')
 @ApiBearerAuth()
@@ -19,12 +21,13 @@ export class FetchInstitutionsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async handle(@Query() queryParams: FetchInstitutionsDto) {
+  async handle(@CurrentUser() user: UserPayload, @Query() queryParams: FetchInstitutionsDto) {
     const { page, query, cnpj } = queryParams
     const result = await this.fetchInstitutions.execute({
       page,
       content: query,
       cnpj,
+      operatorId: user.sub,
     })
     if (result.isLeft()) {
       throw new BadRequestException({})

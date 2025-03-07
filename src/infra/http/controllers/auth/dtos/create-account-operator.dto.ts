@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsString,
   MinLength,
-  ArrayNotEmpty,
 } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
@@ -47,7 +46,6 @@ export class CreateAccountOperatorDTO {
   })
   @IsOptional()
   @IsArray()
-  @ArrayNotEmpty({ message: 'InstitutionsIds cannot be empty' })
   @IsString({ each: true })
   institutionsIds: string[]
 }

@@ -11,5 +11,7 @@ export abstract class InstitutionsRepository {
   abstract findMany(
     params: PaginationParams,
     filters: { content?: string, cnpj?: string },
+    operatorId: string,
+    isSuper?: boolean
   ): Promise<{ institutions: Institution[]; meta: Meta }>
 }

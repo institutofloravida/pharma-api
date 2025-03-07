@@ -10,6 +10,7 @@ import { HashGenerator } from '../../cryptography/hash-generator'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { NoAssociatedInstitutionError } from './_errors/no-associated-institution-error'
+import { InstitutionsRepository } from '../../repositories/institutions-repository'
 
 interface createOperatorUseCaseRequest {
   name: string;
@@ -30,6 +31,7 @@ type createOperatorUseCaseResponse = Either<
 @Injectable()
 export class RegisterOperatorUseCase {
   constructor(
+    private institutionsRepository: InstitutionsRepository,
     private operatorRepository: OperatorsRepository,
     private hashGenerator: HashGenerator,
   ) {}
@@ -41,7 +43,7 @@ export class RegisterOperatorUseCase {
     role = OperatorRole.COMMON,
     institutionsIds,
   }: createOperatorUseCaseRequest): Promise<createOperatorUseCaseResponse> {
-    if (institutionsIds.length < 1) {
+    if ((role.toString() !== OperatorRole.SUPER_ADMIN.toString()) && institutionsIds.length < 1) {
       return left(new NoAssociatedInstitutionError())
     }
     const operatorWithSameEmail =
