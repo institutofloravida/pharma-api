@@ -96,6 +96,8 @@ import { UpdateOperatorController } from './controllers/operator/update-operator
 import { UpdateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/update-operator'
 import { GetOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/get-operator'
 import { GetOperatorController } from './controllers/operator/get-operator.controller'
+import { UpdateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/update-stock'
+import { UpdateStockController } from './controllers/auxiliary-records/stock/update-stock.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -148,6 +150,7 @@ import { GetOperatorController } from './controllers/operator/get-operator.contr
     UpdateManufacturerController,
     UpdateUnitMeasureController,
     UpdateOperatorController,
+    UpdateStockController,
 
   ],
   providers: [
@@ -198,6 +201,7 @@ import { GetOperatorController } from './controllers/operator/get-operator.contr
     UpdateManufacturerUseCase,
     UpdateUnitMeasureUseCase,
     UpdateOperatorUseCase,
+    UpdateStockUseCase,
   ],
 })
 export class HttpModule {}
