@@ -11,11 +11,16 @@ import { FetchInstitutionsDto } from './dtos/fetch-institutions.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { FethInstitutionsUseCase } from '@/domain/pharma/application/use-cases/institution/fetch-institutions'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import type { UserPayload } from '@/infra/auth/jwt-strategy'
+import { UserPayload } from '@/infra/auth/jwt-strategy'
+import { RolesGuard } from '@/infra/auth/roles.guard'
+import { Roles } from '@/infra/auth/role-decorator'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('institution')
 @ApiBearerAuth()
 @Controller('/institutions')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(OperatorRole.SUPER_ADMIN, OperatorRole.MANAGER)
 export class FetchInstitutionsController {
   constructor(private fetchInstitutions: FethInstitutionsUseCase) {}
 

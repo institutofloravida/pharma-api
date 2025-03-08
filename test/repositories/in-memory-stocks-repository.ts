@@ -17,6 +17,12 @@ export class InMemoryStocksRepository implements StocksRepository {
     this.items.push(stock)
   }
 
+  async save(stock: Stock): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(stock.id))
+
+    this.items[itemIndex] = stock
+  }
+
   async findByContent(content: string, institutionId: string) {
     const stock = this.items.find(
       (item) =>

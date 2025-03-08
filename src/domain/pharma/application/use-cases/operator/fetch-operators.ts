@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { OperatorsRepository } from '../../repositories/operators-repository'
 import { Meta } from '@/core/repositories/meta'
 import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
-import type { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 interface FetchOperatorsUseCaseRequest {
   page: number

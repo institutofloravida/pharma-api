@@ -1,6 +1,7 @@
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
@@ -17,7 +18,7 @@ describe('Fetch institutions (E2E)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [OperatorFactory, InstitutionFactory],
+      providers: [OperatorFactory, InstitutionFactory, PrismaService],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -30,13 +31,7 @@ describe('Fetch institutions (E2E)', () => {
   })
 
   test('[GET] /institutions', async () => {
-    const user = await operatorFactory.makePrismaOperator({
-      role: OperatorRole.SUPER_ADMIN,
-    })
-
-    const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
-
-    await Promise.all([
+    const [institution1, institution2] = await Promise.all([
       institutionFactory.makePrismaInstitution({
         cnpj: '12345678901234',
       }),
@@ -44,6 +39,13 @@ describe('Fetch institutions (E2E)', () => {
         cnpj: '12345678912345',
       }),
     ])
+
+    const user = await operatorFactory.makePrismaOperator({
+      role: OperatorRole.SUPER_ADMIN,
+      institutionsIds: [institution1.id, institution2.id],
+    })
+
+    const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
     const response = await request(app.getHttpServer())
       .get('/institutions')

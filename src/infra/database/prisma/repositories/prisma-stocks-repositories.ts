@@ -20,6 +20,17 @@ export class PrismaStocksRepository implements StocksRepository {
     })
   }
 
+  async save(stock: Stock): Promise<void> {
+    const data = PrismaStockMapper.toPrisma(stock)
+
+    await this.prisma.stock.update({
+      where: {
+        id: stock.id.toString(),
+      },
+      data,
+    })
+  }
+
   async findByContent(
     content: string,
     institutionId: string,

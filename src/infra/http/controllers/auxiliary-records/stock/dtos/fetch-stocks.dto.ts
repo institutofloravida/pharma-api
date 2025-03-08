@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsOptional, IsString, IsNumber, Min, IsArray } from 'class-validator'
-import { Type } from 'class-transformer'
+import { Transform, Type } from 'class-transformer'
 
 export class FetchStocksDto {
   @ApiProperty({
@@ -30,6 +30,9 @@ export class FetchStocksDto {
   })
   @IsOptional()
   @IsArray()
+  @Transform(({ value }) => (Array.isArray(value)
+    ? value
+    : [value]))
   @IsString({ each: true })
   institutionsIds?: string[]
 }
