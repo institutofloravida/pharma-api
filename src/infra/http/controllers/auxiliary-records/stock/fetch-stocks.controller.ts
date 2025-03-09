@@ -8,13 +8,13 @@ import {
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/role-decorator'
-import { StockPresenter } from '../../../presenters/stock-presenter'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt-strategy'
 import { FetchStocksUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/fetch-stocks'
 import { FetchStocksDto } from './dtos/fetch-stocks.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { StockWithInstitutionPresenter } from '@/infra/http/presenters/stock-with-institution-presenter'
 
 @ApiTags('stock')
 @ApiBearerAuth()
@@ -47,6 +47,6 @@ export class FetchStocksController {
       meta,
     } = result.value
 
-    return { stocks: stocks.map(StockPresenter.toHTTP), meta }
+    return { stocks: stocks.map(StockWithInstitutionPresenter.toHTTP), meta }
   }
 }

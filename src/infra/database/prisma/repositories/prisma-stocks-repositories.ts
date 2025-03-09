@@ -1,13 +1,11 @@
-import {
-  StocksRepository,
-  StockWithInstitution,
-} from '@/domain/pharma/application/repositories/stocks-repository'
-import { Stock } from '@/domain/pharma/enterprise/entities/stock'
-import { PrismaService } from '../prisma.service'
-import { PrismaStockMapper } from '../mappers/prisma-stock-mapper'
-import { Injectable } from '@nestjs/common'
-import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
+import { StocksRepository } from '@/domain/pharma/application/repositories/stocks-repository'
+import { StockWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/stock-with-institution'
+import { Injectable } from '@nestjs/common'
+import { PrismaStockMapper } from '../mappers/prisma-stock-mapper'
+import { PrismaService } from '../prisma.service'
+import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 
 @Injectable()
 export class PrismaStocksRepository implements StocksRepository {
@@ -57,13 +55,45 @@ export class PrismaStocksRepository implements StocksRepository {
       where: {
         id,
       },
+      include: {
+        institution: true,
+      },
     })
 
     if (!stock) {
       return null
     }
 
-    return PrismaStockMapper.toDomain(stock)
+    const stockMapped = PrismaStockMapper.toDomain(stock)
+
+    return stockMapped
+  }
+
+  async findByIdWithDetails(id: string): Promise<StockWithInstitution | null> {
+    const stock = await this.prisma.stock.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        institution: true,
+      },
+    })
+
+    if (!stock) {
+      return null
+    }
+
+    const stockMapped = PrismaStockMapper.toDomain(stock)
+
+    return StockWithInstitution.create({
+      id: stockMapped.id,
+      content: stockMapped.content,
+      status: stockMapped.status,
+      institutionId: stockMapped.institutionId,
+      institutionName: stock.institution?.name ?? '',
+      createdAt: stockMapped.createdAt,
+      updatedAt: stockMapped.updatedAt,
+    })
   }
 
   async findManyByInstitutionsId(
@@ -125,10 +155,19 @@ export class PrismaStocksRepository implements StocksRepository {
       }),
     ])
 
-    const stocksMapped = stocks.map((stock) => ({
-      stock: PrismaStockMapper.toDomain(stock),
-      institutionName: stock.institution?.name ?? '',
-    }))
+    const stocksMapped = stocks.map((stock) => {
+      const stockMapped = PrismaStockMapper.toDomain(stock)
+
+      return StockWithInstitution.create({
+        id: stockMapped.id,
+        content: stockMapped.content,
+        status: stockMapped.status,
+        institutionId: stockMapped.institutionId,
+        institutionName: stock.institution?.name ?? '',
+        createdAt: stockMapped.createdAt,
+        updatedAt: stockMapped.updatedAt,
+      })
+    })
     return {
       stocks: stocksMapped,
       meta: {

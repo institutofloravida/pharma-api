@@ -1,11 +1,11 @@
 import { Either, left, right } from '@/core/either'
-import { Stock } from '@/domain/pharma/enterprise/entities/stock'
 import { Injectable } from '@nestjs/common'
 import { StocksRepository } from '../../../repositories/stocks-repository'
 import { OperatorsRepository } from '../../../repositories/operators-repository'
 import { ForbiddenError } from '@/core/erros/errors/forbidden-error'
 import { InstitutionsRepository } from '../../../repositories/institutions-repository'
 import { Meta } from '@/core/repositories/meta'
+import { StockWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/stock-with-institution'
 
 interface FetchStocksUseCaseRequest {
   page: number
@@ -17,7 +17,7 @@ interface FetchStocksUseCaseRequest {
 type FetchStocksUseCaseResponse = Either<
   ForbiddenError,
   {
-    stocks: Array<{ stock: Stock } & { institutionName: string | null }>,
+    stocks: StockWithInstitution[],
     meta: Meta
   }
 >

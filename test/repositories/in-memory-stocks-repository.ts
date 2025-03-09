@@ -4,9 +4,9 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
 import {
   StocksRepository,
-  type StockWithInstitution,
 } from '@/domain/pharma/application/repositories/stocks-repository'
 import { Stock } from '@/domain/pharma/enterprise/entities/stock'
+import { StockWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/stock-with-institution'
 
 export class InMemoryStocksRepository implements StocksRepository {
   constructor(private institutionsRepository: InstitutionsRepository) {}
@@ -35,12 +35,35 @@ export class InMemoryStocksRepository implements StocksRepository {
     return stock
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<Stock | null> {
     const stock = this.items.find((item) => item.id.equal(new UniqueEntityId(id)))
     if (!stock) {
       return null
     }
+
     return stock
+  }
+
+  async findByIdWithDetails(id: string): Promise<StockWithInstitution | null> {
+    const stock = this.items.find((item) => item.id.equal(new UniqueEntityId(id)))
+    if (!stock) {
+      return null
+    }
+
+    const institution = await this.institutionsRepository.findById(stock.institutionId.toString())
+    if (!institution) {
+      throw new Error(`Instituição com id "${stock.institutionId.toString()}" não foi encontrada!`)
+    }
+
+    return StockWithInstitution.create({
+      id: stock.id,
+      content: stock.content,
+      status: stock.status,
+      institutionId: stock.institutionId,
+      institutionName: institution.content,
+      createdAt: stock.createdAt,
+      updatedAt: stock.updatedAt,
+    })
   }
 
   async findManyByInstitutionsId(
@@ -82,13 +105,19 @@ export class InMemoryStocksRepository implements StocksRepository {
         const institution = await this.institutionsRepository.findById(
           stock.institutionId.toString(),
         )
-
-        return {
-          stock,
-          institutionName: institution
-            ? institution.content
-            : '',
+        if (!institution) {
+          throw new Error(`Instituição com id "${stock.institutionId.toString()}" não foi encontrada!`)
         }
+
+        return StockWithInstitution.create({
+          id: stock.id,
+          content: stock.content,
+          status: stock.status,
+          institutionId: stock.institutionId,
+          institutionName: institution.content,
+          createdAt: stock.createdAt,
+          updatedAt: stock.updatedAt,
+        })
       }),
     )
 
