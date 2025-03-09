@@ -23,6 +23,7 @@ export class UpdateStockUseCase {
   constructor(private stocksRepository: StocksRepository) {}
   async execute({
     content,
+    status,
     stockId,
   }: updateStockUseCaseRequest): Promise<updateStockUseCaseResponse> {
     const stock = await this.stocksRepository.findById(stockId)
@@ -41,9 +42,11 @@ export class UpdateStockUseCase {
       }
       stock.content = content
     }
+    if (status !== undefined) {
+      stock.status = status
+    }
 
     await this.stocksRepository.save(stock)
-
     return right({
       stock,
     })
