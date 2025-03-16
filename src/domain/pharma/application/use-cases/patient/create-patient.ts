@@ -116,10 +116,8 @@ export class CreatePatientUseCase {
       pathologiesIds: pathologiesIds.map((id) => new UniqueEntityId(id)),
     })
 
-    await Promise.all([
-      this.addressRepository.create(address),
-      this.patientRepository.create(patient),
-    ])
+    await this.addressRepository.create(address)
+    await this.patientRepository.create(patient)
 
     return right({
       patient,

@@ -12,6 +12,7 @@ export class PrismaPatientsRepository implements PatientsRepository {
 
   async create(patient: Patient): Promise<void> {
     const patientMapped = PrismaPatientMapper.toPrisma(patient)
+
     await this.prisma.patient.create({
       data: patientMapped,
     })
