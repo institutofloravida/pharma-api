@@ -9,9 +9,11 @@ import { DispensationFactory } from 'test/factories/make-dispensation'
 import { PatientFactory } from 'test/factories/make-patient'
 import { addDays } from 'date-fns'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { AddressFactory } from 'test/factories/make-address'
 
 describe('Fetch Dispensations (E2E)', () => {
   let app: INestApplication
+  let addressFactory: AddressFactory
   let patientFactory: PatientFactory
   let operatorFactory: OperatorFactory
   let dispensationFactory: DispensationFactory
@@ -20,11 +22,12 @@ describe('Fetch Dispensations (E2E)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [DispensationFactory, OperatorFactory, PatientFactory],
+      providers: [DispensationFactory, OperatorFactory, PatientFactory, AddressFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
     patientFactory = moduleRef.get(PatientFactory)
+    addressFactory = moduleRef.get(AddressFactory)
 
     operatorFactory = moduleRef.get(OperatorFactory)
     dispensationFactory = moduleRef.get(DispensationFactory)
@@ -40,8 +43,10 @@ describe('Fetch Dispensations (E2E)', () => {
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
+    const address = await addressFactory.makePrismaAddress()
+
     const patient =
-      await patientFactory.makePrismaPatient()
+      await patientFactory.makePrismaPatient({ addressId: address.id })
 
     await Promise.all([
       dispensationFactory.makePrismaDispensation({

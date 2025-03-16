@@ -1,9 +1,8 @@
 import { left, right, type Either } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
-import { MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
+import { ExitType, MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
 import { Injectable } from '@nestjs/common'
-import { ExitType } from '@prisma/client'
 import { BatchStocksRepository } from '../../../repositories/batch-stocks-repository'
 import { BatchesRepository } from '../../../repositories/batches-repository'
 import { MedicinesExitsRepository } from '../../../repositories/medicines-exits-repository'
@@ -22,6 +21,7 @@ interface RegisterExitUseCaseRequest {
   batcheStockId: string;
   quantity: number;
   exitType: ExitType;
+  movementTypeId: string;
   exitDate?: Date;
 }
 
@@ -49,6 +49,7 @@ export class RegisterExitUseCase {
     operatorId,
     batcheStockId,
     quantity,
+    movementTypeId,
     exitDate,
     exitType,
   }: RegisterExitUseCaseRequest): Promise<RegisterExitUseCaseResponse> {
@@ -111,6 +112,7 @@ export class RegisterExitUseCase {
       operatorId: new UniqueEntityId(operatorId),
       quantity,
       exitDate,
+      movementTypeId: new UniqueEntityId(movementTypeId),
     })
 
     await this.medicineExitRepository.create(exit)

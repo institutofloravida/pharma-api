@@ -8,7 +8,6 @@ export class PrismaDispensationMapper {
     return Dispensation.create(
       {
         operatorId: new UniqueEntityId(raw.operatorId),
-        exitsRecords: raw.exitRecords,
         patientId: new UniqueEntityId(raw.patientId),
         dispensationDate: raw.dispensationDate,
         createdAt: raw.createdAt,
@@ -26,9 +25,6 @@ export class PrismaDispensationMapper {
       dispensationDate: dispensation.dispensationDate,
       patientId: dispensation.patientId.toString(),
       operatorId: dispensation.operatorId.toString(),
-      exitRecords: {
-        connect: dispensation.exitsRecords.map(exit => ({ id: exit.id.toString() })),
-      },
       createdAt: dispensation.createdAt,
       updatedAt: dispensation.updatedAt,
     }

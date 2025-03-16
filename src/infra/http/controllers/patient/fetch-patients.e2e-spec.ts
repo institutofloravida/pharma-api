@@ -5,11 +5,13 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
+import { AddressFactory } from 'test/factories/make-address'
 import { OperatorFactory } from 'test/factories/make-operator'
 import { PatientFactory } from 'test/factories/make-patient'
 
 describe('Fetch Patients (E2E)', () => {
   let app: INestApplication
+  let addressFactory: AddressFactory
   let operatorFactory: OperatorFactory
   let patientFactory: PatientFactory
   let jwt: JwtService
@@ -17,11 +19,11 @@ describe('Fetch Patients (E2E)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [PatientFactory, OperatorFactory],
+      providers: [PatientFactory, OperatorFactory, AddressFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
-
+    addressFactory = moduleRef.get(AddressFactory)
     operatorFactory = moduleRef.get(OperatorFactory)
     patientFactory = moduleRef.get(PatientFactory)
     jwt = moduleRef.get(JwtService)
@@ -36,11 +38,15 @@ describe('Fetch Patients (E2E)', () => {
 
     const accessToken = jwt.sign({ sub: user.id.toString(), role: user.role })
 
+    const address1 = await addressFactory.makePrismaAddress()
+    const address2 = await addressFactory.makePrismaAddress()
+
     await Promise.all([
       patientFactory.makePrismaPatient({
         birthDate: new Date('2001-01-01'),
         generalRegistration: '019977256',
         cpf: '01234567891',
+        addressId: address1.id,
         sus: '1234567890123456',
         name: 'Francisco Chico Sousa',
       }),
@@ -48,6 +54,7 @@ describe('Fetch Patients (E2E)', () => {
         birthDate: new Date('2001-01-01'),
         generalRegistration: '92837465',
         cpf: '09876543210',
+        addressId: address2.id,
         sus: '0987654321098765',
         name: 'Francisco Chico Sousa',
       }),

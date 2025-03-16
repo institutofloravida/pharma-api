@@ -6,6 +6,7 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
+import { AddressFactory } from 'test/factories/make-address'
 import { BatchFactory } from 'test/factories/make-batch'
 import { BatchStockFactory } from 'test/factories/make-batch-stock'
 import { InstitutionFactory } from 'test/factories/make-insitution'
@@ -24,6 +25,7 @@ import { UnitMeasureFactory } from 'test/factories/make-unit-measure'
 
 describe('Create Dispensation (E2E)', () => {
   let app: INestApplication
+  let addressFactory: AddressFactory
   let manufacturerFactory: ManufacturerFactory
   let patientFactory: PatientFactory
   let institutionFactory: InstitutionFactory
@@ -59,10 +61,12 @@ describe('Create Dispensation (E2E)', () => {
         MedicineStockFactory,
         MovementTypeFactory,
         ManufacturerFactory,
+        AddressFactory,
       ],
     }).compile()
 
     app = moduleRef.createNestApplication()
+    addressFactory = moduleRef.get(AddressFactory)
     institutionFactory = moduleRef.get(InstitutionFactory)
     manufacturerFactory = moduleRef.get(ManufacturerFactory)
     patientFactory = moduleRef.get(PatientFactory)
@@ -95,7 +99,9 @@ describe('Create Dispensation (E2E)', () => {
       role: operator.role,
     })
 
-    const patient = await patientFactory.makePrismaPatient()
+    const address = await addressFactory.makePrismaAddress()
+
+    const patient = await patientFactory.makePrismaPatient({ addressId: address.id })
 
     const unitMeasure = await unitMeasureFactory.makePrismaUnitMeasure()
     const pharmaceuticalForm =
