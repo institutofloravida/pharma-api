@@ -5,7 +5,9 @@ import { Patient as PrismaPatient, Prisma } from '@prisma/client'
 export class PrismaPatientMapper {
   static toDomain(raw: PrismaPatient & { pathologies: { id: string }[] }): Patient {
     return Patient.create({
-      addressId: new UniqueEntityId(raw.addressId),
+      addressId: raw.addressId
+        ? new UniqueEntityId(raw.addressId)
+        : null,
       createdAt: raw.createdAt,
       birthDate: raw.birthDate,
       cpf: raw.cpf,
@@ -26,7 +28,9 @@ export class PrismaPatientMapper {
       id: patient.id.toString(),
       name: patient.name,
       gender: patient.gender,
-      addressId: patient.addressId.toString(),
+      addressId: patient.addressId
+        ? patient.addressId.toString()
+        : null,
       birthDate: patient.birthDate,
       cpf: patient.cpf,
       race: patient.race,

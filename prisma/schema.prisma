@@ -294,11 +294,11 @@ model Patient {
   gender              Gender
   race                Race
   generalRegistration String?   @map("general_registration") @db.VarChar(255)
-  addressId           String    @unique @map("adress_id")
+  addressId           String?   @unique @map("adress_id")
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime? @updatedAt @map("updated_at")
 
-  address       Address        @relation(fields: [addressId], references: [id])
+  address       Address?       @relation(fields: [addressId], references: [id])
   pathologies   Pathology[]
   dispensations Dispensation[]
 
