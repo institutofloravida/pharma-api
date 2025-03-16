@@ -7,6 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 enum OperatorRole {
   SUPER_ADMIN
   MANAGER
@@ -163,6 +167,7 @@ model MovementType {
   updatedAt DateTime?         @updatedAt @map("updated_at")
 
   medicineEntries MedicineEntry[]
+  Exit            Exit[]
 }
 
 model MedicineEntry {
@@ -260,6 +265,8 @@ model Address {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime? @updatedAt @map("updated_at")
 
+  patient Patient?
+
   @@map("addresses")
 }
 
@@ -287,10 +294,11 @@ model Patient {
   gender              Gender
   race                Race
   generalRegistration String?   @map("general_registration") @db.VarChar(255)
-  addressId           String    @map("adress_id")
+  addressId           String?   @unique @map("adress_id")
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime? @updatedAt @map("updated_at")
 
+  address       Address?       @relation(fields: [addressId], references: [id])
   pathologies   Pathology[]
   dispensations Dispensation[]
 
@@ -305,7 +313,7 @@ model Dispensation {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime? @updatedAt() @map("updated_at")
 
-  exitRecords Exit[]
+  exitRecords Exit[]   @relation("DispensationExits")
   patient     Patient  @relation(fields: [patientId], references: [id])
   operator    Operator @relation(fields: [operatorId], references: [id])
 
@@ -314,8 +322,8 @@ model Dispensation {
 
 enum ExitType {
   DISPENSATION
+  MOVEMENT_TYPE
   EXPIRATION
-  OTHER
 }
 
 model Exit {
@@ -327,13 +335,15 @@ model Exit {
   exitType        ExitType
   exitDate        DateTime  @default(now())
   dispensationId  String?
+  movementTypeId  String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
 
   operator      Operator      @relation(fields: [operatorId], references: [id])
   batchestock   BatcheStock   @relation(fields: [batchestockId], references: [id])
   medicineStock MedicineStock @relation(fields: [medicineStockId], references: [id])
-  Dispensation  Dispensation? @relation(fields: [dispensationId], references: [id])
+  dispensation  Dispensation? @relation("DispensationExits", fields: [dispensationId], references: [id])
+  movementType  MovementType? @relation(fields: [movementTypeId], references: [id])
 
   @@map("exits")
 }

@@ -142,7 +142,6 @@ describe('Dispensation Medicine', () => {
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryDispensationsMedicinesRepository.items).toHaveLength(1)
-      expect(inMemoryDispensationsMedicinesRepository.items[0].totalQuantity).toEqual(result.value.dispensation.totalQuantity)
 
       expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(20 - quantityToDispense)
     }
@@ -280,7 +279,6 @@ describe('Dispensation Medicine', () => {
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryDispensationsMedicinesRepository.items).toHaveLength(1)
-      expect(inMemoryDispensationsMedicinesRepository.items[0].totalQuantity).toEqual(result.value.dispensation.totalQuantity)
 
       expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(15)
       expect(inMemoryBatchStocksRepository.items[1].quantity).toBe(0)

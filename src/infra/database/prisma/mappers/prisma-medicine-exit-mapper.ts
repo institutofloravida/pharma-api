@@ -1,19 +1,22 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
+import { ExitType, MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
 import { Exit as PrismaExit, type Prisma } from '@prisma/client'
 export class PrismaMedicineExitMapper {
   static toDomain(raw: PrismaExit): MedicineExit {
     return MedicineExit.create({
-      exitType: raw.exitType,
+      exitType: ExitType[raw.exitType],
       batchestockId: new UniqueEntityId(raw.batchestockId),
       medicineStockId: new UniqueEntityId(raw.medicineStockId),
       operatorId: new UniqueEntityId(raw.operatorId),
       quantity: raw.quantity,
       exitDate: raw.exitDate,
       createdAt: raw.createdAt,
+      movementTypeId: raw.movementTypeId
+        ? new UniqueEntityId(raw.movementTypeId)
+        : undefined,
       dispensationId: raw.dispensationId
         ? new UniqueEntityId(raw.dispensationId)
-        : null,
+        : undefined,
       updatedAt: raw.updatedAt ?? undefined,
     },
     new UniqueEntityId(raw.id),
@@ -29,6 +32,9 @@ export class PrismaMedicineExitMapper {
       medicineStockId: exit.medicineStockId.toString(),
       dispensationId: exit.dispensationId
         ? exit.dispensationId.toString()
+        : null,
+      movementTypeId: exit.movementTypeId
+        ? exit.movementTypeId.toString()
         : null,
       quantity: exit.quantity,
       exitDate: exit.exitDate,

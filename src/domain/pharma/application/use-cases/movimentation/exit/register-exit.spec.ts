@@ -15,7 +15,11 @@ import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memo
 import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
 import { makeInstitution } from 'test/factories/make-insitution'
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
+import { makeMovementType } from 'test/factories/make-movement-type'
+import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 
+let inMemoryMovementTypes: InMemoryMovementTypesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
@@ -30,6 +34,8 @@ let sut: RegisterExitUseCase
 
 describe('Register Exit', () => {
   beforeEach(() => {
+    inMemoryMovementTypes = new InMemoryMovementTypesRepository()
+
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
@@ -73,6 +79,12 @@ describe('Register Exit', () => {
   it('shoult be able to register a new exit', async () => {
     const quantityToExit = 5
 
+    const movementType = makeMovementType({
+      content: 'DONATION',
+      direction: 'EXIT',
+    })
+    await inMemoryMovementTypes.create(movementType)
+
     const institution = makeInstitution()
     await inMemoryInstitutionsRepository.create(institution)
 
@@ -113,7 +125,8 @@ describe('Register Exit', () => {
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      exitType: 'OTHER',
+      exitType: ExitType.MOVEMENT_TYPE,
+      movementTypeId: movementType.id.toString(),
       quantity: quantityToExit,
     })
 
@@ -134,6 +147,13 @@ describe('Register Exit', () => {
 
   it('shoult not be able to register a new exit with quantity less or equal zero', async () => {
     const quantityZeroToExit = 0
+
+    const movementType = makeMovementType({
+      content: 'DONATION',
+      direction: 'EXIT',
+    })
+    await inMemoryMovementTypes.create(movementType)
+
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
 
@@ -171,7 +191,8 @@ describe('Register Exit', () => {
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      exitType: 'OTHER',
+      exitType: ExitType.MOVEMENT_TYPE,
+      movementTypeId: movementType.id.toString(),
       quantity: quantityZeroToExit + 5,
     })
     const result = await sut.execute({
@@ -179,7 +200,8 @@ describe('Register Exit', () => {
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      exitType: 'OTHER',
+      exitType: ExitType.MOVEMENT_TYPE,
+      movementTypeId: movementType.id.toString(),
       quantity: quantityZeroToExit,
     })
     expect(result.isLeft()).toBeTruthy()
@@ -192,6 +214,13 @@ describe('Register Exit', () => {
   it('shoult not be to keep stock updated for exits from different batches', async () => {
     const quantityToExitBatch1 = 10
     const quantityToExitBatch2 = 15
+
+    const movementType = makeMovementType({
+      content: 'DONATION',
+      direction: 'EXIT',
+    })
+    await inMemoryMovementTypes.create(movementType)
+
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
 
@@ -245,7 +274,8 @@ describe('Register Exit', () => {
       batcheStockId: batchestock1.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      exitType: 'OTHER',
+      exitType: ExitType.MOVEMENT_TYPE,
+      movementTypeId: movementType.id.toString(),
       quantity: quantityToExitBatch1,
     })
     const result2 = await sut.execute({
@@ -253,7 +283,8 @@ describe('Register Exit', () => {
       batcheStockId: batchestock2.id.toString(),
       stockId: stock.id.toString(),
       operatorId: 'operator-1',
-      exitType: 'OTHER',
+      exitType: ExitType.MOVEMENT_TYPE,
+      movementTypeId: movementType.id.toString(),
       quantity: quantityToExitBatch2,
     })
 

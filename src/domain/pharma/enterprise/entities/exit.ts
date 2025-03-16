@@ -1,8 +1,13 @@
+/* eslint-disable no-unused-vars */
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 
-export type ExitType = 'DISPENSATION' | 'EXPIRATION' | 'OTHER'
+export enum ExitType {
+  DISPENSATION = 'DISPENSATION',
+  MOVEMENT_TYPE = 'MOVEMENT_TYPE',
+  EXPIRATION = 'EXPIRATION',
+}
 
 export interface MedicineExitProps {
   medicineStockId: UniqueEntityId
@@ -11,7 +16,8 @@ export interface MedicineExitProps {
   operatorId: UniqueEntityId
   exitType: ExitType
   exitDate: Date
-  dispensationId?: UniqueEntityId | null
+  dispensationId?: UniqueEntityId
+  movementTypeId?: UniqueEntityId
   createdAt: Date
   updatedAt?: Date
 }
@@ -63,6 +69,10 @@ export class MedicineExit extends Entity<MedicineExitProps> {
     return this.props.dispensationId
   }
 
+  get movementTypeId() {
+    return this.props.movementTypeId
+  }
+
   get createdAt() {
     return this.props.createdAt
   }
@@ -79,11 +89,32 @@ export class MedicineExit extends Entity<MedicineExitProps> {
     props: Optional<MedicineExitProps, 'createdAt' | 'exitDate'>,
     id?: UniqueEntityId,
   ) {
-    const medicineExit = new MedicineExit({
-      ...props,
-      createdAt: props.createdAt ?? new Date(),
-      exitDate: props.exitDate ?? new Date(),
-    }, id)
+    if (props.exitType === 'DISPENSATION') {
+      if (!props.dispensationId) {
+        throw new Error('dispensationId é obrigatório para saída tipo DISPENSATION')
+      }
+      if (props.movementTypeId) {
+        throw new Error('movementTypeId não deve ser informado para saída tipo DISPENSATION')
+      }
+    }
+
+    if (props.exitType === 'MOVEMENT_TYPE') {
+      if (!props.movementTypeId) {
+        throw new Error('movementTypeId é obrigatório para saída tipo MOVEMENT_TYPE')
+      }
+      if (props.dispensationId) {
+        throw new Error('dispensationId não deve ser informado para saída tipo MOVEMENT_TYPE')
+      }
+    }
+
+    const medicineExit = new MedicineExit(
+      {
+        ...props,
+        createdAt: props.createdAt ?? new Date(),
+        exitDate: props.exitDate ?? new Date(),
+      },
+      id,
+    )
 
     return medicineExit
   }

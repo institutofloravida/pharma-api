@@ -12,7 +12,6 @@ export function makeDispensation(
   const dispensation = Dispensation.create({
     dispensationDate: new Date(),
     operatorId: new UniqueEntityId(),
-    exitsRecords: [],
     patientId: new UniqueEntityId(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),

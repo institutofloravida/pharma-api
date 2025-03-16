@@ -6,7 +6,7 @@ import { BatchesRepository } from '../../repositories/batches-repository'
 import { NoBatchInStockFoundError } from '../_errors/no-batch-in-stock-found-error'
 import { InsufficientQuantityInStockError } from '../_errors/insufficient-quantity-in-stock-error'
 import { InsufficientQuantityBatchInStockError } from '../_errors/insufficient-quantity-batch-in-stock-error'
-import { MedicineExit } from '../../../enterprise/entities/exit'
+import { ExitType, MedicineExit } from '../../../enterprise/entities/exit'
 import { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository'
 import { Dispensation } from '../../../enterprise/entities/dispensation'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
@@ -120,19 +120,25 @@ export class DispensationMedicineUseCase {
         ),
       )
     }
-    const exitsRecords: MedicineExit[] = []
+
+    const dispensation = Dispensation.create({
+      patientId: new UniqueEntityId(patientId),
+      dispensationDate,
+      operatorId: new UniqueEntityId(operatorId),
+    })
+
+    await this.dispensationsMedicinesRepository.create(dispensation)
 
     for (const item of batchesStocks) {
       const medicineExit = MedicineExit.create({
         medicineStockId: medicineStock.id,
         batchestockId: new UniqueEntityId(item.batchStockId),
         exitDate: dispensationDate,
-        exitType: 'DISPENSATION',
+        exitType: ExitType.DISPENSATION,
+        dispensationId: dispensation.id,
         quantity: item.quantity,
         operatorId: new UniqueEntityId(operatorId),
       })
-
-      exitsRecords.push(medicineExit)
 
       await Promise.all([
         this.medicinesExitsRepository.create(medicineExit),
@@ -146,15 +152,6 @@ export class DispensationMedicineUseCase {
         ),
       ])
     }
-
-    const dispensation = Dispensation.create({
-      patientId: new UniqueEntityId(patientId),
-      dispensationDate,
-      exitsRecords,
-      operatorId: new UniqueEntityId(operatorId),
-    })
-
-    await this.dispensationsMedicinesRepository.create(dispensation)
 
     return right({ dispensation })
   }

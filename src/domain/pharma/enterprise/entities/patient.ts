@@ -14,7 +14,7 @@ export interface PatientProps {
   race: Race
   pathologiesIds: UniqueEntityId[]
   generalRegistration?: string | null
-  addressId: UniqueEntityId
+  addressId?: UniqueEntityId | null
   createdAt: Date
   updatedAt?: Date | null
 }
