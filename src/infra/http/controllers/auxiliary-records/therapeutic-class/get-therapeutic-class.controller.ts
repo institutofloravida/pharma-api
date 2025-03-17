@@ -9,7 +9,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { GetTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/get-therapeutic-class'
 import { TherapeuticClassPresenter } from '@/infra/http/presenters/therapeutic-class-presenter'
 
-@ApiTags('therapeuticclass')
+@ApiTags('therapeutic-class')
 @ApiBearerAuth()
 @Controller('/therapeutic-class')
 export class GetTherapeuticClassController {
