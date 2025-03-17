@@ -128,6 +128,7 @@ export class PrismaStocksRepository implements StocksRepository {
       this.prisma.stock.findMany({
         where: {
           ...(!isSuper && { institutionId: { in: institutionsIds } }),
+          ...(isSuper && { institutionId: { in: institutionsIds } }),
           name: {
             contains: content ?? '',
             mode: 'insensitive',

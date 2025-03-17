@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  ForbiddenException,
   Get,
   Query,
   UseGuards,
@@ -15,6 +16,7 @@ import { FetchStocksDto } from './dtos/fetch-stocks.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { StockWithInstitutionPresenter } from '@/infra/http/presenters/stock-with-institution-presenter'
+import { ForbiddenError } from '@/core/erros/errors/forbidden-error'
 
 @ApiTags('stock')
 @ApiBearerAuth()
@@ -31,7 +33,6 @@ export class FetchStocksController {
   ) {
     const userId = user.sub
     const { page, query, institutionsIds } = queryParams
-
     const result = await this.fetchStocks.execute({
       page,
       operatorId: userId,
@@ -39,7 +40,13 @@ export class FetchStocksController {
       institutionsIds,
     })
     if (result.isLeft()) {
-      throw new BadRequestException({})
+      const error = result.value
+      switch (error.constructor) {
+        case ForbiddenError:
+          throw new ForbiddenException()
+        default:
+          throw new BadRequestException()
+      }
     }
 
     const {

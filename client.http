@@ -81,7 +81,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetch_stocks
-GET {{baseurl}}/stocks?page=1&institutionsIds=ac96054c-856e-46c0-bdde-7efbe78daba8
+GET {{baseurl}}/stocks?page=1&institutionsIds=dd81da9c-77ca-4117-8782-16cdd44c5b21
 Authorization: Bearer {{authToken}}
 
 

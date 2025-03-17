@@ -37,8 +37,10 @@ export class FetchStocksUseCase {
     institutionsIds,
   }: FetchStocksUseCaseRequest): Promise<FetchStocksUseCaseResponse> {
     const operator = await this.operatorsRepository.findById(operatorId)
+    console.log(institutionsIds)
     if (institutionsIds) {
       const institutionsIdsByOperator = operator?.institutionsIds.map(item => item.toString())
+      console.log(institutionsIdsByOperator)
       for (const item of institutionsIds) {
         if (!institutionsIdsByOperator?.includes(item)) {
           return left(new ForbiddenError())
@@ -57,7 +59,7 @@ export class FetchStocksUseCase {
       content,
       operator?.isSuperAdmin(),
     )
-
+    console.log(stocks)
     return right({
       stocks,
       meta,
