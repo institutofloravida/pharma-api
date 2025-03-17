@@ -11,21 +11,33 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     this.items.push(medicine)
   }
 
-  async addMedicinesVariantsId(medicineId: string, medicineVariantId: string): Promise<void> {
-    const itemIndex = this.items.findIndex(item => item.id.equal(new UniqueEntityId(medicineId)))
+  async addMedicinesVariantsId(
+    medicineId: string,
+    medicineVariantId: string,
+  ): Promise<void> {
+    const itemIndex = this.items.findIndex((item) =>
+      item.id.equal(new UniqueEntityId(medicineId)),
+    )
 
-    const medicine = await this.items.find(item => item.id.equal(new UniqueEntityId(medicineId)))
+    const medicine = await this.items.find((item) =>
+      item.id.equal(new UniqueEntityId(medicineId)),
+    )
     if (!medicine) {
       throw new Error(`medicamento com id ${medicineId} não foi encontrado!`)
     }
-    medicine.medicinesVariantsIds = [...medicine.medicinesVariantsIds, new UniqueEntityId(medicineVariantId)]
+    medicine.medicinesVariantsIds = [
+      ...medicine.medicinesVariantsIds,
+      new UniqueEntityId(medicineVariantId),
+    ]
 
     this.items[itemIndex] = medicine
   }
 
   async findByContent(content: string) {
     const medicine = this.items.find(
-      item => item.content.toLowerCase().trim() === content.toLowerCase().trim())
+      (item) =>
+        item.content.toLowerCase().trim() === content.toLowerCase().trim(),
+    )
     if (!medicine) {
       return null
     }
@@ -34,7 +46,7 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
   }
 
   async medicineExists(medicine: Medicine) {
-    const medicineExists = this.items.find(item => {
+    const medicineExists = this.items.find((item) => {
       return medicine.equals(item)
     })
 
@@ -46,7 +58,7 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
   }
 
   async findById(id: string) {
-    const medicine = this.items.find(item => item.id.toString() === id)
+    const medicine = this.items.find((item) => item.id.toString() === id)
     if (!medicine) {
       return null
     }
@@ -54,9 +66,13 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     return medicine
   }
 
-  async findByMedicineVariantId(medicineVariantId: string): Promise<Medicine | null> {
-    const medicine = this.items.find(item => {
-      const medicinesVariantsIds = item.medicinesVariantsIds.map(item => item.toString())
+  async findByMedicineVariantId(
+    medicineVariantId: string,
+  ): Promise<Medicine | null> {
+    const medicine = this.items.find((item) => {
+      const medicinesVariantsIds = item.medicinesVariantsIds.map((item) =>
+        item.toString(),
+      )
       return medicinesVariantsIds.includes(medicineVariantId)
     })
 
@@ -67,15 +83,40 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     return medicine
   }
 
-  async findMany({ page }: PaginationParams, content?: string): Promise<{ medicines: Medicine[], meta: Meta }> {
+  async findMany(
+    { page }: PaginationParams,
+    filters: { content?: string; therapeuticClassesIds?: string[] },
+  ): Promise<{ medicines: Medicine[]; meta: Meta }> {
     const medicines = this.items
 
+    const { content, therapeuticClassesIds } = filters
     const medicinesFiltred = medicines
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .filter(item => item.content.includes(content ?? ''))
+      .filter((medicine) => {
+        const medicineTherapeuticClassesIdsCasted = medicine.therapeuticClassesIds.map(item => item.toString())
 
-    const medicinesPaginated = medicinesFiltred
-      .slice((page - 1) * 10, page * 10)
+        if (content && !medicine.content.toLowerCase().includes(content.toLowerCase())) {
+          return false
+        }
+
+        if (therapeuticClassesIds) {
+          const containstherapeuticClasses = therapeuticClassesIds.map(item => {
+            if (medicineTherapeuticClassesIdsCasted.includes(item)) {
+              return true
+            }
+            return false
+          })
+
+          return containstherapeuticClasses.includes(true)
+        }
+
+        return medicine
+      })
+
+    const medicinesPaginated = medicinesFiltred.slice(
+      (page - 1) * 10,
+      page * 10,
+    )
 
     return {
       medicines: medicinesPaginated,

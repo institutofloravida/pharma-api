@@ -12,8 +12,8 @@ export function makeMedicine(
   const medicine = Medicine.create({
     content: faker.commerce.productName(),
     description: faker.lorem.sentence(),
-    therapeuticClassesIds: Array.from({ length: 3 }, () => new UniqueEntityId()),
-    medicinesVariantsIds: Array.from({ length: 2 }, () => new UniqueEntityId()),
+    therapeuticClassesIds: [],
+    medicinesVariantsIds: [],
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     ...override,

@@ -5,6 +5,7 @@ import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 import { PrismaMedicineMapper } from '../mappers/prisma-medicine-mapper'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import type { Prisma } from '@prisma/client'
 
 @Injectable()
 export class PrismaMedicinesRepository implements MedicinesRepository {
@@ -52,7 +53,9 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     })
   }
 
-  async findByMedicineVariantId(medicineVariantid: string): Promise<Medicine | null> {
+  async findByMedicineVariantId(
+    medicineVariantid: string,
+  ): Promise<Medicine | null> {
     const medicineVariant = await this.prisma.medicineVariant.findFirst({
       where: {
         id: medicineVariantid,
@@ -94,27 +97,30 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
 
   async findMany(
     { page }: PaginationParams,
-    content?: string,
+    filters: { content?: string; therapeuticClassesIds?: string[] },
   ): Promise<{ medicines: Medicine[]; meta: Meta }> {
+    const { content, therapeuticClassesIds } = filters
+    const whereClause: Prisma.MedicineWhereInput = {
+      name: {
+        contains: content ?? '',
+        mode: 'insensitive',
+      },
+      ...(therapeuticClassesIds && {
+        therapeuticClasses: {
+          some: { id: { in: therapeuticClassesIds } },
+        },
+      }),
+    }
+
     const medicines = await this.prisma.medicine.findMany({
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * 10,
       take: 10,
-      where: {
-        name: {
-          contains: content ?? '',
-          mode: 'insensitive',
-        },
-      },
+      where: whereClause,
     })
 
     const totalCount = await this.prisma.medicine.count({
-      where: {
-        name: {
-          contains: content ?? '',
-          mode: 'insensitive',
-        },
-      },
+      where: whereClause,
     })
     const medicinesMappered = medicines.map(PrismaMedicineMapper.toDomain)
     return {

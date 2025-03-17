@@ -7,6 +7,7 @@ import { Meta } from '@/core/repositories/meta'
 interface FetchMedicinesUseCaseRequest {
   page: number,
   content?: string,
+  therapeuticClassesIds?: string[]
 }
 
 type FetchMedicinesUseCaseResponse = Either<
@@ -24,8 +25,9 @@ export class FetchMedicinesUseCase {
   async execute({
     page,
     content,
+    therapeuticClassesIds,
   }: FetchMedicinesUseCaseRequest): Promise<FetchMedicinesUseCaseResponse> {
-    const { medicines, meta } = await this.MedicinesRepository.findMany({ page }, content)
+    const { medicines, meta } = await this.MedicinesRepository.findMany({ page }, { content, therapeuticClassesIds })
 
     return right({
       medicines,
