@@ -40,8 +40,9 @@ export class UpdateTherapeuticClassUseCase {
       }
       therapeuticClass.content = content
     }
-
-    therapeuticClass.description = description
+    if (description) {
+      therapeuticClass.description = description
+    }
 
     await this.therapeuticClassRepository.save(therapeuticClass)
 
