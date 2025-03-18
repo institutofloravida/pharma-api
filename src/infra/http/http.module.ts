@@ -100,6 +100,8 @@ import { UpdateStockUseCase } from '@/domain/pharma/application/use-cases/auxili
 import { UpdateStockController } from './controllers/auxiliary-records/stock/update-stock.controller'
 import { GetStockDetailsController } from './controllers/auxiliary-records/stock/get-stock-details.controller'
 import { GetStockDetailsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/get-stock-details'
+import { GetMedicineController } from './controllers/medicine/medicine/get-medicine.controller'
+import { GetMedicineUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/get-medicine'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -115,6 +117,7 @@ import { GetStockDetailsUseCase } from '@/domain/pharma/application/use-cases/au
     GetUnitMeasureController,
     GetOperatorController,
     GetStockDetailsController,
+    GetMedicineController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
     CreateInstitutionController,
@@ -167,6 +170,7 @@ import { GetStockDetailsUseCase } from '@/domain/pharma/application/use-cases/au
     GetUnitMeasureUseCase,
     GetOperatorUseCase,
     GetStockDetailsUseCase,
+    GetMedicineUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
     CreateInstitutionUseCase,
