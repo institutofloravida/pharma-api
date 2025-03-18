@@ -41,6 +41,8 @@ describe('Fetch Medicines (E2E)', () => {
 
     const therapeuticClass =
       await therapeuticClassFactory.makePrismaTherapeuticClass()
+    const therapeuticClass2 =
+      await therapeuticClassFactory.makePrismaTherapeuticClass()
 
     await Promise.all([
       medicineFactory.makePrismaMedicine({
@@ -49,7 +51,7 @@ describe('Fetch Medicines (E2E)', () => {
       }),
       medicineFactory.makePrismaMedicine({
         content: 'medicine 2',
-        therapeuticClassesIds: [],
+        therapeuticClassesIds: [therapeuticClass2.id],
       }),
     ])
 
@@ -58,6 +60,10 @@ describe('Fetch Medicines (E2E)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .query({
         page: 1,
+        therapeuticClassesIds: [
+          therapeuticClass.id.toString(),
+          therapeuticClass2.id.toString(),
+        ],
       })
       .send()
 

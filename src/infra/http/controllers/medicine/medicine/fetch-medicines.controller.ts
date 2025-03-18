@@ -14,9 +14,9 @@ export class FetchMedicinesController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchMedicinesDto) {
-    const { page, query } = queryParams
+    const { page, query, therapeuticClassesIds } = queryParams
 
-    const result = await this.fetchMedicines.execute({ page, content: query })
+    const result = await this.fetchMedicines.execute({ page, content: query, therapeuticClassesIds })
 
     if (result.isLeft()) {
       throw new BadRequestException({})
