@@ -1,22 +1,22 @@
 import { Either, left, right } from '@/core/either'
-import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 import { Injectable } from '@nestjs/common'
 import { MedicineNotFoundError } from './_errors/medicine-not-found-error'
 import { MedicinesRepository } from '../../../repositories/medicines-repository'
+import { MedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-details'
 
-interface GetMedicineUseCaseRequest {
+interface GetMedicineDetailsUseCaseRequest {
   id: string;
 }
 
-type GetMedicineUseCaseResponse = Either<MedicineNotFoundError, Medicine>
+type GetMedicineDetailsUseCaseResponse = Either<MedicineNotFoundError, MedicineDetails>
 
 @Injectable()
-export class GetMedicineUseCase {
+export class GetMedicineDetailsUseCase {
   constructor(private medicinesRepository: MedicinesRepository) {}
 
   async execute({
     id,
-  }: GetMedicineUseCaseRequest): Promise<GetMedicineUseCaseResponse> {
+  }: GetMedicineDetailsUseCaseRequest): Promise<GetMedicineDetailsUseCaseResponse> {
     const medicine = await this.medicinesRepository.findById(id)
 
     if (!medicine) {

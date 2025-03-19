@@ -6,21 +6,21 @@ import {
   Param, UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { MedicinePresenter } from '../../../presenters/medicine-presenter'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { GetMedicineUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/get-medicine'
+import { GetMedicineDetailsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/get-medicine-details'
 import { MedicineNotFoundError } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/_errors/medicine-not-found-error'
+import { MedicineDetailsPresenter } from '@/infra/http/presenters/medicine-datails-presenter'
 
 @ApiTags('medicine')
 @ApiBearerAuth()
 @Controller('/medicine')
-export class GetMedicineController {
-  constructor(private getMedicine: GetMedicineUseCase) {}
+export class GetMedicineDetailsController {
+  constructor(private getMedicineDetails: GetMedicineDetailsUseCase) {}
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async handle(@Param('id') id: string) {
-    const result = await this.getMedicine.execute({
+    const result = await this.getMedicineDetails.execute({
       id,
     })
 
@@ -37,7 +37,7 @@ export class GetMedicineController {
     const medicine = result.value
 
     return {
-      medicine: MedicinePresenter.toHTTP(medicine),
+      medicine: MedicineDetailsPresenter.toHTTP(medicine),
     }
   }
 }

@@ -6,6 +6,8 @@ import { PrismaMedicineMapper } from '../mappers/prisma-medicine-mapper'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Prisma } from '@prisma/client'
+import { MedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-details'
+import { PrismaMedicineDetailsMapper } from '../mappers/prisma-medicine-details-mapper'
 
 @Injectable()
 export class PrismaMedicinesRepository implements MedicinesRepository {
@@ -83,16 +85,20 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     return PrismaMedicineMapper.toDomain(medicineRecord)
   }
 
-  async findById(id: string): Promise<Medicine | null> {
+  async findById(id: string): Promise<MedicineDetails | null> {
     const medicine = await this.prisma.medicine.findUnique({
       where: { id },
+      include: {
+        therapeuticClasses: true,
+      },
     })
 
     if (!medicine) {
       return null
     }
+    const medicineMapped = PrismaMedicineDetailsMapper.toDomain(medicine)
 
-    return PrismaMedicineMapper.toDomain(medicine)
+    return medicineMapped
   }
 
   async findMany(

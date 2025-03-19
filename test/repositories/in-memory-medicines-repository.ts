@@ -3,8 +3,12 @@ import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicinesRepository } from '@/domain/pharma/application/repositories/medicines-repository'
 import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
+import { MedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-details'
+import { InMemoryTherapeuticClassesRepository } from './in-memory-therapeutic-classes-repository'
 
 export class InMemoryMedicinesRepository implements MedicinesRepository {
+  constructor(private therapeuticClassesRepository: InMemoryTherapeuticClassesRepository) {}
+
   public items: Medicine[] = []
 
   async create(medicine: Medicine) {
@@ -57,13 +61,28 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     return null
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<MedicineDetails | null> {
     const medicine = this.items.find((item) => item.id.toString() === id)
     if (!medicine) {
       return null
     }
 
-    return medicine
+    const therapeuticClasses = await Promise.all(medicine.therapeuticClassesIds.map(async (item) => {
+      const therapeuticClass = await this.therapeuticClassesRepository.findById(item.toString())
+      if (!therapeuticClass) {
+        throw new Error(`Therapeutic class with id ${item.toString()} not found!`)
+      }
+      return { id: therapeuticClass.id, name: therapeuticClass.content }
+    }))
+
+    return MedicineDetails.create({
+      id: medicine.id,
+      content: medicine.content,
+      description: medicine.description,
+      createdAt: medicine.createdAt,
+      updatedAt: medicine.updatedAt,
+      therapeuticClasses,
+    })
   }
 
   async findByMedicineVariantId(
