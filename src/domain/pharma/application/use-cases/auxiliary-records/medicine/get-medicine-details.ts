@@ -17,7 +17,7 @@ export class GetMedicineDetailsUseCase {
   async execute({
     id,
   }: GetMedicineDetailsUseCaseRequest): Promise<GetMedicineDetailsUseCaseResponse> {
-    const medicine = await this.medicinesRepository.findById(id)
+    const medicine = await this.medicinesRepository.findByIdWithDetails(id)
 
     if (!medicine) {
       return left(new MedicineNotFoundError(id))

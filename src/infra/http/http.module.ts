@@ -102,6 +102,8 @@ import { GetStockDetailsController } from './controllers/auxiliary-records/stock
 import { GetStockDetailsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/get-stock-details'
 import { GetMedicineDetailsController } from './controllers/medicine/medicine/get-medicine.controller'
 import { GetMedicineDetailsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/get-medicine-details'
+import { UpdateMedicineController } from './controllers/medicine/medicine/update-medicine.controller'
+import { UpdateMedicineUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/update-medicine'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -157,6 +159,7 @@ import { GetMedicineDetailsUseCase } from '@/domain/pharma/application/use-cases
     UpdateUnitMeasureController,
     UpdateOperatorController,
     UpdateStockController,
+    UpdateMedicineController,
 
   ],
   providers: [
@@ -210,6 +213,7 @@ import { GetMedicineDetailsUseCase } from '@/domain/pharma/application/use-cases
     UpdateUnitMeasureUseCase,
     UpdateOperatorUseCase,
     UpdateStockUseCase,
+    UpdateMedicineUseCase,
   ],
 })
 export class HttpModule {}

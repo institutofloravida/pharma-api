@@ -20,6 +20,32 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     })
   }
 
+  async save(medicine: Medicine): Promise<void> {
+    const data = PrismaMedicineMapper.toPrisma(medicine)
+    await this.prisma.medicine.update({
+      where: {
+        id: medicine.id.toString(),
+      },
+      data,
+    })
+  }
+
+  async findByName(name: string): Promise<Medicine | null> {
+    const medicine = await this.prisma.medicine.findFirst({
+      where: {
+        name: {
+          equals: name.trim(),
+          mode: 'insensitive',
+        },
+      },
+    })
+
+    if (!medicine) {
+      return null
+    }
+    return PrismaMedicineMapper.toDomain(medicine)
+  }
+
   async findByContent(content: string): Promise<Medicine | null> {
     const medicine = await this.prisma.medicine.findFirst({
       where: {
@@ -85,7 +111,20 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
     return PrismaMedicineMapper.toDomain(medicineRecord)
   }
 
-  async findById(id: string): Promise<MedicineDetails | null> {
+  async findById(id: string): Promise<Medicine | null> {
+    const medicine = await this.prisma.medicine.findUnique({
+      where: { id },
+    })
+
+    if (!medicine) {
+      return null
+    }
+    const medicineMapped = PrismaMedicineMapper.toDomain(medicine)
+
+    return medicineMapped
+  }
+
+  async findByIdWithDetails(id: string): Promise<MedicineDetails | null> {
     const medicine = await this.prisma.medicine.findUnique({
       where: { id },
       include: {

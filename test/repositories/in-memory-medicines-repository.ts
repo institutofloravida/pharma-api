@@ -7,12 +7,21 @@ import { MedicineDetails } from '@/domain/pharma/enterprise/entities/value-objec
 import { InMemoryTherapeuticClassesRepository } from './in-memory-therapeutic-classes-repository'
 
 export class InMemoryMedicinesRepository implements MedicinesRepository {
-  constructor(private therapeuticClassesRepository: InMemoryTherapeuticClassesRepository) {}
+  constructor(
+    private therapeuticClassesRepository: InMemoryTherapeuticClassesRepository,
+  ) {}
 
   public items: Medicine[] = []
 
   async create(medicine: Medicine) {
     this.items.push(medicine)
+  }
+
+  async save(medicine: Medicine): Promise<void> {
+    const itemIndex = this.items.findIndex((item) =>
+      item.id.equal(medicine.id),
+    )
+    this.items[itemIndex] = medicine
   }
 
   async addMedicinesVariantsId(
@@ -37,10 +46,9 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     this.items[itemIndex] = medicine
   }
 
-  async findByContent(content: string) {
-    const medicine = this.items.find(
-      (item) =>
-        item.content.toLowerCase().trim() === content.toLowerCase().trim(),
+  async findByName(name: string): Promise<Medicine | null> {
+    const medicine = this.items.find((item) =>
+      item.content.toLowerCase().includes(name.toLowerCase()),
     )
     if (!medicine) {
       return null
@@ -61,19 +69,33 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     return null
   }
 
-  async findById(id: string): Promise<MedicineDetails | null> {
+  async findById(id: string): Promise<Medicine | null> {
     const medicine = this.items.find((item) => item.id.toString() === id)
     if (!medicine) {
       return null
     }
 
-    const therapeuticClasses = await Promise.all(medicine.therapeuticClassesIds.map(async (item) => {
-      const therapeuticClass = await this.therapeuticClassesRepository.findById(item.toString())
-      if (!therapeuticClass) {
-        throw new Error(`Therapeutic class with id ${item.toString()} not found!`)
-      }
-      return { id: therapeuticClass.id, name: therapeuticClass.content }
-    }))
+    return medicine
+  }
+
+  async findByIdWithDetails(id: string): Promise<MedicineDetails | null> {
+    const medicine = this.items.find((item) => item.id.toString() === id)
+    if (!medicine) {
+      return null
+    }
+
+    const therapeuticClasses = await Promise.all(
+      medicine.therapeuticClassesIds.map(async (item) => {
+        const therapeuticClass =
+          await this.therapeuticClassesRepository.findById(item.toString())
+        if (!therapeuticClass) {
+          throw new Error(
+            `Therapeutic class with id ${item.toString()} not found!`,
+          )
+        }
+        return { id: therapeuticClass.id, name: therapeuticClass.content }
+      }),
+    )
 
     return MedicineDetails.create({
       id: medicine.id,
@@ -112,19 +134,25 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     const medicinesFiltred = medicines
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .filter((medicine) => {
-        const medicineTherapeuticClassesIdsCasted = medicine.therapeuticClassesIds.map(item => item.toString())
+        const medicineTherapeuticClassesIdsCasted =
+          medicine.therapeuticClassesIds.map((item) => item.toString())
 
-        if (content && !medicine.content.toLowerCase().includes(content.toLowerCase())) {
+        if (
+          content &&
+          !medicine.content.toLowerCase().includes(content.toLowerCase())
+        ) {
           return false
         }
 
         if (therapeuticClassesIds) {
-          const containstherapeuticClasses = therapeuticClassesIds.map(item => {
-            if (medicineTherapeuticClassesIdsCasted.includes(item)) {
-              return true
-            }
-            return false
-          })
+          const containstherapeuticClasses = therapeuticClassesIds.map(
+            (item) => {
+              if (medicineTherapeuticClassesIdsCasted.includes(item)) {
+                return true
+              }
+              return false
+            },
+          )
 
           return containstherapeuticClasses.includes(true)
         }
