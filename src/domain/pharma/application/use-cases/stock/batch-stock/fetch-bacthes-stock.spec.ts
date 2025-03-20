@@ -17,7 +17,9 @@ import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
@@ -30,10 +32,11 @@ let inMemoryBatchesStockRepository: InMemoryBatchStocksRepository
 let sut: FetchBatchesStockUseCase
 describe('Fetch Batches on Stock', () => {
   beforeEach(() => {
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryStocksRepository,
       inMemoryMedicinesRepository,

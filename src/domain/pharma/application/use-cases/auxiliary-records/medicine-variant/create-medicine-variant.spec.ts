@@ -6,7 +6,9 @@ import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memo
 import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
@@ -15,9 +17,10 @@ let sut: CreateMedicineVariantUseCase
 
 describe('Medicine Variant', () => {
   beforeEach(() => {
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
 
     inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository(
       inMemoryMedicinesRepository,

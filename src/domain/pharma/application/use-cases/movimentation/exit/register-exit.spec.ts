@@ -18,7 +18,9 @@ import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 import { makeMovementType } from 'test/factories/make-movement-type'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypes: InMemoryMovementTypesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
@@ -34,6 +36,7 @@ let sut: RegisterExitUseCase
 
 describe('Register Exit', () => {
   beforeEach(() => {
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryMovementTypes = new InMemoryMovementTypesRepository()
 
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
@@ -43,7 +46,7 @@ describe('Register Exit', () => {
     inMemoryStocksRepository = new InMemoryStocksRepository(
       inMemoryInstitutionsRepository,
     )
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(

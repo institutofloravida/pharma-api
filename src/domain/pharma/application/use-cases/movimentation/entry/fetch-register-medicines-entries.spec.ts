@@ -23,7 +23,9 @@ import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { makeBatch } from 'test/factories/make-batch'
 import { makeBatchStock } from 'test/factories/make-batch-stock'
 import { makeOperator } from 'test/factories/make-operator'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
@@ -39,6 +41,7 @@ let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
 let sut: FetchRegisterMedicinesEntriesUseCase
 describe('Fetch Register Medicines Entries', () => {
   beforeEach(() => {
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
 
@@ -46,7 +49,7 @@ describe('Fetch Register Medicines Entries', () => {
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository(
       inMemoryMedicinesRepository,
       inMemoryPharmaceuticalFormsRepository,

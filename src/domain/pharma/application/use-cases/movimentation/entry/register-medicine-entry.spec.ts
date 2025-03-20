@@ -26,7 +26,9 @@ import { addYears } from 'date-fns'
 import { makeManufacturer } from 'test/factories/make-manufacturer'
 import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
@@ -44,6 +46,7 @@ let sut: RegisterMedicineEntryUseCase
 
 describe('Register Entry', () => {
   beforeEach(() => {
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
       inMemoryInstitutionsRepository,
@@ -56,7 +59,7 @@ describe('Register Entry', () => {
     inMemoryStocksRepository = new InMemoryStocksRepository(
       inMemoryInstitutionsRepository,
     )
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryStocksRepository,

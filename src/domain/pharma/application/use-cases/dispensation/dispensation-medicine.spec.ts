@@ -22,7 +22,9 @@ import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory
 import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memory-pharmaceutical-forms'
 import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
@@ -40,13 +42,14 @@ let sut: DispensationMedicineUseCase
 
 describe('Dispensation Medicine', () => {
   beforeEach(() => {
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
     inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryPatientsRepository = new InMemoryPatientsRepository()
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryStocksRepository,

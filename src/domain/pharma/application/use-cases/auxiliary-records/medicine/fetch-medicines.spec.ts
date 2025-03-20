@@ -12,7 +12,7 @@ describe('Fetch medicines', () => {
     inMemoryTherapeuticClassesRepository =
       new InMemoryTherapeuticClassesRepository()
 
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
 
     sut = new FetchMedicinesUseCase(inMemoryMedicinesRepository)
   })

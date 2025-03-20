@@ -1,12 +1,15 @@
 import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
 import { CreateMedicineUseCase } from './create-medicine'
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let sut: CreateMedicineUseCase
 
 describe('Medicine', () => {
   beforeEach(() => {
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository()
+    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     sut = new CreateMedicineUseCase(inMemoryMedicinesRepository)
   })
   it('shoult be able create a Medicine', async () => {
