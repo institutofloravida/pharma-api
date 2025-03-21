@@ -50,6 +50,25 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
     return PrismaMedicineVariantMapper.toDomain(medicineVariant)
   }
 
+  async findByIdWithDetails(id: string): Promise<MedicineVariantWithMedicine | null> {
+    const medicineVariant = await this.prisma.medicineVariant.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        medicine: true,
+        pharmaceuticalForm: true,
+        unitMeasure: true,
+      },
+    })
+
+    if (!medicineVariant) {
+      return null
+    }
+
+    return PrismaMedicineVariantWithMedicineMapper.toDomain(medicineVariant)
+  }
+
   async findManyByMedicineIdWithMedicine(
     medicineId: string,
     { page }: PaginationParams,

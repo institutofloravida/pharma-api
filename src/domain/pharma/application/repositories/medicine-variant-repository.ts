@@ -7,6 +7,7 @@ export abstract class MedicinesVariantsRepository {
   abstract create(medicinevariant: MedicineVariant): Promise<void>
   abstract medicineVariantExists(medicinevariant: MedicineVariant): Promise<MedicineVariant | null>
   abstract findById(id:string): Promise<MedicineVariant | null>
+  abstract findByIdWithDetails(id:string): Promise<MedicineVariantWithMedicine | null>
   abstract findManyByMedicineIdWithMedicine(
     medicineId: string,
     params: PaginationParams,

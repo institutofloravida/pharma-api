@@ -44,6 +44,65 @@ implements MedicinesVariantsRepository {
     return medicineVariant
   }
 
+  async findByIdWithDetails(id: string): Promise<MedicineVariantWithMedicine | null> {
+    const medicineVariant = this.items.find(
+      (item) => item.id.toString() === id,
+    )
+    if (!medicineVariant) {
+      return null
+    }
+
+    const medicine = this.medicinesRepository.items.find((medicine) => {
+      return medicine.id.equal(medicineVariant.medicineId)
+    })
+
+    if (!medicine) {
+      throw new Error(
+        `Medicine with Id ${medicineVariant.id.toString()} does not exist.`,
+      )
+    }
+
+    const pharmaceuticalForm =
+          this.pharmaceuticalFormsRepository.items.find(
+            (pharmaceuticalForm) => {
+              return pharmaceuticalForm.id.equal(pharmaceuticalForm.id)
+            },
+          )
+
+    if (!pharmaceuticalForm) {
+      throw new Error(
+            `pharmaceuticalForm with Id ${medicineVariant.pharmaceuticalFormId.toString()} does not exist.`,
+      )
+    }
+
+    const unitMeasure = this.unitsMeasureRepository.items.find(
+      (UnitMeasure) => {
+        return UnitMeasure.id.equal(UnitMeasure.id)
+      },
+    )
+
+    if (!unitMeasure) {
+      throw new Error(
+            `UnitMeasure with Id ${medicineVariant.unitMeasureId.toString()} does not exist.`,
+      )
+    }
+
+    const medicineVariantWithDetails = MedicineVariantWithMedicine.create({
+      dosage: medicineVariant.dosage,
+      medicineId: medicineVariant.medicineId,
+      medicine: medicine.content,
+      pharmaceuticalForm: pharmaceuticalForm.content,
+      pharmaceuticalFormId: medicineVariant.pharmaceuticalFormId,
+      unitMeasure: unitMeasure.acronym,
+      unitMeasureId: medicineVariant.unitMeasureId,
+      createdAt: medicineVariant.createdAt,
+      updatedAt: medicineVariant.updatedAt,
+      medicineVariantId: medicineVariant.id,
+    })
+
+    return medicineVariantWithDetails
+  }
+
   async findManyByMedicineIdWithMedicine(
     medicineId: string,
     { page }: PaginationParams,
