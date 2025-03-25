@@ -9,7 +9,8 @@ import { PrismaMedicineVariantWithMedicineMapper } from '../mappers/prisma-medic
 import { Meta } from '@/core/repositories/meta'
 
 @Injectable()
-export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepository {
+export class PrismaMedicinesVariantsRepository
+implements MedicinesVariantsRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(medicineVariant: MedicineVariant): Promise<void> {
@@ -30,7 +31,9 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
     })
   }
 
-  async medicineVariantExists(medicineVariant: MedicineVariant): Promise<MedicineVariant | null> {
+  async medicineVariantExists(
+    medicineVariant: MedicineVariant,
+  ): Promise<MedicineVariant | null> {
     const medicineVariantRecord = await this.prisma.medicineVariant.findFirst({
       where: {
         medicineId: medicineVariant.medicineId.toString(),
@@ -61,7 +64,9 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
     return PrismaMedicineVariantMapper.toDomain(medicineVariant)
   }
 
-  async findByIdWithDetails(id: string): Promise<MedicineVariantWithMedicine | null> {
+  async findByIdWithDetails(
+    id: string,
+  ): Promise<MedicineVariantWithMedicine | null> {
     const medicineVariant = await this.prisma.medicineVariant.findUnique({
       where: {
         id,
@@ -80,15 +85,17 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
     return PrismaMedicineVariantWithMedicineMapper.toDomain(medicineVariant)
   }
 
-  async findManyByMedicineIdWithMedicine(
-    medicineId: string,
+  async findMany(
     { page }: PaginationParams,
-    content?: string,
-  ):Promise<{
-    medicinesVariants: MedicineVariantWithMedicine[],
-    meta: Meta
+    filters?: { medicineId?: string; content?: string },
+  ): Promise<{
+    medicinesVariants: MedicineVariantWithMedicine[];
+    meta: Meta;
   }> {
     const pageSize = 10
+
+    const { content, medicineId } = filters ?? {}
+
     const medicineVariants = await this.prisma.medicineVariant.findMany({
       where: {
         medicineId,
@@ -97,7 +104,6 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
             name: {
               contains: content ?? '',
               mode: 'insensitive',
-
             },
           },
         },
@@ -125,7 +131,9 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
       },
     })
 
-    const medicineVariantsMappered = medicineVariants.map(PrismaMedicineVariantWithMedicineMapper.toDomain)
+    const medicineVariantsMappered = medicineVariants.map(
+      PrismaMedicineVariantWithMedicineMapper.toDomain,
+    )
 
     return {
       medicinesVariants: medicineVariantsMappered,

@@ -5,7 +5,7 @@ import { MedicinesVariantsRepository } from '../../../repositories/medicine-vari
 import { Meta } from '@/core/repositories/meta'
 
 interface FetchMedicinesVariantsUseCaseRequest {
-  medicineId: string;
+  medicineId?: string;
   page: number;
   content?: string
 }
@@ -30,10 +30,9 @@ export class FetchMedicinesVariantsUseCase {
     content,
   }: FetchMedicinesVariantsUseCaseRequest): Promise<FetchMedicinesVariantsUseCaseResponse> {
     const { medicinesVariants, meta } =
-      await this.MedicinesVariantsRepository.findManyByMedicineIdWithMedicine(
-        medicineId,
+      await this.MedicinesVariantsRepository.findMany(
         { page },
-        content,
+        { medicineId, content },
       )
 
     return right({

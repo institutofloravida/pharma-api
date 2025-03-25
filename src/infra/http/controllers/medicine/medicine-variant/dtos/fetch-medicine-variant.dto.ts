@@ -27,7 +27,7 @@ export class FetchMedicinesVariantsDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
     description: 'The ID of the medicine to filter results.',
   })
-  @IsOptional()
   @IsString({ message: 'Medicine ID must be a string.' })
-  medicineId: string
+  @IsOptional()
+  medicineId?: string
 }

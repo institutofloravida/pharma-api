@@ -52,7 +52,9 @@ implements MedicinesVariantsRepository {
     return medicineVariant
   }
 
-  async findByIdWithDetails(id: string): Promise<MedicineVariantWithMedicine | null> {
+  async findByIdWithDetails(
+    id: string,
+  ): Promise<MedicineVariantWithMedicine | null> {
     const medicineVariant = this.items.find(
       (item) => item.id.toString() === id,
     )
@@ -70,16 +72,15 @@ implements MedicinesVariantsRepository {
       )
     }
 
-    const pharmaceuticalForm =
-          this.pharmaceuticalFormsRepository.items.find(
-            (pharmaceuticalForm) => {
-              return pharmaceuticalForm.id.equal(pharmaceuticalForm.id)
-            },
-          )
+    const pharmaceuticalForm = this.pharmaceuticalFormsRepository.items.find(
+      (pharmaceuticalForm) => {
+        return pharmaceuticalForm.id.equal(pharmaceuticalForm.id)
+      },
+    )
 
     if (!pharmaceuticalForm) {
       throw new Error(
-            `pharmaceuticalForm with Id ${medicineVariant.pharmaceuticalFormId.toString()} does not exist.`,
+        `pharmaceuticalForm with Id ${medicineVariant.pharmaceuticalFormId.toString()} does not exist.`,
       )
     }
 
@@ -91,7 +92,7 @@ implements MedicinesVariantsRepository {
 
     if (!unitMeasure) {
       throw new Error(
-            `UnitMeasure with Id ${medicineVariant.unitMeasureId.toString()} does not exist.`,
+        `UnitMeasure with Id ${medicineVariant.unitMeasureId.toString()} does not exist.`,
       )
     }
 
@@ -111,14 +112,17 @@ implements MedicinesVariantsRepository {
     return medicineVariantWithDetails
   }
 
-  async findManyByMedicineIdWithMedicine(
-    medicineId: string,
-    { page }: PaginationParams,
-    content?: string,
+  async findMany(
+    {
+      page,
+    }: PaginationParams,
+    filters: { medicineId?: string; content?: string },
   ): Promise<{
     medicinesVariants: MedicineVariantWithMedicine[];
     meta: Meta;
   }> {
+    const { content, medicineId } = filters
+
     const medicinesVariantsWithMedicine = this.items
       .filter((item) => item.medicineId.toString() === medicineId)
       .map((medicineVariant) => {

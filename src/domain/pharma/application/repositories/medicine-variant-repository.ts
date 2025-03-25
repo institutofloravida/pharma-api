@@ -9,10 +9,12 @@ export abstract class MedicinesVariantsRepository {
   abstract medicineVariantExists(medicineVariant: MedicineVariant): Promise<MedicineVariant | null>
   abstract findById(id:string): Promise<MedicineVariant | null>
   abstract findByIdWithDetails(id:string): Promise<MedicineVariantWithMedicine | null>
-  abstract findManyByMedicineIdWithMedicine(
-    medicineId: string,
+  abstract findMany(
     params: PaginationParams,
-    content?: string
+    filters: {
+      medicineId?: string,
+      content?: string
+    }
   ): Promise<{
     medicinesVariants: MedicineVariantWithMedicine[],
     meta: Meta
