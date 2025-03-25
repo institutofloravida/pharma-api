@@ -21,6 +21,14 @@ implements MedicinesVariantsRepository {
     this.items.push(medicinevariant)
   }
 
+  async save(medicinevariant: MedicineVariant): Promise<void> {
+    const medicineVariantIndex = this.items.findIndex((item) => {
+      return item.id.equal(medicinevariant.id)
+    })
+
+    this.items[medicineVariantIndex] = medicinevariant
+  }
+
   async medicineVariantExists(medicinevariant: MedicineVariant) {
     const medicineVariantExists = this.items.find((item) => {
       return medicinevariant.equals(item)

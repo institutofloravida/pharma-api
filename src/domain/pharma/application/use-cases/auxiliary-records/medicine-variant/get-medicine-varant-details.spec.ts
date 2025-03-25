@@ -56,7 +56,6 @@ describe('Get a medicine variant', () => {
     const result = await sut.execute({
       id: medicineVariant.id.toString(),
     })
-    console.log(result.value)
     expect(result.isRight()).toBeTruthy()
     expect(result.value).toEqual(
       expect.objectContaining({

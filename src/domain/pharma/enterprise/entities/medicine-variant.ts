@@ -59,7 +59,8 @@ export class MedicineVariant extends AggregateRoot<MedicineVariantProps> {
     if (
       medicineVariant.medicineId.toString() === this.medicineId.toString() &&
       medicineVariant.dosage.toLowerCase().trim().replace(' ', '') === this.dosage.toLowerCase().trim().replace(' ', '') &&
-      medicineVariant.pharmaceuticalFormId.toString().toLowerCase().trim() === this.pharmaceuticalFormId.toString().toLowerCase().trim()
+      medicineVariant.pharmaceuticalFormId.toString().toLowerCase().trim() === this.pharmaceuticalFormId.toString().toLowerCase().trim() &&
+      medicineVariant.unitMeasureId.toString().toLowerCase().trim() === this.unitMeasureId.toString().toLowerCase().trim()
     ) {
       return true
     }

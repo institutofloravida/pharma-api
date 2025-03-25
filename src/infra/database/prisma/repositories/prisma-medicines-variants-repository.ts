@@ -19,6 +19,17 @@ export class PrismaMedicinesVariantsRepository implements MedicinesVariantsRepos
     })
   }
 
+  async save(medicineVariant: MedicineVariant): Promise<void> {
+    const data = PrismaMedicineVariantMapper.toPrisma(medicineVariant)
+
+    await this.prisma.medicineVariant.update({
+      where: {
+        id: medicineVariant.id.toString(),
+      },
+      data,
+    })
+  }
+
   async medicineVariantExists(medicineVariant: MedicineVariant): Promise<MedicineVariant | null> {
     const medicineVariantRecord = await this.prisma.medicineVariant.findFirst({
       where: {
