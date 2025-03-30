@@ -240,7 +240,7 @@ model BatcheStock {
 model Batch {
   id                String    @id @default(cuid())
   manufacturerId    String    @map("manufacturer_id")
-  code              String    @unique
+  code              String
   expirationDate    DateTime  @map("expiration_date")
   manufacturingDate DateTime? @map("manufacturing_date")
   createdAt         DateTime  @default(now()) @map("created_at")
@@ -249,6 +249,7 @@ model Batch {
   batchesStocks BatcheStock[]
   manufacturer  Manufacturer  @relation(fields: [manufacturerId], references: [id])
 
+  @@unique([manufacturerId, code])
   @@index([manufacturerId])
   @@map("batches")
 }
