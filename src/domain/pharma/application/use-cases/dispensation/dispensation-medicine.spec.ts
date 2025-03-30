@@ -52,6 +52,7 @@ describe('Dispensation Medicine', () => {
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
+      inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
       inMemoryMedicinesRepository,
       inMemoryMedicinesVariantsRepository,
