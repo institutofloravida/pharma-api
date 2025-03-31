@@ -43,6 +43,7 @@ describe('Medicine Stock', () => {
       )
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
+      inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
       inMemoryMedicinesRepository,
       inMemoryMedicinesVariantsRepository,

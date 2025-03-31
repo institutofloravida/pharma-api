@@ -8,6 +8,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details'
 import { Prisma } from '@prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory'
 
 @Injectable()
 export class PrismaMedicinesStockRepository
@@ -207,12 +208,13 @@ implements MedicinesStockRepository {
       }),
     ])
 
-    const medicinesStockMapped = medicinesStock.map(medicineStock => {
+    const medicinesStockMapped = medicinesStock.map((medicineStock) => {
       return MedicineStockDetails.create({
         id: new UniqueEntityId(medicineStock.id),
         dosage: medicineStock.medicineVariant.dosage,
         medicine: medicineStock.medicineVariant.medicine.name,
-        pharmaceuticalForm: medicineStock.medicineVariant.pharmaceuticalForm.name,
+        pharmaceuticalForm:
+          medicineStock.medicineVariant.pharmaceuticalForm.name,
         stock: medicineStock.stock.name,
         unitMeasure: medicineStock.medicineVariant.unitMeasure.acronym,
         currentQuantity: medicineStock.currentQuantity,
@@ -220,12 +222,108 @@ implements MedicinesStockRepository {
         stockId: new UniqueEntityId(medicineStock.stockId),
         createdAt: medicineStock.createdAt,
         updatedAt: medicineStock.updatedAt,
-
       })
     })
 
     return {
       medicinesStock: medicinesStockMapped,
+      meta: {
+        page,
+        totalCount,
+      },
+    }
+  }
+
+  async fetchInventory(
+    { page }: PaginationParams,
+    institutionId: string,
+    filters: {
+      stockId?: string;
+      medicineName?: string;
+      therapeuticClasses?: string[];
+      isCloseToExpiring?: boolean;
+      isLowStock?: boolean;
+    },
+  ): Promise<{ inventory: MedicineStockInventory[]; meta: Meta }> {
+    const { isLowStock, medicineName, stockId, therapeuticClasses } = filters
+    const whereClause: Prisma.MedicineStockWhereInput = {
+      stock: {
+        institution: {
+          id: institutionId,
+        },
+      },
+      ...(isLowStock && {
+        currentQuantity: {
+          lt: this.prisma.medicineStock.fields.minimumLevel,
+        },
+      }),
+      ...(stockId && { stockId }),
+      ...(medicineName && {
+        medicineVariant: {
+          medicine: {
+            name: {
+              contains: medicineName,
+              mode: 'insensitive',
+            },
+            ...(therapeuticClasses && {
+              therapeuticClasses: {
+                some: {
+                  id: { in: therapeuticClasses },
+                },
+              },
+            }),
+          },
+        },
+      }),
+    }
+
+    const [inventory, totalCount] = await this.prisma.$transaction([
+      this.prisma.medicineStock.findMany({
+        where: whereClause,
+        orderBy: {
+          medicineVariant: {
+            medicine: {
+              name: 'asc',
+            },
+          },
+        },
+        skip: (page - 1) * 10,
+        take: 10,
+        include: {
+          medicineVariant: {
+            include: {
+              pharmaceuticalForm: true,
+              unitMeasure: true,
+            },
+          },
+          batchesStocks: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      }),
+      this.prisma.medicineStock.count({
+        where: whereClause,
+      }),
+    ])
+
+    const inventoryMaped = inventory.map((medicineStock) => {
+      return MedicineStockInventory.create({
+        stockId: new UniqueEntityId(medicineStock.id),
+        minimumLevel: medicineStock.minimumLevel,
+        dosage: medicineStock.medicineVariant.dosage,
+        unitMeasure: medicineStock.medicineVariant.unitMeasure.acronym,
+        pharmaceuticalForm: medicineStock.medicineVariant.pharmaceuticalForm.name,
+        currentQuantity: medicineStock.currentQuantity,
+        medicineStockId: new UniqueEntityId(medicineStock.id),
+        medicineVariantId: new UniqueEntityId(medicineStock.medicineVariant.id),
+        batchesStockIds: medicineStock.batchesStocks.map(item => new UniqueEntityId(item.id)),
+      })
+    })
+
+    return {
+      inventory: inventoryMaped,
       meta: {
         page,
         totalCount,

@@ -42,6 +42,7 @@ describe('Fetch Medicines on Stock', () => {
       inMemoryUnitsMeasureRepository,
     )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
+      inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
       inMemoryMedicinesRepository,
       inMemoryMedicinesVariantsRepository,

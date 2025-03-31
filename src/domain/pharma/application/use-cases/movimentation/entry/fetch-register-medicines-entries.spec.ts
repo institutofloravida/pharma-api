@@ -56,6 +56,7 @@ describe('Fetch Register Medicines Entries', () => {
       inMemoryUnitsMeasureRepository,
     )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
+      inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
       inMemoryMedicinesRepository,
       inMemoryMedicinesVariantsRepository,

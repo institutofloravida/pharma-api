@@ -40,7 +40,7 @@ async function main() {
       description: '',
     },
   })
-  await prisma.institution.create({
+  const institution3 = await prisma.institution.create({
     data: {
       name: 'Ubs - módulo 15',
       cnpj: '01.234.567/0001-20',
@@ -48,21 +48,18 @@ async function main() {
     },
   })
 
-  await prisma.operator.createMany({
-    data: [
-      {
-        name: 'Instituto Flora Vida',
-        email: 'floravida@gmail.com',
-        passwordHash: await hash('12345678', 8),
-        role: OperatorRole.SUPER_ADMIN,
+  await prisma.operator.create({
+    data: {
+      name: 'Carlos Pereira',
+      email: 'carlos.pereira@biovida.com',
+      passwordHash: await hash('12345678', 8),
+      role: OperatorRole.COMMON,
+      institutions: {
+        connect: {
+          id: institution3.id,
+        },
       },
-      {
-        name: 'Carlos Pereira',
-        email: 'carlos.pereira@biovida.com',
-        passwordHash: await hash('12345678', 8),
-        role: OperatorRole.COMMON,
-      },
-    ],
+    },
   })
 
   await prisma.operator.create({
@@ -75,6 +72,27 @@ async function main() {
         connect: {
           id: institution.id,
         },
+      },
+    },
+  })
+  await prisma.operator.create({
+    data: {
+      name: 'Instituto Flora Vida',
+      email: 'floravida@gmail.com',
+      passwordHash: await hash('12345678', 8),
+      role: OperatorRole.SUPER_ADMIN,
+      institutions: {
+        connect: [
+          {
+            id: institution.id,
+          },
+          {
+            id: institution2.id,
+          },
+          {
+            id: institution3.id,
+          },
+        ],
       },
     },
   })
