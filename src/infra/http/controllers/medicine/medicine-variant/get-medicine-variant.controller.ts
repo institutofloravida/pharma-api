@@ -11,7 +11,7 @@ import { GetMedicineVariantDetailsUseCase } from '@/domain/pharma/application/us
 import { MedicineVariantNotFoundError } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/_errors/medicine-variant-not-found-error'
 import { MedicineVariantWithMedicinePresenter } from '@/infra/http/presenters/medicine-variant-with-medicine-presenter'
 
-@ApiTags('medicinevariant')
+@ApiTags('medicine-variant')
 @ApiBearerAuth()
 @Controller('/medicinevariant')
 export class GetMedicineVariantController {

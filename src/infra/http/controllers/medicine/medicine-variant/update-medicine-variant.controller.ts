@@ -8,7 +8,7 @@ import { UpdateMedicineVariantUseCase } from '@/domain/pharma/application/use-ca
 import type { UpdateMedicineVariantDto } from './dtos/update-medicine-variant-dto'
 import { MedicineVariantAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/_errors/medicine-variant-already-exists-error'
 
-@ApiTags('medicinevariant')
+@ApiTags('medicine-variant')
 @ApiBearerAuth()
 @Controller('/medicinevariant')
 @UseGuards(JwtAuthGuard, RolesGuard)
