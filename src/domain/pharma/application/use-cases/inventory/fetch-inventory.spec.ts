@@ -13,7 +13,7 @@ import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
-import { FetchMedicineStockInventoryUseCase } from './fetch-inventory'
+import { FetchInventoryUseCase } from './fetch-inventory'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
@@ -23,7 +23,7 @@ let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
-let sut: FetchMedicineStockInventoryUseCase
+let sut: FetchInventoryUseCase
 describe('Fetch Medicines on Stock', () => {
   beforeEach(() => {
     inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
@@ -50,7 +50,7 @@ describe('Fetch Medicines on Stock', () => {
       inMemoryPharmaceuticalFormsRepository,
     )
 
-    sut = new FetchMedicineStockInventoryUseCase(inMemoryMedicinesStockRepository)
+    sut = new FetchInventoryUseCase(inMemoryMedicinesStockRepository)
   })
 
   it('should be able to fetch inventory', async () => {
