@@ -1,4 +1,4 @@
-import type { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory'
+import { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory'
 
 export class InventoryPresenter {
   static toHTTP(inventory: MedicineStockInventory) {

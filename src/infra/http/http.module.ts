@@ -110,6 +110,8 @@ import { UpdateMedicineVariantController } from './controllers/medicine/medicine
 import { UpdateMedicineVariantUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/update-medicine-variant'
 import { FetchInventoryUseCase } from '@/domain/pharma/application/use-cases/inventory/fetch-inventory'
 import { FetchInventoryController } from './controllers/inventory/fetch-inventory.controller'
+import { GetInventoryMedicineDetailsController } from './controllers/inventory/get-inventory-medicine-details.controller'
+import { GetMedicineInventoryDetailsUseCase } from '@/domain/pharma/application/use-cases/inventory/get-medicine-inventory'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -127,6 +129,7 @@ import { FetchInventoryController } from './controllers/inventory/fetch-inventor
     GetStockDetailsController,
     GetMedicineDetailsController,
     GetMedicineVariantController,
+    GetInventoryMedicineDetailsController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
     CreateInstitutionController,
@@ -184,6 +187,7 @@ import { FetchInventoryController } from './controllers/inventory/fetch-inventor
     GetStockDetailsUseCase,
     GetMedicineDetailsUseCase,
     GetMedicineVariantDetailsUseCase,
+    GetMedicineInventoryDetailsUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
     CreateInstitutionUseCase,

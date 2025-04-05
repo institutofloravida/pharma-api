@@ -18,6 +18,7 @@ import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
+import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
@@ -28,15 +29,49 @@ let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
+let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryBatchesStockRepository: InMemoryBatchStocksRepository
 let sut: FetchBatchesStockUseCase
 describe('Fetch Batches on Stock', () => {
   beforeEach(() => {
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
+    inMemoryStocksRepository = new InMemoryStocksRepository(
+      inMemoryInstitutionsRepository,
+    )
+
+    inMemoryBatchesRepository = new InMemoryBatchesRepository()
+
     inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
+    inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
+    inMemoryBatchesRepository = new InMemoryBatchesRepository()
+
+    inMemoryMedicinesVariantsRepository =
+    new InMemoryMedicinesVariantsRepository(
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+    )
+    inMemoryBatchesStockRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
+    inMemoryBatchesStockRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
+
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -44,27 +79,12 @@ describe('Fetch Batches on Stock', () => {
       inMemoryMedicinesVariantsRepository,
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
-    )
-    inMemoryMedicinesVariantsRepository =
-      new InMemoryMedicinesVariantsRepository(
-        inMemoryMedicinesRepository,
-        inMemoryPharmaceuticalFormsRepository,
-        inMemoryUnitsMeasureRepository,
-      )
-    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
-    inMemoryStocksRepository = new InMemoryStocksRepository(
-      inMemoryInstitutionsRepository,
-    )
-    inMemoryBatchesRepository = new InMemoryBatchesRepository()
-    inMemoryBatchesStockRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesStockRepository,
       inMemoryBatchesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesStockRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryStocksRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryPharmaceuticalFormsRepository,
+      inMemoryManufacturersRepository,
     )
+    inMemoryBatchesStockRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+
     sut = new FetchBatchesStockUseCase(inMemoryBatchesStockRepository)
   })
 

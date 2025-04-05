@@ -14,6 +14,9 @@ import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 import { FetchInventoryUseCase } from './fetch-inventory'
+import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
+import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
+import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMedicinesRepository: InMemoryMedicinesRepository
@@ -23,6 +26,9 @@ let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
+let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
+let inMemoryBatchesRepository: InMemoryBatchesRepository
+let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let sut: FetchInventoryUseCase
 describe('Fetch Medicines on Stock', () => {
   beforeEach(() => {
@@ -41,6 +47,16 @@ describe('Fetch Medicines on Stock', () => {
       inMemoryPharmaceuticalFormsRepository,
       inMemoryUnitsMeasureRepository,
     )
+    inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
+    inMemoryBatchesRepository = new InMemoryBatchesRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -48,7 +64,11 @@ describe('Fetch Medicines on Stock', () => {
       inMemoryMedicinesVariantsRepository,
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryBatchesRepository,
+      inMemoryManufacturersRepository,
     )
+    inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
 
     sut = new FetchInventoryUseCase(inMemoryMedicinesStockRepository)
   })

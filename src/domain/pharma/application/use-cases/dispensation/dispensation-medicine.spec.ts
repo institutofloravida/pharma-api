@@ -51,14 +51,7 @@ describe('Dispensation Medicine', () => {
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
-    inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
-      inMemoryInstitutionsRepository,
-      inMemoryStocksRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryPharmaceuticalFormsRepository,
-    )
+
     inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository(
       inMemoryMedicinesRepository,
       inMemoryPharmaceuticalFormsRepository,
@@ -67,12 +60,24 @@ describe('Dispensation Medicine', () => {
     inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
       inMemoryBatchesRepository,
       inMemoryMedicinesRepository,
-      inMemoryMedicinesStockRepository,
       inMemoryMedicinesVariantsRepository,
       inMemoryStocksRepository,
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
     )
+    inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
+      inMemoryInstitutionsRepository,
+      inMemoryStocksRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryBatchesRepository,
+      inMemoryManufacturersRepository,
+    )
+    inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository()
     inMemoryDispensationsMedicinesRepository = new InMemoryDispensationsMedicinesRepository()
 
