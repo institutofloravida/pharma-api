@@ -336,6 +336,7 @@ implements MedicinesStockRepository {
       const medicineStockInventory = MedicineStockInventory.create({
         stockId: medicineStock.stockId,
         unitMeasure: unitMeasure.acronym,
+        medicine: medicine.content,
         pharmaceuticalForm: pharmaceuticalForm.content,
         medicineVariantId: medicineVariant.id,
         medicineStockId: medicineStock.id,

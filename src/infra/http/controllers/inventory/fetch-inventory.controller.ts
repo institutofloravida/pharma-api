@@ -9,7 +9,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { FetchInventoryUseCase } from '@/domain/pharma/application/use-cases/inventory/fetch-inventory'
 import { FetchInventoryDto } from './dtos/fetch-inventory.dto'
-import { InventoryPresenter } from '../../presenters/prisma-inventory-presenter'
+import { InventoryPresenter } from '../../presenters/inventory-presenter'
 
 @ApiTags('inventory')
 @ApiBearerAuth()

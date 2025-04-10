@@ -296,6 +296,7 @@ implements MedicinesStockRepository {
             include: {
               pharmaceuticalForm: true,
               unitMeasure: true,
+              medicine: true,
             },
           },
           batchesStocks: {
@@ -316,6 +317,7 @@ implements MedicinesStockRepository {
         minimumLevel: medicineStock.minimumLevel,
         dosage: medicineStock.medicineVariant.dosage,
         unitMeasure: medicineStock.medicineVariant.unitMeasure.acronym,
+        medicine: medicineStock.medicineVariant.medicine.name,
         pharmaceuticalForm:
           medicineStock.medicineVariant.pharmaceuticalForm.name,
         currentQuantity: medicineStock.currentQuantity,
