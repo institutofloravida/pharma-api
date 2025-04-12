@@ -28,7 +28,6 @@ export class FetchInventoryController {
       isLowStock,
       therapeuticClassesIds,
     } = queryParams
-
     const result = await this.fetchInventory.execute({
       page,
       institutionId,

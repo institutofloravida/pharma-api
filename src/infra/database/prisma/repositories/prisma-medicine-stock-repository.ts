@@ -260,23 +260,21 @@ implements MedicinesStockRepository {
         },
       }),
       ...(stockId && { stockId }),
-      ...(medicineName && {
-        medicineVariant: {
-          medicine: {
-            name: {
-              contains: medicineName,
-              mode: 'insensitive',
-            },
-            ...(therapeuticClasses && {
-              therapeuticClasses: {
-                some: {
-                  id: { in: therapeuticClasses },
-                },
-              },
-            }),
+      medicineVariant: {
+        medicine: {
+          name: {
+            contains: medicineName ?? '',
+            mode: 'insensitive',
           },
+          ...(therapeuticClasses && {
+            therapeuticClasses: {
+              some: {
+                id: { in: therapeuticClasses },
+              },
+            },
+          }),
         },
-      }),
+      },
     }
 
     const [inventory, totalCount] = await this.prisma.$transaction([
@@ -300,6 +298,11 @@ implements MedicinesStockRepository {
             },
           },
           batchesStocks: {
+            where: {
+              currentQuantity: {
+                gt: 0,
+              },
+            },
             select: {
               id: true,
             },
