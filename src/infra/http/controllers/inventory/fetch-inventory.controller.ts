@@ -36,7 +36,6 @@ export class FetchInventoryController {
       therapeuticClasses: therapeuticClassesIds,
       isLowStock,
     })
-
     if (result.isLeft()) {
       throw new BadRequestException()
     }

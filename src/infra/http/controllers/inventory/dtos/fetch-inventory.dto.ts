@@ -51,6 +51,7 @@ export class FetchInventoryDto {
     example: true,
     description: 'Indica se o estoque está baixo',
   })
+  @Type(() => Boolean)
   @IsOptional()
   @IsBoolean()
   isLowStock?: boolean
