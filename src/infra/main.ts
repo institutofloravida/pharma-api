@@ -6,11 +6,20 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { ValidationPipe } from '@nestjs/common'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true })
+  const app = await NestFactory.create(AppModule)
+
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://localhost:3333',
+      'https://pharma-web-s3mo.vercel.app',
+    ],
+    credentials: true,
+  })
 
   const configService = app.get<ConfigService<Env, true>>(ConfigService)
-  const port = configService.get<number>('PORT')
-
+  const port = configService.get<number>('PORT') || 3000
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('Pharma API')
