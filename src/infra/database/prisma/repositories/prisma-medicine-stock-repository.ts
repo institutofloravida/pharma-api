@@ -9,6 +9,8 @@ import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-
 import { Prisma } from '@prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory'
+import { MedicineStockInventoryDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-inventory-details'
+import { PrismaBatchMapper } from '../mappers/prisma-batch-mapper'
 
 @Injectable()
 export class PrismaMedicinesStockRepository
@@ -258,23 +260,21 @@ implements MedicinesStockRepository {
         },
       }),
       ...(stockId && { stockId }),
-      ...(medicineName && {
-        medicineVariant: {
-          medicine: {
-            name: {
-              contains: medicineName,
-              mode: 'insensitive',
-            },
-            ...(therapeuticClasses && {
-              therapeuticClasses: {
-                some: {
-                  id: { in: therapeuticClasses },
-                },
-              },
-            }),
+      medicineVariant: {
+        medicine: {
+          name: {
+            contains: medicineName ?? '',
+            mode: 'insensitive',
           },
+          ...(therapeuticClasses && {
+            therapeuticClasses: {
+              some: {
+                id: { in: therapeuticClasses },
+              },
+            },
+          }),
         },
-      }),
+      },
     }
 
     const [inventory, totalCount] = await this.prisma.$transaction([
@@ -294,9 +294,15 @@ implements MedicinesStockRepository {
             include: {
               pharmaceuticalForm: true,
               unitMeasure: true,
+              medicine: true,
             },
           },
           batchesStocks: {
+            where: {
+              currentQuantity: {
+                gt: 0,
+              },
+            },
             select: {
               id: true,
             },
@@ -314,11 +320,15 @@ implements MedicinesStockRepository {
         minimumLevel: medicineStock.minimumLevel,
         dosage: medicineStock.medicineVariant.dosage,
         unitMeasure: medicineStock.medicineVariant.unitMeasure.acronym,
-        pharmaceuticalForm: medicineStock.medicineVariant.pharmaceuticalForm.name,
+        medicine: medicineStock.medicineVariant.medicine.name,
+        pharmaceuticalForm:
+          medicineStock.medicineVariant.pharmaceuticalForm.name,
         currentQuantity: medicineStock.currentQuantity,
         medicineStockId: new UniqueEntityId(medicineStock.id),
         medicineVariantId: new UniqueEntityId(medicineStock.medicineVariant.id),
-        batchesStockIds: medicineStock.batchesStocks.map(item => new UniqueEntityId(item.id)),
+        batchesStockIds: medicineStock.batchesStocks.map(
+          (item) => new UniqueEntityId(item.id),
+        ),
       })
     })
 
@@ -329,5 +339,74 @@ implements MedicinesStockRepository {
         totalCount,
       },
     }
+  }
+
+  async getInventoryByMedicineStockId(
+    medicineStockid: string,
+  ): Promise<MedicineStockInventoryDetails | null> {
+    const inventory = await this.prisma.medicineStock.findUnique({
+      where: {
+        id: medicineStockid,
+      },
+      include: {
+        batchesStocks: {
+          select: {
+            id: true,
+            currentQuantity: true,
+            batch: {
+              include: {
+                manufacturer: true,
+              },
+            },
+          },
+        },
+        medicineVariant: {
+          select: {
+            dosage: true,
+            unitMeasure: {
+              select: {
+                acronym: true,
+              },
+            },
+            pharmaceuticalForm: true,
+            medicine: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if (!inventory) {
+      return null
+    }
+
+    const batchesStock = inventory.batchesStocks.map((batchStock) => {
+      const batch = PrismaBatchMapper.toDomain(batchStock.batch)
+
+      return {
+        id: new UniqueEntityId(batchStock.id),
+        code: batch.code,
+        quantity: batchStock.currentQuantity,
+        expirationDate: batch.expirationDate,
+        manufacturingDate: batch.manufacturingDate,
+        manufacturer: batchStock.batch.manufacturer.name,
+        isCloseToExpiration: batch.isCloseToExpiration(),
+        isExpired: batch.isExpired(),
+      }
+    })
+
+    return MedicineStockInventoryDetails.create({
+      medicineStockId: new UniqueEntityId(inventory.id),
+      dosage: inventory.medicineVariant.dosage,
+      unitMeasure: inventory.medicineVariant.unitMeasure.acronym,
+      pharmaceuticalForm: inventory.medicineVariant.pharmaceuticalForm.name,
+      minimumLevel: inventory.minimumLevel,
+      medicine: inventory.medicineVariant.medicine.name,
+      stockId: new UniqueEntityId(inventory.stockId),
+      batchesStock,
+    })
   }
 }

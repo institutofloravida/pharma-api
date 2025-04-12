@@ -5,7 +5,6 @@ import { Optional } from '../../../../core/types/optional'
 export interface BatchProps {
   manufacturerId: UniqueEntityId
   code: string
-
   expirationDate: Date
   manufacturingDate?: Date | null
   createdAt: Date
@@ -54,6 +53,20 @@ export class Batch extends Entity<BatchProps> {
 
   private touch() {
     this.props.updatedAt = new Date()
+  }
+
+  public isCloseToExpiration(days: number = 30): boolean {
+    const expirationDate = this.props.expirationDate
+    const currentDate = new Date()
+    const timeDiff = expirationDate.getTime() - currentDate.getTime()
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
+    return daysDiff <= days
+  }
+
+  public isExpired(): boolean {
+    const expirationDate = this.props.expirationDate
+    const currentDate = new Date()
+    return expirationDate < currentDate
   }
 
   static create(

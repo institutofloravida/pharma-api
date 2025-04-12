@@ -1,5 +1,5 @@
 import { IsInt, IsOptional, IsString, Min } from 'class-validator'
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 
 export class FetchMedicinesVariantsDto {
@@ -23,7 +23,7 @@ export class FetchMedicinesVariantsDto {
   @IsString({ message: 'Query must be a string.' })
   query?: string = ''
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: '123e4567-e89b-12d3-a456-426614174000',
     description: 'The ID of the medicine to filter results.',
   })

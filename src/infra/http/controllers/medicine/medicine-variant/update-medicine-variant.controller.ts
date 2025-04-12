@@ -5,10 +5,10 @@ import { Roles } from '@/infra/auth/role-decorator'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { UpdateMedicineVariantUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/update-medicine-variant'
-import type { UpdateMedicineVariantDto } from './dtos/update-medicine-variant-dto'
+import { UpdateMedicineVariantDto } from './dtos/update-medicine-variant-dto'
 import { MedicineVariantAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/_errors/medicine-variant-already-exists-error'
 
-@ApiTags('medicinevariant')
+@ApiTags('medicine-variant')
 @ApiBearerAuth()
 @Controller('/medicinevariant')
 @UseGuards(JwtAuthGuard, RolesGuard)

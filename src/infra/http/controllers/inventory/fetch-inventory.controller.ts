@@ -9,7 +9,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { FetchInventoryUseCase } from '@/domain/pharma/application/use-cases/inventory/fetch-inventory'
 import { FetchInventoryDto } from './dtos/fetch-inventory.dto'
-import { InventoryPresenter } from '../../presenters/prisma-inventory-presenter'
+import { InventoryPresenter } from '../../presenters/inventory-presenter'
 
 @ApiTags('inventory')
 @ApiBearerAuth()
@@ -28,7 +28,6 @@ export class FetchInventoryController {
       isLowStock,
       therapeuticClassesIds,
     } = queryParams
-
     const result = await this.fetchInventory.execute({
       page,
       institutionId,
@@ -37,7 +36,6 @@ export class FetchInventoryController {
       therapeuticClasses: therapeuticClassesIds,
       isLowStock,
     })
-
     if (result.isLeft()) {
       throw new BadRequestException()
     }

@@ -6,22 +6,36 @@ import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 import { InMemoryBatchesRepository } from './in-memory-batches-repository'
 import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-objects/batch-stock-with-batch'
 import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
-import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-repository'
 import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
 import { InMemoryStocksRepository } from './in-memory-stocks-repository'
 import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
 import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-repository'
 
 export class InMemoryBatchStocksRepository implements BatchStocksRepository {
   constructor(
     private batchesRepository: InMemoryBatchesRepository,
     private medicinesRepository: InMemoryMedicinesRepository,
-    private medicinesStocksRepository: InMemoryMedicinesStockRepository,
     private medicinesVariantsRepository: InMemoryMedicinesVariantsRepository,
     private stocksRepository: InMemoryStocksRepository,
     private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
     private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
   ) {}
+
+  private medicinesStockRepository?: InMemoryMedicinesStockRepository
+
+  public setMedicinesStockRepository(
+    repo: InMemoryMedicinesStockRepository,
+  ): void {
+    this.medicinesStockRepository = repo
+  }
+
+  private getMedicineStockRepository(): InMemoryMedicinesStockRepository {
+    if (!this.medicinesStockRepository) {
+      throw new Error('MedicinesStockRepository não foi injetado.')
+    }
+    return this.medicinesStockRepository
+  }
 
   public items: BatchStock[] = []
 
@@ -96,8 +110,7 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
     const batchesStock = this.items
     const batchesStocksFiltered: BatchStockWithBatch[] = []
 
-    const medicineStock =
-      await this.medicinesStocksRepository.findById(medicineStockId)
+    const medicineStock = await this.getMedicineStockRepository().findById(medicineStockId)
     if (!medicineStock) {
       throw new Error(
         `O estoque de medicamento com id ${medicineStockId} não foi encontrado!`,

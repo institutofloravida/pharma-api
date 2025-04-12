@@ -62,7 +62,9 @@ export class Medicine extends AggregateRoot<MedicineProps> {
       return null
     }
 
-    return this.description.substring(0, 120).trimEnd().concat('...')
+    return this.description.length > 120
+      ? (this.description.substring(0, 120).trimEnd().concat('...'))
+      : (this.description.substring(0, 120).trimEnd())
   }
 
   public equals(medicine: Medicine) {

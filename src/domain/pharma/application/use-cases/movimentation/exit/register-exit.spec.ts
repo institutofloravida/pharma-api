@@ -19,6 +19,7 @@ import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-mov
 import { makeMovementType } from 'test/factories/make-movement-type'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
+import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypes: InMemoryMovementTypesRepository
@@ -32,6 +33,7 @@ let inMemoryMedicinesRepository: InMemoryMedicinesRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
+let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let sut: RegisterExitUseCase
 
 describe('Register Exit', () => {
@@ -48,7 +50,16 @@ describe('Register Exit', () => {
     )
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository()
+    inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -56,16 +67,12 @@ describe('Register Exit', () => {
       inMemoryMedicinesVariantsRepository,
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
-    )
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesStockRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryStocksRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryPharmaceuticalFormsRepository,
+      inMemoryManufacturersRepository,
     )
+    inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+
     inMemoryMedicinesVariantsRepository =
       new InMemoryMedicinesVariantsRepository(
         inMemoryMedicinesRepository,

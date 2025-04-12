@@ -30,14 +30,13 @@ export class UpdateMedicineUseCase {
     therapeuticClassesIds,
   }: updateMedicineUseCaseRequest): Promise<updateMedicineUseCaseResponse> {
     const medicine = await this.medicinesRepository.findById(medicineId)
-
     if (!medicine) {
       return left(new MedicineNotFoundError(medicineId))
     }
 
-    if (content) {
+    if (content !== undefined) {
       const medicineWithSameContent =
-        await this.medicinesRepository.findByName(content)
+      await this.medicinesRepository.findByName(content)
       if (
         medicineWithSameContent &&
         !medicine.id.equal(medicineWithSameContent.id)
@@ -48,7 +47,7 @@ export class UpdateMedicineUseCase {
       medicine.content = content
     }
 
-    if (description) {
+    if (description !== undefined) {
       medicine.description = description
     }
 

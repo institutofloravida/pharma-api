@@ -28,11 +28,13 @@ describe('Medicine', () => {
     const medicine = makeMedicine({
       content: 'medicine 1',
       therapeuticClassesIds: [therapeuticClass.id],
+      description: 'test description',
     })
     await inMemoryMedicinesRepository.create(medicine)
 
     const result = await sut.execute({
       content: 'medicine 2',
+      description: '',
       medicineId: medicine.id.toString(),
     })
 
@@ -40,6 +42,7 @@ describe('Medicine', () => {
     if (result.isRight()) {
       expect(inMemoryMedicinesRepository.items).toHaveLength(1)
       expect(inMemoryMedicinesRepository.items[0].content).toBe('medicine 2')
+      expect(inMemoryMedicinesRepository.items[0].description).toBe('')
     }
   })
 

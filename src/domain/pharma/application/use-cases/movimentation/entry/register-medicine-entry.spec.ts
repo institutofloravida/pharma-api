@@ -60,7 +60,16 @@ describe('Register Entry', () => {
       inMemoryInstitutionsRepository,
     )
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
+    inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
+    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryStocksRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryPharmaceuticalFormsRepository,
+    )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -68,16 +77,12 @@ describe('Register Entry', () => {
       inMemoryMedicinesVariantsRepository,
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
-    )
-    inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
+      inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesStockRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryStocksRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryPharmaceuticalFormsRepository,
+      inMemoryManufacturersRepository,
     )
+    inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+
     inMemoryMedicinesVariantsRepository =
       new InMemoryMedicinesVariantsRepository(
         inMemoryMedicinesRepository,
