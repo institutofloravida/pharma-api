@@ -16,6 +16,7 @@ export abstract class OperatorsRepository {
       email?: string
       institutionId?: string
       role?: OperatorRole
-    }
+    },
+    isSuper: boolean
   ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }>
 }

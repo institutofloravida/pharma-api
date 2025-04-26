@@ -29,6 +29,7 @@ describe('Fetch Operators', () => {
 
     const result = await sut.execute({
       page: 1,
+      isSuper: false,
     })
 
     expect(result.value?.operators).toEqual([
@@ -60,15 +61,18 @@ describe('Fetch Operators', () => {
     const result = await sut.execute({
       page: 2,
       name: 'operator',
+      isSuper: false,
     })
     const result2 = await sut.execute({
       page: 1,
       email: 'operatorcommon10@gmail.com',
+      isSuper: true,
     })
     const result3 = await sut.execute({
       page: 1,
       role: OperatorRole.MANAGER,
       name: '1',
+      isSuper: false,
     })
     if (result.isRight() && result2.isRight() && result3.isRight()) {
       expect(result.value?.operators).toHaveLength(10)

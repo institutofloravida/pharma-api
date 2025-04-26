@@ -116,6 +116,7 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       institutionId?: string
       role?: OperatorRole
     },
+    isSuper: boolean,
   ): Promise<{ operators: OperatorWithInstitution[]; meta: Meta }> {
     const { email, institutionId, name, role } = filters
     const whereClause: Prisma.OperatorWhereInput = {
@@ -132,6 +133,11 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       ...(role && {
         role: {
           equals: $Enums.OperatorRole[role as keyof typeof $Enums.OperatorRole],
+        },
+      }),
+      ...(!isSuper && {
+        role: {
+          not: $Enums.OperatorRole.SUPER_ADMIN,
         },
       }),
       ...(institutionId && {

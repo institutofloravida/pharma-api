@@ -1,13 +1,15 @@
-import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation'
+import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient'
 
 export class DispensationPresenter {
-  static toHTTP(dispensation: Dispensation) {
+  static toHTTP(dispensation: DispensationWithPatient) {
     return {
-      id: dispensation.id.toString(),
+      id: dispensation.dispensationId.toString(),
       dispensationDate: dispensation.dispensationDate,
       patientId: dispensation.patientId.toString(),
+      patient: dispensation.patient,
       operatorId: dispensation.operatorId.toString(),
-      createdAt: dispensation.createdAt,
+      operator: dispensation.operator,
+      items: dispensation.items,
     }
   }
 }
