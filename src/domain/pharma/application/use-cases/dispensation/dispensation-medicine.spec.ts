@@ -23,6 +23,7 @@ import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memo
 import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
+import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
@@ -37,26 +38,37 @@ let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
+let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryDispensationsMedicinesRepository: InMemoryDispensationsMedicinesRepository
 let sut: DispensationMedicineUseCase
 
 describe('Dispensation Medicine', () => {
   beforeEach(() => {
-    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
+    inMemoryTherapeuticClassesRepository =
+      new InMemoryTherapeuticClassesRepository()
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
-    inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
+    inMemoryPharmaceuticalFormsRepository =
+      new InMemoryPharmaceuticalFormsRepository()
     inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryPatientsRepository = new InMemoryPatientsRepository()
-    inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
-    inMemoryBatchesRepository = new InMemoryBatchesRepository()
-
-    inMemoryMedicinesVariantsRepository = new InMemoryMedicinesVariantsRepository(
-      inMemoryMedicinesRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
+    inMemoryStocksRepository = new InMemoryStocksRepository(
+      inMemoryInstitutionsRepository,
     )
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(
+      inMemoryTherapeuticClassesRepository,
+    )
+    inMemoryBatchesRepository = new InMemoryBatchesRepository()
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
+      inMemoryInstitutionsRepository,
+    )
+
+    inMemoryMedicinesVariantsRepository =
+      new InMemoryMedicinesVariantsRepository(
+        inMemoryMedicinesRepository,
+        inMemoryPharmaceuticalFormsRepository,
+        inMemoryUnitsMeasureRepository,
+      )
     inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
       inMemoryBatchesRepository,
       inMemoryMedicinesRepository,
@@ -76,10 +88,17 @@ describe('Dispensation Medicine', () => {
       inMemoryBatchesRepository,
       inMemoryManufacturersRepository,
     )
-    inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+    inMemoryBatchStocksRepository.setMedicinesStockRepository(
+      inMemoryMedicinesStockRepository,
+    )
 
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository()
-    inMemoryDispensationsMedicinesRepository = new InMemoryDispensationsMedicinesRepository()
+    inMemoryDispensationsMedicinesRepository =
+      new InMemoryDispensationsMedicinesRepository(
+        inMemoryMedicinesExitsRepository,
+        inMemoryOperatorsRepository,
+        inMemoryPatientsRepository,
+      )
 
     sut = new DispensationMedicineUseCase(
       inMemoryDispensationsMedicinesRepository,
@@ -152,7 +171,9 @@ describe('Dispensation Medicine', () => {
     if (result.isRight()) {
       expect(inMemoryDispensationsMedicinesRepository.items).toHaveLength(1)
 
-      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(20 - quantityToDispense)
+      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
+        20 - quantityToDispense,
+      )
     }
   })
   it('should not be able to dispense a medication with batch expired', async () => {

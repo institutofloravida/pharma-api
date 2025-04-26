@@ -6,18 +6,19 @@ import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/val
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 interface FetchOperatorsUseCaseRequest {
-  page: number
-  name?: string
-  email?: string
-  institutionId?: string
-  role?: OperatorRole
+  page: number;
+  name?: string;
+  email?: string;
+  institutionId?: string;
+  role?: OperatorRole;
+  isSuper: boolean;
 }
 
 type FetchOperatorsUseCaseResponse = Either<
   null,
   {
-    operators: OperatorWithInstitution[]
-    meta: Meta
+    operators: OperatorWithInstitution[];
+    meta: Meta;
   }
 >
 
@@ -31,8 +32,13 @@ export class FethOperatorsUseCase {
     email,
     institutionId,
     role,
+    isSuper,
   }: FetchOperatorsUseCaseRequest): Promise<FetchOperatorsUseCaseResponse> {
-    const { operators, meta } = await this.operatorsRepository.findMany({ page }, { email, institutionId, name, role })
+    const { operators, meta } = await this.operatorsRepository.findMany(
+      { page },
+      { email, institutionId, name, role },
+      isSuper,
+    )
 
     return right({
       operators,

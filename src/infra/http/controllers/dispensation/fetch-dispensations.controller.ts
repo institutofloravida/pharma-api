@@ -1,4 +1,10 @@
-import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { FetchDispensationsUseCase } from '@/domain/pharma/application/use-cases/dispensation/fetch-dispensation'
@@ -14,9 +20,13 @@ export class FetchDispensationsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchDispensationsDto) {
-    const { page, patientId } = queryParams
+    const { page, patientId, dispensationDate } = queryParams
 
-    const result = await this.fetchDispensations.execute({ page, patientId })
+    const result = await this.fetchDispensations.execute({
+      page,
+      patientId,
+      dispensationDate,
+    })
 
     if (result.isLeft()) {
       throw new BadRequestException({})
