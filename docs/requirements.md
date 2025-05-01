@@ -22,7 +22,7 @@
 
 - [ ] Deve ser possível visualizar alertas de medicamentos a vencer
 - ✅ Deve ser possível realizar a dispensação de um medicamento(FEFO);
-- [ ] Deve ser possível rebecer os lotes com as respectivas quantidades a 
+- ✅ Deve ser possível rebecer os lotes com as respectivas quantidades a 
       serem dispensadas (dada uma quantidade x), respeitando o FEFO.
 - ✅ Deve ser possível registrar o recebimento de medicamentos;
 - ✅ deve ser possível registrar a saída de medicamentos

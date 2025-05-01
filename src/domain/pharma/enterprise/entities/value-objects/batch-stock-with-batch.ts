@@ -14,6 +14,7 @@ export interface BatchStockWithBatchProps {
   unitMeasure: string;
   dosage: string;
   currentQuantity: number
+  expirationDate: Date
   createdAt: Date
   updatedAt?: Date | null
 }
@@ -65,6 +66,10 @@ export class BatchStockWithBatch extends ValueObject<BatchStockWithBatchProps> {
 
   get quantity() {
     return this.props.currentQuantity
+  }
+
+  get expirationDate() {
+    return this.props.expirationDate
   }
 
   get createdAt() {

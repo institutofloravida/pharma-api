@@ -35,6 +35,7 @@ export class PrismaBatchStockWithBatchMapper {
         currentQuantity: raw.currentQuantity,
         medicineVariantId: new UniqueEntityId(raw.medicineVariantId),
         stockId: new UniqueEntityId(raw.stockId),
+        expirationDate: new Date(),
         medicineStockId: new UniqueEntityId(raw.medicineStockId),
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,

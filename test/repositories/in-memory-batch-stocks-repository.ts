@@ -103,27 +103,39 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
 
   async findMany(
     { page }: PaginationParams,
-    filters: { stockId: string; medicineStockId: string; code?: string },
+    filters: {
+      medicineStockId: string;
+      code?: string;
+    },
+    pagination: boolean = true,
   ): Promise<{ batchesStock: BatchStockWithBatch[]; meta: Meta }> {
-    const { medicineStockId, stockId, code } = filters
+    const { medicineStockId, code } = filters
 
     const batchesStock = this.items
     const batchesStocksFiltered: BatchStockWithBatch[] = []
 
-    const medicineStock = await this.getMedicineStockRepository().findById(medicineStockId)
+    const medicineStock =
+      await this.getMedicineStockRepository().findById(medicineStockId)
     if (!medicineStock) {
       throw new Error(
         `O estoque de medicamento com id ${medicineStockId} não foi encontrado!`,
       )
     }
 
-    const stock = await this.stocksRepository.findById(stockId)
-    if (!stock) throw new Error(`Estoque com Id ${stockId} não foi encontrado`)
+    const stock = await this.stocksRepository.findById(
+      medicineStock.stockId.toString(),
+    )
+    if (!stock) {
+      throw new Error(
+        `O estoque de medicamento com id ${medicineStock.stockId} não foi encontrado!`,
+      )
+    }
+
     const medicine = await this.medicinesRepository.findByMedicineVariantId(
       medicineStock.medicineVariantId.toString(),
     )
     if (!medicine) {
-      throw new Error()
+      throw new Error('medicine not found')
     }
 
     const medicineVariant = await this.medicinesVariantsRepository.findById(
@@ -153,13 +165,13 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
         `unidade de medida com id ${medicineVariant.unitMeasureId} não foi encontrada`,
       )
     }
-
     for (const batchStock of batchesStock) {
-      if (!batchStock.stockId.equal(new UniqueEntityId(stockId))) continue
-
+      if (!batchStock.stockId.equal(medicineStock.stockId)) continue
       if (
         !batchStock.medicineStockId.equal(new UniqueEntityId(medicineStockId))
-      ) { continue }
+      ) {
+        continue
+      }
 
       const batch = await this.batchesRepository.findById(
         batchStock.batchId.toString(),
@@ -190,6 +202,7 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
         medicineStockId: medicineStock.id,
         dosage: medicineVariant.dosage,
         pharmaceuticalForm: pharmaceuticalForm.content,
+        expirationDate: batch.expirationDate,
         unitMeasure: unitMeasure.acronym,
         createdAt: batchStock.createdAt,
         updatedAt: batchStock.updatedAt,
@@ -202,7 +215,9 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
     )
 
     return {
-      batchesStock: batchesStockPaginated,
+      batchesStock: pagination
+        ? batchesStockPaginated
+        : batchesStocksFiltered,
       meta: {
         page,
         totalCount: batchesStocksFiltered.length,
