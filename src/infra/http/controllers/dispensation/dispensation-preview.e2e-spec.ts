@@ -23,18 +23,15 @@ import { StockFactory } from 'test/factories/make-stock'
 import { TherapeuticClassFactory } from 'test/factories/make-therapeutic-class'
 import { UnitMeasureFactory } from 'test/factories/make-unit-measure'
 
-describe('Create Dispensation (E2E)', () => {
+describe('Dispensation Preview (E2E)', () => {
   let app: INestApplication
-  let addressFactory: AddressFactory
   let manufacturerFactory: ManufacturerFactory
-  let patientFactory: PatientFactory
   let institutionFactory: InstitutionFactory
   let stockFactory: StockFactory
   let batchFactory: BatchFactory
   let batchStockFactory: BatchStockFactory
   let medicineStockFactory: MedicineStockFactory
   let medicineVariantFactory: MedicineVariantFactory
-  let movementTypeFactory: MovementTypeFactory
   let unitMeasureFactory: UnitMeasureFactory
   let pharmaceuticalFormFactory: PharmaceuticalFormFactory
   let medicineFactory: MedicineFactory
@@ -66,16 +63,13 @@ describe('Create Dispensation (E2E)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
-    addressFactory = moduleRef.get(AddressFactory)
     institutionFactory = moduleRef.get(InstitutionFactory)
     manufacturerFactory = moduleRef.get(ManufacturerFactory)
-    patientFactory = moduleRef.get(PatientFactory)
     medicineVariantFactory = moduleRef.get(MedicineVariantFactory)
     batchFactory = moduleRef.get(BatchFactory)
     batchStockFactory = moduleRef.get(BatchStockFactory)
     medicineStockFactory = moduleRef.get(MedicineStockFactory)
     stockFactory = moduleRef.get(StockFactory)
-    movementTypeFactory = moduleRef.get(MovementTypeFactory)
     unitMeasureFactory = moduleRef.get(UnitMeasureFactory)
     pharmaceuticalFormFactory = moduleRef.get(PharmaceuticalFormFactory)
     medicineFactory = moduleRef.get(MedicineFactory)
@@ -86,11 +80,11 @@ describe('Create Dispensation (E2E)', () => {
     await app.init()
   })
 
-  test('[POST] /dispensation', async () => {
+  test('[GET] /dispensation/preview', async () => {
     const institution = await institutionFactory.makePrismaInstitution()
     const manufacturer = await manufacturerFactory.makePrismaManufacturer()
     const operator = await operatorFactory.makePrismaOperator({
-      role: OperatorRole.MANAGER,
+      role: OperatorRole.COMMON,
       institutionsIds: [institution.id],
     })
 
@@ -98,10 +92,6 @@ describe('Create Dispensation (E2E)', () => {
       sub: operator.id.toString(),
       role: operator.role,
     })
-
-    const address = await addressFactory.makePrismaAddress()
-
-    const patient = await patientFactory.makePrismaPatient({ addressId: address.id })
 
     const unitMeasure = await unitMeasureFactory.makePrismaUnitMeasure()
     const pharmaceuticalForm =
@@ -137,6 +127,7 @@ describe('Create Dispensation (E2E)', () => {
       medicineStockId: medicineStock.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
+
     })
 
     const batchStock2 = await batchStockFactory.makePrismaBatchStock({
@@ -161,53 +152,16 @@ describe('Create Dispensation (E2E)', () => {
       },
     })
 
-    await movementTypeFactory.makePrismaMovementType({
-      content: 'DONATION',
-      direction: 'ENTRY',
-    })
-
     const response = await request(app.getHttpServer())
-      .post('/dispensation')
+      .get('/dispensation/preview')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
+      .query({
         medicineStockId: medicineStock.id.toString(),
-        patientId: patient.id.toString(),
-        batchesStocks: [
-          {
-            batchStockId: batchStock.id.toString(),
-            quantity: 20,
-          },
-          {
-            batchStockId: batchStock2.id.toString(),
-            quantity: 5,
-          },
-        ],
-        dispensationDate: new Date(),
+        quantityRequired: 45,
       })
 
-    expect(response.statusCode).toBe(201)
+    expect(response.statusCode).toBe(200)
 
-    const dispensationOnDatabase = await prisma.dispensation.findFirst({
-      where: {
-        patientId: patient.id.toString(),
-      },
-    })
-
-    const quantityOnMedicineStock = await prisma.medicineStock.findFirst()
-    const quantityOnBatchStock = await prisma.batcheStock.findUnique({
-      where: {
-        id: batchStock.id.toString(),
-      },
-    })
-    const quantityOnBatchStock2 = await prisma.batcheStock.findUnique({
-      where: {
-        id: batchStock2.id.toString(),
-      },
-    })
-
-    expect(dispensationOnDatabase).toBeTruthy()
-    expect(quantityOnBatchStock?.currentQuantity).toEqual(20)
-    expect(quantityOnBatchStock2?.currentQuantity).toEqual(5)
-    expect(quantityOnMedicineStock?.currentQuantity).toEqual(25)
+    expect(response.body.dispensationPreview).toBeTruthy()
   })
 })

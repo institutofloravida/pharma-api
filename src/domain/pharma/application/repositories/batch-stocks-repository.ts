@@ -11,8 +11,7 @@ export abstract class BatchStocksRepository {
   abstract findByBatchIdAndStockId(batchId: string, stockId: string): Promise<BatchStock | null>
   abstract findById(id:string): Promise<BatchStock | null>
   abstract findMany(params: PaginationParams, filters: {
-    stockId: string,
     medicineStockId: string
     code?: string
-  }): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }>
+  }, pagination?: boolean): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }>
 }

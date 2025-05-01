@@ -16,11 +16,10 @@ export class FetchBatchesStockController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async handle(@Query() queryParams: FetchBatchesStockDto) {
-    const { medicineStockId, page, stockId, code } = queryParams
+    const { medicineStockId, page, code } = queryParams
 
     const result = await this.fetchBatchesStock.execute({
       medicineStockId,
-      stockId,
       page,
       code,
     })

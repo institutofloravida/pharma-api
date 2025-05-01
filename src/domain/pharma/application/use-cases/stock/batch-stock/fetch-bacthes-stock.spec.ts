@@ -162,7 +162,6 @@ describe('Fetch Batches on Stock', () => {
 
     const result = await sut.execute({
       page: 1,
-      stockId: stock.id.toString(),
       medicineStockId: medicineStock.id.toString(),
       code: 'ABC',
     })
@@ -234,9 +233,96 @@ describe('Fetch Batches on Stock', () => {
     const result = await sut.execute({
       page: 3,
       medicineStockId: medicineStock.id.toString(),
-      stockId: stock.id.toString(),
     })
 
     expect(result.value?.batchesStock).toHaveLength(2)
+  })
+
+  it.todo('should not be able to fetch batches stocks with quantity less than or greater than zero', async () => {
+    const institution = makeInstitution()
+    await inMemoryInstitutionsRepository.create(institution)
+
+    const stock = makeStock({
+      institutionId: institution.id,
+    })
+    await inMemoryStocksRepository.create(stock)
+
+    const pharmaceuticalForm = makePharmaceuticalForm()
+    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm)
+
+    const unitMeasure = makeUnitMeasure()
+    await inMemoryUnitsMeasureRepository.create(unitMeasure)
+
+    const medicine = makeMedicine()
+    await inMemoryMedicinesRepository.create(medicine)
+
+    const medicineVariant = makeMedicineVariant({
+      medicineId: medicine.id,
+      pharmaceuticalFormId: pharmaceuticalForm.id,
+      unitMeasureId: unitMeasure.id,
+    })
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
+
+    await inMemoryMedicinesRepository.addMedicinesVariantsId(
+      medicine.id.toString(),
+      medicineVariant.id.toString(),
+    )
+
+    const medicineStock = makeMedicineStock({
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      currentQuantity: 10,
+    })
+    await inMemoryMedicinesStockRepository.create(medicineStock)
+
+    const batch = makeBatch({
+      code: 'ABC01',
+    })
+    await inMemoryBatchesRepository.create(batch)
+
+    const batch2 = makeBatch({
+      code: 'ABC02',
+    })
+    await inMemoryBatchesRepository.create(batch2)
+
+    const batchStock = makeBatchStock({
+      currentQuantity: 10,
+      batchId: batch.id,
+      medicineStockId: medicineStock.id,
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      createdAt: new Date(2024, 0, 29),
+    })
+    await inMemoryBatchesStockRepository.create(batchStock)
+    const batchStock2 = makeBatchStock({
+      batchId: batch2.id,
+      medicineStockId: medicineStock.id,
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      createdAt: new Date(2024, 0, 20),
+      currentQuantity: 0,
+    })
+    await inMemoryBatchesStockRepository.create(batchStock2)
+
+    await inMemoryMedicinesStockRepository.addBatchStock(
+      medicineStock.id.toString(),
+      batchStock.id.toString(),
+
+    )
+    await inMemoryMedicinesStockRepository.addBatchStock(
+      medicineStock.id.toString(),
+      batchStock2.id.toString(),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+      medicineStockId: medicineStock.id.toString(),
+    })
+
+    expect(result.value?.batchesStock).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ quantity: 10 }),
+      ]),
+    )
   })
 })

@@ -112,6 +112,8 @@ import { FetchInventoryUseCase } from '@/domain/pharma/application/use-cases/inv
 import { FetchInventoryController } from './controllers/inventory/fetch-inventory.controller'
 import { GetInventoryMedicineDetailsController } from './controllers/inventory/get-inventory-medicine-details.controller'
 import { GetMedicineInventoryDetailsUseCase } from '@/domain/pharma/application/use-cases/inventory/get-medicine-inventory'
+import { DispensationPreviewController } from './controllers/dispensation/dispensation-preview.controller'
+import { DispensationPreviewUseCase } from '@/domain/pharma/application/use-cases/dispensation/dispensation-preview'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -130,6 +132,7 @@ import { GetMedicineInventoryDetailsUseCase } from '@/domain/pharma/application/
     GetMedicineDetailsController,
     GetMedicineVariantController,
     GetInventoryMedicineDetailsController,
+    DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
     CreateInstitutionController,
@@ -188,6 +191,7 @@ import { GetMedicineInventoryDetailsUseCase } from '@/domain/pharma/application/
     GetMedicineDetailsUseCase,
     GetMedicineVariantDetailsUseCase,
     GetMedicineInventoryDetailsUseCase,
+    DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
     CreateInstitutionUseCase,

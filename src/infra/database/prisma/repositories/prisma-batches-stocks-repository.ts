@@ -95,11 +95,11 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
   }
 
   async findMany({ page }: PaginationParams, filters: {
-    stockId: string,
+    // stockId: string,
     medicineStockId: string
     code?: string
-  }): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }> {
-    const { medicineStockId, stockId, code } = filters
+  }, pagination: boolean = true): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }> {
+    const { medicineStockId, code } = filters
 
     const whereClause: Prisma.BatcheStockWhereInput = {
       ...(code && {
@@ -111,14 +111,15 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         },
       }),
       medicineStockId,
-      stockId,
     }
 
     const [batchesStock, totalCount] = await this.prisma.$transaction([
       this.prisma.batcheStock.findMany({
         where: whereClause,
-        take: 10,
-        skip: (page - 1) * 10,
+        ...(pagination && {
+          take: 10,
+          skip: (page - 1) * 10,
+        }),
         include: {
           stock: true,
           batch: true,
@@ -131,6 +132,11 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
             },
           },
 
+        },
+        orderBy: {
+          batch: {
+            expirationDate: 'asc',
+          },
         },
       }),
       this.prisma.batcheStock.count({
@@ -152,6 +158,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         stock: batchStock.stock.name,
         unitMeasure: batchStock.medicineVariant.unitMeasure.acronym,
         dosage: batchStock.medicineVariant.dosage,
+        expirationDate: batchStock.batch.expirationDate,
         currentQuantity: batchStock.currentQuantity,
         createdAt: batchStock.createdAt,
         updatedAt: batchStock.updatedAt,

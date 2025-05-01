@@ -6,7 +6,6 @@ import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-o
 
 interface FetchBatchesStockUseCaseRequest {
   page: number;
-  stockId: string
   medicineStockId: string
   code?: string;
 }
@@ -27,12 +26,10 @@ export class FetchBatchesStockUseCase {
     page,
     code,
     medicineStockId,
-    stockId,
   }: FetchBatchesStockUseCaseRequest): Promise<FetchBatchesStockUseCaseResponse> {
     const { batchesStock, meta } = await this.batchesStockRepository.findMany(
       { page },
       {
-        stockId,
         medicineStockId,
         code,
       },
