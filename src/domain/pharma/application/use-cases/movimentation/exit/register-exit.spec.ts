@@ -132,9 +132,8 @@ describe('Register Exit', () => {
       batchestock1.id.toString(),
     )
     const result = await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       batcheStockId: batchestock1.id.toString(),
-      stockId: stock.id.toString(),
       operatorId: 'operator-1',
       exitType: ExitType.MOVEMENT_TYPE,
       movementTypeId: movementType.id.toString(),
@@ -198,18 +197,16 @@ describe('Register Exit', () => {
     )
 
     await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       batcheStockId: batchestock1.id.toString(),
-      stockId: stock.id.toString(),
       operatorId: 'operator-1',
       exitType: ExitType.MOVEMENT_TYPE,
       movementTypeId: movementType.id.toString(),
       quantity: quantityZeroToExit + 5,
     })
     const result = await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       batcheStockId: batchestock1.id.toString(),
-      stockId: stock.id.toString(),
       operatorId: 'operator-1',
       exitType: ExitType.MOVEMENT_TYPE,
       movementTypeId: movementType.id.toString(),
@@ -281,18 +278,16 @@ describe('Register Exit', () => {
     )
 
     const result1 = await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       batcheStockId: batchestock1.id.toString(),
-      stockId: stock.id.toString(),
       operatorId: 'operator-1',
       exitType: ExitType.MOVEMENT_TYPE,
       movementTypeId: movementType.id.toString(),
       quantity: quantityToExitBatch1,
     })
     const result2 = await sut.execute({
-      medicineVariantId: medicineVariant.id.toString(),
+      medicineStockId: medicineStock.id.toString(),
       batcheStockId: batchestock2.id.toString(),
-      stockId: stock.id.toString(),
       operatorId: 'operator-1',
       exitType: ExitType.MOVEMENT_TYPE,
       movementTypeId: movementType.id.toString(),

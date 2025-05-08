@@ -114,6 +114,10 @@ import { GetInventoryMedicineDetailsController } from './controllers/inventory/g
 import { GetMedicineInventoryDetailsUseCase } from '@/domain/pharma/application/use-cases/inventory/get-medicine-inventory'
 import { DispensationPreviewController } from './controllers/dispensation/dispensation-preview.controller'
 import { DispensationPreviewUseCase } from '@/domain/pharma/application/use-cases/dispensation/dispensation-preview'
+import { RegisterMedicineExitController } from './controllers/movimentation/exit/register-exit.controller'
+import { RegisterExitUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/register-exit'
+import { FetchMedicinesExitsController } from './controllers/movimentation/exit/fetch-exits.controller'
+import { FetchMedicinesExitsUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/fetch-exits'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -147,6 +151,7 @@ import { DispensationPreviewUseCase } from '@/domain/pharma/application/use-case
     CreateMovementTypeController,
     DispensationController,
     RegisterMedicineEntryController,
+    RegisterMedicineExitController,
     FetchOperatorsController,
     FetchInstitutionsController,
     FetchStocksController,
@@ -165,6 +170,7 @@ import { DispensationPreviewUseCase } from '@/domain/pharma/application/use-case
     FetchMedicinesStockController,
     FetchmovementTypesController,
     FetchInventoryController,
+    FetchMedicinesExitsController,
     UpdateInstitutionController,
     UpdatePathologyController,
     UpdateTherapeuticClassController,
@@ -206,6 +212,7 @@ import { DispensationPreviewUseCase } from '@/domain/pharma/application/use-case
     CreateMovementTypeUseCase,
     DispensationMedicineUseCase,
     RegisterMedicineEntryUseCase,
+    RegisterExitUseCase,
     FethOperatorsUseCase,
     FethInstitutionsUseCase,
     FetchStocksUseCase,
@@ -224,6 +231,7 @@ import { DispensationPreviewUseCase } from '@/domain/pharma/application/use-case
     FetchMedicinesStockUseCase,
     FetchMovementTypesUseCase,
     FetchInventoryUseCase,
+    FetchMedicinesExitsUseCase,
     UpdateInstitutionUseCase,
     UpdatePathologyUseCase,
     UpdateTherapeuticClassUseCase,

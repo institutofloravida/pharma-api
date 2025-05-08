@@ -25,7 +25,9 @@ export class FetchDispensationsController {
     const result = await this.fetchDispensations.execute({
       page,
       patientId,
-      dispensationDate,
+      dispensationDate: dispensationDate
+        ? new Date(dispensationDate)
+        : undefined,
     })
 
     if (result.isLeft()) {

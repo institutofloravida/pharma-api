@@ -1,7 +1,10 @@
 import { left, right, type Either } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
-import { ExitType, MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
+import {
+  ExitType,
+  MedicineExit,
+} from '@/domain/pharma/enterprise/entities/exit'
 import { Injectable } from '@nestjs/common'
 import { BatchStocksRepository } from '../../../repositories/batch-stocks-repository'
 import { BatchesRepository } from '../../../repositories/batches-repository'
@@ -15,8 +18,7 @@ import { MedicineStockNotExistsError } from '../../stock/medicine-stock/_errors/
 import { MedicineVariantNotFoundError } from '../../auxiliary-records/medicine-variant/_errors/medicine-variant-not-found-error'
 
 interface RegisterExitUseCaseRequest {
-  medicineVariantId: string;
-  stockId: string;
+  medicineStockId: string;
   operatorId: string;
   batcheStockId: string;
   quantity: number;
@@ -44,8 +46,7 @@ export class RegisterExitUseCase {
   ) {}
 
   async execute({
-    medicineVariantId,
-    stockId,
+    medicineStockId,
     operatorId,
     batcheStockId,
     quantity,
@@ -53,18 +54,17 @@ export class RegisterExitUseCase {
     exitDate,
     exitType,
   }: RegisterExitUseCaseRequest): Promise<RegisterExitUseCaseResponse> {
-    const medicineVariant = await this.medicinesVariantRepository.findById(medicineVariantId)
-    if (!medicineVariant) {
-      return left(new MedicineVariantNotFoundError(medicineVariantId))
+    const medicineStock =
+      await this.medicinesStockRepository.findById(medicineStockId)
+    if (!medicineStock) {
+      return left(new MedicineStockNotExistsError(medicineStockId))
     }
 
-    const medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        medicineVariantId,
-        stockId,
-      )
-    if (!medicineStock) {
-      return left(new MedicineStockNotExistsError(medicineVariantId, stockId))
+    const medicineVariant = await this.medicinesVariantRepository.findById(
+      medicineStock.medicineVariantId.toString(),
+    )
+    if (!medicineVariant) {
+      return left(new MedicineVariantNotFoundError(medicineStock.medicineVariantId.toString()))
     }
 
     const batchestock =
@@ -95,10 +95,7 @@ export class RegisterExitUseCase {
     }
 
     await Promise.all([
-      this.batchesStocksRepository.subtract(
-        batcheStockId,
-        quantity,
-      ),
+      this.batchesStocksRepository.subtract(batcheStockId, quantity),
       this.medicinesStockRepository.subtract(
         medicineStock.id.toString(),
         quantity,
