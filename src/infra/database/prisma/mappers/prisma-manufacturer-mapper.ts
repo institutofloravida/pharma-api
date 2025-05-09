@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Manufacturer } from '@/domain/pharma/enterprise/entities/manufacturer'
-import { Manufacturer as PrismaManufacturer, type Prisma } from '@prisma/client'
+import { Manufacturer as PrismaManufacturer, type Prisma } from 'prisma/generated/prisma'
 
 export class PrismaManufacturerMapper {
   static toDomain(raw: PrismaManufacturer): Manufacturer {

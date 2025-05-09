@@ -5,7 +5,7 @@ import { PrismaBatchStockMapper } from '../mappers/prisma-batch-stock-mapper'
 import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
-import { Prisma } from '@prisma/client'
+import { Prisma } from 'prisma/generated/prisma'
 import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-objects/batch-stock-with-batch'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
@@ -97,9 +97,10 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
   async findMany({ page }: PaginationParams, filters: {
     // stockId: string,
     medicineStockId: string
-    code?: string
+    code?: string,
+    includeExpired?: boolean
   }, pagination: boolean = true): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }> {
-    const { medicineStockId, code } = filters
+    const { medicineStockId, code, includeExpired } = filters
 
     const whereClause: Prisma.BatcheStockWhereInput = {
       ...(code && {
@@ -108,6 +109,11 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
             contains: code,
             mode: 'insensitive',
           },
+        },
+      }),
+      ...(includeExpired === false && {
+        batch: {
+          expirationDate: { gte: new Date() },
         },
       }),
       medicineStockId,
@@ -142,7 +148,6 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
       this.prisma.batcheStock.count({
         where: whereClause,
       }),
-
     ])
 
     const batchesStockMapped = batchesStock.map(batchStock => {

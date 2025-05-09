@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Patient } from '@/domain/pharma/enterprise/entities/patient'
-import { Patient as PrismaPatient, Prisma } from '@prisma/client'
+import { Patient as PrismaPatient, Prisma } from 'prisma/generated/prisma'
 
 export class PrismaPatientMapper {
   static toDomain(raw: PrismaPatient & { pathologies: { id: string }[] }): Patient {

@@ -5,7 +5,7 @@ import { PrismaTherapeuticClassMapper } from '../mappers/prisma-therapeutic-clas
 import { Injectable } from '@nestjs/common'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
-import { Prisma } from '@prisma/client'
+import { Prisma } from 'prisma/generated/prisma'
 
 @Injectable()
 export class PrismaTherapeuticClassesRepository

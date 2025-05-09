@@ -13,5 +13,6 @@ export abstract class BatchStocksRepository {
   abstract findMany(params: PaginationParams, filters: {
     medicineStockId: string
     code?: string
+    includeExpired?: boolean
   }, pagination?: boolean): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }>
 }

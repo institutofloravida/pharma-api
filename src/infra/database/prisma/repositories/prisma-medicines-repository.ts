@@ -5,7 +5,7 @@ import { Medicine } from '@/domain/pharma/enterprise/entities/medicine'
 import { PrismaMedicineMapper } from '../mappers/prisma-medicine-mapper'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
-import { Prisma } from '@prisma/client'
+import { Prisma } from 'prisma/generated/prisma'
 import { MedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-details'
 import { PrismaMedicineDetailsMapper } from '../mappers/prisma-medicine-details-mapper'
 

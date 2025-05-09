@@ -11,8 +11,8 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreatePatientDto } from './dtos/create-patient.dto'
 import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/create-patient'
 import { PatientPresenter } from '../../presenters/patient-presenter'
-import { Race } from '@prisma/client'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { Race } from 'prisma/generated/prisma'
 
 @ApiTags('patient')
 @ApiBearerAuth()

@@ -17,6 +17,9 @@ lerna-debug.log*
 
 /ower
 
+#prisma
+/prisma/generated
+
 # Tests
 /coverage
 /.nyc_output

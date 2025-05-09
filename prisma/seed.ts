@@ -1,5 +1,5 @@
-import { PrismaClient, OperatorRole } from '@prisma/client'
 import { hash } from 'bcryptjs'
+import { OperatorRole, PrismaClient } from 'prisma/generated/prisma'
 
 const prisma = new PrismaClient()
 

@@ -7,7 +7,7 @@ import {
   PharmaceuticalForm as PrismaPharmaceuticalForm,
   Stock as PrismaStock,
   UnitMeasure as PrismaUnitMeasure,
-} from '@prisma/client'
+} from 'prisma/generated/prisma'
 
 type PrismaMedicineStockDetails = PrismaMedicineStock & {
   medicineVariant: PrismaMedicineVariant,

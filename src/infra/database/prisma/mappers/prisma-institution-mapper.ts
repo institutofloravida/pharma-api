@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Institution } from '@/domain/pharma/enterprise/entities/institution'
-import { Institution as PrismaInstitution, type Prisma } from '@prisma/client'
+import { Institution as PrismaInstitution, type Prisma } from 'prisma/generated/prisma'
 
 export class PrismaInstitutionMapper {
   static toDomain(raw: PrismaInstitution): Institution {

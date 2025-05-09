@@ -9,7 +9,7 @@ import { Injectable } from '@nestjs/common'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details'
-import { Prisma } from '@prisma/client'
+import { Prisma } from 'prisma/generated/prisma'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 @Injectable()

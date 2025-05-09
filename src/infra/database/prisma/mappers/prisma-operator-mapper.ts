@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Operator, OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
-import { $Enums, Operator as PrismaOperator, type Prisma } from '@prisma/client'
+import { $Enums, Operator as PrismaOperator, type Prisma } from 'prisma/generated/prisma'
 
 export class PrismaOperatorMapper {
   static toDomain(

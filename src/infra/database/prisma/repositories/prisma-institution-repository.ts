@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma.service'
 import { PrismaInstitutionMapper } from '../mappers/prisma-institution-mapper'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
-import { Prisma } from '@prisma/client'
+import { Prisma } from 'prisma/generated/prisma'
 
 @Injectable()
 export class PrismaInstitutionsRepository implements InstitutionsRepository {

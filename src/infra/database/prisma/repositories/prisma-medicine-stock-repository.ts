@@ -6,7 +6,7 @@ import { PrismaMedicineStockMapper } from '../mappers/prisma-medicine-stock-mapp
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details'
-import { Prisma } from '@prisma/client'
+import { Prisma } from 'prisma/generated/prisma'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory'
 import { MedicineStockInventoryDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-inventory-details'

@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ExitType, MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
-import { Exit as PrismaExit, type Prisma } from '@prisma/client'
+import { Exit as PrismaExit, type Prisma } from 'prisma/generated/prisma'
 export class PrismaMedicineExitMapper {
   static toDomain(raw: PrismaExit): MedicineExit {
     return MedicineExit.create({

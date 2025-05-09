@@ -1,26 +1,25 @@
-import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { Meta } from '@/core/repositories/meta';
-import { PaginationParams } from '@/core/repositories/pagination-params';
-import { MedicinesExitsRepository } from '@/domain/pharma/application/repositories/medicines-exits-repository';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params'
+import { MedicinesExitsRepository } from '@/domain/pharma/application/repositories/medicines-exits-repository'
 import {
   ExitType,
   MedicineExit,
-} from '@/domain/pharma/enterprise/entities/exit';
-import { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details';
-import { InMemoryBatchStocksRepository } from './in-memory-batch-stocks-repository';
-import { InMemoryBatchesRepository } from './in-memory-batches-repository';
-import { InMemoryStocksRepository } from './in-memory-stocks-repository';
-import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-repository';
-import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository';
-import { InMemoryMedicinesRepository } from './in-memory-medicines-repository';
-import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms';
-import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository';
-import { InMemoryOperatorsRepository } from './in-memory-operators-repository';
-import { InMemoryMovementTypesRepository } from './in-memory-movement-types-repository';
+} from '@/domain/pharma/enterprise/entities/exit'
+import { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details'
+import { InMemoryBatchStocksRepository } from './in-memory-batch-stocks-repository'
+import { InMemoryBatchesRepository } from './in-memory-batches-repository'
+import { InMemoryStocksRepository } from './in-memory-stocks-repository'
+import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-repository'
+import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
+import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
+import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
+import { InMemoryOperatorsRepository } from './in-memory-operators-repository'
+import { InMemoryMovementTypesRepository } from './in-memory-movement-types-repository'
 
 export class InMemoryMedicinesExitsRepository
-  implements MedicinesExitsRepository
-{
+implements MedicinesExitsRepository {
   constructor(
     private batchStocksRepository: InMemoryBatchStocksRepository,
     private batchesRepository: InMemoryBatchesRepository,
@@ -34,9 +33,9 @@ export class InMemoryMedicinesExitsRepository
     private medicinesStockRepository: InMemoryMedicinesStockRepository,
   ) {}
 
-  public items: MedicineExit[] = [];
+  public items: MedicineExit[] = []
   async create(medicineExit: MedicineExit) {
-    this.items.push(medicineExit);
+    this.items.push(medicineExit)
   }
 
   async findMany(
@@ -59,113 +58,110 @@ export class InMemoryMedicinesExitsRepository
       medicineStockId,
       movementTypeId,
       operatorId,
-    } = filters;
-    const medicinesExitsFilteredAndMapped: MedicineExitDetails[] = [];
-    
+    } = filters
+    const medicinesExitsFilteredAndMapped: MedicineExitDetails[] = []
+
     for (const exit of this.items) {
       const medicineStock = this.medicinesStockRepository.items.find((item) =>
         item.id.equal(exit.medicineStockId),
-    );
+      )
 
       if (!medicineStock) {
         throw new Error(
           `Medicine Stock with id "${exit.medicineStockId.toString()} does not exist."`,
-        );
+        )
       }
 
       const medicineVariant = this.medicinesVariantsRepository.items.find(
         (item) => item.id.equal(medicineStock.medicineVariantId),
-      );
+      )
 
       if (!medicineVariant) {
         throw new Error(
           `Medicine variant with id "${medicineStock.medicineVariantId.toString()} does not exist."`,
-        );
+        )
       }
 
       const medicine = this.medicinesRepository.items.find((item) =>
         item.id.equal(medicineVariant.medicineId),
-      );
+      )
 
       if (!medicine) {
         throw new Error(
           `Medicine with id "${medicineVariant.medicineId.toString()} does not exist."`,
-        );
+        )
       }
 
       const pharmaceuticalForm = this.pharmaceuticalFormsRepository.items.find(
         (item) => item.id.equal(medicineVariant.pharmaceuticalFormId),
-      );
+      )
 
       if (!pharmaceuticalForm) {
         throw new Error(
           `Pharmaceutical Form with id "${medicineVariant.pharmaceuticalFormId.toString()} does not exist."`,
-        );
+        )
       }
-      
 
       const unitMeasure = this.unitsMeasureRepository.items.find((item) =>
         item.id.equal(medicineVariant.unitMeasureId),
-      );
+      )
 
       if (!unitMeasure) {
         throw new Error(
           `Unit Measure with id "${medicineVariant.unitMeasureId.toString()} does not exist."`,
-        );
+        )
       }
-      
+
       const movementType = this.movementType.items.find((item) =>
         item.id.equal(exit.movementTypeId ?? new UniqueEntityId('')),
-      );
+      )
 
       const batchStock = this.batchStocksRepository.items.find((item) =>
         item.id.equal(exit.batchestockId),
-      );
+      )
       if (!batchStock) {
         throw new Error(
           `Batchstock with id "${exit.batchestockId.toString()} does not exist."`,
-        );
+        )
       }
-      
 
       const operator = this.operatorsRepository.items.find((item) =>
         item.id.equal(exit.operatorId),
-      );
+      )
 
       if (!operator) {
         throw new Error(
           `operator with id "${exit.operatorId.toString()} does not exist."`,
-        );
+        )
       }
 
       const batch = this.batchesRepository.items.find((batch) =>
         batch.id.equal(batchStock.batchId),
-      );
+      )
       if (!batch) {
         throw new Error(
           `batch with id "${batchStock.batchId.toString} does not exist."`,
-        );
+        )
       }
 
-      
       const stock = this.stocksRepository.items.find((stock) =>
         stock.id.equal(batchStock.stockId),
-      );
+      )
       if (!stock) {
         throw new Error(
           `stock with id "${batchStock.stockId.toString()} does not exist."`,
-        );
+        )
       }
 
       if (
         institutionId &&
         !stock.institutionId.equal(new UniqueEntityId(institutionId))
       ) {
-        continue;
+        continue
       }
 
       if (batchCode && batchCode !== batch.code) {
-        continue;
+        continue
       }
 
       if (
@@ -176,32 +172,32 @@ export class InMemoryMedicinesExitsRepository
           exit.exitDate.getFullYear() === exitDate.getFullYear()
         )
       ) {
-        continue;
+        continue
       }
-      
+
       if (exitType && exitType !== exit.exitType) {
-        continue;
+        continue
       }
 
       if (
         medicineStockId &&
         !exit.medicineStockId.equal(new UniqueEntityId(medicineStockId))
       ) {
-        continue;
+        continue
       }
 
       if (
         movementTypeId &&
         !exit.movementTypeId?.equal(new UniqueEntityId(movementTypeId))
       ) {
-        continue;
+        continue
       }
 
       if (
         operatorId &&
         !exit.operatorId.equal(new UniqueEntityId(operatorId))
       ) {
-        continue;
+        continue
       }
 
       const medicineExitDetails = MedicineExitDetails.create({
@@ -223,15 +219,15 @@ export class InMemoryMedicinesExitsRepository
         operator: operator.name,
         updatedAt: exit.updatedAt,
         createdAt: exit.createdAt,
-      });
+      })
 
-      medicinesExitsFilteredAndMapped.push(medicineExitDetails);
+      medicinesExitsFilteredAndMapped.push(medicineExitDetails)
     }
 
     const medicinesPaginated = medicinesExitsFilteredAndMapped.slice(
       (page - 1) * 10,
       page * 10,
-    );
+    )
 
     return {
       medicinesExits: medicinesPaginated,
@@ -239,6 +235,6 @@ export class InMemoryMedicinesExitsRepository
         page,
         totalCount: medicinesExitsFilteredAndMapped.length,
       },
-    };
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Batch } from '@/domain/pharma/enterprise/entities/batch'
-import { Batch as PrismaBatch, type Prisma } from '@prisma/client'
+import { Batch as PrismaBatch, type Prisma } from 'prisma/generated/prisma'
 
 export class PrismaBatchMapper {
   static toDomain(raw: PrismaBatch): Batch {

@@ -24,8 +24,10 @@ import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-unit
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
+let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
@@ -46,6 +48,8 @@ describe('Dispensation Medicine', () => {
   beforeEach(() => {
     inMemoryTherapeuticClassesRepository =
       new InMemoryTherapeuticClassesRepository()
+    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
+
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
@@ -92,7 +96,18 @@ describe('Dispensation Medicine', () => {
       inMemoryMedicinesStockRepository,
     )
 
-    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository()
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryBatchStocksRepository,
+      inMemoryBatchesRepository,
+      inMemoryOperatorsRepository,
+      inMemoryMovementTypesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryStocksRepository,
+      inMemoryMedicinesStockRepository,
+    )
     inMemoryDispensationsMedicinesRepository =
       new InMemoryDispensationsMedicinesRepository(
         inMemoryMedicinesExitsRepository,

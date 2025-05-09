@@ -15,6 +15,7 @@ export interface DispensationBatchPreview {
   code: string;
   quantity: number;
   expirationDate: Date;
+  isExpired: boolean
 }
 
 type DispensationPreviewUseCaseResponse = Either<
@@ -57,12 +58,19 @@ export class DispensationPreviewUseCase {
     let remainingQuantity = quantityRequired
     const { batchesStock } = await this.batchesStockRepository.findMany(
       { page: 1 },
-      { medicineStockId },
+      { medicineStockId, includeExpired: false },
       false,
     )
 
     for await (const batchStock of batchesStock) {
       const rest = batchStock.quantity - remainingQuantity
+
+      const today = new Date()
+      const expirationDate = new Date(batchStock.expirationDate)
+
+      today.setHours(0, 0, 0, 0)
+      expirationDate.setHours(0, 0, 0, 0)
+
       batchesPreview.push({
         batchStockId: batchStock.id.toString(),
         code: batchStock.batch,
@@ -70,8 +78,8 @@ export class DispensationPreviewUseCase {
         quantity: rest > 0
           ? remainingQuantity
           : batchStock.quantity,
+        isExpired: today > expirationDate,
       })
-
       if (rest >= 0) {
         remainingQuantity = 0
         break

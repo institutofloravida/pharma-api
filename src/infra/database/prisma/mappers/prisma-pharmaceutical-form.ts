@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
-import { PharmaceuticalForm as PrismaPharmaceuticalForm, Prisma } from '@prisma/client'
+import { PharmaceuticalForm as PrismaPharmaceuticalForm, Prisma } from 'prisma/generated/prisma'
 
 export class PrismaPharmaceuticalFormMapper {
   static toDomain(raw: PrismaPharmaceuticalForm): PharmaceuticalForm {

@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
-import { UnitMeasure as PrismaUnitMeasure, type Prisma } from '@prisma/client'
+import { UnitMeasure as PrismaUnitMeasure, type Prisma } from 'prisma/generated/prisma'
 
 export class PrismaUnitMeasureMapper {
   static toDomain(raw: PrismaUnitMeasure): UnitMeasure {
