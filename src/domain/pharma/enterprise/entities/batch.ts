@@ -56,10 +56,15 @@ export class Batch extends Entity<BatchProps> {
   }
 
   public isCloseToExpiration(days: number = 30): boolean {
+    if (this.isExpired()) {
+      return false
+    }
+
     const expirationDate = this.props.expirationDate
     const currentDate = new Date()
     const timeDiff = expirationDate.getTime() - currentDate.getTime()
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
+
     return daysDiff <= days
   }
 

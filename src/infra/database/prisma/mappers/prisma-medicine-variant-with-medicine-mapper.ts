@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
-import { MedicineVariant as PrismaMedicineVariant, Medicine as PrismaMedicine, type PharmaceuticalForm as PrismaPharmaceuticalForm, UnitMeasure as PrismaUnitMeasure } from 'prisma/generated/prisma'
+import { MedicineVariant as PrismaMedicineVariant, Medicine as PrismaMedicine, type PharmaceuticalForm as PrismaPharmaceuticalForm, UnitMeasure as PrismaUnitMeasure } from 'prisma/generated'
 
 type PrismaMedicineVariantWithMedicine = PrismaMedicineVariant & {
   medicine: PrismaMedicine

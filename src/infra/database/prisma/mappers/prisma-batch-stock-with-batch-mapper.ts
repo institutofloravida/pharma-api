@@ -8,7 +8,7 @@ import {
   PharmaceuticalForm as PrismaPharmaceuticalForm,
   Stock as PrismaStock,
   UnitMeasure as PrismaUnitMeasure,
-} from 'prisma/generated/prisma'
+} from 'prisma/generated'
 
 type PrismaBatchStockWithBatch = PrismaBatchStock & {
   batch: PrismaBatch

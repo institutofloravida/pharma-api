@@ -7,7 +7,7 @@ import {
   PharmaceuticalForm as PrismaPharmaceuticalForm,
   Stock as PrismaStock,
   UnitMeasure as PrismaUnitMeasure,
-} from 'prisma/generated/prisma'
+} from 'prisma/generated'
 
 type PrismaMedicineStockDetails = PrismaMedicineStock & {
   medicineVariant: PrismaMedicineVariant,
@@ -28,7 +28,11 @@ export class PrismaMedicineStockDetailsMapper {
         pharmaceuticalForm: raw.pharmaceuticalForm.name,
         stock: raw.stock.name,
         unitMeasure: raw.unitMeasure.acronym,
-        currentQuantity: raw.currentQuantity,
+        quantity: {
+          totalCurrent: raw.currentQuantity,
+          available: 0,
+          unavailable: 0,
+        },
         medicineVariantId: new UniqueEntityId(raw.medicineVariantId),
         stockId: new UniqueEntityId(raw.stockId),
         createdAt: raw.createdAt,

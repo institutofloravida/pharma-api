@@ -13,7 +13,11 @@ interface DispensationPreviewUseCaseRequest {
 export interface DispensationBatchPreview {
   batchStockId: string;
   code: string;
-  quantity: number;
+  quantity: {
+    toDispensation: number,
+    totalCurrent: number
+  }
+
   expirationDate: Date;
   isExpired: boolean
 }
@@ -64,7 +68,7 @@ export class DispensationPreviewUseCase {
 
     for await (const batchStock of batchesStock) {
       const rest = batchStock.quantity - remainingQuantity
-
+      console.log('total: ', batchStock.quantity)
       const today = new Date()
       const expirationDate = new Date(batchStock.expirationDate)
 
@@ -75,9 +79,12 @@ export class DispensationPreviewUseCase {
         batchStockId: batchStock.id.toString(),
         code: batchStock.batch,
         expirationDate: batchStock.expirationDate,
-        quantity: rest > 0
-          ? remainingQuantity
-          : batchStock.quantity,
+        quantity: {
+          toDispensation: rest > 0
+            ? remainingQuantity
+            : batchStock.quantity,
+          totalCurrent: batchStock.quantity,
+        },
         isExpired: today > expirationDate,
       })
       if (rest >= 0) {
@@ -87,7 +94,7 @@ export class DispensationPreviewUseCase {
         remainingQuantity -= batchStock.quantity
       }
     }
-
+    console.log(batchesPreview)
     return right({ batchesPreview })
   }
 }

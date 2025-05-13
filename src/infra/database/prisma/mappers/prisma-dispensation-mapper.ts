@@ -1,7 +1,7 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation'
 import { MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
-import { Dispensation as PrismaDispensation, type Prisma } from 'prisma/generated/prisma'
+import { Dispensation as PrismaDispensation, type Prisma } from 'prisma/generated'
 
 export class PrismaDispensationMapper {
   static toDomain(raw: PrismaDispensation & { exitRecords: MedicineExit[] }): Dispensation {

@@ -342,7 +342,7 @@ implements MedicinesStockRepository {
         medicineStockId: medicineStock.id,
         dosage: medicineVariant.dosage,
         minimumLevel: medicineStock.minimumLevel,
-        currentQuantity: medicineStock.quantity,
+        quantity: medicineStock.quantity,
         batchesStockIds: medicineStock.batchesStockIds,
       })
 

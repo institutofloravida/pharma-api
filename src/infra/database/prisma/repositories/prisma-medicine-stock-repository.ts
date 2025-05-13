@@ -6,7 +6,7 @@ import { PrismaMedicineStockMapper } from '../mappers/prisma-medicine-stock-mapp
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details'
-import { Prisma } from 'prisma/generated/prisma'
+import { Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory'
 import { MedicineStockInventoryDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-inventory-details'
@@ -210,7 +210,25 @@ implements MedicinesStockRepository {
       }),
     ])
 
-    const medicinesStockMapped = medicinesStock.map((medicineStock) => {
+    const medicinesStockMapped = await Promise.all(medicinesStock.map(async (medicineStock) => {
+      const totalQuantityBatchesOnStockExpired = await this.prisma.batcheStock.aggregate({
+        where: {
+          medicineStockId: medicineStock.id,
+          medicineStock: {
+            currentQuantity: { gt: 0 },
+          },
+          currentQuantity: { gt: 0 },
+          batch: {
+            expirationDate: {
+              lte: new Date(),
+            },
+          },
+        },
+        _sum: {
+          currentQuantity: true,
+        },
+      })
+
       return MedicineStockDetails.create({
         id: new UniqueEntityId(medicineStock.id),
         dosage: medicineStock.medicineVariant.dosage,
@@ -219,13 +237,17 @@ implements MedicinesStockRepository {
           medicineStock.medicineVariant.pharmaceuticalForm.name,
         stock: medicineStock.stock.name,
         unitMeasure: medicineStock.medicineVariant.unitMeasure.acronym,
-        currentQuantity: medicineStock.currentQuantity,
+        quantity: {
+          totalCurrent: medicineStock.currentQuantity,
+          unavailable: totalQuantityBatchesOnStockExpired._sum.currentQuantity ?? 0,
+          available: medicineStock.currentQuantity - (totalQuantityBatchesOnStockExpired._sum.currentQuantity ?? 0),
+        },
         medicineVariantId: new UniqueEntityId(medicineStock.medicineVariantId),
         stockId: new UniqueEntityId(medicineStock.stockId),
         createdAt: medicineStock.createdAt,
         updatedAt: medicineStock.updatedAt,
       })
-    })
+    }))
 
     return {
       medicinesStock: medicinesStockMapped,
@@ -314,7 +336,24 @@ implements MedicinesStockRepository {
       }),
     ])
 
-    const inventoryMaped = inventory.map((medicineStock) => {
+    const inventoryMaped = await Promise.all(inventory.map(async (medicineStock) => {
+      const totalQuantityBatchesOnStockExpired = await this.prisma.batcheStock.aggregate({
+        where: {
+          medicineStockId: medicineStock.id,
+          medicineStock: {
+            currentQuantity: { gt: 0 },
+          },
+          currentQuantity: { gt: 0 },
+          batch: {
+            expirationDate: {
+              lte: new Date(),
+            },
+          },
+        },
+        _sum: {
+          currentQuantity: true,
+        },
+      })
       return MedicineStockInventory.create({
         stockId: new UniqueEntityId(medicineStock.id),
         minimumLevel: medicineStock.minimumLevel,
@@ -323,14 +362,18 @@ implements MedicinesStockRepository {
         medicine: medicineStock.medicineVariant.medicine.name,
         pharmaceuticalForm:
           medicineStock.medicineVariant.pharmaceuticalForm.name,
-        currentQuantity: medicineStock.currentQuantity,
+        quantity: {
+          current: medicineStock.currentQuantity,
+          available: medicineStock.currentQuantity,
+          unavailable: medicineStock.currentQuantity - (totalQuantityBatchesOnStockExpired._sum.currentQuantity ?? 0),
+        },
         medicineStockId: new UniqueEntityId(medicineStock.id),
         medicineVariantId: new UniqueEntityId(medicineStock.medicineVariant.id),
         batchesStockIds: medicineStock.batchesStocks.map(
           (item) => new UniqueEntityId(item.id),
         ),
       })
-    })
+    }))
 
     return {
       inventory: inventoryMaped,
@@ -350,6 +393,9 @@ implements MedicinesStockRepository {
       },
       include: {
         batchesStocks: {
+          where: {
+            currentQuantity: { gt: 0 },
+          },
           select: {
             id: true,
             currentQuantity: true,
@@ -357,6 +403,11 @@ implements MedicinesStockRepository {
               include: {
                 manufacturer: true,
               },
+            },
+          },
+          orderBy: {
+            batch: {
+              expirationDate: 'asc',
             },
           },
         },
@@ -378,6 +429,39 @@ implements MedicinesStockRepository {
         },
       },
     })
+
+    const [medicineStockTotalCurrent, medicineStockUnavailable] = await this.prisma.$transaction([
+      this.prisma.batcheStock.aggregate({
+        where: {
+          medicineStockId: medicineStockid,
+          currentQuantity: { gt: 0 },
+        },
+        _sum: {
+          currentQuantity: true,
+        },
+      }),
+      this.prisma.batcheStock.aggregate({
+        where: {
+          medicineStockId: medicineStockid,
+          currentQuantity: { gt: 0 },
+          batch: {
+            expirationDate: {
+              lt: new Date(),
+            },
+          },
+        },
+        _sum: {
+          currentQuantity: true,
+        },
+      }),
+
+    ])
+    const totalCurrent = medicineStockTotalCurrent._sum.currentQuantity
+      ? medicineStockTotalCurrent._sum.currentQuantity
+      : 0
+    const unavailable = medicineStockUnavailable._sum.currentQuantity
+      ? medicineStockUnavailable._sum.currentQuantity
+      : 0
 
     if (!inventory) {
       return null
@@ -406,6 +490,11 @@ implements MedicinesStockRepository {
       minimumLevel: inventory.minimumLevel,
       medicine: inventory.medicineVariant.medicine.name,
       stockId: new UniqueEntityId(inventory.stockId),
+      quantity: {
+        totalCurrent,
+        available: totalCurrent - unavailable,
+        unavailable,
+      },
       batchesStock,
     })
   }

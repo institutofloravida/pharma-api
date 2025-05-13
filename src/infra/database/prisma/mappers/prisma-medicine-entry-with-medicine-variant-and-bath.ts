@@ -9,7 +9,7 @@ import {
   UnitMeasure as PrismaUnitMeasure,
   Operator as PrismaOperator,
   Stock as PrismaStock,
-} from 'prisma/generated/prisma'
+} from 'prisma/generated'
 
 type PrismaMedicineEntryWithMedicineVariantAndBatch = PrismaMedicineEntry & {
   medicine: PrismaMedicine,

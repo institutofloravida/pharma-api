@@ -12,7 +12,7 @@ import { CreatePatientDto } from './dtos/create-patient.dto'
 import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/create-patient'
 import { PatientPresenter } from '../../presenters/patient-presenter'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Race } from 'prisma/generated/prisma'
+import { Race } from 'prisma/generated'
 
 @ApiTags('patient')
 @ApiBearerAuth()

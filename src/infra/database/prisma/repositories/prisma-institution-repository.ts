@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma.service'
 import { PrismaInstitutionMapper } from '../mappers/prisma-institution-mapper'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
-import { Prisma } from 'prisma/generated/prisma'
+import { $Enums, Prisma } from 'prisma/generated'
 
 @Injectable()
 export class PrismaInstitutionsRepository implements InstitutionsRepository {
@@ -24,6 +24,22 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
     const data = PrismaInstitutionMapper.toPrisma(institution)
     await this.prisma.institution.create({
       data,
+    })
+    const superAdmins = await this.prisma.operator.findMany({
+      where: {
+        role: $Enums.OperatorRole.SUPER_ADMIN,
+      },
+    })
+
+    await this.prisma.institution.update({
+      where: {
+        id: institution.id.toString(),
+      },
+      data: {
+        operators: {
+          connect: superAdmins.map(operator => ({ id: operator.id })),
+        },
+      },
     })
   }
 
@@ -109,6 +125,7 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
       }),
 
     ])
+    console.log(institutions)
 
     return {
       institutions: institutions.map(PrismaInstitutionMapper.toDomain),

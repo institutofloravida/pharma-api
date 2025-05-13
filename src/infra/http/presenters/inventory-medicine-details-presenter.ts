@@ -11,6 +11,7 @@ export class InventoryMedicineDetailsPresenter {
       stockId: medicineInventoryDetails.stockId.toString(),
       totalQuantity: medicineInventoryDetails.totalQuantity(),
       unitMeasure: medicineInventoryDetails.unitMeasure,
+      quantity: medicineInventoryDetails.quantity,
       batchesStock: medicineInventoryDetails.batchesStock.map((batch) => {
         return {
           ...batch,

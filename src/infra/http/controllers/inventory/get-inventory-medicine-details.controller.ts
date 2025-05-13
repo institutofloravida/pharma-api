@@ -28,7 +28,7 @@ export class GetInventoryMedicineDetailsController {
     }
 
     const { medicineStockInventory } = result.value
-
+    console.log(medicineStockInventory)
     return {
       inventory: InventoryMedicineDetailsPresenter.toHTTP(medicineStockInventory),
     }

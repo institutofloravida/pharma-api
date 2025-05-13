@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma.service'
 import { PrismaPathologyMapper } from '../mappers/prisma-pathology-mapper'
 import { PathologiesRepository } from '@/domain/pharma/application/repositories/pathologies-repository'
 import { Meta } from '@/core/repositories/meta'
-import { Prisma } from 'prisma/generated/prisma'
+import { Prisma } from 'prisma/generated'
 
 @Injectable()
 export class PrismaPathologysRepository implements PathologiesRepository {

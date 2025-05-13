@@ -5,6 +5,7 @@ import { Meta } from '@/core/repositories/meta'
 import { InstitutionsRepository } from '../../repositories/institutions-repository'
 import { OperatorsRepository } from '../../repositories/operators-repository'
 import { OperatorNotFoundError } from '../operator/_errors/operator-not-found-error'
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 interface FetchInstitutionsUseCaseRequest {
   page: number;
@@ -31,7 +32,7 @@ export class FethInstitutionsUseCase {
     cnpj,
     operatorId,
   }: FetchInstitutionsUseCaseRequest): Promise<FetchInstitutionsUseCaseResponse> {
-    const operator = this.operatorsRepository.findById(operatorId)
+    const operator = await this.operatorsRepository.findById(operatorId)
     if (!operator) {
       return left(new OperatorNotFoundError(operatorId))
     }
@@ -42,6 +43,7 @@ export class FethInstitutionsUseCase {
         cnpj,
       },
       operatorId,
+      operator.role === OperatorRole.SUPER_ADMIN,
     )
 
     return right({

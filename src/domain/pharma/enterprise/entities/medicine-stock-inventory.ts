@@ -5,7 +5,11 @@ export interface MedicineStockInventoryProps {
   medicineVariantId: UniqueEntityId
   medicineStockId: UniqueEntityId
   stockId: UniqueEntityId
-  currentQuantity: number
+  quantity: {
+    current: number
+    available: number
+    unavailable: number
+  }
   medicine: string
   pharmaceuticalForm: string
   unitMeasure: string
@@ -27,8 +31,8 @@ export class MedicineStockInventory extends ValueObject<MedicineStockInventoryPr
     return this.props.stockId
   }
 
-  get quantity(): number {
-    return this.props.currentQuantity
+  get quantity() {
+    return this.props.quantity
   }
 
   get medicine(): string {
@@ -48,7 +52,7 @@ export class MedicineStockInventory extends ValueObject<MedicineStockInventoryPr
   }
 
   public isLowStock(minimunQuantity: number = this.props.minimumLevel): boolean {
-    return this.props.currentQuantity < minimunQuantity
+    return this.props.quantity.available < minimunQuantity
   }
 
   get batchesStockIds() {

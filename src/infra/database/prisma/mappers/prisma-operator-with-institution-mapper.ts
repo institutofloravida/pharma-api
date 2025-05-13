@@ -1,7 +1,7 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
-import { Operator as PrismaOperator } from 'prisma/generated/prisma'
+import { Operator as PrismaOperator } from 'prisma/generated'
 
 type PrismaOperatorWithInstitutions = PrismaOperator & {
   institutions: {

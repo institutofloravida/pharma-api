@@ -7,7 +7,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Meta } from '@/core/repositories/meta'
 import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
 import { PrismaOperatorWithInstitutionsMapper } from '../mappers/prisma-operator-with-institution-mapper'
-import { $Enums, type Prisma } from 'prisma/generated/prisma'
+import { $Enums, type Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 @Injectable()

@@ -6,7 +6,7 @@ import { PrismaDispensationMapper } from '../mappers/prisma-dispensation-mapper'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient'
-import { Prisma } from 'prisma/generated/prisma'
+import { Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 @Injectable()

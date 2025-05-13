@@ -10,7 +10,11 @@ export interface MedicineStockDetailsProps {
   pharmaceuticalForm: string;
   unitMeasure: string;
   dosage: string;
-  currentQuantity: number
+  quantity: {
+    totalCurrent: number
+    available: number
+    unavailable: number
+  }
   createdAt: Date
   updatedAt?: Date | null
 }
@@ -49,7 +53,7 @@ export class MedicineStockDetails extends ValueObject<MedicineStockDetailsProps>
   }
 
   get quantity() {
-    return this.props.currentQuantity
+    return this.props.quantity
   }
 
   get createdAt() {

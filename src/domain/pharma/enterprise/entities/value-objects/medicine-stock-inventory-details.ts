@@ -9,6 +9,11 @@ export interface MedicineStockInventoryDetailsProps {
   unitMeasure: string
   dosage: string
   minimumLevel: number
+  quantity: {
+    totalCurrent: number,
+    available: number,
+    unavailable: number
+  }
   batchesStock: {
     id: UniqueEntityId,
     code: string,
@@ -52,6 +57,10 @@ export class MedicineStockInventoryDetails extends ValueObject<MedicineStockInve
 
   public isLowStock(minimunQuantity: number = this.props.minimumLevel): boolean {
     return this.totalQuantity() < minimunQuantity
+  }
+
+  get quantity() {
+    return this.props.quantity
   }
 
   get batchesStock() {

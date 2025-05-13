@@ -66,6 +66,9 @@ implements MedicinesEntriesRepository {
       },
       take: 10,
       skip: (page - 1) * 10,
+      orderBy: {
+        entryDate: 'desc',
+      },
     })
 
     const medicinesEntriesFilteredCount = await this.prisma.medicineEntry.count({

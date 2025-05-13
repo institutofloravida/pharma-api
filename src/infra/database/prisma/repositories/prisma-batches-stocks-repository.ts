@@ -5,7 +5,7 @@ import { PrismaBatchStockMapper } from '../mappers/prisma-batch-stock-mapper'
 import { BatchStocksRepository } from '@/domain/pharma/application/repositories/batch-stocks-repository'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
-import { Prisma } from 'prisma/generated/prisma'
+import { Prisma } from 'prisma/generated'
 import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-objects/batch-stock-with-batch'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
@@ -103,6 +103,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     const { medicineStockId, code, includeExpired } = filters
 
     const whereClause: Prisma.BatcheStockWhereInput = {
+      currentQuantity: { gt: 0 },
       ...(code && {
         batch: {
           code: {

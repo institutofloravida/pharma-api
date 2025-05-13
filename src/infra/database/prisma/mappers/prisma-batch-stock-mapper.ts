@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
-import { BatcheStock as PrismaBatchStock, type Prisma } from 'prisma/generated/prisma'
+import { BatcheStock as PrismaBatchStock, type Prisma } from 'prisma/generated'
 
 export class PrismaBatchStockMapper {
   static toDomain(raw: PrismaBatchStock): BatchStock {

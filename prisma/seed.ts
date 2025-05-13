@@ -1,5 +1,5 @@
 import { hash } from 'bcryptjs'
-import { OperatorRole, PrismaClient } from 'prisma/generated/prisma'
+import { OperatorRole, PrismaClient } from './generated'
 
 const prisma = new PrismaClient()
 
@@ -29,21 +29,21 @@ async function main() {
   const institution = await prisma.institution.create({
     data: {
       name: 'Instituto Flora Vida',
-      cnpj: '01.234.567/0001-89',
+      cnpj: '01234567000189',
       description: '',
     },
   })
   const institution2 = await prisma.institution.create({
     data: {
       name: 'Ubs - módulo 20',
-      cnpj: '01.234.567/0001-10',
+      cnpj: '01234567000110',
       description: '',
     },
   })
   const institution3 = await prisma.institution.create({
     data: {
       name: 'Ubs - módulo 15',
-      cnpj: '01.234.567/0001-20',
+      cnpj: '01234567000120',
       description: '',
     },
   })
@@ -212,7 +212,7 @@ async function main() {
   await prisma.movementType.createMany(
     {
       data: [{
-        name: 'DONATION',
+        name: 'DOAÇÃO',
         direction: 'ENTRY',
       }],
     },

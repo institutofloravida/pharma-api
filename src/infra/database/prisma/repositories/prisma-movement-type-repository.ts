@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma.service'
 import { Injectable } from '@nestjs/common'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
-import { Prisma } from 'prisma/generated/prisma'
+import { Prisma } from 'prisma/generated'
 
 @Injectable()
 export class PrismaMovementTypesRepository implements MovementTypesRepository {

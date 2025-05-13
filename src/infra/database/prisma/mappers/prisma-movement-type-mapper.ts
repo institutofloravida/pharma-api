@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MovementType } from '@/domain/pharma/enterprise/entities/movement-type'
-import { MovementType as PrismaMovementType, type Prisma } from 'prisma/generated/prisma'
+import { MovementType as PrismaMovementType, type Prisma } from 'prisma/generated'
 
 export class PrismaMovementTypeMapper {
   static toDomain(raw: PrismaMovementType): MovementType {
