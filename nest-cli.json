@@ -10,6 +10,11 @@
         "include": "../prisma/generated",
         "outDir": "dist/prisma",
         "watchAssets": true
+      },
+      {
+        "include": "../prisma/seed.ts",
+        "outDir": "dist/prisma",
+        "watchAssets": true
       }
     ]
   }

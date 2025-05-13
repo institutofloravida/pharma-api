@@ -460,6 +460,11 @@ implements MedicinesStockRepository {
       pharmaceuticalForm: pharmaceuticalForm.content,
       unitMeasure: unitMeasure.acronym,
       batchesStock,
+      quantity: {
+        available: 0,
+        totalCurrent: 0,
+        unavailable: 0,
+      },
     })
   }
 }
