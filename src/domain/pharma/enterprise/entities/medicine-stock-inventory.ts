@@ -52,7 +52,11 @@ export class MedicineStockInventory extends ValueObject<MedicineStockInventoryPr
   }
 
   public isLowStock(minimunQuantity: number = this.props.minimumLevel): boolean {
-    return this.props.quantity.available < minimunQuantity
+    return this.props.quantity.available < minimunQuantity && this.props.quantity.available > 0
+  }
+
+  public isZero(): boolean {
+    return this.props.quantity.current === 0
   }
 
   get batchesStockIds() {

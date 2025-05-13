@@ -13,6 +13,7 @@ export class InventoryPresenter {
       quantity: inventory.quantity,
       bacthesStocks: inventory.batchesStockIds.length,
       isLowStock: inventory.isLowStock(),
+      isZero: inventory.isZero(),
     }
   }
 }

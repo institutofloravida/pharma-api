@@ -89,6 +89,7 @@ export class RegisterMedicineEntryUseCase {
       medicineStock = MedicineStock.create({
         batchesStockIds: [],
         currentQuantity: 0,
+        minimumLevel: 15,
         medicineVariantId: new UniqueEntityId(medicineVariantId),
         stockId: new UniqueEntityId(stockId),
       })
