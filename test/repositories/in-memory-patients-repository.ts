@@ -19,7 +19,7 @@ export class InMemoryPatientsRepository implements PatientsRepository {
   }
 
   async findByCpf(cpf: string) {
-    const patient = this.items.find((item) => item.cpf.toString() === cpf)
+    const patient = this.items.find((item) => item.cpf && item.cpf.toString() === cpf)
     if (patient) {
       return patient
     }
@@ -44,7 +44,7 @@ export class InMemoryPatientsRepository implements PatientsRepository {
 
   private findManyByCpf(cpf: string): Patient[] {
     const patients = this.items.filter((item) => {
-      return item.cpf.includes(cpf)
+      return item.cpf && item.cpf.includes(cpf)
     })
 
     return patients

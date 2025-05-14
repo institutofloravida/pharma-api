@@ -39,7 +39,7 @@ export class CreatePatientController {
     const result = await this.createPatient.execute({
       addressPatient,
       birthDate,
-      cpf,
+      cpf: cpf || undefined,
       gender,
       name,
       pathologiesIds,

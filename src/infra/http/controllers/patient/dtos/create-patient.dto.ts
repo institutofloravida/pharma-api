@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator'
 import { Type } from 'class-transformer'
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 
 export enum Gender {
   M = 'M',
@@ -27,14 +27,14 @@ export enum Race {
 }
 
 export class AddressDTO {
-  @ApiProperty({ description: 'Street name', example: 'Elm Street' })
+  @ApiPropertyOptional({ description: 'Street name', example: 'Elm Street' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   street: string
 
-  @ApiProperty({ description: 'House or apartment number', example: '45B' })
+  @ApiPropertyOptional({ description: 'House or apartment number', example: '45B' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   number: string
 
   @ApiProperty({
@@ -61,10 +61,10 @@ export class AddressDTO {
   @IsNotEmpty()
   state: string
 
-  @ApiProperty({ description: 'ZIP or postal code', example: '62704' })
+  @ApiPropertyOptional({ description: 'ZIP or postal code', example: '62704' })
   @IsString()
-  @IsNotEmpty()
-  zipCode: string
+  @IsOptional()
+  zipCode?: string
 }
 
 export class CreatePatientDto {
@@ -73,13 +73,13 @@ export class CreatePatientDto {
   @IsNotEmpty()
   name: string
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'CPF number of the patient',
     example: '12345678900',
   })
   @IsString()
-  @IsNotEmpty()
-  cpf: string
+  @IsOptional()
+  cpf?: string | null
 
   @ApiProperty({
     description: 'SUS number of the patient',

@@ -16,20 +16,20 @@ import { AddresssRepository } from '../../repositories/address-repository'
 
 interface createPatientUseCaseRequest {
   name: string;
-  cpf: string;
+  cpf?: string;
   sus: string;
   birthDate: Date;
   gender: Gender;
   race: Race;
   generalRegistration?: string | null;
   addressPatient: {
-    street: string;
-    number: string;
+    street?: string;
+    number?: string;
     complement?: string | null;
     neighborhood: string;
     city: string;
     state: string;
-    zipCode: string;
+    zipCode?: string;
   };
   pathologiesIds: string[];
 }
@@ -73,7 +73,7 @@ export class CreatePatientUseCase {
       )
     }
 
-    const patientWithSameCpf = await this.patientRepository.findByCpf(cpf)
+    const patientWithSameCpf = await this.patientRepository.findByCpf(cpf || '')
     const patientWithSameSus = await this.patientRepository.findBySus(sus)
     if (patientWithSameCpf) {
       return left(
