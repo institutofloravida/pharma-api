@@ -183,14 +183,16 @@ describe('Dispensation Preview', () => {
           expect.objectContaining({
             batchStockId: batcheStock1.id.toString(),
             code: 'ATE001',
-            quantity: batcheStock1.quantity,
+            quantity: { toDispensation: batcheStock1.quantity, totalCurrent: batcheStock1.quantity },
           }),
           expect.objectContaining({
             batchStockId: batcheStock2.id.toString(),
             code: 'ATE002',
-            quantity:
+            quantity: {
+              toDispensation: quantityToDispense - batcheStock1.quantity,
+              totalCurrent: batcheStock2.quantity,
+            },
 
-              quantityToDispense - batcheStock1.quantity,
           }),
         ]),
       )
@@ -301,7 +303,6 @@ describe('Dispensation Preview', () => {
       medicineStockId: medicineStock.id.toString(),
       quantityRequired: quantityToDispense,
     })
-
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(result.value.batchesPreview).toHaveLength(2)
@@ -310,13 +311,19 @@ describe('Dispensation Preview', () => {
           expect.objectContaining({
             batchStockId: batcheStock1.id.toString(),
             code: 'ATE001',
-            quantity: batcheStock1.quantity,
+            quantity: {
+              toDispensation: batcheStock1.quantity,
+              totalCurrent: batcheStock1.quantity,
+            },
           }),
           expect.objectContaining({
             batchStockId: batcheStock2.id.toString(),
             code: 'ATE002',
             quantity:
-              quantityToDispense - batcheStock1.quantity,
+            {
+              totalCurrent: batcheStock2.quantity,
+              toDispensation: quantityToDispense - batcheStock1.quantity,
+            },
           }),
         ]),
       )

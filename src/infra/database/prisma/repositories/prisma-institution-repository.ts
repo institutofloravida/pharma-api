@@ -125,7 +125,6 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
       }),
 
     ])
-    console.log(institutions)
 
     return {
       institutions: institutions.map(PrismaInstitutionMapper.toDomain),

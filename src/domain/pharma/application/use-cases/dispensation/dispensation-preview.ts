@@ -68,7 +68,6 @@ export class DispensationPreviewUseCase {
 
     for await (const batchStock of batchesStock) {
       const rest = batchStock.quantity - remainingQuantity
-      console.log('total: ', batchStock.quantity)
       const today = new Date()
       const expirationDate = new Date(batchStock.expirationDate)
 
@@ -94,7 +93,6 @@ export class DispensationPreviewUseCase {
         remainingQuantity -= batchStock.quantity
       }
     }
-    console.log(batchesPreview)
     return right({ batchesPreview })
   }
 }
