@@ -75,6 +75,51 @@ async function main() {
       },
     },
   })
+
+  await prisma.operator.create({
+    data: {
+      name: 'Sandyele',
+      email: 'sandyele@gmail.com',
+      passwordHash: await hash('12345678', 8),
+      role: OperatorRole.SUPER_ADMIN,
+      institutions: {
+        connect: [
+          {
+            id: institution.id,
+          },
+          {
+            id: institution2.id,
+          },
+          {
+            id: institution3.id,
+          },
+        ],
+      },
+    },
+  })
+
+  await prisma.operator.create({
+    data: {
+      name: 'Rodrigo Baluz',
+      email: 'baluz@gmail.com',
+      passwordHash: await hash('12345678', 8),
+      role: OperatorRole.SUPER_ADMIN,
+      institutions: {
+        connect: [
+          {
+            id: institution.id,
+          },
+          {
+            id: institution2.id,
+          },
+          {
+            id: institution3.id,
+          },
+        ],
+      },
+    },
+  })
+
   await prisma.operator.create({
     data: {
       name: 'Instituto Flora Vida',
