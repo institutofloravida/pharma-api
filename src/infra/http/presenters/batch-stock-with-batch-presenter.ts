@@ -15,6 +15,10 @@ export class BatchStockWithBatchPresenter {
       unitMeasure: batchStockWithBatch.unitMeasure,
       dosage: batchStockWithBatch.dosage,
       quantity: batchStockWithBatch.quantity,
+      expirationDate: batchStockWithBatch.expirationDate,
+      isAvailable: batchStockWithBatch.isAvailable,
+      isCloseToExpiration: batchStockWithBatch.isCloseToExpiration,
+      isExpired: batchStockWithBatch.isExpired,
     }
   }
 }

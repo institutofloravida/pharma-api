@@ -8,6 +8,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Prisma } from 'prisma/generated'
 import { BatchStockWithBatch } from '@/domain/pharma/enterprise/entities/value-objects/batch-stock-with-batch'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { PrismaBatchMapper } from '../mappers/prisma-batch-mapper'
 
 @Injectable()
 export class PrismaBatchStocksRepository implements BatchStocksRepository {
@@ -95,12 +96,12 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
   }
 
   async findMany({ page }: PaginationParams, filters: {
-    // stockId: string,
     medicineStockId: string
     code?: string,
     includeExpired?: boolean
   }, pagination: boolean = true): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }> {
     const { medicineStockId, code, includeExpired } = filters
+    console.log(filters)
 
     const whereClause: Prisma.BatcheStockWhereInput = {
       currentQuantity: { gt: 0 },
@@ -112,12 +113,12 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
           },
         },
       }),
-      ...(includeExpired === false && {
+      ...(!includeExpired && {
         batch: {
           expirationDate: { gte: new Date() },
         },
       }),
-      medicineStockId,
+      medicineStockId: { equals: medicineStockId },
     }
 
     const [batchesStock, totalCount] = await this.prisma.$transaction([
@@ -127,15 +128,37 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
           take: 10,
           skip: (page - 1) * 10,
         }),
-        include: {
-          stock: true,
+        select: {
+          id: true,
+          batchId: true,
+          medicineStockId: true,
+          medicineVariantId: true,
+          stockId: true,
+          createdAt: true,
+          currentQuantity: true,
+          updatedAt: true,
+          stock: {
+            select: {
+              name: true,
+            },
+          },
           batch: true,
-          medicineStock: true,
           medicineVariant: {
-            include: {
-              medicine: true,
-              pharmaceuticalForm: true,
-              unitMeasure: true,
+            select: {
+              dosage: true,
+              medicine: {
+                select: {
+                  name: true,
+                },
+              },
+              pharmaceuticalForm: {
+                select: {
+                  name: true,
+                },
+              },
+              unitMeasure: {
+                select: { acronym: true },
+              },
             },
           },
 
@@ -152,6 +175,8 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     ])
 
     const batchesStockMapped = batchesStock.map(batchStock => {
+      const batch = PrismaBatchMapper.toDomain(batchStock.batch)
+
       return BatchStockWithBatch.create({
         id: new UniqueEntityId(batchStock.id),
         batch: batchStock.batch.code,
@@ -166,6 +191,9 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
         dosage: batchStock.medicineVariant.dosage,
         expirationDate: batchStock.batch.expirationDate,
         currentQuantity: batchStock.currentQuantity,
+        isAvailable: !batch.isExpired(),
+        isCloseToExpiration: batch.isCloseToExpiration(),
+        isExpired: batch.isExpired(),
         createdAt: batchStock.createdAt,
         updatedAt: batchStock.updatedAt,
 

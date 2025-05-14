@@ -23,7 +23,7 @@ interface RegisterExitUseCaseRequest {
   batcheStockId: string;
   quantity: number;
   exitType: ExitType;
-  movementTypeId: string;
+  movementTypeId?: string;
   exitDate?: Date;
 }
 

@@ -32,6 +32,7 @@ export class FetchBatchesStockUseCase {
       {
         medicineStockId,
         code,
+        includeExpired: true,
       },
     )
 

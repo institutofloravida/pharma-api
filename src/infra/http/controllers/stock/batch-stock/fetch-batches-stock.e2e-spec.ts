@@ -115,7 +115,6 @@ describe('Fetch Batches Stock (E2E)', () => {
 
     const batch = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
     const batch2 = await batchFactory.makePrismaBatch({ manufacturerId: manufacturer.id })
-
     await Promise.all([
       batchStockFactory.makePrismaBatchStock({
         batchId: batch.id,

@@ -17,7 +17,9 @@ type PrismaBatchStockWithBatch = PrismaBatchStock & {
   pharmaceuticalForm: PrismaPharmaceuticalForm,
   stock: PrismaStock,
   unitMeasure: PrismaUnitMeasure
-
+  isCloseToExpiration: boolean
+  isExpired: boolean
+  isAvailable: boolean
 }
 
 export class PrismaBatchStockWithBatchMapper {
@@ -37,6 +39,9 @@ export class PrismaBatchStockWithBatchMapper {
         stockId: new UniqueEntityId(raw.stockId),
         expirationDate: new Date(),
         medicineStockId: new UniqueEntityId(raw.medicineStockId),
+        isExpired: raw.isExpired,
+        isAvailable: raw.isAvailable,
+        isCloseToExpiration: raw.isCloseToExpiration,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },

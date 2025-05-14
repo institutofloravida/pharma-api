@@ -3,20 +3,22 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 
 export interface AddressProps {
-  street: string
-  number: string
+  street?: string | null
+  number?: string | null
   complement?: string | null
   neighborhood: string
   city: string
   state: string
-  zipCode: string
+  zipCode?: string | null
   createdAt: Date
   updatedAt?: Date | null
 }
 
 export class Address extends Entity<AddressProps> {
-  get street() {
+  get street(): string | null {
     return this.props.street
+      ? this.props.street
+      : null
   }
 
   set street(value: string) {
@@ -24,8 +26,10 @@ export class Address extends Entity<AddressProps> {
     this.touch()
   }
 
-  get number() {
+  get number():string | null {
     return this.props.number
+      ? this.props.number
+      : null
   }
 
   set number(value: string) {
@@ -69,8 +73,10 @@ export class Address extends Entity<AddressProps> {
     this.touch()
   }
 
-  get zipCode() {
+  get zipCode(): string | null {
     return this.props.zipCode
+      ? this.props.zipCode
+      : null
   }
 
   set zipCode(value: string) {

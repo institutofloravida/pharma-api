@@ -7,7 +7,7 @@ export type Race = 'BLACK' | 'WHITE' | 'YELLOW' | 'MIXED' | 'UNDECLARED' | 'INDI
 
 export interface PatientProps {
   name: string
-  cpf: string
+  cpf?: string | null
   sus: string
   birthDate: Date
   gender: Gender
@@ -29,8 +29,10 @@ export class Patient extends AggregateRoot<PatientProps> {
     this.touch()
   }
 
-  get cpf() {
+  get cpf(): string | null {
     return this.props.cpf
+      ? this.props.cpf
+      : null
   }
 
   set cpf(value: string) {
@@ -38,8 +40,10 @@ export class Patient extends AggregateRoot<PatientProps> {
     this.touch()
   }
 
-  public getFormattedCpf(): string {
-    return this.cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4')
+  public getFormattedCpf(): string | null {
+    return this.cpf
+      ? this.cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4')
+      : null
   }
 
   get sus() {

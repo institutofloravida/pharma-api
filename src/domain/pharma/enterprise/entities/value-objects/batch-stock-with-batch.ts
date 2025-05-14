@@ -15,6 +15,9 @@ export interface BatchStockWithBatchProps {
   dosage: string;
   currentQuantity: number
   expirationDate: Date
+  isCloseToExpiration: boolean
+  isExpired: boolean
+  isAvailable: boolean
   createdAt: Date
   updatedAt?: Date | null
 }
@@ -70,6 +73,18 @@ export class BatchStockWithBatch extends ValueObject<BatchStockWithBatchProps> {
 
   get expirationDate() {
     return this.props.expirationDate
+  }
+
+  get isCloseToExpiration() {
+    return this.props.isCloseToExpiration
+  }
+
+  get isExpired() {
+    return this.props.isExpired
+  }
+
+  get isAvailable() {
+    return this.props.isAvailable
   }
 
   get createdAt() {

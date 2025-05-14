@@ -257,13 +257,13 @@ model Batch {
 
 model Address {
   id           String    @id @default(uuid())
-  street       String
-  number       String
+  street       String?
+  number       String?
   complement   String?   @db.VarChar(255)
   neighborhood String
   city         String
   state        String
-  zipCode      String    @map("zip_code")
+  zipCode      String?   @map("zip_code")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime? @updatedAt @map("updated_at")
 
@@ -290,7 +290,7 @@ enum Race {
 model Patient {
   id                  String    @id @default(uuid())
   name                String
-  cpf                 String    @unique
+  cpf                 String?   @unique
   sus                 String    @unique
   birthDate           DateTime  @map("birth_date")
   gender              Gender

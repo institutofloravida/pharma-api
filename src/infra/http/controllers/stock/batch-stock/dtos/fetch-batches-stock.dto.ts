@@ -14,10 +14,6 @@ export class FetchBatchesStockDto {
   @Min(1, { message: 'Page must be at least 1.' })
   page: number = 1
 
-  @ApiProperty({ example: 'stock-123', description: 'Stock ID' })
-  @IsString({ message: 'The "stockId" field must be a string.' })
-  stockId: string
-
   @ApiProperty({ example: 'medicine-stock-456', description: 'Medicine stock ID' })
   @IsString({ message: 'The "medicineStockId" field must be a string.' })
   medicineStockId: string

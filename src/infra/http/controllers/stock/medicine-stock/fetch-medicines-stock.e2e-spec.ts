@@ -169,8 +169,20 @@ describe('Fetch Medicines On Stock (E2E)', () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         medicines_stock: expect.arrayContaining([
-          expect.objectContaining({ quantity: 10 }),
-          expect.objectContaining({ quantity: 30 }),
+          expect.objectContaining({
+            quantity: expect.objectContaining({
+              available: 10,
+              totalCurrent: 10,
+              unavailable: 0,
+            }),
+          }),
+          expect.objectContaining({
+            quantity: expect.objectContaining({
+              available: 30,
+              totalCurrent: 30,
+              unavailable: 0,
+            }),
+          }),
         ]),
       }),
     )

@@ -178,13 +178,22 @@ describe('Fetch Iventory (E2E)', () => {
       expect.objectContaining({
         inventory: expect.arrayContaining([
           expect.objectContaining({
-            quantity: 10,
+            quantity: expect.objectContaining({
+              available: 10,
+              current: 10,
+              unavailable: 10,
+            }),
           }),
           expect.objectContaining({
-            quantity: 30,
+            quantity: expect.objectContaining({
+              available: 30,
+              current: 30,
+              unavailable: 30,
+            }),
           }),
         ]),
       }),
     )
   })
+  test.todo('rever expect unavailable')
 })
