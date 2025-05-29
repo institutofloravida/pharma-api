@@ -97,6 +97,7 @@ implements MedicinesEntriesRepository {
         pharmaceuticalForm: item.medicineStock.medicineVariant.pharmaceuticalForm,
         quantity: item.quantity,
         stock: item.medicineStock.stock,
+        nfNumber: item.nfNumber,
         unitMeasure: item.medicineStock.medicineVariant.unitMeasure,
         updatedAt: item.createdAt,
       })

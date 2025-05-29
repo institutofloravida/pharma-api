@@ -16,6 +16,7 @@ export function makeMedicineEntry(
     movementTypeId: new UniqueEntityId(),
     operatorId: new UniqueEntityId(),
     quantity: faker.number.int({ max: 100, min: 1 }),
+    nfNumber: faker.string.numeric(44),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     ...override,

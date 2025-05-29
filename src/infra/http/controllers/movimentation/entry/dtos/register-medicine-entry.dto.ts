@@ -75,6 +75,13 @@ export class RegisterMedicineEntryDto {
   entryDate: Date
 
   @ApiProperty({
+    description: 'Nota fiscal número',
+    example: '1234567890',
+  })
+  @IsString()
+  nfNumber: string
+
+  @ApiProperty({
     description: 'Lista de novos lotes para entrada',
     required: false,
   })

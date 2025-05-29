@@ -114,6 +114,7 @@ describe('Register Medicine Entry (E2E)', () => {
         operatorId: operator.id.toString(),
         stockId: stock.id.toString(),
         entryDate: new Date(),
+        nfNumber: '12345678901234567890123456789012345678901234',
         newBatches: [
           {
             code: 'ABCD1',

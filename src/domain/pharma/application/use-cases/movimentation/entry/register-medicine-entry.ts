@@ -34,6 +34,7 @@ interface RegisterMedicineEntryUseCaseRequest {
     quantityToEntry: number;
   }[];
   movementTypeId: string;
+  nfNumber: string;
   entryDate?: Date;
 }
 
@@ -61,6 +62,7 @@ export class RegisterMedicineEntryUseCase {
     newBatches,
     entryDate,
     movementTypeId,
+    nfNumber,
   }: RegisterMedicineEntryUseCaseRequest): Promise<RegisterMedicineEntryUseCaseResponse> {
     if (
       (!batches && !newBatches) ||
@@ -156,6 +158,7 @@ export class RegisterMedicineEntryUseCase {
           medicineStockId: medicineStock.id,
           operatorId: new UniqueEntityId(operatorId),
           quantity: totalMovementBatches,
+          nfNumber,
           entryDate,
         })
 
@@ -215,6 +218,7 @@ export class RegisterMedicineEntryUseCase {
           operatorId: new UniqueEntityId(operatorId),
           quantity: totalMovementNewBatches,
           entryDate,
+          nfNumber,
         })
 
         await this.medicineEntryRepository.create(entry)

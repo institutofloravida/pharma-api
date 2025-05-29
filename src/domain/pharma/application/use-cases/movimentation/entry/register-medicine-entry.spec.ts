@@ -153,6 +153,7 @@ describe('Register Entry', () => {
           quantityToEntry,
         },
       ],
+      nfNumber: '01234567890123456789012345678901234567891234',
       batches: [],
     })
     expect(result.isRight()).toBeTruthy()
@@ -240,6 +241,7 @@ describe('Register Entry', () => {
       stockId: stock.id.toString(),
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
+      nfNumber: '01234567890123456789012345678901234567891234',
       batches: [
         {
           batchId: batch.id.toString(),
@@ -355,6 +357,7 @@ describe('Register Entry', () => {
           quantityToEntry: quantityToEntryBatch2,
         },
       ],
+      nfNumber: '01234567890123456789012345678901234567891234',
       stockId: stock.id.toString(),
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
@@ -371,6 +374,7 @@ describe('Register Entry', () => {
         },
       ],
       stockId: stock.id.toString(),
+      nfNumber: '01234567890123456789012345678901234567891234',
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
       batches: [],
