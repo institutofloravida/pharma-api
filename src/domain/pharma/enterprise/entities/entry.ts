@@ -5,6 +5,7 @@ import { Optional } from '@/core/types/optional'
 export interface MedicineEntryProps {
   medicineStockId: UniqueEntityId
   batcheStockId: UniqueEntityId
+  nfNumber: string
   quantity: number
   operatorId: UniqueEntityId
   movementTypeId: UniqueEntityId
@@ -20,6 +21,10 @@ export class MedicineEntry extends Entity<MedicineEntryProps> {
 
   get batcheStockId() {
     return this.props.batcheStockId
+  }
+
+  get nfNumber() {
+    return this.props.nfNumber
   }
 
   get quantity() {

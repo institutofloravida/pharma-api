@@ -8,10 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-}
-
 enum OperatorRole {
   SUPER_ADMIN
   MANAGER
@@ -179,6 +175,7 @@ model MedicineEntry {
   operatorId      String    @map("operator_id")
   movementTypeId  String    @map("movement_type_id")
   entryDate       DateTime  @default(now()) @map("entry_date")
+  nfNumber        String    @map("nf_number")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime? @updatedAt @map("updated_at")
 

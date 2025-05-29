@@ -27,7 +27,7 @@ export class RegisterMedicineEntryController {
     @Param('stockId') stockId: string,
     @Body() body: RegisterMedicineEntryDto,
   ) {
-    const { batches, entryDate, movementTypeId, newBatches } = body
+    const { batches, entryDate, movementTypeId, newBatches, nfNumber } = body
 
     const result = await this.registerMedicineEntry.execute({
       batches,
@@ -36,6 +36,7 @@ export class RegisterMedicineEntryController {
       operatorId: user.sub,
       stockId,
       entryDate,
+      nfNumber,
       newBatches,
     })
 
