@@ -29,6 +29,7 @@ export class CreateMedicineVariantController {
       medicineId,
       pharmaceuticalFormId,
       unitMeasureId,
+      complement: body.complement ?? null,
     })
 
     if (result.isLeft()) {

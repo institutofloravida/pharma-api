@@ -1,5 +1,5 @@
-import { IsString } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger'
+import { IsOptional, IsString } from 'class-validator'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 
 export class CreateMedicineVariantDto {
   @ApiProperty({
@@ -29,4 +29,13 @@ export class CreateMedicineVariantDto {
   })
   @IsString({ message: 'Unit Measure ID must be a string.' })
   unitMeasureId: string
+
+  @ApiPropertyOptional({
+    example: 'CX 10',
+    description: 'informações complementares',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  complement?: string | null
 }

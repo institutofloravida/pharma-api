@@ -10,6 +10,7 @@ interface createMedicineVariantUseCaseRequest {
   dosage: string;
   pharmaceuticalFormId: string;
   unitMeasureId: string
+  complement: string | null
 }
 
 type createMedicineVariantUseCaseResponse = Either<
@@ -27,12 +28,14 @@ export class CreateMedicineVariantUseCase {
     medicineId,
     pharmaceuticalFormId,
     unitMeasureId,
+    complement,
   }: createMedicineVariantUseCaseRequest): Promise<createMedicineVariantUseCaseResponse> {
     const medicineVariant = MedicineVariant.create({
       dosage,
       medicineId: new UniqueEntityId(medicineId),
       pharmaceuticalFormId: new UniqueEntityId(pharmaceuticalFormId),
       unitMeasureId: new UniqueEntityId(unitMeasureId),
+      complement,
     })
 
     const medicineVariantExists = await this.medicineVariantRepository.medicineVariantExists(medicineVariant)

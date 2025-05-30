@@ -7,6 +7,7 @@ export interface MedicineVariantProps {
   dosage: string;
   pharmaceuticalFormId: UniqueEntityId;
   unitMeasureId: UniqueEntityId
+  complement?: string | null;
   createdAt: Date;
   updatedAt?: Date | null;
 }
@@ -40,6 +41,15 @@ export class MedicineVariant extends AggregateRoot<MedicineVariantProps> {
 
   set unitMeasureId(value: UniqueEntityId) {
     this.props.unitMeasureId = value
+    this.touch()
+  }
+
+  get complement() {
+    return this.props.complement
+  }
+
+  set complement(value: string | null | undefined) {
+    this.props.complement = value ?? null
     this.touch()
   }
 
