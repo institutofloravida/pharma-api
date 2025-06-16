@@ -18,4 +18,8 @@ export abstract class PatientsRepository {
       pathologyId?: string
     }
   ): Promise<{ patients: Patient[]; meta: Meta }>
+  abstract getPatientsMetrics(institutionId: string): Promise<{
+    total: number
+    receiveMonth: number
+  }>
 }

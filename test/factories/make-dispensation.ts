@@ -2,7 +2,6 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Dispensation, type DispensationProps } from '@/domain/pharma/enterprise/entities/dispensation'
 import { PrismaDispensationMapper } from '@/infra/database/prisma/mappers/prisma-dispensation-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 
 export function makeDispensation(
@@ -13,8 +12,8 @@ export function makeDispensation(
     dispensationDate: new Date(),
     operatorId: new UniqueEntityId(),
     patientId: new UniqueEntityId(),
-    createdAt: faker.date.past(),
-    updatedAt: faker.date.recent(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
     ...override,
   },
   id,

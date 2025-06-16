@@ -75,4 +75,89 @@ implements DispensationsMedicinesRepository {
       },
     }
   }
+
+  async getDispensationMetrics(
+    institutionId: string,
+  ): Promise<{
+    today: { total: number; percentageAboveAverage: number };
+    month: { total: number; percentageComparedToLastMonth: number };
+  }> {
+    const today = new Date()
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0))
+    const endOfToday = new Date(today.setHours(23, 59, 59, 999))
+
+    const [todayCount, monthCount, lastMonthCount] = await this.prisma.$transaction([
+      this.prisma.dispensation.count({
+        where: {
+          exitRecords: {
+            some: {
+              batchestock: {
+                stock: {
+                  institutionId,
+                },
+              },
+            },
+          },
+          dispensationDate: {
+            gte: startOfToday,
+            lte: endOfToday,
+          },
+        },
+      }),
+      this.prisma.dispensation.count({
+        where: {
+          exitRecords: {
+            some: {
+              batchestock: {
+                stock: {
+                  institutionId,
+                },
+              },
+            },
+          },
+          dispensationDate: {
+            gte: new Date(new Date().setDate(1)),
+          },
+        },
+      }),
+      this.prisma.dispensation.count({
+        where: {
+          exitRecords: {
+            some: {
+              batchestock: {
+                stock: {
+                  institutionId,
+                },
+              },
+            },
+          },
+          dispensationDate: {
+            gte: new Date(new Date().setMonth(new Date().getMonth() - 1, 1)),
+            lt: new Date(new Date().setMonth(new Date().getMonth(), 1)),
+          },
+        },
+      }),
+    ])
+
+    const averageLastMonth = lastMonthCount > 0
+      ? lastMonthCount / 30
+      : 0
+
+    return {
+      today: {
+        total: todayCount,
+        percentageAboveAverage:
+      averageLastMonth > 0
+        ? ((todayCount - averageLastMonth) / averageLastMonth) * 100
+        : 0,
+      },
+      month: {
+        total: monthCount,
+        percentageComparedToLastMonth:
+      lastMonthCount > 0
+        ? ((monthCount - lastMonthCount) / lastMonthCount) * 100
+        : 0,
+      },
+    }
+  }
 }

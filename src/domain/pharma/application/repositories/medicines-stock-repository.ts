@@ -50,4 +50,16 @@ export abstract class MedicinesStockRepository {
   abstract getInventoryByMedicineStockId(
     medicineStockid: string,
   ): Promise<MedicineStockInventoryDetails | null>
+
+  abstract getInventoryMetrics(
+    institutionId: string,
+  ): Promise<{
+    quantity: {
+      totalCurrent: number
+      available: number
+      unavailable: number
+      zero: number
+      expired: number
+    }
+  }>
 }

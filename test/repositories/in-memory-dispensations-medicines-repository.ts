@@ -97,92 +97,69 @@ implements DispensationsMedicinesRepository {
       },
     }
   }
-}
 
-/*
+  async getDispensationMetrics(institutionId: string): Promise<{
+    today: { total: number; percentageAboveAverage: number };
+    month: { total: number; percentageComparedToLastMonth: number };
+  }> {
+    const now = new Date()
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    )
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
 
-const dispensationFilteredByMedicineId: DispensationDetails[] = []
-    for (const dispensation of this.items) {
-      const exit = this.exitsRepository.items.find((exit) =>
-        exit.dispensationId?.equal(dispensation.id),
-      )
-      if (!exit) {
-        throw new Error('Nenhuma saída identificada para essa dispensa!')
-      }
+    const dispensations = this.items
+    console.log(dispensations)
+    const todayDispensations = dispensations.filter(
+      (d) =>
+        d.dispensationDate >= todayStart &&
+        d.dispensationDate <
+          new Date(todayStart.getTime() + 24 * 60 * 60 * 1000),
+    )
+    const todayTotal = todayDispensations.length
 
-      const medicineStock = this.medicineStockRepository.items.find((item) =>
-        item.id.equal(medicineStock.id),
-      )
+    const daysSoFar = now.getDate() - 1 || 1
+    const monthDispensations = dispensations.filter(
+      (d) =>
+        d.dispensationDate >= monthStart && d.dispensationDate < todayStart,
+    )
+    const averagePerDay = monthDispensations.length / daysSoFar
 
-      if (!medicineStock) {
-        throw new Error('Estoque de medicamento não encontrado.')
-      }
+    const percentageAboveAverage =
+      averagePerDay === 0
+        ? 100
+        : ((todayTotal - averagePerDay) / averagePerDay) * 100
 
-      const medicineVariant = this.medicinesVariantsRepository.items.find(
-        (item) => item.id.equal(medicineStock.medicineVariantId),
-      )
+    const thisMonthDispensations = dispensations.filter(
+      (d) => d.dispensationDate >= monthStart && d.dispensationDate <= now,
+    )
+    const thisMonthTotal = thisMonthDispensations.length
 
-      if (!medicineVariant) {
-        throw new Error('Variante não encontrada.')
-      }
+    const lastMonthDispensations = dispensations.filter(
+      (d) =>
+        d.dispensationDate >= lastMonthStart &&
+        d.dispensationDate <= lastMonthEnd,
+    )
+    const lastMonthTotal = lastMonthDispensations.length
 
-      const pharmaceuticalForm = this.pharmaceuticalFormsRepository.items.find(
-        (item) => item.id.equal(medicineStock.pharmaceuticalFormId),
-      )
+    const percentageComparedToLastMonth =
+      lastMonthTotal === 0
+        ? 100
+        : ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
 
-      if (!pharmaceuticalForm) {
-        throw new Error('Variante não encontrada.')
-      }
-
-      const unitMeasure = this.unitsMeasureRepository.items.find(
-        (item) => item.id.equal(medicineStock.unitMeasureId),
-      )
-
-      if (!unitMeasure) {
-        throw new Error('Variante não encontrada.')
-      }
-
-      const medicine = this.medicinesRepository.items.find((item) =>
-        item.id.equal(medicineVariant.medicineId),
-      )
-
-      if (!medicine) {
-        throw new Error('Medicamento não encontrado.')
-      }
-
-      const operator = this.operatorsRepository.items.find((operator) =>
-        operator.id.equal(dispensation.operatorId),
-      )
-
-      if (!operator) {
-        throw new Error('Operador não encontrado.')
-      }
-
-      const patient = this.patientsRepository.items.find((patient) =>
-        patient.id.equal(dispensation.patientId),
-      )
-
-      if (!patient) {
-        throw new Error('Operador não encontrado.')
-      }
-
-      if (medicineId && medicine.id.equal(new UniqueEntityId(medicineId))) {
-        const dispensationDetails = DispensationDetails.create({
-          dispensationId: dispensation.id,
-          dispensationDate: dispensation.dispensationDate,
-          medicine: {
-            name: medicine.content,
-            dosage: medicineVariant.dosage,
-            pharmaceuticaForm: pharmaceuticalForm.content,
-            unitMeasure: unitMeasure.acronym,
-            quantity: dispensation.
-          },
-          operatorId: dispensation.operatorId,
-          operator: operator.name,
-          patientId: dispensation.patientId,
-          patient: patient.name,
-        })
-        dispensationFilteredByMedicineId.push(dispensation)
-      }
+    return {
+      today: {
+        total: todayTotal,
+        percentageAboveAverage,
+      },
+      month: {
+        total: thisMonthTotal,
+        percentageComparedToLastMonth,
+      },
     }
-*/
+  }
+}

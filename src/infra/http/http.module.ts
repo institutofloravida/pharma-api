@@ -118,6 +118,8 @@ import { RegisterMedicineExitController } from './controllers/movimentation/exit
 import { RegisterExitUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/register-exit'
 import { FetchMedicinesExitsController } from './controllers/movimentation/exit/fetch-exits.controller'
 import { FetchMedicinesExitsUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/fetch-exits'
+import { GetMetricsController } from './controllers/metrics/get-metrics.controller'
+import { GetMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics/get-metrics'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -136,6 +138,7 @@ import { FetchMedicinesExitsUseCase } from '@/domain/pharma/application/use-case
     GetMedicineDetailsController,
     GetMedicineVariantController,
     GetInventoryMedicineDetailsController,
+    GetMetricsController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -197,6 +200,7 @@ import { FetchMedicinesExitsUseCase } from '@/domain/pharma/application/use-case
     GetMedicineDetailsUseCase,
     GetMedicineVariantDetailsUseCase,
     GetMedicineInventoryDetailsUseCase,
+    GetMetricsUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,

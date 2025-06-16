@@ -9,4 +9,14 @@ export abstract class DispensationsMedicinesRepository {
     patientId?: string,
     dispensationDate?: Date
   }): Promise<{ dispensations: DispensationWithPatient[], meta: Meta }>
+  abstract getDispensationMetrics(institutionId: string): Promise<{
+    today: {
+      total: number
+      percentageAboveAverage: number
+    },
+    month: {
+      total: number
+      percentageComparedToLastMonth: number
+    }
+  }>
 }

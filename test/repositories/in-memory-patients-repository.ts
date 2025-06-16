@@ -2,9 +2,18 @@ import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { PatientsRepository } from '@/domain/pharma/application/repositories/patients-repository'
 import { Patient } from '@/domain/pharma/enterprise/entities/patient'
+import { InMemoryDispensationsMedicinesRepository } from './in-memory-dispensations-medicines-repository'
 
 export class InMemoryPatientsRepository implements PatientsRepository {
   public items: Patient[] = []
+
+  private dispensationsRepository?: InMemoryDispensationsMedicinesRepository
+
+  public setDispensationsRepository(
+    repo: InMemoryDispensationsMedicinesRepository,
+  ): void {
+    this.dispensationsRepository = repo
+  }
 
   async create(patient: Patient) {
     this.items.push(patient)
@@ -19,7 +28,9 @@ export class InMemoryPatientsRepository implements PatientsRepository {
   }
 
   async findByCpf(cpf: string) {
-    const patient = this.items.find((item) => item.cpf && item.cpf.toString() === cpf)
+    const patient = this.items.find(
+      (item) => item.cpf && item.cpf.toString() === cpf,
+    )
     if (patient) {
       return patient
     }
@@ -82,7 +93,9 @@ export class InMemoryPatientsRepository implements PatientsRepository {
 
   private findManyByPathologyId(pathologyId: string): Patient[] {
     const patients = this.items.filter((patient) => {
-      const pathologiesIds = patient.pathologiesIds.map(item => item.toString())
+      const pathologiesIds = patient.pathologiesIds.map((item) =>
+        item.toString(),
+      )
       return pathologiesIds.includes(pathologyId)
     })
 
@@ -92,16 +105,17 @@ export class InMemoryPatientsRepository implements PatientsRepository {
   async findMany(
     { page }: PaginationParams,
     filters: {
-      name?: string,
-      cpf?: string,
-      sus?: string,
-      birthDate?: Date,
-      generalRegistration?: string,
-      pathologyId?: string
+      name?: string;
+      cpf?: string;
+      sus?: string;
+      birthDate?: Date;
+      generalRegistration?: string;
+      pathologyId?: string;
     },
   ): Promise<{ patients: Patient[]; meta: Meta }> {
     let patients = this.items
-    const { birthDate, cpf, generalRegistration, name, pathologyId, sus } = filters
+    const { birthDate, cpf, generalRegistration, name, pathologyId, sus } =
+      filters
 
     if (name) {
       patients = this.findManyByName(name)
@@ -137,6 +151,36 @@ export class InMemoryPatientsRepository implements PatientsRepository {
         page,
         totalCount: patients.length,
       },
+    }
+  }
+
+  async getPatientsMetrics(
+    institutionId: string,
+  ): Promise<{ total: number; receiveMonth: number }> {
+    const patients = this.items
+
+    const now = new Date()
+    const currentMonth = now.getMonth()
+    const currentYear = now.getFullYear()
+    const receiveMonth = this.dispensationsRepository?.items.filter(
+      (dispensation) => {
+        const createdAt = dispensation.createdAt
+        return (
+          createdAt.getMonth() === currentMonth &&
+          createdAt.getFullYear() === currentYear
+        )
+      },
+    ).reduce((acc: string[], dispensation) => {
+      acc.push(dispensation.patientId.toString())
+      return acc
+    }, [])
+    const receiveMonthDistinctPatients = new Set(
+      receiveMonth,
+    )
+
+    return {
+      total: patients.length,
+      receiveMonth: receiveMonthDistinctPatients.size,
     }
   }
 }

@@ -203,12 +203,53 @@ implements MedicinesStockRepository {
         )
       }
 
+      const batchesStock = await Promise.all(
+        medicineStock.batchesStockIds.map(async (id) => {
+          const batchStock = await this.batchesStocksRepository.findById(
+            id.toString(),
+          )
+          if (!batchStock) {
+            throw new Error('lote não identificado')
+          }
+          const batch = await this.batchesRepository.findById(
+            batchStock.batchId.toString(),
+          )
+          if (!batch) {
+            throw new Error('lote não identificado')
+          }
+          const manufacturer = await this.manufacturersRepository.findById(
+            batch.manufacturerId.toString(),
+          )
+          if (!manufacturer) {
+            throw new Error('fabricante não identificado')
+          }
+          return {
+            id: batchStock.id,
+            code: batch.code,
+            quantity: batchStock.quantity,
+            expirationDate: batch.expirationDate,
+            manufacturingDate: batch.manufacturingDate,
+            manufacturer: manufacturer.content,
+            isCloseToExpiration: batch.isCloseToExpiration(),
+            isExpired: batch.isExpired(),
+          }
+        }),
+      )
+
       const medicineStockDetails = MedicineStockDetails.create({
         id: medicineStock.id,
         stock: stock.content,
         stockId: stock.id,
         medicine: medicine.content,
-        currentQuantity: medicineStock.quantity,
+        quantity: {
+          totalCurrent: medicineStock.quantity,
+          available: batchesStock
+            .filter((batch) => !batch.isExpired)
+            .reduce((acc, batch) => acc + batch.quantity, 0),
+          unavailable: batchesStock
+            .filter((batch) => batch.isExpired)
+            .reduce((acc, batch) => acc + batch.quantity, 0),
+        },
         medicineVariantId: medicineVariant.id,
         dosage: medicineVariant.dosage,
         pharmaceuticalForm: pharmaceuticalForm.content,
@@ -333,6 +374,39 @@ implements MedicinesStockRepository {
         )
       }
 
+      const batchesStock = await Promise.all(
+        medicineStock.batchesStockIds.map(async (id) => {
+          const batchStock = await this.batchesStocksRepository.findById(
+            id.toString(),
+          )
+          if (!batchStock) {
+            throw new Error('lote não identificado')
+          }
+          const batch = await this.batchesRepository.findById(
+            batchStock.batchId.toString(),
+          )
+          if (!batch) {
+            throw new Error('lote não identificado')
+          }
+          const manufacturer = await this.manufacturersRepository.findById(
+            batch.manufacturerId.toString(),
+          )
+          if (!manufacturer) {
+            throw new Error('fabricante não identificado')
+          }
+          return {
+            id: batchStock.id,
+            code: batch.code,
+            quantity: batchStock.quantity,
+            expirationDate: batch.expirationDate,
+            manufacturingDate: batch.manufacturingDate,
+            manufacturer: manufacturer.content,
+            isCloseToExpiration: batch.isCloseToExpiration(),
+            isExpired: batch.isExpired(),
+          }
+        }),
+      )
+
       const medicineStockInventory = MedicineStockInventory.create({
         stockId: medicineStock.stockId,
         unitMeasure: unitMeasure.acronym,
@@ -342,7 +416,15 @@ implements MedicinesStockRepository {
         medicineStockId: medicineStock.id,
         dosage: medicineVariant.dosage,
         minimumLevel: medicineStock.minimumLevel,
-        quantity: medicineStock.quantity,
+        quantity: {
+          current: medicineStock.quantity,
+          available: batchesStock
+            .filter((batch) => !batch.isExpired)
+            .reduce((acc, batch) => acc + batch.quantity, 0),
+          unavailable: batchesStock
+            .filter((batch) => batch.isExpired)
+            .reduce((acc, batch) => acc + batch.quantity, 0),
+        },
         batchesStockIds: medicineStock.batchesStockIds,
       })
 
@@ -466,5 +548,50 @@ implements MedicinesStockRepository {
         unavailable: 0,
       },
     })
+  }
+
+  async getInventoryMetrics(institutionId: string): Promise<{
+    quantity: {
+      totalCurrent: number;
+      available: number;
+      unavailable: number;
+      zero: number;
+      expired: number;
+    };
+  }> {
+    const institution =
+      await this.institutionsRepository.findById(institutionId)
+    if (!institution) {
+      throw new Error(
+        `Instituição com Id ${institutionId} não foi encontrada!`,
+      )
+    }
+
+    const medicinesStock = await this.fetchInventory(
+      { page: 1 },
+      institutionId,
+      {},
+    )
+    return {
+      quantity: {
+        totalCurrent: this.items.reduce(
+          (acc, item) => acc + (item
+            ? item.quantity
+            : 0),
+          0,
+        ),
+        available: medicinesStock.inventory.reduce(
+          (acc, item) => acc + item.quantity.available,
+          0,
+        ),
+        unavailable: medicinesStock.inventory.reduce(
+          (acc, item) => acc + item.quantity.unavailable,
+          0,
+        ),
+        zero: medicinesStock.inventory.filter((item) => item.isZero()).length,
+        expired: medicinesStock.inventory.filter((item) => item.quantity.unavailable > 0)
+          .length,
+      },
+    }
   }
 }
