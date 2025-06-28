@@ -101,7 +101,6 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     includeExpired?: boolean
   }, pagination: boolean = true): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }> {
     const { medicineStockId, code, includeExpired } = filters
-    console.log(filters)
 
     const whereClause: Prisma.BatcheStockWhereInput = {
       currentQuantity: { gt: 0 },

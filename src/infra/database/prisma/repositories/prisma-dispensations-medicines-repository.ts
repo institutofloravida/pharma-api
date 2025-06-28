@@ -85,7 +85,6 @@ implements DispensationsMedicinesRepository {
     const today = new Date()
     const startOfToday = new Date(today.setHours(0, 0, 0, 0))
     const endOfToday = new Date(today.setHours(23, 59, 59, 999))
-
     const [todayCount, monthCount, lastMonthCount] = await this.prisma.$transaction([
       this.prisma.dispensation.count({
         where: {

@@ -157,19 +157,20 @@ export class PrismaPatientsRepository implements PatientsRepository {
   async getPatientsMetrics(institutionId: string): Promise<{ total: number; receiveMonth: number }> {
     const [total, receiveMonth] = await this.prisma.$transaction([
       this.prisma.patient.count(),
-      this.prisma.dispensation.count({
+      this.prisma.dispensation.findMany({
         where: {
-
           createdAt: {
             gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
           },
         },
+        distinct: ['patientId'],
+        select: { patientId: true },
       }),
     ])
 
     return {
       total,
-      receiveMonth,
+      receiveMonth: receiveMonth.length,
     }
   }
 }

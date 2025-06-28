@@ -118,8 +118,12 @@ import { RegisterMedicineExitController } from './controllers/movimentation/exit
 import { RegisterExitUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/register-exit'
 import { FetchMedicinesExitsController } from './controllers/movimentation/exit/fetch-exits.controller'
 import { FetchMedicinesExitsUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/fetch-exits'
-import { GetMetricsController } from './controllers/metrics/get-metrics.controller'
-import { GetMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics/get-metrics'
+import { GetUsersMetricsController } from './controllers/metrics/get-users-metrics.controller'
+import { GetUsersMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics/get-users-metrics'
+import { GetDispenseMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics/get-dispense-metrics'
+import { GetDispenseMetricsController } from './controllers/metrics/get-dispenses-metrics.controller'
+import { GetInventoryMetricsController } from './controllers/metrics/get-inventory-metrics.controller'
+import { GetInventoryMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics/get-inventory-metrics'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -138,7 +142,9 @@ import { GetMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics
     GetMedicineDetailsController,
     GetMedicineVariantController,
     GetInventoryMedicineDetailsController,
-    GetMetricsController,
+    GetUsersMetricsController,
+    GetDispenseMetricsController,
+    GetInventoryMetricsController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -200,7 +206,9 @@ import { GetMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics
     GetMedicineDetailsUseCase,
     GetMedicineVariantDetailsUseCase,
     GetMedicineInventoryDetailsUseCase,
-    GetMetricsUseCase,
+    GetUsersMetricsUseCase,
+    GetDispenseMetricsUseCase,
+    GetInventoryMetricsUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,

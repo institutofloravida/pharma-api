@@ -113,7 +113,6 @@ implements DispensationsMedicinesRepository {
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
 
     const dispensations = this.items
-    console.log(dispensations)
     const todayDispensations = dispensations.filter(
       (d) =>
         d.dispensationDate >= todayStart &&

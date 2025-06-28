@@ -523,10 +523,9 @@ implements MedicinesStockRepository {
       unavailable: number;
       zero: number;
       expired: number;
-      closeToExpiration: number;
     };
   }> {
-    const [totalCurrent, available, zero, closeToExpiration] =
+    const [totalCurrent, available, zero] =
       await this.prisma.$transaction([
         this.prisma.medicineStock.aggregate({
           where: {
@@ -596,7 +595,6 @@ implements MedicinesStockRepository {
         unavailable: (totalCurrent._sum.currentQuantity ?? 0) - (available._sum.currentQuantity ?? 0),
         zero,
         expired: (totalCurrent._sum.currentQuantity ?? 0) - (available._sum.currentQuantity ?? 0),
-        closeToExpiration: 0,
       },
     }
   }

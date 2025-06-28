@@ -1,4 +1,3 @@
-import { GetMetricsUseCase } from './get-metrics'
 import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository'
 import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
@@ -27,6 +26,7 @@ import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeStock } from 'test/factories/make-stock'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 import { makeManufacturer } from 'test/factories/make-manufacturer'
+import { GetUsersMetricsUseCase } from './get-users-metrics'
 
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
@@ -44,9 +44,9 @@ let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryDispensationsRepository: InMemoryDispensationsMedicinesRepository
-let sut: GetMetricsUseCase
+let sut: GetUsersMetricsUseCase
 
-describe('Get Metrics', () => {
+describe('Get Users Metrics', () => {
   beforeEach(() => {
     vi.useFakeTimers()
 
@@ -121,14 +121,12 @@ describe('Get Metrics', () => {
       inMemoryDispensationsRepository,
     )
 
-    sut = new GetMetricsUseCase(
-      inMemoryMedicinesStockRepository,
-      inMemoryDispensationsRepository,
+    sut = new GetUsersMetricsUseCase(
       inMemoryPatientsRepository,
     )
   })
 
-  it('should be able to get a Metrics', async () => {
+  it('should be able to get Users Metrics', async () => {
     const date = new Date(2025, 2, 1)
     vi.setSystemTime(date)
 
@@ -241,25 +239,6 @@ describe('Get Metrics', () => {
         users: {
           total: 1,
           receiveMonth: 1,
-        },
-        dispense: {
-          today: {
-            total: 2,
-            percentageAboveAverage: 100,
-          },
-          month: {
-            total: 2,
-            percentageComparedToLastMonth: 100,
-          },
-        },
-        inventory: {
-          quantity: {
-            totalCurrent: 20,
-            available: 20,
-            unavailable: 0,
-            zero: 0,
-            expired: 0,
-          },
         },
       }),
     )
