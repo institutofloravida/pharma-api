@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Meta } from '@/core/repositories/meta'
+import { Meta, MetaReport } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository'
 import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation'
@@ -7,6 +7,8 @@ import { InMemoryMedicinesExitsRepository } from './in-memory-medicines-exits-re
 import { InMemoryOperatorsRepository } from './in-memory-operators-repository'
 import { InMemoryPatientsRepository } from './in-memory-patients-repository'
 import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient'
+import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-repository'
+import { InMemoryStocksRepository } from './in-memory-stocks-repository'
 
 export class InMemoryDispensationsMedicinesRepository
 implements DispensationsMedicinesRepository {
@@ -15,6 +17,8 @@ implements DispensationsMedicinesRepository {
     private exitsRepository: InMemoryMedicinesExitsRepository,
     private operatorsRepository: InMemoryOperatorsRepository,
     private patientsRepository: InMemoryPatientsRepository,
+    private medicinesStocksRepository: InMemoryMedicinesStockRepository,
+    private stocksRepository: InMemoryStocksRepository,
   ) {}
 
   async create(dispensation: Dispensation) {
@@ -158,6 +162,115 @@ implements DispensationsMedicinesRepository {
       month: {
         total: thisMonthTotal,
         percentageComparedToLastMonth,
+      },
+    }
+  }
+
+  async getDispensationsInAPeriod(
+    institutionId: string,
+    startDate?: Date,
+    endDate?: Date,
+    patientId?: string,
+    operatorId?: string,
+  ): Promise<{ dispensations: DispensationWithPatient[]; meta: MetaReport }> {
+    const dispensations = this.items
+    const dispensationsFiltered = dispensations
+      .filter((dispensation) => {
+        const exit = this.exitsRepository.items.find((exit) =>
+          exit.dispensationId?.equal(dispensation.id),
+        )
+        if (!exit) {
+          throw new Error('Exit not found for dispensation.')
+        }
+
+        const medicineStock = this.medicinesStocksRepository.items.find(
+          (stock) => stock.id.equal(exit.medicineStockId),
+        )
+
+        if (!medicineStock) {
+          throw new Error('Medicine stock not found for exit.')
+        }
+
+        const stock = this.stocksRepository.items.find((stock) =>
+          stock.id.equal(medicineStock.stockId),
+        )
+
+        if (!stock) {
+          throw new Error('Stock not found for medicine stock.')
+        }
+
+        if (!stock.institutionId.equal(new UniqueEntityId(institutionId))) {
+          return false
+        }
+        if (
+          startDate &&
+          dispensation.dispensationDate <
+            new Date(startDate.setHours(0, 0, 0, 0))
+        ) {
+          return false
+        }
+        if (
+          endDate &&
+          dispensation.dispensationDate >
+            new Date(endDate.setHours(23, 59, 59, 999))
+        ) {
+          return false
+        }
+
+        if (
+          patientId &&
+          !dispensation.patientId.equal(new UniqueEntityId(patientId))
+        ) {
+          return false
+        }
+
+        if (
+          operatorId &&
+          !dispensation.operatorId.equal(new UniqueEntityId(operatorId))
+        ) {
+          return false
+        }
+
+        return true
+      })
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+
+    const dispensationsMapped = dispensationsFiltered.map((dispensation) => {
+      const exitsOfDispensation = this.exitsRepository.items.filter((exit) =>
+        exit.dispensationId?.equal(dispensation.id),
+      )
+
+      const operator = this.operatorsRepository.items.find((operator) =>
+        operator.id.equal(dispensation.operatorId),
+      )
+
+      if (!operator) {
+        throw new Error('Operador não encontrado.')
+      }
+
+      const patient = this.patientsRepository.items.find((patient) =>
+        patient.id.equal(dispensation.patientId),
+      )
+
+      if (!patient) {
+        throw new Error('Pacient não encontrado.')
+      }
+
+      return DispensationWithPatient.create({
+        dispensationDate: dispensation.dispensationDate,
+        dispensationId: dispensation.id,
+        items: exitsOfDispensation.length,
+        operatorId: dispensation.operatorId,
+        operator: operator.name,
+        patientId: dispensation.operatorId,
+        patient: patient.name,
+      })
+    })
+
+    return {
+      dispensations: dispensationsMapped,
+      meta: {
+        totalCount: dispensationsFiltered.length,
       },
     }
   }

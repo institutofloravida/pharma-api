@@ -124,6 +124,8 @@ import { GetDispenseMetricsUseCase } from '@/domain/pharma/application/use-cases
 import { GetDispenseMetricsController } from './controllers/metrics/get-dispenses-metrics.controller'
 import { GetInventoryMetricsController } from './controllers/metrics/get-inventory-metrics.controller'
 import { GetInventoryMetricsUseCase } from '@/domain/pharma/application/use-cases/metrics/get-inventory-metrics'
+import { GetDispenseInAPeriodUseCase } from '@/domain/pharma/application/use-cases/reports/get-dispenses-in-a-period-report'
+import { GetDispenseInAPeriodController } from './controllers/reports/get-dispense-in-a-period-report.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -145,6 +147,7 @@ import { GetInventoryMetricsUseCase } from '@/domain/pharma/application/use-case
     GetUsersMetricsController,
     GetDispenseMetricsController,
     GetInventoryMetricsController,
+    GetDispenseInAPeriodController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -209,6 +212,7 @@ import { GetInventoryMetricsUseCase } from '@/domain/pharma/application/use-case
     GetUsersMetricsUseCase,
     GetDispenseMetricsUseCase,
     GetInventoryMetricsUseCase,
+    GetDispenseInAPeriodUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,

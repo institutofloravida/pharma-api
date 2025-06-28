@@ -94,6 +94,8 @@ describe('Fetch Dispensations', () => {
         inMemoryMedicinesExitsRepository,
         inMemoryOperatorsRepository,
         inMemoryPatientsRepository,
+        inMemoryMedicinesStockRepository,
+        inMemoryStocksRepository,
       )
 
     sut = new FetchDispensationsUseCase(inMemoryDispensationsRepository)
