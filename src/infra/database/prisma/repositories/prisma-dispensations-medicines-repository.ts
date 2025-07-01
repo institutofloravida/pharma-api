@@ -80,6 +80,9 @@ implements DispensationsMedicinesRepository {
     today: { total: number; percentageAboveAverage: number };
     month: { total: number; percentageComparedToLastMonth: number };
   }> {
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
+
     const today = new Date()
     const startOfToday = new Date(today.setHours(0, 0, 0, 0))
     const endOfToday = new Date(today.setHours(23, 59, 59, 999))
@@ -114,7 +117,7 @@ implements DispensationsMedicinesRepository {
               },
             },
             dispensationDate: {
-              gte: new Date(new Date().setDate(1)),
+              gte: startOfMonth,
             },
           },
         }),
