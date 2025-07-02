@@ -53,3 +53,8 @@ export class Dispensation extends Entity<DispensationProps> {
     return dispensation
   }
 }
+
+export interface DispensationPerDay {
+  dispensationDate: Date
+  total: number
+}

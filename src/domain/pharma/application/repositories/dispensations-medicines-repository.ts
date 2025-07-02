@@ -1,5 +1,5 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
-import { Dispensation } from '../../enterprise/entities/dispensation'
+import { Dispensation, type DispensationPerDay } from '../../enterprise/entities/dispensation'
 import { Meta, type MetaReport } from '@/core/repositories/meta'
 import { DispensationWithPatient } from '../../enterprise/entities/value-objects/dispensation-with-patient'
 
@@ -29,4 +29,9 @@ export abstract class DispensationsMedicinesRepository {
     patientId?: string,
     operatorId?: string,
   ): Promise<{ dispensations: DispensationWithPatient[], meta: MetaReport }>
+  abstract fetchDispensesPerDay(
+    institutionId: string,
+    startDate?: Date,
+    endDate?: Date,
+  ): Promise<{ dispenses: DispensationPerDay[], meta: MetaReport }>
 }

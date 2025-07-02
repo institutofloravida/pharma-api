@@ -1,5 +1,8 @@
 import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository'
-import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation'
+import {
+  Dispensation,
+  type DispensationPerDay,
+} from '@/domain/pharma/enterprise/entities/dispensation'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaDispensationMapper } from '../mappers/prisma-dispensation-mapper'
@@ -81,7 +84,15 @@ implements DispensationsMedicinesRepository {
     month: { total: number; percentageComparedToLastMonth: number };
   }> {
     const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
+    const startOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1,
+      0,
+      0,
+      0,
+      0,
+    )
 
     const today = new Date()
     const startOfToday = new Date(today.setHours(0, 0, 0, 0))
@@ -215,6 +226,49 @@ implements DispensationsMedicinesRepository {
 
     return {
       dispensations: dispensationsMapped,
+      meta: {
+        totalCount,
+      },
+    }
+  }
+
+  async fetchDispensesPerDay(
+    institutionId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<{ dispenses: DispensationPerDay[]; meta: MetaReport }> {
+    const whereClause: Prisma.DispensationWhereInput = {
+      exitRecords: {
+        some: {
+          batchestock: {
+            stock: {
+              institutionId: { equals: institutionId },
+            },
+          },
+        },
+      },
+      dispensationDate: { gte: startDate, lte: endDate },
+    }
+
+    const totalCount = await this.prisma.dispensation.count({ where: whereClause })
+    const dispensesGroupedByDay = await this.prisma.dispensation.groupBy({
+      by: ['dispensationDate'],
+      where: whereClause,
+      _count: {
+        _all: true,
+      },
+      orderBy: {
+        dispensationDate: 'asc',
+      },
+    })
+
+    const dispensesPerDay: DispensationPerDay[] = dispensesGroupedByDay.map((group) => ({
+      dispensationDate: group.dispensationDate,
+      total: group._count._all,
+    }))
+
+    return {
+      dispenses: dispensesPerDay,
       meta: {
         totalCount,
       },

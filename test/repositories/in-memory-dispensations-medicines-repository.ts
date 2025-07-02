@@ -2,7 +2,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Meta, MetaReport } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository'
-import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation'
+import { Dispensation, type DispensationPerDay } from '@/domain/pharma/enterprise/entities/dispensation'
 import { InMemoryMedicinesExitsRepository } from './in-memory-medicines-exits-repository'
 import { InMemoryOperatorsRepository } from './in-memory-operators-repository'
 import { InMemoryPatientsRepository } from './in-memory-patients-repository'
@@ -271,6 +271,83 @@ implements DispensationsMedicinesRepository {
       dispensations: dispensationsMapped,
       meta: {
         totalCount: dispensationsFiltered.length,
+      },
+    }
+  }
+
+  async fetchDispensesPerDay(
+    institutionId: string,
+    startDate?: Date,
+    endDate?: Date,
+  ): Promise<{ dispenses: DispensationPerDay[]; meta: MetaReport }> {
+    const dispensations = this.items
+      .filter((dispensation) => {
+        const exit = this.exitsRepository.items.find((exit) =>
+          exit.dispensationId?.equal(dispensation.id),
+        )
+        if (!exit) {
+          throw new Error('Exit not found for dispensation.')
+        }
+
+        const medicineStock = this.medicinesStocksRepository.items.find(
+          (stock) => stock.id.equal(exit.medicineStockId),
+        )
+
+        if (!medicineStock) {
+          throw new Error('Medicine stock not found for exit.')
+        }
+
+        const stock = this.stocksRepository.items.find((stock) =>
+          stock.id.equal(medicineStock.stockId),
+        )
+
+        if (!stock) {
+          throw new Error('Stock not found for medicine stock.')
+        }
+
+        if (!stock.institutionId.equal(new UniqueEntityId(institutionId))) {
+          return false
+        }
+        if (
+          startDate &&
+          dispensation.dispensationDate < new Date(startDate.setHours(0, 0, 0, 0))
+        ) {
+          return false
+        }
+        if (
+          endDate &&
+          dispensation.dispensationDate >
+            new Date(endDate.setHours(23, 59, 59, 999))
+        ) {
+          return false
+        }
+
+        return true
+      })
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+
+    const dispensationsPerDay: DispensationPerDay[] = []
+
+    dispensations.forEach((dispensation) => {
+      const dateKey = dispensation.dispensationDate.toISOString().split('T')[0]
+      const existingEntry = dispensationsPerDay.find(
+        (entry) => entry.dispensationDate.toISOString().split('T')[0] === dateKey,
+      )
+
+      if (existingEntry) {
+        existingEntry.total += 1
+      } else {
+        dispensationsPerDay.push({
+          dispensationDate: new Date(dateKey),
+          total: 1,
+        })
+      }
+    })
+
+    return {
+      dispenses: dispensationsPerDay,
+      meta: {
+        totalCount: dispensations.length,
       },
     }
   }
