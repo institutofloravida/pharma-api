@@ -27,6 +27,7 @@ import { makeStock } from 'test/factories/make-stock'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 import { makeManufacturer } from 'test/factories/make-manufacturer'
 import { GetInventoryMetricsUseCase } from './get-inventory-metrics'
+import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
 
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
@@ -44,12 +45,13 @@ let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryDispensationsRepository: InMemoryDispensationsMedicinesRepository
+let inMemoryPathologiesRepository: InMemoryPathologiesRepository
 let sut: GetInventoryMetricsUseCase
 
 describe('Get Inventory Metrics', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-
+    inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryTherapeuticClassesRepository =
       new InMemoryTherapeuticClassesRepository()
@@ -115,6 +117,10 @@ describe('Get Inventory Metrics', () => {
         inMemoryMedicinesExitsRepository,
         inMemoryOperatorsRepository,
         inMemoryPatientsRepository,
+        inMemoryMedicinesStockRepository,
+        inMemoryStocksRepository,
+        inMemoryPathologiesRepository,
+
       )
 
     inMemoryPatientsRepository.setDispensationsRepository(

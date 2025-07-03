@@ -2,6 +2,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Dispensation, type DispensationPerDay } from '../../enterprise/entities/dispensation'
 import { Meta, type MetaReport } from '@/core/repositories/meta'
 import { DispensationWithPatient } from '../../enterprise/entities/value-objects/dispensation-with-patient'
+import { MostTreatedPathology } from '../../enterprise/entities/pathology'
 
 export abstract class DispensationsMedicinesRepository {
   abstract create(dispensation: Dispensation): Promise<void>
@@ -34,4 +35,7 @@ export abstract class DispensationsMedicinesRepository {
     startDate?: Date,
     endDate?: Date,
   ): Promise<{ dispenses: DispensationPerDay[], meta: MetaReport }>
+  abstract fetchMostTreatedPathologies(
+    institutionId?: string,
+  ): Promise<{ mostTreatedPathologies: MostTreatedPathology[] }>
 }

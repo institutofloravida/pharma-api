@@ -20,3 +20,10 @@ export class Pathology extends AuxiliaryRecord<PathologyProps> {
     return pathology
   }
 }
+
+export interface MostTreatedPathology {
+  pathologyId: string
+  pathologyName: string
+  total: number
+  percentage: number
+}

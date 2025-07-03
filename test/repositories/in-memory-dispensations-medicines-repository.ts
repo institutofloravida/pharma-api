@@ -2,13 +2,18 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Meta, MetaReport } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository'
-import { Dispensation, type DispensationPerDay } from '@/domain/pharma/enterprise/entities/dispensation'
+import {
+  Dispensation,
+  type DispensationPerDay,
+} from '@/domain/pharma/enterprise/entities/dispensation'
 import { InMemoryMedicinesExitsRepository } from './in-memory-medicines-exits-repository'
 import { InMemoryOperatorsRepository } from './in-memory-operators-repository'
 import { InMemoryPatientsRepository } from './in-memory-patients-repository'
 import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient'
 import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-repository'
 import { InMemoryStocksRepository } from './in-memory-stocks-repository'
+import { MostTreatedPathology } from '@/domain/pharma/enterprise/entities/pathology'
+import { InMemoryPathologiesRepository } from './in-memory-pathologies-repository'
 
 export class InMemoryDispensationsMedicinesRepository
 implements DispensationsMedicinesRepository {
@@ -19,6 +24,8 @@ implements DispensationsMedicinesRepository {
     private patientsRepository: InMemoryPatientsRepository,
     private medicinesStocksRepository: InMemoryMedicinesStockRepository,
     private stocksRepository: InMemoryStocksRepository,
+    private pathologiesRepository: InMemoryPathologiesRepository,
+
   ) {}
 
   async create(dispensation: Dispensation) {
@@ -310,7 +317,8 @@ implements DispensationsMedicinesRepository {
         }
         if (
           startDate &&
-          dispensation.dispensationDate < new Date(startDate.setHours(0, 0, 0, 0))
+          dispensation.dispensationDate <
+            new Date(startDate.setHours(0, 0, 0, 0))
         ) {
           return false
         }
@@ -331,7 +339,8 @@ implements DispensationsMedicinesRepository {
     dispensations.forEach((dispensation) => {
       const dateKey = dispensation.dispensationDate.toISOString().split('T')[0]
       const existingEntry = dispensationsPerDay.find(
-        (entry) => entry.dispensationDate.toISOString().split('T')[0] === dateKey,
+        (entry) =>
+          entry.dispensationDate.toISOString().split('T')[0] === dateKey,
       )
 
       if (existingEntry) {
@@ -350,5 +359,91 @@ implements DispensationsMedicinesRepository {
         totalCount: dispensations.length,
       },
     }
+  }
+
+  async fetchMostTreatedPathologies(
+    institutionId?: string,
+  ): Promise<{ mostTreatedPathologies: MostTreatedPathology[] }> {
+  // Mapeia patologiaId -> { name, count }
+    const pathologyCount: Record<string, { name: string; count: number }> = {}
+
+    // Filtra dispensas pela instituição, se necessário
+    const dispensations = this.items.filter((dispensation) => {
+      if (!institutionId) return true
+      const exit = this.exitsRepository.items.find((exit) =>
+        exit.dispensationId?.equal(dispensation.id),
+      )
+      if (!exit) return false
+      const medicineStock = this.medicinesStocksRepository.items.find(
+        (stock) => stock.id.equal(exit.medicineStockId),
+      )
+      if (!medicineStock) return false
+      const stock = this.stocksRepository.items.find((stock) =>
+        stock.id.equal(medicineStock.stockId),
+      )
+      if (!stock) return false
+      return stock.institutionId.equal(new UniqueEntityId(institutionId))
+    })
+
+    // Conta patologias
+    for (const dispensation of dispensations) {
+      const patient = this.patientsRepository.items.find((p) =>
+        p.id.equal(dispensation.patientId),
+      )
+      if (!patient) continue
+      for (const pathologyId of patient.pathologiesIds) {
+        const id = pathologyId.toString()
+        // Aqui você pode buscar o nome real da patologia se tiver um repositório de patologias
+        const pathology = this.pathologiesRepository.items.find((p) =>
+          p.id.equal(pathologyId),
+        )
+        if (!pathology) {
+          throw new Error(`Pathology with id ${id} not found`)
+        }
+        const pathologyName = pathology.content
+
+        if (!pathologyCount[id]) {
+          pathologyCount[id] = { name: pathologyName, count: 0 }
+        }
+        pathologyCount[id].count++
+      }
+    }
+
+    // Monta array e ordena
+    const allPathologies = Object.entries(pathologyCount)
+      .map(([id, { name, count }]) => ({
+        pathologyId: id,
+        pathologyName: name,
+        total: count,
+        percentage: 0, // inicializa com 0, será atualizado abaixo
+      }))
+      .sort((a, b) => b.total - a.total)
+
+    const totalDispensations = allPathologies.reduce((sum, p) => sum + p.total, 0)
+
+    allPathologies.forEach(p => {
+      p.percentage = totalDispensations > 0
+        ? (p.total / totalDispensations) * 100
+        : 0
+    })
+
+    // Pega as 4 primeiras, soma o resto como "Outros"
+    const top4 = allPathologies.slice(0, 4)
+    const othersTotal = allPathologies.slice(4).reduce((sum, p) => sum + p.total, 0)
+    const othersPercentage = totalDispensations > 0
+      ? (othersTotal / totalDispensations) * 100
+      : 0
+
+    const result: MostTreatedPathology[] = [...top4]
+    if (othersTotal > 0) {
+      result.push({
+        pathologyId: 'others',
+        pathologyName: 'Outros',
+        total: othersTotal,
+        percentage: othersPercentage,
+      })
+    }
+
+    return { mostTreatedPathologies: result }
   }
 }

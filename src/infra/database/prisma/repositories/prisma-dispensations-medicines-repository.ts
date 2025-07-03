@@ -11,6 +11,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient'
 import { Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import type { MostTreatedPathology } from '@/domain/pharma/enterprise/entities/pathology'
 
 @Injectable()
 export class PrismaDispensationsMedicinesRepository
@@ -250,7 +251,9 @@ implements DispensationsMedicinesRepository {
       dispensationDate: { gte: startDate, lte: endDate },
     }
 
-    const totalCount = await this.prisma.dispensation.count({ where: whereClause })
+    const totalCount = await this.prisma.dispensation.count({
+      where: whereClause,
+    })
     const dispensesGroupedByDay = await this.prisma.dispensation.groupBy({
       by: ['dispensationDate'],
       where: whereClause,
@@ -262,10 +265,12 @@ implements DispensationsMedicinesRepository {
       },
     })
 
-    const dispensesPerDay: DispensationPerDay[] = dispensesGroupedByDay.map((group) => ({
-      dispensationDate: group.dispensationDate,
-      total: group._count._all,
-    }))
+    const dispensesPerDay: DispensationPerDay[] = dispensesGroupedByDay.map(
+      (group) => ({
+        dispensationDate: group.dispensationDate,
+        total: group._count._all,
+      }),
+    )
 
     return {
       dispenses: dispensesPerDay,
@@ -273,5 +278,63 @@ implements DispensationsMedicinesRepository {
         totalCount,
       },
     }
+  }
+
+  async fetchMostTreatedPathologies(
+    institutionId?: string,
+  ): Promise<{ mostTreatedPathologies: MostTreatedPathology[] }> {
+    const whereClause = institutionId
+      ? `WHERE s."institution_id" = '${institutionId}'`
+      : ''
+    const pathologies = await this.prisma.$queryRawUnsafe<
+      Array<{ pathologyId: string; pathologyName: string; total: number }>
+    >(
+      `SELECT
+        p.id AS "pathologyId",
+        p.name AS "pathologyName",
+        COUNT(*) AS total
+      FROM "pathology" p
+      JOIN "_PathologyToPatient" pp ON pp."A" = p.id
+      JOIN "patients" pa ON pa.id = pp."B"
+      JOIN "dispensations" d ON d."patient_id" = pa.id
+      JOIN "exits" e ON e."dispensationId" = d.id
+      JOIN "batches_stocks" bs ON bs.id = e."batchestockId"
+      JOIN "stocks" s ON s.id = bs."stock_id"
+      ${whereClause}
+      GROUP BY p.id, p.name
+      ORDER BY total DESC`,
+    )
+
+    const totalDispensations = pathologies.reduce(
+      (sum, p) => sum + Number(p.total),
+      0,
+    )
+    const top4 = pathologies.slice(0, 4).map((p) => ({
+      ...p,
+      total: Number(p.total),
+      percentage:
+        totalDispensations > 0
+          ? (Number(p.total) / totalDispensations) * 100
+          : 0,
+    }))
+    const othersTotal = pathologies
+      .slice(4)
+      .reduce((sum, p) => sum + Number(p.total), 0)
+    const othersPercentage =
+      totalDispensations > 0
+        ? (othersTotal / totalDispensations) * 100
+        : 0
+
+    const result: MostTreatedPathology[] = [...top4]
+    if (othersTotal > 0) {
+      result.push({
+        pathologyId: 'others',
+        pathologyName: 'Outros',
+        total: othersTotal,
+        percentage: othersPercentage,
+      })
+    }
+
+    return { mostTreatedPathologies: result }
   }
 }

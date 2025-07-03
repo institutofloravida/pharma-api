@@ -128,6 +128,8 @@ import { GetDispenseInAPeriodUseCase } from '@/domain/pharma/application/use-cas
 import { GetDispenseInAPeriodController } from './controllers/reports/get-dispense-in-a-period-report.controller'
 import { FetchDispensesPerDayController } from './controllers/metrics/fetch-dispenses-per-day.controller'
 import { FetchDispensesPerDayUseCase } from '@/domain/pharma/application/use-cases/metrics/fetch-dispenses-per-day'
+import { FetchMostTreatedPathologiesController } from './controllers/metrics/fetch-most-treated-pathologies.controller'
+import { FetchMostTreatedPathologiesUseCase } from '@/domain/pharma/application/use-cases/metrics/fetch-most-treated-pathologies'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -186,6 +188,7 @@ import { FetchDispensesPerDayUseCase } from '@/domain/pharma/application/use-cas
     FetchInventoryController,
     FetchMedicinesExitsController,
     FetchDispensesPerDayController,
+    FetchMostTreatedPathologiesController,
     UpdateInstitutionController,
     UpdatePathologyController,
     UpdateTherapeuticClassController,
@@ -252,6 +255,7 @@ import { FetchDispensesPerDayUseCase } from '@/domain/pharma/application/use-cas
     FetchInventoryUseCase,
     FetchMedicinesExitsUseCase,
     FetchDispensesPerDayUseCase,
+    FetchMostTreatedPathologiesUseCase,
     UpdateInstitutionUseCase,
     UpdatePathologyUseCase,
     UpdateTherapeuticClassUseCase,
