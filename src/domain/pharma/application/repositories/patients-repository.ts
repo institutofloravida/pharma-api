@@ -4,6 +4,8 @@ import { Meta } from '@/core/repositories/meta'
 
 export abstract class PatientsRepository {
   abstract create(patient: Patient): Promise<void>
+  abstract save(patient: Patient): Promise<void>
+  abstract savePathologies(patientId: string, pathologiesIds: string[]): Promise<void | null>
   abstract findById(id: string): Promise<Patient | null>
   abstract findByCpf(cpf: string): Promise<Patient | null>
   abstract findBySus(sus: string): Promise<Patient | null>

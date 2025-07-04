@@ -3,6 +3,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { PatientsRepository } from '@/domain/pharma/application/repositories/patients-repository'
 import { Patient } from '@/domain/pharma/enterprise/entities/patient'
 import { InMemoryDispensationsMedicinesRepository } from './in-memory-dispensations-medicines-repository'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 export class InMemoryPatientsRepository implements PatientsRepository {
   public items: Patient[] = []
@@ -17,6 +18,25 @@ export class InMemoryPatientsRepository implements PatientsRepository {
 
   async create(patient: Patient) {
     this.items.push(patient)
+  }
+
+  async save(patient: Patient): Promise<void> {
+    const itemIndex = this.items.findIndex((item) => item.id.equal(patient.id))
+
+    this.items[itemIndex] = patient
+  }
+
+  async savePathologies(
+    patientId: string,
+    pathologiesIds: string[],
+  ): Promise<void | null> {
+    const itemIndex = this.items.findIndex((item) =>
+      item.id.equal(new UniqueEntityId(patientId)),
+    )
+
+    this.items[itemIndex].pathologiesIds = pathologiesIds.map(
+      (pathology) => new UniqueEntityId(pathology),
+    )
   }
 
   async findById(id: string) {
@@ -162,21 +182,19 @@ export class InMemoryPatientsRepository implements PatientsRepository {
     const now = new Date()
     const currentMonth = now.getMonth()
     const currentYear = now.getFullYear()
-    const receiveMonth = this.dispensationsRepository?.items.filter(
-      (dispensation) => {
+    const receiveMonth = this.dispensationsRepository?.items
+      .filter((dispensation) => {
         const createdAt = dispensation.createdAt
         return (
           createdAt.getMonth() === currentMonth &&
           createdAt.getFullYear() === currentYear
         )
-      },
-    ).reduce((acc: string[], dispensation) => {
-      acc.push(dispensation.patientId.toString())
-      return acc
-    }, [])
-    const receiveMonthDistinctPatients = new Set(
-      receiveMonth,
-    )
+      })
+      .reduce((acc: string[], dispensation) => {
+        acc.push(dispensation.patientId.toString())
+        return acc
+      }, [])
+    const receiveMonthDistinctPatients = new Set(receiveMonth)
 
     return {
       total: patients.length,

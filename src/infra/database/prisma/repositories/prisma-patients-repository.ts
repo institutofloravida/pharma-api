@@ -18,6 +18,38 @@ export class PrismaPatientsRepository implements PatientsRepository {
     })
   }
 
+  async save(patient: Patient): Promise<void> {
+    const patientMapped = PrismaPatientMapper.toPrisma(patient)
+
+    await this.prisma.patient.update({
+      data: patientMapped,
+      where: {
+        id: patient.id.toString(),
+      },
+    })
+  }
+
+  async savePathologies(patientId: string, pathologiesIds: string[]): Promise<void> {
+    const patient = await this.prisma.patient.findUnique({
+      where: { id: patientId },
+      select: { pathologies: { select: { id: true } } },
+    })
+
+    const currentIds = patient?.pathologies.map(p => p.id) ?? []
+
+    const disconnectIds = currentIds.filter(id => !pathologiesIds.includes(id))
+
+    await this.prisma.patient.update({
+      where: { id: patientId },
+      data: {
+        pathologies: {
+          connect: pathologiesIds.map(id => ({ id })),
+          disconnect: disconnectIds.map(id => ({ id })),
+        },
+      },
+    })
+  }
+
   async findById(id: string): Promise<Patient | null> {
     const patient = await this.prisma.patient.findUnique({
       where: {

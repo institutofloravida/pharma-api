@@ -13,4 +13,15 @@ export class PrismaAddressRepository implements AddresssRepository {
       data: PrismaAddressMapper.toPrisma(address),
     })
   }
+
+  async save(address: Address): Promise<void> {
+    const addressMapped = PrismaAddressMapper.toPrisma(address)
+
+    await this.prisma.address.update({
+      data: addressMapped,
+      where: {
+        id: address.id.toString(),
+      },
+    })
+  }
 }

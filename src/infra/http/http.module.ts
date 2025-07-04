@@ -130,6 +130,8 @@ import { FetchDispensesPerDayController } from './controllers/metrics/fetch-disp
 import { FetchDispensesPerDayUseCase } from '@/domain/pharma/application/use-cases/metrics/fetch-dispenses-per-day'
 import { FetchMostTreatedPathologiesController } from './controllers/metrics/fetch-most-treated-pathologies.controller'
 import { FetchMostTreatedPathologiesUseCase } from '@/domain/pharma/application/use-cases/metrics/fetch-most-treated-pathologies'
+import { UpdatePatientController } from './controllers/patient/update-patient.controller'
+import { UpdatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/update-patient'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -199,6 +201,7 @@ import { FetchMostTreatedPathologiesUseCase } from '@/domain/pharma/application/
     UpdateStockController,
     UpdateMedicineController,
     UpdateMedicineVariantController,
+    UpdatePatientController,
 
   ],
   providers: [
@@ -266,6 +269,7 @@ import { FetchMostTreatedPathologiesUseCase } from '@/domain/pharma/application/
     UpdateStockUseCase,
     UpdateMedicineUseCase,
     UpdateMedicineVariantUseCase,
+    UpdatePatientUseCase,
   ],
 })
 export class HttpModule {}

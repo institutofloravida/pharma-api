@@ -7,4 +7,10 @@ export class InMemoryAddressRepository implements AddresssRepository {
   async create(address: Address): Promise<void> {
     this.items.push(address)
   }
+
+  async save(address: Address): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(address.id))
+
+    this.items[itemIndex] = address
+  }
 }
