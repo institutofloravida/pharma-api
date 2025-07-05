@@ -5,6 +5,9 @@ import { Patient } from '@/domain/pharma/enterprise/entities/patient'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaPatientMapper } from '../mappers/prisma-patient-mapper'
+import { PatientDetails } from '@/domain/pharma/enterprise/entities/value-objects/patient-details'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { PrismaPathologyMapper } from '../mappers/prisma-pathology-mapper'
 
 @Injectable()
 export class PrismaPatientsRepository implements PatientsRepository {
@@ -29,22 +32,27 @@ export class PrismaPatientsRepository implements PatientsRepository {
     })
   }
 
-  async savePathologies(patientId: string, pathologiesIds: string[]): Promise<void> {
+  async savePathologies(
+    patientId: string,
+    pathologiesIds: string[],
+  ): Promise<void> {
     const patient = await this.prisma.patient.findUnique({
       where: { id: patientId },
       select: { pathologies: { select: { id: true } } },
     })
 
-    const currentIds = patient?.pathologies.map(p => p.id) ?? []
+    const currentIds = patient?.pathologies.map((p) => p.id) ?? []
 
-    const disconnectIds = currentIds.filter(id => !pathologiesIds.includes(id))
+    const disconnectIds = currentIds.filter(
+      (id) => !pathologiesIds.includes(id),
+    )
 
     await this.prisma.patient.update({
       where: { id: patientId },
       data: {
         pathologies: {
-          connect: pathologiesIds.map(id => ({ id })),
-          disconnect: disconnectIds.map(id => ({ id })),
+          connect: pathologiesIds.map((id) => ({ id })),
+          disconnect: disconnectIds.map((id) => ({ id })),
         },
       },
     })
@@ -69,6 +77,59 @@ export class PrismaPatientsRepository implements PatientsRepository {
     }
 
     return PrismaPatientMapper.toDomain(patient)
+  }
+
+  async findByIdWithDetails(id: string): Promise<PatientDetails | null> {
+    const patient = await this.prisma.patient.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        pathologies: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        address: true,
+      },
+    })
+
+    if (!patient || !patient.address) {
+      return null
+    }
+
+    const pathologiesMapped = patient.pathologies.map(
+      PrismaPathologyMapper.toDomain,
+    )
+
+    const patientDetails = PatientDetails.create({
+      patientId: new UniqueEntityId(patient.id),
+      birthDate: patient.birthDate,
+      createdAt: patient.createdAt,
+      gender: patient.gender,
+      name: patient.name,
+      race: patient.race,
+      sus: patient.sus,
+      cpf: patient.cpf,
+      generalRegistration: patient.generalRegistration,
+      updatedAt: patient.updatedAt,
+      pathologies: pathologiesMapped,
+      address: {
+        city: patient.address.city,
+        neighborhood: patient.address.neighborhood,
+        state: patient.address.state,
+        complement: patient.address.complement,
+        number: patient.address.number,
+        street: patient.address.street,
+        zipCode: patient.address.zipCode,
+        id: new UniqueEntityId(patient.address.id),
+      },
+    })
+
+    return patientDetails
   }
 
   async findByCpf(cpf: string): Promise<Patient | null> {
@@ -186,7 +247,9 @@ export class PrismaPatientsRepository implements PatientsRepository {
     }
   }
 
-  async getPatientsMetrics(institutionId: string): Promise<{ total: number; receiveMonth: number }> {
+  async getPatientsMetrics(
+    institutionId: string,
+  ): Promise<{ total: number; receiveMonth: number }> {
     const [total, receiveMonth] = await this.prisma.$transaction([
       this.prisma.patient.count(),
       this.prisma.dispensation.findMany({

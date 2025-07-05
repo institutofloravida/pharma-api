@@ -4,9 +4,17 @@ import { PatientsRepository } from '@/domain/pharma/application/repositories/pat
 import { Patient } from '@/domain/pharma/enterprise/entities/patient'
 import { InMemoryDispensationsMedicinesRepository } from './in-memory-dispensations-medicines-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { PatientDetails } from '@/domain/pharma/enterprise/entities/value-objects/patient-details'
+import { InMemoryAddressRepository } from './in-memory-address-repository'
+import { InMemoryPathologiesRepository } from './in-memory-pathologies-repository'
 
 export class InMemoryPatientsRepository implements PatientsRepository {
   public items: Patient[] = []
+
+  constructor(
+    private addressRepository: InMemoryAddressRepository,
+    private pathologiesRepository: InMemoryPathologiesRepository,
+  ) {}
 
   private dispensationsRepository?: InMemoryDispensationsMedicinesRepository
 
@@ -45,6 +53,52 @@ export class InMemoryPatientsRepository implements PatientsRepository {
       return patient
     }
     return null
+  }
+
+  async findByIdWithDetails(id: string): Promise<PatientDetails | null> {
+    const patient = this.items.find((item) => item.id.toString() === id)
+    if (!patient || !patient.addressId) {
+      return null
+    }
+
+    const address = this.addressRepository.items.find((address) =>
+      address.id.equal(patient.addressId ?? new UniqueEntityId()),
+    )
+
+    if (!address) {
+      return null
+    }
+
+    const pathologies = this.pathologiesRepository.items.filter((pathology) =>
+      patient.pathologiesIds
+        .map((item) => item.toString())
+        .includes(pathology.id.toString()),
+    )
+
+    const patientDetails = PatientDetails.create({
+      patientId: patient.id,
+      name: patient.name,
+      birthDate: patient.birthDate,
+      gender: patient.gender,
+      race: patient.race,
+      sus: patient.sus,
+      cpf: patient.cpf,
+      generalRegistration: patient.generalRegistration,
+      createdAt: patient.createdAt,
+      updatedAt: patient.updatedAt,
+      pathologies,
+      address: {
+        id: address.id,
+        city: address.city,
+        neighborhood: address.neighborhood,
+        state: address.state,
+        number: address.number,
+        street: address.street,
+        zipCode: address.zipCode,
+        complement: address.complement,
+      },
+    })
+    return patientDetails
   }
 
   async findByCpf(cpf: string) {

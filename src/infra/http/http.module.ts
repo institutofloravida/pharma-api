@@ -132,6 +132,8 @@ import { FetchMostTreatedPathologiesController } from './controllers/metrics/fet
 import { FetchMostTreatedPathologiesUseCase } from '@/domain/pharma/application/use-cases/metrics/fetch-most-treated-pathologies'
 import { UpdatePatientController } from './controllers/patient/update-patient.controller'
 import { UpdatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/update-patient'
+import { GetPatientDetailsController } from './controllers/patient/get-patient-details.controller'
+import { GetPatientDetailsUseCase } from '@/domain/pharma/application/use-cases/patient/get-patient-details'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -154,6 +156,7 @@ import { UpdatePatientUseCase } from '@/domain/pharma/application/use-cases/pati
     GetDispenseMetricsController,
     GetInventoryMetricsController,
     GetDispenseInAPeriodController,
+    GetPatientDetailsController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -222,6 +225,7 @@ import { UpdatePatientUseCase } from '@/domain/pharma/application/use-cases/pati
     GetDispenseMetricsUseCase,
     GetInventoryMetricsUseCase,
     GetDispenseInAPeriodUseCase,
+    GetPatientDetailsUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
