@@ -57,6 +57,7 @@ describe('MedicineVariant', () => {
       pharmaceuticalFormId: pharmaceuticalForm.id,
       unitMeasureId: unitMeasure.id,
       dosage: '10',
+      complement: 'CX',
     })
     await inMemoryMedicinesVariantsRepository.create(medicineVariant)
     const result = await sut.execute({
@@ -64,6 +65,7 @@ describe('MedicineVariant', () => {
       pharmaceuticalFormId: pharmaceuticalForm2.id.toString(),
       unitMeasureId: unitMeasure2.id.toString(),
       medicineVariantId: medicineVariant.id.toString(),
+      complement: 'CP',
     })
 
     expect(result.isRight()).toBeTruthy()
@@ -76,6 +78,9 @@ describe('MedicineVariant', () => {
       expect(
         inMemoryMedicinesVariantsRepository.items[0].unitMeasureId,
       ).toEqual(unitMeasure2.id)
+      expect(
+        inMemoryMedicinesVariantsRepository.items[0].complement,
+      ).toEqual('CP')
     }
   })
 

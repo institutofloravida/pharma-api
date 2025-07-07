@@ -11,6 +11,14 @@ export class UpdateMedicineVariantDto {
   dosage?: string
 
   @ApiProperty({
+    example: 'CX',
+    description: 'The complement of the medicine variant.',
+  })
+  @IsString({ message: 'Complement must be a string.' })
+  @IsOptional()
+  complement?: string
+
+  @ApiProperty({
     example: '123e4567-e89b-12d3-a456-426614174001',
     description: 'The ID of the pharmaceutical form of the medicine.',
   })

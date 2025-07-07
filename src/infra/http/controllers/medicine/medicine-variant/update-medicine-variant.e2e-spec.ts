@@ -80,6 +80,7 @@ describe('Update Medicine Variant (E2E)', () => {
         pharmaceuticalFormId: pharmaceuticalForm.id,
         unitMeasureId: unitMeasure.id,
         dosage: '500',
+        complement: 'CX',
       })
 
     const response = await request(app.getHttpServer())
@@ -88,6 +89,7 @@ describe('Update Medicine Variant (E2E)', () => {
       .send({
         dosage: '400',
         unitMeasureId: unitMeasure2.id.toString(),
+        complement: 'CP',
       })
 
     expect(response.statusCode).toBe(204)
@@ -102,6 +104,7 @@ describe('Update Medicine Variant (E2E)', () => {
       expect.objectContaining({
         dosage: '400',
         unitMeasureId: unitMeasure2.id.toString(),
+        complement: 'CP',
       }),
     )
   })

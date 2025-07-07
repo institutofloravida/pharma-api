@@ -23,13 +23,14 @@ export class UpdateMedicineVariantController {
   async handle(
     @Param('id') medicineVariantId: string,
     @Body() body: UpdateMedicineVariantDto) {
-    const { dosage, pharmaceuticalFormId, unitMeasureId } = body
+    const { dosage, pharmaceuticalFormId, unitMeasureId, complement } = body
 
     const result = await this.updateMedicineVariant.execute({
       medicineVariantId,
       dosage,
       pharmaceuticalFormId,
       unitMeasureId,
+      complement,
     })
 
     if (result.isLeft()) {

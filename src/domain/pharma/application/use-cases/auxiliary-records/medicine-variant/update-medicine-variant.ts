@@ -11,6 +11,8 @@ interface updateMedicineVariantUseCaseRequest {
   dosage?: string;
   pharmaceuticalFormId?: string;
   unitMeasureId?: string;
+  complement?: string
+
 }
 
 type updateMedicineVariantUseCaseResponse = Either<
@@ -31,6 +33,7 @@ export class UpdateMedicineVariantUseCase {
     dosage,
     pharmaceuticalFormId,
     unitMeasureId,
+    complement,
   }: updateMedicineVariantUseCaseRequest): Promise<updateMedicineVariantUseCaseResponse> {
     const medicineVariant =
       await this.medicinesVariantsRepository.findById(medicineVariantId)
@@ -71,6 +74,10 @@ export class UpdateMedicineVariantUseCase {
 
     if (unitMeasureId) {
       medicineVariant.unitMeasureId = new UniqueEntityId(unitMeasureId)
+    }
+
+    if (complement) {
+      medicineVariant.complement = complement
     }
 
     await this.medicinesVariantsRepository.save(medicineVariant)
