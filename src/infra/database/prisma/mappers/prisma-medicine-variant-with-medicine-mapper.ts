@@ -19,6 +19,7 @@ export class PrismaMedicineVariantWithMedicineMapper {
       dosage: raw.dosage,
       pharmaceuticalFormId: new UniqueEntityId(raw.pharmaceuticalFormId),
       unitMeasureId: new UniqueEntityId(raw.unitMeasureId),
+      complement: raw.complement ?? undefined,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt ?? undefined,
     },

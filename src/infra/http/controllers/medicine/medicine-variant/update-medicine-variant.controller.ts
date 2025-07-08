@@ -10,7 +10,7 @@ import { MedicineVariantAlreadyExistsError } from '@/domain/pharma/application/u
 
 @ApiTags('medicine-variant')
 @ApiBearerAuth()
-@Controller('/medicinevariant')
+@Controller('/medicine-variant')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(OperatorRole.MANAGER)
 export class UpdateMedicineVariantController {

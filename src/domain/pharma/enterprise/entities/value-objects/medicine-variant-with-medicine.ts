@@ -10,6 +10,7 @@ export interface MedicineVariantWithMedicineProps {
   pharmaceuticalForm: string;
   unitMeasureId: UniqueEntityId
   unitMeasure: string
+  complement?: string
   createdAt: Date;
   updatedAt?: Date | null;
 }
@@ -45,6 +46,10 @@ export class MedicineVariantWithMedicine extends ValueObject<MedicineVariantWith
 
   get unitMeasure() {
     return this.props.unitMeasure
+  }
+
+  get complement() {
+    return this.props.complement
   }
 
   get createdAt() {

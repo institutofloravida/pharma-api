@@ -84,7 +84,7 @@ describe('Update Medicine Variant (E2E)', () => {
       })
 
     const response = await request(app.getHttpServer())
-      .put(`/medicinevariant/${medicineVariant.id.toString()}`)
+      .put(`/medicine-variant/${medicineVariant.id.toString()}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         dosage: '400',

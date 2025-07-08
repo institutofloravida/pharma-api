@@ -10,7 +10,7 @@ interface createMedicineVariantUseCaseRequest {
   dosage: string;
   pharmaceuticalFormId: string;
   unitMeasureId: string
-  complement: string | null
+  complement?: string | null
 }
 
 type createMedicineVariantUseCaseResponse = Either<

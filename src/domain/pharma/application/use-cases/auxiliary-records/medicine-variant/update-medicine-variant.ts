@@ -57,7 +57,7 @@ export class UpdateMedicineVariantUseCase {
         }),
       )
 
-      if (medicineVariantExists) {
+      if (medicineVariantExists && !medicineVariantExists.id.equal(medicineVariant.id)) {
         return left(new MedicineVariantAlreadyExistsError())
       }
     }

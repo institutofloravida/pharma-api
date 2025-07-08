@@ -13,7 +13,7 @@ import { MedicineVariantWithMedicinePresenter } from '@/infra/http/presenters/me
 
 @ApiTags('medicine-variant')
 @ApiBearerAuth()
-@Controller('/medicinevariant')
+@Controller('/medicine-variant')
 export class GetMedicineVariantController {
   constructor(private getMedicineVariantDetails: GetMedicineVariantDetailsUseCase) {}
 
@@ -37,7 +37,7 @@ export class GetMedicineVariantController {
     const medicinevariant = result.value
 
     return {
-      medicinevariant: MedicineVariantWithMedicinePresenter.toHTTP(medicinevariant),
+      medicine_variant: MedicineVariantWithMedicinePresenter.toHTTP(medicinevariant),
     }
   }
 }

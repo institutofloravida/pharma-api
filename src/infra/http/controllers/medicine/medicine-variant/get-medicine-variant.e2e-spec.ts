@@ -78,7 +78,7 @@ describe('Get MedicineVariant (E2E)', () => {
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual(
       expect.objectContaining({
-        medicinevariant: expect.objectContaining({
+        medicine_variant: expect.objectContaining({
           medicineId: medicine.id.toString(),
           medicine: medicine.content,
           dosage: medicineVariant.dosage,

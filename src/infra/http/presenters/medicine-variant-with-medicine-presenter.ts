@@ -11,6 +11,7 @@ export class MedicineVariantWithMedicinePresenter {
       pharmaceuticalForm: medicineVariantWithMedicine.pharmaceuticalForm,
       unitMeasureId: medicineVariantWithMedicine.unitMeasureId.toString(),
       unitMeasure: medicineVariantWithMedicine.unitMeasure,
+      complement: medicineVariantWithMedicine.complement,
       createdAt: medicineVariantWithMedicine.createdAt,
       updatedAt: medicineVariantWithMedicine.updatedAt,
     }
