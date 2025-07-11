@@ -33,9 +33,11 @@ export class PrismaMedicineExitMapper {
       dispensationId: exit.dispensationId
         ? exit.dispensationId.toString()
         : null,
-      movementTypeId: exit.movementTypeId
-        ? exit.movementTypeId.toString()
-        : null,
+      movementTypeId: exit.exitType === ExitType.EXPIRATION
+        ? null
+        : exit.movementTypeId
+          ? exit.movementTypeId.toString()
+          : null,
       quantity: exit.quantity,
       exitDate: exit.exitDate,
       createdAt: exit.createdAt,

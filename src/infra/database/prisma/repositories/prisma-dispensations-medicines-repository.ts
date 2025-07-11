@@ -191,8 +191,8 @@ implements DispensationsMedicinesRepository {
           },
         },
       },
-      ...(startDate && { dispensationDate: { gte: startDate } }),
-      ...(endDate && { dispensationDate: { lte: endDate } }),
+      ...(startDate && { dispensationDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) } }),
+      ...(endDate && { dispensationDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) } }),
       ...(patientId && { patientId: { equals: patientId } }),
       ...(operatorId && { operatorId: { equals: operatorId } }),
     }

@@ -1,5 +1,5 @@
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import {
   IsUUID,
   IsNumber,
@@ -31,9 +31,10 @@ export class RegisterExitDto {
   @IsEnum(ExitType)
   exitType: ExitType
 
-  @ApiProperty({ example: '75e5b24b-bf1b-4a1d-b0d5-cfcba1e587e1', description: 'ID do tipo de movimentação' })
+  @ApiPropertyOptional({ example: '75e5b24b-bf1b-4a1d-b0d5-cfcba1e587e1', description: 'ID do tipo de movimentação' })
   @IsUUID()
-  movementTypeId: string
+  @IsOptional()
+  movementTypeId?: string
 
   @ApiProperty({
     example: '2025-05-07T12:00:00.000Z',

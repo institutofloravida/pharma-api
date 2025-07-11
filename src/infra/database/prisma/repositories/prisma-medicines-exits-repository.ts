@@ -208,8 +208,8 @@ implements MedicinesExitsRepository {
           },
         }),
       },
-      ...(startDate && { exitDate: { gte: startDate } }),
-      ...(endDate && { exitDate: { lte: endDate } }),
+      ...(startDate && { exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) } }),
+      ...(endDate && { exitDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) } }),
       ...(exitType && {
         exitType: { equals: exitType },
       }),
@@ -279,7 +279,7 @@ implements MedicinesExitsRepository {
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          exitDate: 'desc',
         },
       },
       ),

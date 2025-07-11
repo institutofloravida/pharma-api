@@ -172,8 +172,8 @@ implements MedicinesEntriesRepository {
           },
         },
         ...(operatorId && { operatorId }),
-        ...(startDate && { entryDate: { gte: startDate } }),
-        ...(endDate && { entryDate: { lte: endDate } }),
+        ...(startDate && { entryDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) } }),
+        ...(endDate && { entryDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) } }),
       },
       include: {
         batcheStock: {
