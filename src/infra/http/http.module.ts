@@ -134,6 +134,8 @@ import { UpdatePatientController } from './controllers/patient/update-patient.co
 import { UpdatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/update-patient'
 import { GetPatientDetailsController } from './controllers/patient/get-patient-details.controller'
 import { GetPatientDetailsUseCase } from '@/domain/pharma/application/use-cases/patient/get-patient-details'
+import { GetMovimentationInAPeriodController } from './controllers/reports/get-movimentation-in-a-period.controller'
+import { GetMovimentationInAPeriodUseCase } from '@/domain/pharma/application/use-cases/reports/get-movimentation-in-a-period'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -157,6 +159,7 @@ import { GetPatientDetailsUseCase } from '@/domain/pharma/application/use-cases/
     GetInventoryMetricsController,
     GetDispenseInAPeriodController,
     GetPatientDetailsController,
+    GetMovimentationInAPeriodController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -226,6 +229,7 @@ import { GetPatientDetailsUseCase } from '@/domain/pharma/application/use-cases/
     GetInventoryMetricsUseCase,
     GetDispenseInAPeriodUseCase,
     GetPatientDetailsUseCase,
+    GetMovimentationInAPeriodUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,

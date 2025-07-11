@@ -1,5 +1,5 @@
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
-import type { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details'
+import { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details'
 
 export class MedicineExitPresenter {
   static toHTTP(medicineExit: MedicineExitDetails) {
