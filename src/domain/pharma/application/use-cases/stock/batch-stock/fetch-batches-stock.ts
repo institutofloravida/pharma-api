@@ -8,6 +8,8 @@ interface FetchBatchesStockUseCaseRequest {
   page: number;
   medicineStockId: string
   code?: string;
+  includeZero?: boolean
+  includeExpired?: boolean
 }
 
 type FetchBatchesStockUseCaseResponse = Either<
@@ -26,13 +28,16 @@ export class FetchBatchesStockUseCase {
     page,
     code,
     medicineStockId,
+    includeZero,
+    includeExpired = true,
   }: FetchBatchesStockUseCaseRequest): Promise<FetchBatchesStockUseCaseResponse> {
     const { batchesStock, meta } = await this.batchesStockRepository.findMany(
       { page },
       {
         medicineStockId,
         code,
-        includeExpired: true,
+        includeExpired,
+        includeZero,
       },
     )
 

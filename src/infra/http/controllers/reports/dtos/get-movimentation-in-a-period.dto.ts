@@ -2,6 +2,7 @@ import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
+import { MovementDirection } from '../../auxiliary-records/movement-type/dtos/create-movement-type.dto'
 
 export class GetMovimentationInAPeriodDto {
   @ApiProperty({
@@ -100,4 +101,9 @@ export class GetMovimentationInAPeriodDto {
   @IsEnum(ExitType)
   @IsOptional()
   exitType?: ExitType
+
+  @ApiProperty({ example: MovementDirection.ENTRY, enum: MovementDirection })
+  @IsEnum(MovementDirection)
+  @IsOptional()
+  direction?: MovementDirection
 }

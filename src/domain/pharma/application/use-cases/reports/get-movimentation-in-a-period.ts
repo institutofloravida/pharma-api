@@ -5,11 +5,13 @@ import { MedicinesEntriesRepository } from '../../repositories/medicines-entries
 import { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation'
+import type { MovementDirection } from '@/domain/pharma/enterprise/entities/movement-type'
 
 interface GetMovimentationInAPeriodUseCaseRequest {
   institutionId: string;
   startDate: Date;
   endDate: Date;
+  direction?: MovementDirection
   operatorId?: string;
   medicineId?: string;
   medicineVariantId?: string;
@@ -49,9 +51,15 @@ export class GetMovimentationInAPeriodUseCase {
     medicineVariantId,
     movementTypeId,
     quantity,
+    direction,
   }: GetMovimentationInAPeriodUseCaseRequest): Promise<GetMovimentationInAPeriodUseCaseResponse> {
-    const { entriesMovimentation, meta: metaEntries } =
-      await this.entriesRepository.fetchMovimentation({
+    let entriesMovimentation: Movimentation[] = []
+    let exitsMovimentation: Movimentation[] = []
+    let metaEntries = { totalCount: 0 }
+    let metaExits = { totalCount: 0 }
+
+    if (!direction || direction === 'ENTRY') {
+      const result = await this.entriesRepository.fetchMovimentation({
         institutionId,
         startDate,
         endDate,
@@ -63,10 +71,15 @@ export class GetMovimentationInAPeriodUseCase {
         movementTypeId,
         operatorId,
         quantity,
+        direction,
       })
 
-    const { exitsMovimentation, meta: metaExits } =
-      await this.exitsRepository.fetchMovimentation({
+      entriesMovimentation = result.entriesMovimentation
+      metaEntries = result.meta
+    }
+
+    if (!direction || direction === 'EXIT') {
+      const result = await this.exitsRepository.fetchMovimentation({
         institutionId,
         startDate,
         endDate,
@@ -80,6 +93,10 @@ export class GetMovimentationInAPeriodUseCase {
         quantity,
         exitType,
       })
+
+      exitsMovimentation = result.exitsMovimentation
+      metaExits = result.meta
+    }
 
     const movimentationsOrdered: Movimentation[] = [
       ...entriesMovimentation,

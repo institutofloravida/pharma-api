@@ -220,7 +220,7 @@ implements MedicinesEntriesRepository {
           pharmaceuticalForm: item.medicineStock.medicineVariant.pharmaceuticalForm.name,
           quantity: item.quantity,
           stock: item.medicineStock.stock.name,
-          unitMeasure: item.medicineStock.medicineVariant.unitMeasure.name,
+          unitMeasure: item.medicineStock.medicineVariant.unitMeasure.acronym,
           batchCode: item.batcheStock.batch.code,
           dosage: item.medicineStock.medicineVariant.dosage,
           medicineId: new UniqueEntityId(item.medicineStock.medicineVariant.medicineId),

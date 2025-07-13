@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsInt, IsOptional, IsString, Min } from 'class-validator'
+import { IsBoolean, IsInt, IsOptional, IsString, Min } from 'class-validator'
 
 export class FetchBatchesStockDto {
   @ApiPropertyOptional({
@@ -22,4 +22,18 @@ export class FetchBatchesStockDto {
   @IsOptional()
   @IsString({ message: 'The "code" field must be a string.' })
   code?: string
+
+  @ApiPropertyOptional({ example: true, description: 'Optional include batch expired' })
+  @IsOptional()
+  @Type(() => Boolean)
+
+  @IsBoolean()
+  includeExpired?: boolean
+
+  @ApiPropertyOptional({ example: true, description: 'Optional include batch zero' })
+  @IsOptional()
+  @Type(() => Boolean)
+
+  @IsBoolean()
+  includeZero?: boolean
 }

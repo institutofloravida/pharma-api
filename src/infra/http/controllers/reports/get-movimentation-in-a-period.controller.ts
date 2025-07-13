@@ -26,6 +26,7 @@ export class GetMovimentationInAPeriodController {
       institutionId,
       startDate,
       endDate,
+      direction,
       operatorId,
       batchStockId,
       exitType,
@@ -49,6 +50,7 @@ export class GetMovimentationInAPeriodController {
       movementTypeId,
       quantity: Number(quantity),
       stockId,
+      direction,
     })
 
     if (result.isLeft()) {

@@ -14,5 +14,6 @@ export abstract class BatchStocksRepository {
     medicineStockId: string
     code?: string
     includeExpired?: boolean
+    includeZero?: boolean
   }, pagination?: boolean): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }>
 }

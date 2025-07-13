@@ -9,7 +9,7 @@ import { Injectable } from '@nestjs/common'
 import { Meta, type MetaReport } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details'
-import { Prisma } from 'prisma/generated'
+import { $Enums, Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation'
 
@@ -194,6 +194,7 @@ implements MedicinesExitsRepository {
     } = filters
 
     const whereClause: Prisma.ExitWhereInput = {
+
       ...(quantity && { quantity: { gte: Number(quantity), lte: Number(quantity) } }),
       batchestock: {
         ...(stockId && { stockId: { equals: stockId } }),
@@ -211,7 +212,9 @@ implements MedicinesExitsRepository {
       ...(startDate && { exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) } }),
       ...(endDate && { exitDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) } }),
       ...(exitType && {
-        exitType: { equals: exitType },
+        exitType: {
+          equals: $Enums.ExitType[exitType],
+        },
       }),
       ...(medicineId && {
         medicineStock: {

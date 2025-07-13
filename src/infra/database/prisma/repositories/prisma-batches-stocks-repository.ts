@@ -99,11 +99,14 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
     medicineStockId: string
     code?: string,
     includeExpired?: boolean
+    includeZero?: boolean
   }, pagination: boolean = true): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }> {
-    const { medicineStockId, code, includeExpired } = filters
+    const { medicineStockId, code, includeExpired, includeZero } = filters
 
     const whereClause: Prisma.BatcheStockWhereInput = {
-      currentQuantity: { gt: 0 },
+      currentQuantity: includeZero === true
+        ? { gte: 0 }
+        : { gt: 0 },
       ...(code && {
         batch: {
           code: {
@@ -117,6 +120,7 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
           expirationDate: { gte: new Date() },
         },
       }),
+
       medicineStockId: { equals: medicineStockId },
     }
 
