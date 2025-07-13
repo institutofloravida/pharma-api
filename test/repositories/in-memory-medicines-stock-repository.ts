@@ -271,6 +271,14 @@ implements MedicinesStockRepository {
     }
   }
 
+  async fetchAll(): Promise<{ medicinesStock: MedicineStock[] }> {
+    const medicinesStock = this.items
+
+    return {
+      medicinesStock,
+    }
+  }
+
   async fetchInventory(
     { page }: PaginationParams,
     institutionId: string,

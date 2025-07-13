@@ -136,10 +136,13 @@ import { GetPatientDetailsController } from './controllers/patient/get-patient-d
 import { GetPatientDetailsUseCase } from '@/domain/pharma/application/use-cases/patient/get-patient-details'
 import { GetMovimentationInAPeriodController } from './controllers/reports/get-movimentation-in-a-period.controller'
 import { GetMovimentationInAPeriodUseCase } from '@/domain/pharma/application/use-cases/reports/get-movimentation-in-a-period'
+import { TestScheduleController } from './test.controller'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule],
+  imports: [DatabaseModule, CryptographyModule, ScheduleModule.forRoot()],
   controllers: [
+    TestScheduleController,
     AuthenticateOperatorController,
     ValidateTokenController,
     GetOperatorDetailsController,

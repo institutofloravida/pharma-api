@@ -35,6 +35,8 @@ export abstract class MedicinesStockRepository {
       medicineName?: string;
     },
   ): Promise<{ medicinesStock: MedicineStockDetails[]; meta: Meta }>
+  abstract fetchAll(
+  ): Promise<{ medicinesStock: MedicineStock[] }>
   abstract fetchInventory(
     params: PaginationParams,
     institutionId: string,
