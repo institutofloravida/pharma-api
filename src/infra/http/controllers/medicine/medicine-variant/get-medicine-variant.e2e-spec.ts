@@ -11,7 +11,7 @@ import { OperatorFactory } from 'test/factories/make-operator'
 import { PharmaceuticalFormFactory } from 'test/factories/make-pharmaceutical-form'
 import { UnitMeasureFactory } from 'test/factories/make-unit-measure'
 
-describe('Get MedicineVariant (E2E)', () => {
+describe('Get Medicine Variant (E2E)', () => {
   let app: INestApplication
   let operatorFactory: OperatorFactory
   let unitMeasureFactory: UnitMeasureFactory
@@ -71,7 +71,7 @@ describe('Get MedicineVariant (E2E)', () => {
       })
 
     const response = await request(app.getHttpServer())
-      .get(`/medicinevariant/${medicineVariant.id.toString()}`)
+      .get(`/medicine-variant/${medicineVariant.id.toString()}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
 

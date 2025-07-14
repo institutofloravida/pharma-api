@@ -3,6 +3,7 @@ import { Dispensation, type DispensationPerDay } from '../../enterprise/entities
 import { Meta, type MetaReport } from '@/core/repositories/meta'
 import { DispensationWithPatient } from '../../enterprise/entities/value-objects/dispensation-with-patient'
 import { MostTreatedPathology } from '../../enterprise/entities/pathology'
+import { DispensationWithMedicines } from '../../enterprise/entities/value-objects/dispensation-with-medicines'
 
 export abstract class DispensationsMedicinesRepository {
   abstract create(dispensation: Dispensation): Promise<void>
@@ -29,7 +30,7 @@ export abstract class DispensationsMedicinesRepository {
     endDate?: Date,
     patientId?: string,
     operatorId?: string,
-  ): Promise<{ dispensations: DispensationWithPatient[], meta: MetaReport }>
+  ): Promise<{ dispensations: DispensationWithMedicines[], meta: MetaReport }>
   abstract fetchDispensesPerDay(
     institutionId: string,
     startDate?: Date,

@@ -14,9 +14,14 @@ import { InMemoryMedicinesStockRepository } from './in-memory-medicines-stock-re
 import { InMemoryStocksRepository } from './in-memory-stocks-repository'
 import { MostTreatedPathology } from '@/domain/pharma/enterprise/entities/pathology'
 import { InMemoryPathologiesRepository } from './in-memory-pathologies-repository'
+import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-medicines'
+import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
+import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
+import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
 
 export class InMemoryDispensationsMedicinesRepository
-implements DispensationsMedicinesRepository {
+  implements DispensationsMedicinesRepository {
   public items: Dispensation[] = []
   constructor(
     private exitsRepository: InMemoryMedicinesExitsRepository,
@@ -25,8 +30,12 @@ implements DispensationsMedicinesRepository {
     private medicinesStocksRepository: InMemoryMedicinesStockRepository,
     private stocksRepository: InMemoryStocksRepository,
     private pathologiesRepository: InMemoryPathologiesRepository,
+    private medicinesRepository: InMemoryMedicinesRepository,
+    private medicinesVariantsRepository: InMemoryMedicinesVariantsRepository,
+    private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
+    private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
 
-  ) {}
+  ) { }
 
   async create(dispensation: Dispensation) {
     this.items.push(dispensation)
@@ -54,7 +63,7 @@ implements DispensationsMedicinesRepository {
         if (
           dispensationDate &&
           dispensation.dispensationDate.setHours(0, 0, 0, 0) !==
-            dispensationDate.setHours(0, 0, 0, 0)
+          dispensationDate.setHours(0, 0, 0, 0)
         ) {
           return false
         }
@@ -128,7 +137,7 @@ implements DispensationsMedicinesRepository {
       (d) =>
         d.dispensationDate >= todayStart &&
         d.dispensationDate <
-          new Date(todayStart.getTime() + 24 * 60 * 60 * 1000),
+        new Date(todayStart.getTime() + 24 * 60 * 60 * 1000),
     )
     const todayTotal = todayDispensations.length
 
@@ -179,7 +188,7 @@ implements DispensationsMedicinesRepository {
     endDate?: Date,
     patientId?: string,
     operatorId?: string,
-  ): Promise<{ dispensations: DispensationWithPatient[]; meta: MetaReport }> {
+  ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }> {
     const dispensations = this.items
     const dispensationsFiltered = dispensations
       .filter((dispensation) => {
@@ -212,14 +221,14 @@ implements DispensationsMedicinesRepository {
         if (
           startDate &&
           dispensation.dispensationDate <
-            new Date(startDate.setHours(0, 0, 0, 0))
+          new Date(startDate.setHours(0, 0, 0, 0))
         ) {
           return false
         }
         if (
           endDate &&
           dispensation.dispensationDate >
-            new Date(endDate.setHours(23, 59, 59, 999))
+          new Date(endDate.setHours(23, 59, 59, 999))
         ) {
           return false
         }
@@ -263,7 +272,62 @@ implements DispensationsMedicinesRepository {
         throw new Error('Pacient não encontrado.')
       }
 
-      return DispensationWithPatient.create({
+      const medicines = exitsOfDispensation.map((exit) => {
+        const medicineStock = this.medicinesStocksRepository.items.find(
+          (medicineStock) => medicineStock.id.equal(exit.medicineStockId),
+        )
+        if (!medicineStock) {
+          throw new Error('Medicine stock not found for exit.')
+        }
+
+        const medicineVariant = this.medicinesVariantsRepository.items.find((medicineVariant) =>
+          medicineVariant.id.equal(medicineStock.medicineVariantId),
+        )
+        if (!medicineVariant) {
+          throw new Error('Medicine variant not found for exit.')
+        }
+
+        const medicine = this.medicinesRepository.items.find((medicine) =>
+          medicine.id.equal(medicineVariant.medicineId),
+        )
+        if (!medicine) {
+          throw new Error('Medicine variant not found for exit.')
+        }
+
+        const pharmaceuticalForm = this.pharmaceuticalFormsRepository.items.find(
+          (pharmaceuticalForm) => {
+            return pharmaceuticalForm.id.equal(pharmaceuticalForm.id)
+          },
+        )
+
+        if (!pharmaceuticalForm) {
+          throw new Error(
+            `pharmaceuticalForm with Id ${medicineVariant.pharmaceuticalFormId.toString()} does not exist.`,
+          )
+        }
+
+        const unitMeasure = this.unitsMeasureRepository.items.find(
+          (UnitMeasure) => {
+            return UnitMeasure.id.equal(UnitMeasure.id)
+          },
+        )
+
+        if (!unitMeasure) {
+          throw new Error(
+            `UnitMeasure with Id ${medicineVariant.unitMeasureId.toString()} does not exist.`,
+          )
+        }
+        return {
+           medicineStockId: medicineStock.id,
+           medicine: medicine.content,
+           pharmaceuticalForm: pharmaceuticalForm.content,
+           unitMeasure: unitMeasure.acronym,
+           complement: medicineVariant.complement,
+           quantity: exit.quantity
+        }
+      })
+
+      return DispensationWithMedicines.create({
         dispensationDate: dispensation.dispensationDate,
         dispensationId: dispensation.id,
         items: exitsOfDispensation.length,
@@ -271,6 +335,7 @@ implements DispensationsMedicinesRepository {
         operator: operator.name,
         patientId: dispensation.operatorId,
         patient: patient.name,
+        medicines: medicines
       })
     })
 
@@ -318,14 +383,14 @@ implements DispensationsMedicinesRepository {
         if (
           startDate &&
           dispensation.dispensationDate <
-            new Date(startDate.setHours(0, 0, 0, 0))
+          new Date(startDate.setHours(0, 0, 0, 0))
         ) {
           return false
         }
         if (
           endDate &&
           dispensation.dispensationDate >
-            new Date(endDate.setHours(23, 59, 59, 999))
+          new Date(endDate.setHours(23, 59, 59, 999))
         ) {
           return false
         }
@@ -364,7 +429,7 @@ implements DispensationsMedicinesRepository {
   async fetchMostTreatedPathologies(
     institutionId?: string,
   ): Promise<{ mostTreatedPathologies: MostTreatedPathology[] }> {
-  // Mapeia patologiaId -> { name, count }
+    // Mapeia patologiaId -> { name, count }
     const pathologyCount: Record<string, { name: string; count: number }> = {}
 
     // Filtra dispensas pela instituição, se necessário
