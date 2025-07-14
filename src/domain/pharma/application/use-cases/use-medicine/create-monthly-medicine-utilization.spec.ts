@@ -1,6 +1,6 @@
 import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
-import { CreateMonthlyUseMedicineUtilizationUseCase } from './create-monthly-use-medicine-utilization'
+import { CreateMonthlyMedicineUtilizationUseCase } from './create-monthly-medicine-utilization'
 import { InMemoryUseMedicinesRepository } from 'test/repositories/in-memory-use-medicines-repository'
 import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
@@ -33,7 +33,7 @@ let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryBatchesStockRepository: InMemoryBatchStocksRepository
 
-let sut: CreateMonthlyUseMedicineUtilizationUseCase
+let sut: CreateMonthlyMedicineUtilizationUseCase
 
 describe('Use Medicine', () => {
   beforeEach(() => {
@@ -95,7 +95,7 @@ describe('Use Medicine', () => {
       inMemoryBatchesRepository,
       inMemoryManufacturersRepository,
     )
-    sut = new CreateMonthlyUseMedicineUtilizationUseCase(
+    sut = new CreateMonthlyMedicineUtilizationUseCase(
       inMemoryUseMedicinesrepository,
       inMemoryMedicinesStockRepository,
     )

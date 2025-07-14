@@ -15,7 +15,7 @@ type createMonthlyMedicineUtilizationUseCaseResponse = Either<
 >
 
 @Injectable()
-export class CreateMonthlyUseMedicineUtilizationUseCase {
+export class CreateMonthlyMedicineUtilizationUseCase {
   constructor(
     private useMedicinesRepository: UseMedicinesRepository,
     private medicinesStockRepository: MedicinesStockRepository,
