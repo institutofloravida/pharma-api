@@ -30,6 +30,8 @@ import { makeOperator } from 'test/factories/make-operator'
 import { makeMedicineExit } from 'test/factories/make-medicine-exit'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 import { makeManufacturer } from 'test/factories/make-manufacturer'
+import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
+import { InMemoryAddressRepository } from 'test/repositories/in-memory-address-repository'
 
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
@@ -47,11 +49,14 @@ let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryDispensationsRepository: InMemoryDispensationsMedicinesRepository
+let inMemoryPathologiesRepository: InMemoryPathologiesRepository
+let inMemoryAddressRepository: InMemoryAddressRepository
 let sut: GetDispenseInAPeriodUseCase
 
 describe('Get Dispense In A Period', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
 
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryTherapeuticClassesRepository =
@@ -112,7 +117,9 @@ describe('Get Dispense In A Period', () => {
       inMemoryStocksRepository,
       inMemoryMedicinesStockRepository,
     )
-    inMemoryPatientsRepository = new InMemoryPatientsRepository()
+    inMemoryAddressRepository = new InMemoryAddressRepository()
+
+    inMemoryPatientsRepository = new InMemoryPatientsRepository(inMemoryAddressRepository, inMemoryPathologiesRepository)
     inMemoryDispensationsRepository =
       new InMemoryDispensationsMedicinesRepository(
         inMemoryMedicinesExitsRepository,
@@ -120,6 +127,11 @@ describe('Get Dispense In A Period', () => {
         inMemoryPatientsRepository,
         inMemoryMedicinesStockRepository,
         inMemoryStocksRepository,
+        inMemoryPathologiesRepository,
+        inMemoryMedicinesRepository,
+        inMemoryMedicinesVariantsRepository,
+        inMemoryPharmaceuticalFormsRepository,
+        inMemoryUnitsMeasureRepository,
       )
 
     inMemoryPatientsRepository.setDispensationsRepository(
@@ -240,6 +252,7 @@ describe('Get Dispense In A Period', () => {
       endDate: new Date(2025, 2, 14),
       startDate: new Date(2025, 2, 1),
     })
+
     expect(result.value?.meta.totalCount).toBe(2)
   })
 })

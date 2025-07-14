@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { DispensationsMedicinesRepository } from '../../repositories/dispensations-medicines-repository'
 import { MetaReport } from '@/core/repositories/meta'
-import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient'
+import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-medicines'
 
 interface GetDispenseInAPeriodUseCaseRequest {
   institutionId: string;
@@ -15,7 +15,7 @@ interface GetDispenseInAPeriodUseCaseRequest {
 type GetDispenseInAPeriodUseCaseResponse = Either<
   null,
   {
-    dispenses: DispensationWithPatient[];
+    dispenses: DispensationWithMedicines[];
     meta: MetaReport;
   }
 >

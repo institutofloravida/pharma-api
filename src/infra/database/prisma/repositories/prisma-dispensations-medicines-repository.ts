@@ -12,11 +12,12 @@ import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/val
 import { Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MostTreatedPathology } from '@/domain/pharma/enterprise/entities/pathology'
+import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-medicines'
 
 @Injectable()
 export class PrismaDispensationsMedicinesRepository
-implements DispensationsMedicinesRepository {
-  constructor(private prisma: PrismaService) {}
+  implements DispensationsMedicinesRepository {
+  constructor(private prisma: PrismaService) { }
 
   async create(dispensation: Dispensation): Promise<void> {
     const data = PrismaDispensationMapper.toPrisma(dispensation)
@@ -180,7 +181,7 @@ implements DispensationsMedicinesRepository {
     endDate?: Date,
     patientId?: string,
     operatorId?: string,
-  ): Promise<{ dispensations: DispensationWithPatient[]; meta: MetaReport }> {
+  ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }> {
     const whereClause: Prisma.DispensationWhereInput = {
       exitRecords: {
         some: {
@@ -204,7 +205,22 @@ implements DispensationsMedicinesRepository {
           operator: { select: { id: true, name: true } },
           patient: { select: { id: true, name: true } },
           exitRecords: {
-            select: { medicineStockId: true },
+            select: {
+              medicineStockId: true,
+              quantity: true,
+              medicineStock: {
+                select: {
+                  medicineVariant: {
+                    select: {
+                      medicine: true,
+                      pharmaceuticalForm: true,
+                      unitMeasure: true,
+                      complement: true
+                    }
+                  }
+                }
+              }
+            },
             distinct: ['medicineStockId'],
           },
         },
@@ -214,7 +230,7 @@ implements DispensationsMedicinesRepository {
     ])
 
     const dispensationsMapped = dispensations.map((dispensation) => {
-      return DispensationWithPatient.create({
+      return DispensationWithMedicines.create({
         dispensationDate: dispensation.dispensationDate,
         dispensationId: new UniqueEntityId(dispensation.id),
         operator: dispensation.operator.name,
@@ -222,6 +238,16 @@ implements DispensationsMedicinesRepository {
         patientId: new UniqueEntityId(dispensation.patient.id),
         patient: dispensation.patient.name,
         items: dispensation.exitRecords.length,
+        medicines: dispensation.exitRecords.map(exit => {
+          return {
+            medicineStockId: new UniqueEntityId(exit.medicineStockId),
+            medicine: exit.medicineStock.medicineVariant.medicine.name,
+            pharmaceuticalForm: exit.medicineStock.medicineVariant.pharmaceuticalForm.name,
+            unitMeasure: exit.medicineStock.medicineVariant.unitMeasure.name,
+            complement: exit.medicineStock.medicineVariant.complement,
+            quantity: exit.quantity
+          }
+        })
       })
     })
 

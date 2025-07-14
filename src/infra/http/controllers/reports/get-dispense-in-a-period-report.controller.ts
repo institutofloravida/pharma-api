@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { GetDispenseInAPeriodUseCase } from '@/domain/pharma/application/use-cases/reports/get-dispenses-in-a-period-report'
 import { GetDispenseInAPeriodDto } from './dtos/get-dispense-in-a-period-report.dto'
-import { DispensationPresenter } from '../../presenters/dispensation-presenter'
+import { DispensationWithMedicinesPresenter } from '../../presenters/dispensation-with-medicines-presenter'
 
 @ApiTags('reports')
 @ApiBearerAuth()
@@ -41,7 +41,7 @@ export class GetDispenseInAPeriodController {
 
     const { dispenses, meta } = result.value
 
-    const dispensesMapped = dispenses.map(DispensationPresenter.toHTTP)
+    const dispensesMapped = dispenses.map(DispensationWithMedicinesPresenter.toHTTP)
     return {
       dispenses: dispensesMapped,
       meta,
