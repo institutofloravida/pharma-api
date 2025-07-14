@@ -41,7 +41,7 @@ export class CreateMonthlyMedicineUtilizationUseCase {
         previousBalance: medicineStock.quantity,
         currentBalance: medicineStock.quantity,
         used: 0,
-        medicineStockId: medicineStock.id.toString(),
+        medicineStockId: medicineStock.id,
         createdAt: new Date(),
       })
 

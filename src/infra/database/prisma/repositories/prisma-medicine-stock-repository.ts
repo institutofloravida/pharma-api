@@ -598,4 +598,27 @@ implements MedicinesStockRepository {
       },
     }
   }
+
+  async fetchAll(): Promise<{ medicinesStock: MedicineStock[] }> {
+    const medicinesStock = await this.prisma.medicineStock.findMany({
+      include: {
+        batchesStocks: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    })
+
+    const medicinesStockMapped = medicinesStock.map(item => {
+      return PrismaMedicineStockMapper.toDomain({
+        ...item,
+        batchesStocks: item.batchesStocks,
+      })
+    })
+
+    return {
+      medicinesStock: medicinesStockMapped,
+    }
+  }
 }

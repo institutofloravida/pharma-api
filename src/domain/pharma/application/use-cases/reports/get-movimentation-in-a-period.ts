@@ -5,7 +5,7 @@ import { MedicinesEntriesRepository } from '../../repositories/medicines-entries
 import { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation'
-import type { MovementDirection } from '@/domain/pharma/enterprise/entities/movement-type'
+import { MovementDirection } from '@/domain/pharma/enterprise/entities/movement-type'
 
 interface GetMovimentationInAPeriodUseCaseRequest {
   institutionId: string;

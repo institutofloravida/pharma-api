@@ -206,6 +206,7 @@ model MedicineStock {
   stock            Stock           @relation(fields: [stockId], references: [id])
   medicinesEntries MedicineEntry[]
   exits            Exit[]
+  UseMedicine      UseMedicine[]
 
   @@index([medicineVariantId])
   @@index([stockId])
@@ -346,4 +347,18 @@ model Exit {
   movementType  MovementType? @relation(fields: [movementTypeId], references: [id])
 
   @@map("exits")
+}
+
+model UseMedicine {
+  year            Int
+  month           Int
+  previousBalance Int            @map("previous_balance")
+  medicineStockId String         @map("medicine_stock_id")
+  currentBalance  Int            @map("current_balance")
+  used            Int
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime?      @updatedAt @map("updated_at")
+  medicineStock   MedicineStock? @relation(fields: [medicineStockId], references: [id])
+
+  @@id([year, month])
 }

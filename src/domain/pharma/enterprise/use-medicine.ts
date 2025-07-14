@@ -5,7 +5,7 @@ import { Optional } from '@/core/types/optional'
 export interface UseMedicineProps {
   year: number
   month: number
-  medicineStockId: string
+  medicineStockId: UniqueEntityId
   previousBalance: number
   currentBalance: number
   used: number
@@ -36,7 +36,7 @@ export class UseMedicine extends Entity<UseMedicineProps> {
     return this.props.medicineStockId
   }
 
-  set medicineStockId(medicineStockId: string) {
+  set medicineStockId(medicineStockId: UniqueEntityId) {
     this.props.medicineStockId = medicineStockId
     this.touch()
   }

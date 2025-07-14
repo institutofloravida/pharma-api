@@ -136,13 +136,13 @@ import { GetPatientDetailsController } from './controllers/patient/get-patient-d
 import { GetPatientDetailsUseCase } from '@/domain/pharma/application/use-cases/patient/get-patient-details'
 import { GetMovimentationInAPeriodController } from './controllers/reports/get-movimentation-in-a-period.controller'
 import { GetMovimentationInAPeriodUseCase } from '@/domain/pharma/application/use-cases/reports/get-movimentation-in-a-period'
-import { TestScheduleController } from './test.controller'
 import { ScheduleModule } from '@nestjs/schedule'
+import { CreateMonthlyMedicineUtilizationController } from './controllers/use-medicine/create-monthly-medicine-utilization.controller'
+import { CreateMonthlyMedicineUtilizationUseCase } from '@/domain/pharma/application/use-cases/use-medicine/create-monthly-medicine-utilization'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, ScheduleModule.forRoot()],
   controllers: [
-    TestScheduleController,
     AuthenticateOperatorController,
     ValidateTokenController,
     GetOperatorDetailsController,
@@ -176,6 +176,7 @@ import { ScheduleModule } from '@nestjs/schedule'
     CreateMedicineVariantController,
     CreatePatientController,
     CreateMovementTypeController,
+    CreateMonthlyMedicineUtilizationController,
     DispensationController,
     RegisterMedicineEntryController,
     RegisterMedicineExitController,
@@ -246,6 +247,7 @@ import { ScheduleModule } from '@nestjs/schedule'
     CreateMedicineVariantUseCase,
     CreatePatientUseCase,
     CreateMovementTypeUseCase,
+    CreateMonthlyMedicineUtilizationUseCase,
     DispensationMedicineUseCase,
     RegisterMedicineEntryUseCase,
     RegisterExitUseCase,

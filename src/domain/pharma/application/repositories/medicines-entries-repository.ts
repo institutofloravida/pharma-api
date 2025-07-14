@@ -3,7 +3,7 @@ import { MedicineEntry } from '../../enterprise/entities/entry'
 import { MedicineEntryWithMedicineVariantAndBatch } from '../../enterprise/entities/value-objects/medicine-entry-with-medicine-batch-stock'
 import { Meta, type MetaReport } from '@/core/repositories/meta'
 import { Movimentation } from '../../enterprise/entities/value-objects/movimentation'
-import type { MovementDirection } from '../../enterprise/entities/movement-type'
+import { MovementDirection } from '../../enterprise/entities/movement-type'
 
 export abstract class MedicinesEntriesRepository {
   abstract create(medicineEntry: MedicineEntry): Promise<void>

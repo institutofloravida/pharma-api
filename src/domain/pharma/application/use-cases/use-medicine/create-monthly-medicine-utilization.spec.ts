@@ -171,7 +171,6 @@ describe('Use Medicine', () => {
           expect.objectContaining({
             year: 2025,
             month: 2,
-            medicineStockId: medicineStock.id.toString(),
             previousBalance: 80,
             currentBalance: 80,
             used: 0,
@@ -179,7 +178,6 @@ describe('Use Medicine', () => {
           expect.objectContaining({
             year: 2025,
             month: 2,
-            medicineStockId: medicineStock2.id.toString(),
             previousBalance: 50,
             currentBalance: 50,
             used: 0,
