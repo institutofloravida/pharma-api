@@ -1,4 +1,4 @@
-import { left, right, type Either } from '@/core/either'
+import { right, type Either } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { UseMedicinesRepository } from '../../repositories/use-medicine-repository'
 import { UseMedicine } from '@/domain/pharma/enterprise/use-medicine'
@@ -27,25 +27,27 @@ export class CreateMonthlyMedicineUtilizationUseCase {
     const year = date.getFullYear()
     const month = date.getMonth()
 
-    const useMedicineExists =
-      await this.useMedicinesRepository.findByYearAndMonth(year, month)
-    if (useMedicineExists) {
-      return left(new UseMedicineAlreadyExistsError())
-    }
-
     const { medicinesStock } = await this.medicinesStockRepository.fetchAll()
     for (const medicineStock of medicinesStock) {
-      const useMedicine = UseMedicine.create({
-        year,
-        month,
-        previousBalance: medicineStock.quantity,
-        currentBalance: medicineStock.quantity,
-        used: 0,
-        medicineStockId: medicineStock.id,
-        createdAt: new Date(),
-      })
+      const useMedicineExists =
+        await this.useMedicinesRepository.findByMedicineStockIdAndYearAndMonth(
+          year,
+          month,
+          medicineStock.id.toString(),
+        )
+      if (!useMedicineExists) {
+        const useMedicine = UseMedicine.create({
+          year,
+          month,
+          previousBalance: medicineStock.quantity,
+          currentBalance: medicineStock.quantity,
+          used: 0,
+          medicineStockId: medicineStock.id,
+          createdAt: new Date(),
+        })
 
-      await this.useMedicinesRepository.create(useMedicine)
+        await this.useMedicinesRepository.create(useMedicine)
+      }
     }
 
     return right(null)

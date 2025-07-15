@@ -14,12 +14,13 @@ export class PrismaUseMedicineMapper {
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     },
-    new UniqueEntityId(),
+    new UniqueEntityId(raw.id),
     )
   }
 
   static toPrisma(usemedicine: UseMedicine): Prisma.UseMedicineUncheckedCreateInput {
     return {
+      id: usemedicine.id.toString(),
       year: usemedicine.year,
       month: usemedicine.month,
       medicineStockId: usemedicine.medicineStockId.toString(),

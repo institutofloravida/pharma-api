@@ -18,7 +18,9 @@ import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
-import { UseMedicineAlreadyExistsError } from './_erros/use-medicine-already-exists-erro'
+import { InMemoryMedicinesExitsRepository } from 'test/repositories/in-memory-medicines-exits-repository'
+import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 
 let inMemoryUseMedicinesrepository: InMemoryUseMedicinesRepository
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
@@ -32,13 +34,19 @@ let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryBatchesStockRepository: InMemoryBatchStocksRepository
+let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
+let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
+let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 
 let sut: CreateMonthlyMedicineUtilizationUseCase
 
 describe('Use Medicine', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-    inMemoryUseMedicinesrepository = new InMemoryUseMedicinesRepository()
+
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
+    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
+
     inMemoryTherapeuticClassesRepository =
       new InMemoryTherapeuticClassesRepository()
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository(
@@ -95,6 +103,26 @@ describe('Use Medicine', () => {
       inMemoryBatchesRepository,
       inMemoryManufacturersRepository,
     )
+
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryBatchesStockRepository,
+      inMemoryBatchesRepository,
+      inMemoryOperatorsRepository,
+      inMemoryMovementTypesRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryStocksRepository,
+      inMemoryMedicinesStockRepository,
+    )
+    inMemoryUseMedicinesrepository = new InMemoryUseMedicinesRepository(
+      inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
+      inMemoryInstitutionsRepository,
+      inMemoryMedicinesExitsRepository,
+    )
+
     sut = new CreateMonthlyMedicineUtilizationUseCase(
       inMemoryUseMedicinesrepository,
       inMemoryMedicinesStockRepository,
@@ -184,59 +212,6 @@ describe('Use Medicine', () => {
           }),
         ]),
       )
-    }
-  })
-  it('shoult not be able create a Use Medicine with same year and month', async () => {
-    const date = new Date(2025, 2, 1)
-    vi.setSystemTime(date)
-    const institution = makeInstitution()
-    await inMemoryInstitutionsRepository.create(institution)
-
-    const stock = makeStock({
-      institutionId: institution.id,
-    })
-    await inMemoryStocksRepository.create(stock)
-
-    const pharmaceuticalForm = makePharmaceuticalForm()
-    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm)
-
-    const unitMeasure = makeUnitMeasure()
-    await inMemoryUnitsMeasureRepository.create(unitMeasure)
-
-    const medicine = makeMedicine()
-    await inMemoryMedicinesRepository.create(medicine)
-
-    const medicineVariant = makeMedicineVariant({
-      medicineId: medicine.id,
-      pharmaceuticalFormId: pharmaceuticalForm.id,
-      unitMeasureId: unitMeasure.id,
-    })
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
-
-    await inMemoryMedicinesRepository.addMedicinesVariantsId(
-      medicine.id.toString(),
-      medicineVariant.id.toString(),
-    )
-
-    const medicineStock = makeMedicineStock({
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-      currentQuantity: 80,
-      createdAt: new Date(2024, 0, 20),
-    })
-    await inMemoryMedicinesStockRepository.create(medicineStock)
-
-    await sut.execute({
-      date,
-    })
-
-    const result = await sut.execute({
-      date,
-    })
-    expect(result.isLeft()).toBeTruthy()
-    if (result.isLeft()) {
-      expect(inMemoryUseMedicinesrepository.items).toHaveLength(1)
-      expect(result.value).toBeInstanceOf(UseMedicineAlreadyExistsError)
     }
   })
 })

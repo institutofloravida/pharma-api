@@ -350,6 +350,7 @@ model Exit {
 }
 
 model UseMedicine {
+  id              String         @id @default(uuid())
   year            Int
   month           Int
   previousBalance Int            @map("previous_balance")
@@ -360,5 +361,5 @@ model UseMedicine {
   updatedAt       DateTime?      @updatedAt @map("updated_at")
   medicineStock   MedicineStock? @relation(fields: [medicineStockId], references: [id])
 
-  @@id([year, month])
+  @@unique([year, month, medicineStockId])
 }
