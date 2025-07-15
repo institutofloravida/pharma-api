@@ -4,6 +4,7 @@ import { UseMedicinesRepository } from '@/domain/pharma/application/repositories
 import { UseMedicine } from '@/domain/pharma/enterprise/use-medicine'
 import { PrismaUseMedicineMapper } from '../mappers/prisma-use-medicine-maper'
 import { MetaReport } from '@/core/repositories/meta'
+import { Prisma } from 'prisma/generated'
 
 @Injectable()
 export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
@@ -60,8 +61,7 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     meta: MetaReport;
   }> {
     const { institutionId, month, year, stockId } = filters
-
-    const useMedicinesWithTotalUsed = await this.prisma.$queryRawUnsafe<
+    const useMedicinesWithTotalUsed = await this.prisma.$queryRaw<
       Array<{
         id: string;
         year: number;
@@ -74,54 +74,55 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
         updatedAt: Date | null;
         totalUsed: number;
       }>
-    >(`
-  SELECT 
-    um.*,
-    COALESCE(SUM(e.quantity), 0) AS "totalUsed"
-  FROM 
-    "use_medicine" um
-  INNER JOIN "medicines_stocks" ms ON ms.id = um."medicine_stock_id"
-  INNER JOIN "stocks" s ON s.id = ms."stock_id"
-  LEFT JOIN "exits" e 
-    ON e."medicine_stock_id" = um."medicine_stock_id"
-    AND EXTRACT(YEAR FROM e."exitDate") = um.year
-    AND EXTRACT(MONTH FROM e."exitDate") = um.month + 1
+    >(
+      Prisma.sql`
+    SELECT 
+      um.*,
+      COALESCE(SUM(e.quantity), 0) AS "totalUsed"
+    FROM 
+      "use_medicine" um
+    INNER JOIN "medicines_stocks" ms ON ms.id = um."medicine_stock_id"
+    INNER JOIN "stocks" s ON s.id = ms."stock_id"
+    LEFT JOIN "exits" e 
+      ON e."medicine_stock_id" = um."medicine_stock_id"
+      AND EXTRACT(YEAR FROM e."exit_date") = ${year}
+      AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
+    WHERE 
+      s."institution_id" = ${institutionId}
+      ${stockId
+? Prisma.sql`AND s.id = ${stockId}`
+: Prisma.sql``}
+      AND um.year = ${year}
+      AND um.month = ${month}
+    GROUP BY 
+      um.id
+  `,
+    )
 
-  WHERE 
-    s."institution_id" = '${institutionId}'
-    ${stockId
-? `AND s.id = '${stockId}'`
-: ''}
-    AND um.year = ${year}
-    AND um.month = ${month}
-  GROUP BY 
-    um.id
-`)
+    const [totalGeneralResult] = await this.prisma.$queryRaw<
+      Array<{ totalGeneralUsed: bigint }>
+    >(
+      Prisma.sql`
+    SELECT 
+      COALESCE(SUM(e.quantity), 0) AS "totalGeneralUsed"
+    FROM "exits" e
+    INNER JOIN "medicines_stocks" ms ON ms.id = e."medicine_stock_id"
+    INNER JOIN "stocks" s ON s.id = ms."stock_id"
+    WHERE 
+      s."institution_id" = ${institutionId}
+      ${stockId
+? Prisma.sql`AND s.id = ${stockId}`
+: Prisma.sql``}
+      AND EXTRACT(YEAR FROM e."exit_date") = ${year}
+      AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
+  `,
+    )
 
-    const [totalGeneralResult] = await this.prisma.$queryRawUnsafe<
-      Array<{
-        totalGeneralUsed: number;
-      }>
-    >(`
-  SELECT 
-    COALESCE(SUM(e.quantity), 0) AS "totalGeneralUsed"
-  FROM "exits" e
-  INNER JOIN "medicines_stocks" ms ON ms.id = e."medicine_stock_id"
-  INNER JOIN "stocks" s ON s.id = ms."stock_id"
-  WHERE 
-    s."institution_id" = '${institutionId}'
-    ${stockId
-? `AND s.id = '${stockId}'`
-: ''}
-    AND EXTRACT(YEAR FROM e."exitDate") = ${year}
-    AND EXTRACT(MONTH FROM e."exitDate") = um.month + 1
-
-`)
-
-    const utilization = useMedicinesWithTotalUsed.map(useMedicine => {
+    // conversão segura
+    const utilization = useMedicinesWithTotalUsed.map((useMedicine) => {
       return PrismaUseMedicineMapper.toDomain({
         ...useMedicine,
-        used: useMedicine.totalUsed,
+        used: Number(useMedicine.totalUsed),
       })
     })
 
@@ -129,7 +130,7 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
       meta: {
         totalCount: utilization.length,
       },
-      totalUtilization: totalGeneralResult.totalGeneralUsed,
+      totalUtilization: Number(totalGeneralResult.totalGeneralUsed),
       utilization,
     }
   }

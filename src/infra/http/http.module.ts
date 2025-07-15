@@ -139,9 +139,12 @@ import { GetMovimentationInAPeriodUseCase } from '@/domain/pharma/application/us
 import { ScheduleModule } from '@nestjs/schedule'
 import { CreateMonthlyMedicineUtilizationController } from './controllers/use-medicine/create-monthly-medicine-utilization.controller'
 import { CreateMonthlyMedicineUtilizationUseCase } from '@/domain/pharma/application/use-cases/use-medicine/create-monthly-medicine-utilization'
+import { GetMonthlyMedicineUtilizationController } from './controllers/reports/get-monthly-medicine-utilization.controller'
+import { GetMonthlyMedicineUtilizationUseCase } from '@/domain/pharma/application/use-cases/reports/get-monthly-medicine-utilization'
+import { EnvModule } from '../env/env.module'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule, ScheduleModule.forRoot()],
+  imports: [DatabaseModule, EnvModule, CryptographyModule, ScheduleModule.forRoot()],
   controllers: [
     AuthenticateOperatorController,
     ValidateTokenController,
@@ -163,6 +166,7 @@ import { CreateMonthlyMedicineUtilizationUseCase } from '@/domain/pharma/applica
     GetDispenseInAPeriodController,
     GetPatientDetailsController,
     GetMovimentationInAPeriodController,
+    GetMonthlyMedicineUtilizationController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -234,6 +238,7 @@ import { CreateMonthlyMedicineUtilizationUseCase } from '@/domain/pharma/applica
     GetDispenseInAPeriodUseCase,
     GetPatientDetailsUseCase,
     GetMovimentationInAPeriodUseCase,
+    GetMonthlyMedicineUtilizationUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,

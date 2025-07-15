@@ -329,16 +329,16 @@ enum ExitType {
 
 model Exit {
   id              String    @id @default(uuid())
-  medicineStockId String
-  batchestockId   String
-  operatorId      String
+  medicineStockId String    @map("medicine_stock_id")
+  batchestockId   String    @map("batche_stock_id")
+  operatorId      String    @map("operator_id")
   quantity        Int
-  exitType        ExitType
-  exitDate        DateTime  @default(now())
-  dispensationId  String?
-  movementTypeId  String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime? @updatedAt
+  exitType        ExitType  @map("exit_type")
+  exitDate        DateTime  @default(now()) @map("exit_date")
+  dispensationId  String?   @map("dispensation_id")
+  movementTypeId  String?   @map("movement_type_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime? @updatedAt @map("updated_at")
 
   operator      Operator      @relation(fields: [operatorId], references: [id])
   batchestock   BatcheStock   @relation(fields: [batchestockId], references: [id])
@@ -362,4 +362,5 @@ model UseMedicine {
   medicineStock   MedicineStock? @relation(fields: [medicineStockId], references: [id])
 
   @@unique([year, month, medicineStockId])
+  @@map("use_medicine")
 }

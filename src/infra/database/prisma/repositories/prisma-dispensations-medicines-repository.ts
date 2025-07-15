@@ -16,7 +16,7 @@ import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/v
 
 @Injectable()
 export class PrismaDispensationsMedicinesRepository
-  implements DispensationsMedicinesRepository {
+implements DispensationsMedicinesRepository {
   constructor(private prisma: PrismaService) { }
 
   async create(dispensation: Dispensation): Promise<void> {
@@ -215,11 +215,11 @@ export class PrismaDispensationsMedicinesRepository
                       medicine: true,
                       pharmaceuticalForm: true,
                       unitMeasure: true,
-                      complement: true
-                    }
-                  }
-                }
-              }
+                      complement: true,
+                    },
+                  },
+                },
+              },
             },
             distinct: ['medicineStockId'],
           },
@@ -245,9 +245,9 @@ export class PrismaDispensationsMedicinesRepository
             pharmaceuticalForm: exit.medicineStock.medicineVariant.pharmaceuticalForm.name,
             unitMeasure: exit.medicineStock.medicineVariant.unitMeasure.name,
             complement: exit.medicineStock.medicineVariant.complement,
-            quantity: exit.quantity
+            quantity: exit.quantity,
           }
-        })
+        }),
       })
     })
 
@@ -323,8 +323,8 @@ export class PrismaDispensationsMedicinesRepository
       JOIN "_PathologyToPatient" pp ON pp."A" = p.id
       JOIN "patients" pa ON pa.id = pp."B"
       JOIN "dispensations" d ON d."patient_id" = pa.id
-      JOIN "exits" e ON e."dispensationId" = d.id
-      JOIN "batches_stocks" bs ON bs.id = e."batchestockId"
+      JOIN "exits" e ON e."dispensation_id" = d.id
+      JOIN "batches_stocks" bs ON bs.id = e."batche_stock_id"
       JOIN "stocks" s ON s.id = bs."stock_id"
       ${whereClause}
       GROUP BY p.id, p.name
