@@ -1,10 +1,8 @@
 import { BadRequestException, Body, ConflictException, Controller, HttpCode, Param, Put, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { RolesGuard } from '@/infra/auth/roles.guard'
-import { Roles } from '@/infra/auth/role-decorator'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { UpdateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/update-stock'
-import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { StockAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/_errors/stock-already-exists-error'
 import { UpdateStockDto } from './dtos/update-stock.dto'
 
@@ -12,7 +10,6 @@ import { UpdateStockDto } from './dtos/update-stock.dto'
 @ApiBearerAuth()
 @Controller('/stock')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(OperatorRole.MANAGER)
 export class UpdateStockController {
   constructor(
     private updateStock: UpdateStockUseCase,
