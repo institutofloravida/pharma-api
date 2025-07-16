@@ -14,6 +14,7 @@ async function bootstrap() {
       'http://localhost:5173',
       'http://localhost:3333',
       'https://pharma-web-s3mo.vercel.app',
+      'https://webpharma.vercel.app'
     ],
     credentials: true,
   })
