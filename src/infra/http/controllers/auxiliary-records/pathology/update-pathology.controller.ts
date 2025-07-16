@@ -1,18 +1,15 @@
 import { BadRequestException, Body, ConflictException, Controller, HttpCode, Param, Put, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { RolesGuard } from '@/infra/auth/roles.guard'
-import { Roles } from '@/infra/auth/role-decorator'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { UpdatePathologyDto } from '../pathology/dtos/update-pathology.dto'
 import { UpdatePathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/update-pathology'
 import { PathologyAlreadyExistsError } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/_erros/pathology-already-exists-error'
-import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 
 @ApiTags('pathology')
 @ApiBearerAuth()
 @Controller('/pathology')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(OperatorRole.MANAGER)
 export class UpdatePathologyController {
   constructor(
     private updatePathology: UpdatePathologyUseCase,
