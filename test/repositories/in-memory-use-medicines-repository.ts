@@ -7,10 +7,10 @@ import { InMemoryInstitutionsRepository } from './in-memory-institutions-reposit
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { InMemoryMedicinesExitsRepository } from './in-memory-medicines-exits-repository'
 import { UseMedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/use-medicine-details'
-import type { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
-import type { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
-import type { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
-import type { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
+import  { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
+import  { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import  { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
+import  { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
 
 export class InMemoryUseMedicinesRepository implements UseMedicinesRepository {
   public items: UseMedicine[] = []
@@ -198,7 +198,7 @@ export class InMemoryUseMedicinesRepository implements UseMedicinesRepository {
           pharmaceuticalForm: pharmaceuticalForm.content,
           unitMeasure: unitMeasure.content,
           complement: medicineVariant.complement ?? undefined,
-          id: useMedicine.id.toString(),
+          id: useMedicine.id,
           currentBalance: useMedicine.currentBalance,
           createdAt: useMedicine.createdAt,
           medicineStockId: useMedicine.medicineStockId,

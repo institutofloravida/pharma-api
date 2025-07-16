@@ -84,14 +84,7 @@ describe('Use Medicine', () => {
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
     )
-    inMemoryBatchesStockRepository = new InMemoryBatchStocksRepository(
-      inMemoryBatchesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryStocksRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryPharmaceuticalFormsRepository,
-    )
+
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -121,6 +114,10 @@ describe('Use Medicine', () => {
       inMemoryStocksRepository,
       inMemoryInstitutionsRepository,
       inMemoryMedicinesExitsRepository,
+        inMemoryMedicinesVariantsRepository,
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository
     )
 
     sut = new CreateMonthlyMedicineUtilizationUseCase(

@@ -17,6 +17,7 @@ import { BatchStock } from '@/domain/pharma/enterprise/entities/batch-stock'
 import { AtLeastOneMustBePopulatedError } from '../_errors/at-least-one-must-be-populated-error'
 import { StockNotFoundError } from '../../auxiliary-records/stock/_errors/stock-not-found-error'
 import { MedicineVariantNotFoundError } from '../../auxiliary-records/medicine-variant/_errors/medicine-variant-not-found-error'
+import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization'
 
 interface RegisterMedicineEntryUseCaseRequest {
   medicineVariantId: string;
@@ -52,7 +53,8 @@ export class RegisterMedicineEntryUseCase {
     private batcheStocksRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
     private medicinesVariantsRepository: MedicinesVariantsRepository,
-  ) {}
+    private createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase
+  ) { }
 
   async execute({
     medicineVariantId,
@@ -96,6 +98,10 @@ export class RegisterMedicineEntryUseCase {
         stockId: new UniqueEntityId(stockId),
       })
       await this.medicinesStockRepository.create(medicineStock)
+
+      await this.createMonthlyMedicineUtilizationUseCase.execute({
+        date: new Date()
+      })
     }
 
     let totalMovementBatches = 0
@@ -113,10 +119,10 @@ export class RegisterMedicineEntryUseCase {
         }
 
         let batchStock =
-        await this.batcheStocksRepository.findByBatchIdAndStockId(
-          batch.batchId,
-          stockId,
-        )
+          await this.batcheStocksRepository.findByBatchIdAndStockId(
+            batch.batchId,
+            stockId,
+          )
 
         if (!batchStock) {
           batchStock = BatchStock.create({

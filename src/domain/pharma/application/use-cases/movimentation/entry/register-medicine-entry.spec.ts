@@ -27,6 +27,9 @@ import { makeManufacturer } from 'test/factories/make-manufacturer'
 import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
+import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization'
+import { InMemoryUseMedicinesRepository } from 'test/repositories/in-memory-use-medicines-repository'
+import { InMemoryMedicinesExitsRepository } from 'test/repositories/in-memory-medicines-exits-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
@@ -42,10 +45,14 @@ let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
+let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
+let inMemoryUseMedicinesRepository: InMemoryUseMedicinesRepository
+let createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase
 let sut: RegisterMedicineEntryUseCase
 
 describe('Register Entry', () => {
   beforeEach(() => {
+
     inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
@@ -82,13 +89,41 @@ describe('Register Entry', () => {
       inMemoryManufacturersRepository,
     )
     inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+   inMemoryUseMedicinesRepository =  new InMemoryUseMedicinesRepository(
+   inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
+      inMemoryInstitutionsRepository,
+      inMemoryMedicinesExitsRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository
 
+)
+
+    createMonthlyMedicineUtilizationUseCase = new CreateMonthlyMedicineUtilizationUseCase(
+      inMemoryUseMedicinesRepository, inMemoryMedicinesStockRepository)
     inMemoryMedicinesVariantsRepository =
       new InMemoryMedicinesVariantsRepository(
         inMemoryMedicinesRepository,
         inMemoryPharmaceuticalFormsRepository,
         inMemoryUnitsMeasureRepository,
       )
+
+      
+      inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+           inMemoryBatchStocksRepository,
+           inMemoryBatchesRepository,
+           inMemoryOperatorsRepository,
+           inMemoryMovementTypesRepository,
+           inMemoryMedicinesRepository,
+           inMemoryMedicinesVariantsRepository,
+           inMemoryPharmaceuticalFormsRepository,
+           inMemoryUnitsMeasureRepository,
+           inMemoryStocksRepository,
+           inMemoryMedicinesStockRepository,
+         )
+
     inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
@@ -99,6 +134,7 @@ describe('Register Entry', () => {
       inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
       inMemoryMedicinesStockRepository,
+      inMemoryMovementTypesRepository
     )
 
     sut = new RegisterMedicineEntryUseCase(
@@ -108,6 +144,8 @@ describe('Register Entry', () => {
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
       inMemoryMedicinesVariantsRepository,
+      createMonthlyMedicineUtilizationUseCase
+
     )
   })
   it('shoult be able to register a new entry', async () => {
@@ -143,6 +181,7 @@ describe('Register Entry', () => {
     const result = await sut.execute({
       medicineVariantId: medicineVariant.id.toString(),
       stockId: stock.id.toString(),
+
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
       newBatches: [
