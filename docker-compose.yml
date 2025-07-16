@@ -10,3 +10,14 @@ services:
       - "5432:5432"
     volumes:
       - ./data/postgres:/bitnami/postgresql
+    
+  app:
+    entrypoint: ["/bin/sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
+    build: .
+    container_name: pharma-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
