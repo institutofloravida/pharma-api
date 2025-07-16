@@ -53,7 +53,7 @@ export class RegisterMedicineEntryUseCase {
     private batcheStocksRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
     private medicinesVariantsRepository: MedicinesVariantsRepository,
-    private createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase
+    private createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase,
   ) { }
 
   async execute({
@@ -98,10 +98,6 @@ export class RegisterMedicineEntryUseCase {
         stockId: new UniqueEntityId(stockId),
       })
       await this.medicinesStockRepository.create(medicineStock)
-
-      await this.createMonthlyMedicineUtilizationUseCase.execute({
-        date: new Date()
-      })
     }
 
     let totalMovementBatches = 0
@@ -167,6 +163,9 @@ export class RegisterMedicineEntryUseCase {
           nfNumber,
           entryDate,
         })
+        await this.createMonthlyMedicineUtilizationUseCase.execute({
+          date: new Date(),
+        })
 
         await this.medicineEntryRepository.create(entry)
       }
@@ -228,6 +227,9 @@ export class RegisterMedicineEntryUseCase {
         })
 
         await this.medicineEntryRepository.create(entry)
+        await this.createMonthlyMedicineUtilizationUseCase.execute({
+          date: new Date(),
+        })
       }
     }
 

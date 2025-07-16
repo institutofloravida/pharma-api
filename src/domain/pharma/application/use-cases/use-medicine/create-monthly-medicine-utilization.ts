@@ -28,13 +28,15 @@ export class CreateMonthlyMedicineUtilizationUseCase {
     const month = date.getMonth()
 
     const { medicinesStock } = await this.medicinesStockRepository.fetchAll()
+    console.log('medicinesstock', medicinesStock)
     for (const medicineStock of medicinesStock) {
       const useMedicineExists =
-        await this.useMedicinesRepository.findByMedicineStockIdAndYearAndMonth(
-          year,
-          month,
-          medicineStock.id.toString(),
-        )
+      await this.useMedicinesRepository.findByMedicineStockIdAndYearAndMonth(
+        year,
+        month,
+        medicineStock.id.toString(),
+      )
+      console.log('existe use', useMedicineExists)
       if (!useMedicineExists) {
         const useMedicine = UseMedicine.create({
           year,

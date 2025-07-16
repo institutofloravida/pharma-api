@@ -75,8 +75,8 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     totalUsed: number;
     medicine: string;
     dosage: string;
+    unitMeasure: string;
     pharmaceuticalForm: string;
-    acronym: string;
     complement?: string;
     createdAt: Date;
     updatedAt: Date | null;
@@ -145,7 +145,7 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
       console.log('individ>>>>>', useMedicine)
       return UseMedicineDetails.create({
         dosage: useMedicine.dosage,
-        unitMeasure: useMedicine.acronym,
+        unitMeasure: useMedicine.unitMeasure,
         complement: useMedicine.complement,
         createdAt: useMedicine.createdAt,
         currentBalance: useMedicine.currentBalance,
