@@ -12,7 +12,7 @@ services:
       - ./data/postgres:/bitnami/postgresql
     
   app:
-    entrypoint: ["/bin/sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
+    entrypoint: ["/bin/sh", "-c", "npx prisma migrate deploy && npm run seed:js && npm run start:prod"]
     build: .
     container_name: pharma-api
     ports:
