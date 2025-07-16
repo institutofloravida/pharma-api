@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { UseMedicinesRepository } from '@/domain/pharma/application/repositories/use-medicine-repository'
-import { UseMedicine } from '@/domain/pharma/enterprise/use-medicine'
+import { UseMedicine } from '@/domain/pharma/enterprise/entities/use-medicine'
 import { PrismaUseMedicineMapper } from '../mappers/prisma-use-medicine-maper'
 import { MetaReport } from '@/core/repositories/meta'
 import { Prisma } from 'prisma/generated'
+import { UseMedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/use-medicine-details'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 @Injectable()
 export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
@@ -56,32 +58,53 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     month: number;
     stockId?: string;
   }): Promise<{
-    utilization: UseMedicine[];
+    utilization: UseMedicineDetails[];
     totalUtilization: number;
     meta: MetaReport;
   }> {
     const { institutionId, month, year, stockId } = filters
     const useMedicinesWithTotalUsed = await this.prisma.$queryRaw<
-      Array<{
-        id: string;
-        year: number;
-        month: number;
-        previousBalance: number;
-        medicineStockId: string;
-        currentBalance: number;
-        used: number;
-        createdAt: Date;
-        updatedAt: Date | null;
-        totalUsed: number;
-      }>
-    >(
+  Array<{
+    id: string;
+    year: number;
+    month: number;
+    previousBalance: number;
+    medicineStockId: string;
+    currentBalance: number;
+    used: number;
+    totalUsed: number;
+    medicine: string;
+    dosage: string;
+    pharmaceuticalForm: string;
+    acronym: string;
+    complement?: string;
+    createdAt: Date;
+    updatedAt: Date | null;
+  }>
+>(
       Prisma.sql`
     SELECT 
-      um.*,
+     um.id,
+  um.year,
+  um.month,
+  um.previous_balance AS "previousBalance",
+  um.current_balance AS "currentBalance",
+  um.medicine_stock_id AS "medicineStockId",
+  um.created_at AS "createdAt",
+  um.updated_at AS "updatedAt",
+  mv.complement,
+  mv.dosage,
+  pf.name AS "pharmaceuticalForm",
+  um2.acronym AS "unitMeasure",
+  m.name AS "medicine",
       COALESCE(SUM(e.quantity), 0) AS "totalUsed"
     FROM 
       "use_medicine" um
     INNER JOIN "medicines_stocks" ms ON ms.id = um."medicine_stock_id"
+    INNER JOIN "medicines_variants" mv ON mv.id = ms."medicine_variant_id"
+    INNER JOIN "medicines" m ON m.id = mv."medicine_id"
+    INNER JOIN "pharmaceutical_forms" pf ON pf.id = mv."pharmaceutical_form_id"
+    INNER JOIN "unit_measures" um2 ON um2.id = mv."unit_measure_id"
     INNER JOIN "stocks" s ON s.id = ms."stock_id"
     LEFT JOIN "exits" e 
       ON e."medicine_stock_id" = um."medicine_stock_id"
@@ -91,11 +114,11 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
       s."institution_id" = ${institutionId}
       ${stockId
 ? Prisma.sql`AND s.id = ${stockId}`
-: Prisma.sql``}
+: Prisma.empty}
       AND um.year = ${year}
       AND um.month = ${month}
     GROUP BY 
-      um.id
+      um.id, mv."complement", mv."dosage", pf."name", um2."acronym", m."name"
   `,
     )
 
@@ -118,14 +141,26 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
   `,
     )
 
-    // conversão segura
     const utilization = useMedicinesWithTotalUsed.map((useMedicine) => {
-      return PrismaUseMedicineMapper.toDomain({
-        ...useMedicine,
+      console.log('individ>>>>>', useMedicine)
+      return UseMedicineDetails.create({
+        dosage: useMedicine.dosage,
+        unitMeasure: useMedicine.acronym,
+        complement: useMedicine.complement,
+        createdAt: useMedicine.createdAt,
+        currentBalance: useMedicine.currentBalance,
+        id: new UniqueEntityId(useMedicine.id),
+        medicine: useMedicine.medicine,
+        medicineStockId: new UniqueEntityId(useMedicine.medicineStockId),
+        month: useMedicine.month,
+        pharmaceuticalForm: useMedicine.pharmaceuticalForm,
+        previousBalance: useMedicine.previousBalance,
+        updatedAt: useMedicine.updatedAt,
+        year: useMedicine.year,
         used: Number(useMedicine.totalUsed),
       })
     })
-
+    console.log('repo: ', utilization)
     return {
       meta: {
         totalCount: utilization.length,

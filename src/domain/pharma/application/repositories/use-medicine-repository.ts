@@ -1,5 +1,6 @@
 import type { MetaReport } from '@/core/repositories/meta'
-import { UseMedicine } from '../../enterprise/use-medicine'
+import { UseMedicine } from '../../enterprise/entities/use-medicine'
+import type { UseMedicineDetails } from '../../enterprise/entities/value-objects/use-medicine-details'
 
 export abstract class UseMedicinesRepository {
   abstract create(useMedicine: UseMedicine): Promise<void>
@@ -10,5 +11,5 @@ export abstract class UseMedicinesRepository {
     year: number,
     month: number,
     stockId?: string
-  }): Promise<{ utilization: UseMedicine[], totalUtilization: number, meta: MetaReport }>
+  }): Promise<{ utilization: UseMedicineDetails[], totalUtilization: number, meta: MetaReport }>
 }

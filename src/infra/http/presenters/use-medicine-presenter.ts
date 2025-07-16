@@ -1,15 +1,20 @@
-import { UseMedicine } from '@/domain/pharma/enterprise/use-medicine'
+import { UseMedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/use-medicine-details'
 
 export class UseMedicinePresenter {
-  static toHTTP(useMedicine: UseMedicine) {
+  static toHTTP(useMedicine: UseMedicineDetails) {
     return {
       id: useMedicine.id.toString(),
-      name: useMedicine.currentBalance,
-      status: useMedicine.previousBalance,
+      currentBalance: useMedicine.currentBalance,
+      previousBalance: useMedicine.previousBalance,
       used: useMedicine.used,
       medicineStockId: useMedicine.medicineStockId.toString(),
       year: useMedicine.year,
-      statmonths: useMedicine.month,
+      month: useMedicine.month,
+      medicine: useMedicine.medicine,
+      pharmaceuticalForm: useMedicine.pharmaceuticalForm,
+      unitMeasure: useMedicine.unitMeasure,
+      dosage: useMedicine.dosage,
+      complement: useMedicine.complement,
       createdAt: useMedicine.createdAt,
     }
   }

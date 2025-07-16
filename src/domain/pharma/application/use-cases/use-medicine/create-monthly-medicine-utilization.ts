@@ -1,7 +1,7 @@
 import { right, type Either } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { UseMedicinesRepository } from '../../repositories/use-medicine-repository'
-import { UseMedicine } from '@/domain/pharma/enterprise/use-medicine'
+import { UseMedicine } from '@/domain/pharma/enterprise/entities/use-medicine'
 import { UseMedicineAlreadyExistsError } from './_erros/use-medicine-already-exists-erro'
 import { MedicinesStockRepository } from '../../repositories/medicines-stock-repository'
 

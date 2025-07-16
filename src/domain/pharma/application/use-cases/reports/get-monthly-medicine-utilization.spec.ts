@@ -133,6 +133,10 @@ describe('Get Monthly Medicine utilization', () => {
       inMemoryStocksRepository,
       inMemoryInstitutionsRepository,
       inMemoryMedicinesExitsRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryMedicinesRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
     )
 
     sut = new GetMonthlyMedicineUtilizationUseCase(

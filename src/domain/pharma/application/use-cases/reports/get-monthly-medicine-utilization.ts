@@ -1,8 +1,8 @@
 import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { MetaReport } from '@/core/repositories/meta'
-import { UseMedicine } from '@/domain/pharma/enterprise/use-medicine'
 import { UseMedicinesRepository } from '../../repositories/use-medicine-repository'
+import { UseMedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/use-medicine-details'
 
 interface GetMonthlyMedicineUtilizationUseCaseRequest {
   institutionId: string;
@@ -14,7 +14,7 @@ interface GetMonthlyMedicineUtilizationUseCaseRequest {
 type GetMonthlyMedicineUtilizationUseCaseResponse = Either<
   null,
   {
-    utilization: UseMedicine[];
+    utilization: UseMedicineDetails[];
     totalUtilization: number;
     meta: MetaReport;
   }
@@ -37,6 +37,7 @@ export class GetMonthlyMedicineUtilizationUseCase {
         year,
         stockId,
       })
+    console.log('use case: ', utilization)
 
     return right({
       utilization,

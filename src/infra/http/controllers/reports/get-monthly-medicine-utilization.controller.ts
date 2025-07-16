@@ -35,7 +35,6 @@ export class GetMonthlyMedicineUtilizationController {
     }
 
     const { totalUtilization, utilization, meta } = result.value
-
     const utilizationMapped = utilization.map(
       UseMedicinePresenter.toHTTP,
     )

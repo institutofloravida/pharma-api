@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { UseMedicine, type UseMedicineProps } from '@/domain/pharma/enterprise/use-medicine'
+import { UseMedicine, type UseMedicineProps } from '@/domain/pharma/enterprise/entities/use-medicine'
 import { PrismaUseMedicineMapper } from '@/infra/database/prisma/mappers/prisma-use-medicine-maper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'

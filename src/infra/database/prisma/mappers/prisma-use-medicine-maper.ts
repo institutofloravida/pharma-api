@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { UseMedicine } from '@/domain/pharma/enterprise/use-medicine'
+import { UseMedicine } from '@/domain/pharma/enterprise/entities/use-medicine'
 import { UseMedicine as PrismaUseMedicine, type Prisma } from 'prisma/generated'
 
 export class PrismaUseMedicineMapper {
