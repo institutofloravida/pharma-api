@@ -1,5 +1,5 @@
 export class AtLeastOneMustBePopulatedError extends Error {
-  constructor() {
-    super('At least one ("batches" or "newBatches") must be populated.')
+  constructor(message?: string) {
+    super(message || 'At least one  must be populated.')
   }
 }

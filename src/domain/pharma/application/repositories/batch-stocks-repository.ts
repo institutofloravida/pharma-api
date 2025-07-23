@@ -16,4 +16,9 @@ export abstract class BatchStocksRepository {
     includeExpired?: boolean
     includeZero?: boolean
   }, pagination?: boolean): Promise<{ batchesStock: BatchStockWithBatch[], meta: Meta }>
+  abstract exists(
+    code: string,
+    manufacturerId: string,
+    stockId: string
+  ): Promise<BatchStock | null>
 }

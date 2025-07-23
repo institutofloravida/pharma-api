@@ -1,21 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsOptional, IsArray, ValidateNested, IsNumber, IsISO8601, IsNotEmpty } from 'class-validator'
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+  IsISO8601,
+  IsNotEmpty,
+} from 'class-validator'
 import { Type } from 'class-transformer'
 
-class BatchDto {
-  @ApiProperty({ description: 'ID do lote', example: 'batch123' })
-  @IsString()
-  batchId!: string
-
-  @ApiProperty({
-    description: 'Quantidade para entrada',
-    example: 100,
-  })
-  @IsNumber()
-  quantityToEntry!: number
-}
-
-class NewBatchDto {
+class MedicineBatchDto {
   @ApiProperty({ description: 'Código do lote', example: 'ABCDE3' })
   @IsString()
   code: string
@@ -35,10 +30,11 @@ class NewBatchDto {
   @ApiProperty({
     description: 'Data de fabricação',
     example: '2024-12-01T03:00:00.000Z',
+    required: false,
   })
   @IsISO8601({ strict: true })
-  @IsNotEmpty()
-  manufacturingDate: Date
+  @IsOptional()
+  manufacturingDate?: Date
 
   @ApiProperty({
     description: 'Quantidade para entrada',
@@ -48,46 +44,52 @@ class NewBatchDto {
   quantityToEntry: number
 }
 
-export class RegisterMedicineEntryDto {
+class MedicineEntryDto {
   @ApiProperty({
-    description: 'Lista de lotes existentes para entrada',
-    required: false,
+    description: 'ID da variante do medicamento',
+    example: 'variant123',
   })
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => BatchDto)
-  batches?: BatchDto[]
+  @IsString()
+  medicineVariantId: string
 
   @ApiProperty({
-    description: 'Tipo de movimento',
-    example: '033353fa-6a5a-42d7-889f-f1bb3687202e',
+    description: 'Lista de lotes para este medicamento',
+    type: [MedicineBatchDto],
   })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MedicineBatchDto)
+  batches: MedicineBatchDto[]
+}
+
+export class RegisterMedicineEntryDto {
+  @ApiProperty({ description: 'ID do estoque', example: 'stock123' })
+  @IsString()
+  stockId: string
+
+  @ApiProperty({ description: 'ID do tipo de movimento', example: 'moveType123' })
   @IsString()
   movementTypeId: string
 
-  @ApiProperty({
-    description: 'Data de entrada',
-    example: '2025-12-01T03:00:00.000Z',
-  })
-  @IsISO8601({ strict: true })
-  @IsNotEmpty()
-  entryDate: Date
-
-  @ApiProperty({
-    description: 'Nota fiscal número',
-    example: '1234567890',
-  })
+  @ApiProperty({ description: 'Número da nota fiscal', example: 'NF123456' })
   @IsString()
   nfNumber: string
 
   @ApiProperty({
-    description: 'Lista de novos lotes para entrada',
+    description: 'Data da entrada',
+    example: '2025-12-01T03:00:00.000Z',
     required: false,
   })
+  @IsISO8601({ strict: true })
   @IsOptional()
+  entryDate?: Date
+
+  @ApiProperty({
+    description: 'Lista de medicamentos com lotes para entrada',
+    type: [MedicineEntryDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => NewBatchDto)
-  newBatches?: NewBatchDto[]
+  @Type(() => MedicineEntryDto)
+  medicines: MedicineEntryDto[]
 }

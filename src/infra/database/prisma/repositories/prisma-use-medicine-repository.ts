@@ -142,7 +142,6 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     )
 
     const utilization = useMedicinesWithTotalUsed.map((useMedicine) => {
-      console.log('individ>>>>>', useMedicine)
       return UseMedicineDetails.create({
         dosage: useMedicine.dosage,
         unitMeasure: useMedicine.unitMeasure,
@@ -160,7 +159,6 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
         used: Number(useMedicine.totalUsed),
       })
     })
-    console.log('repo: ', utilization)
     return {
       meta: {
         totalCount: utilization.length,

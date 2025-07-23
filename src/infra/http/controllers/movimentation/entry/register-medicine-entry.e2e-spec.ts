@@ -106,29 +106,33 @@ describe('Register Medicine Entry (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .post(`/medicine-entry/stock/${stock.id.toString()}/medicine-variant/${medicineVariant.id.toString()}`)
+      .post('/medicine-entry')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         movementTypeId: movementType.id.toString(),
-        medicineVariantId: medicineVariant.id.toString(),
         operatorId: operator.id.toString(),
         stockId: stock.id.toString(),
         entryDate: new Date(),
         nfNumber: '12345678901234567890123456789012345678901234',
-        newBatches: [
+        medicines: [
           {
-            code: 'ABCD1',
-            expirationDate: addYears(new Date(), 1),
-            manufacturerId: manufacturer.id.toString(),
-            manufacturingDate: subYears(new Date(), 1),
-            quantityToEntry: 40,
-          },
-          {
-            code: 'ABCD2',
-            expirationDate: addYears(new Date(), 1),
-            manufacturerId: manufacturer.id.toString(),
-            manufacturingDate: subYears(new Date(), 1),
-            quantityToEntry: 40,
+            medicineVariantId: medicineVariant.id.toString(),
+            batches: [
+              {
+                code: 'ABCD1',
+                expirationDate: addYears(new Date(), 1),
+                manufacturerId: manufacturer.id.toString(),
+                manufacturingDate: subYears(new Date(), 1),
+                quantityToEntry: 40,
+              },
+              {
+                code: 'ABCD2',
+                expirationDate: addYears(new Date(), 1),
+                manufacturerId: manufacturer.id.toString(),
+                manufacturingDate: subYears(new Date(), 1),
+                quantityToEntry: 40,
+              },
+            ],
           },
         ],
       })
@@ -143,13 +147,6 @@ describe('Register Medicine Entry (E2E)', () => {
     ] = await prisma.$transaction([
       prisma.medicineEntry.findFirst(),
       prisma.medicineStock.findFirst(),
-      prisma.batcheStock.findFirst({
-        where: {
-          batch: {
-            code: 'ABCD1',
-          },
-        },
-      }),
       prisma.batcheStock.findFirst({
         where: {
           batch: {

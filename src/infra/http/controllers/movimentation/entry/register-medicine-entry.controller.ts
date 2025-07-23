@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body, ConflictException, Controller,
   HttpCode,
-  Param,
   Post,
   UseGuards,
 } from '@nestjs/common'
@@ -15,7 +14,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('entry')
 @ApiBearerAuth()
-@Controller('medicine-entry/stock/:stockId/medicine-variant/:medicineVariantId')
+@Controller('medicine-entry')
 @UseGuards(JwtAuthGuard)
 export class RegisterMedicineEntryController {
   constructor(private registerMedicineEntry: RegisterMedicineEntryUseCase) {}
@@ -24,21 +23,17 @@ export class RegisterMedicineEntryController {
   @HttpCode(201)
   async handle(
     @CurrentUser() user: UserPayload,
-    @Param('medicineVariantId') medicineVariantId: string,
-    @Param('stockId') stockId: string,
     @Body() body: RegisterMedicineEntryDto,
   ) {
-    const { batches, entryDate, movementTypeId, newBatches, nfNumber } = body
+    const { entryDate, movementTypeId, nfNumber, medicines, stockId } = body
 
     const result = await this.registerMedicineEntry.execute({
-      batches,
+      medicines,
       movementTypeId,
-      medicineVariantId,
       operatorId: user.sub,
       stockId,
       entryDate,
       nfNumber,
-      newBatches,
     })
 
     if (result.isLeft()) {

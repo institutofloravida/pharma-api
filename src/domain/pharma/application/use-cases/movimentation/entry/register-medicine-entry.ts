@@ -20,23 +20,21 @@ import { MedicineVariantNotFoundError } from '../../auxiliary-records/medicine-v
 import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization'
 
 interface RegisterMedicineEntryUseCaseRequest {
-  medicineVariantId: string;
   stockId: string;
   operatorId: string;
-  batches?: {
-    batchId: string;
-    quantityToEntry: number;
-  }[];
-  newBatches?: {
-    code: string;
-    expirationDate: Date;
-    manufacturerId: string;
-    manufacturingDate?: Date;
-    quantityToEntry: number;
-  }[];
   movementTypeId: string;
   nfNumber: string;
   entryDate?: Date;
+  medicines: Array<{
+    medicineVariantId: string;
+    batches: Array<{
+      code: string;
+      expirationDate: Date;
+      manufacturerId: string;
+      manufacturingDate?: Date;
+      quantityToEntry: number;
+    }>;
+  }>;
 }
 
 type RegisterMedicineEntryUseCaseResponse = Either<
@@ -54,96 +52,117 @@ export class RegisterMedicineEntryUseCase {
     private batchesRepository: BatchesRepository,
     private medicinesVariantsRepository: MedicinesVariantsRepository,
     private createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase,
-  ) { }
+  ) {}
 
   async execute({
-    medicineVariantId,
     stockId,
     operatorId,
-    batches,
-    newBatches,
+    medicines,
     entryDate,
     movementTypeId,
     nfNumber,
   }: RegisterMedicineEntryUseCaseRequest): Promise<RegisterMedicineEntryUseCaseResponse> {
-    if (
-      (!batches && !newBatches) ||
-      (batches?.length === 0 && newBatches?.length === 0)
-    ) {
-      return left(new AtLeastOneMustBePopulatedError())
+    if (medicines.length === 0) {
+      return left(
+        new AtLeastOneMustBePopulatedError(
+          'Pelo menos um medicamento deve ser informado.',
+        ),
+      )
     }
-
     const stock = await this.stocksRepository.findById(stockId)
+
     if (!stock) {
       return left(new StockNotFoundError(stockId))
     }
 
-    const medicineVariant =
-      await this.medicinesVariantsRepository.findById(medicineVariantId)
-    if (!medicineVariant) {
-      return left(new MedicineVariantNotFoundError(medicineVariantId))
-    }
+    for (const medicine of medicines) {
+      const { batches, medicineVariantId } = medicine
 
-    let medicineStock =
-      await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
-        medicineVariantId,
-        stockId,
-      )
-    if (!medicineStock) {
-      medicineStock = MedicineStock.create({
-        batchesStockIds: [],
-        currentQuantity: 0,
-        minimumLevel: 15,
-        medicineVariantId: new UniqueEntityId(medicineVariantId),
-        stockId: new UniqueEntityId(stockId),
-      })
-      await this.medicinesStockRepository.create(medicineStock)
-    }
+      const medicineVariant =
+        await this.medicinesVariantsRepository.findById(medicineVariantId)
+      if (!medicineVariant) {
+        return left(new MedicineVariantNotFoundError(medicineVariantId))
+      }
 
-    let totalMovementBatches = 0
-    if (batches) {
-      for (const batch of batches) {
+      if (batches.length === 0) {
+        return left(
+          new AtLeastOneMustBePopulatedError(
+            'Pelo menos um lote deve ser informado.',
+          ),
+        )
+      }
+
+      let medicineStock =
+        await this.medicinesStockRepository.findByMedicineVariantIdAndStockId(
+          medicineVariantId,
+          stockId,
+        )
+      if (!medicineStock) {
+        medicineStock = MedicineStock.create({
+          batchesStockIds: [],
+          currentQuantity: 0,
+          minimumLevel: 15,
+          medicineVariantId: new UniqueEntityId(medicineVariantId),
+          stockId: new UniqueEntityId(stockId),
+        })
+        await this.medicinesStockRepository.create(medicineStock)
+      }
+
+      let totalMovementBatches = 0
+      for await (const batch of batches) {
         if (batch.quantityToEntry <= 0) {
           return left(new InvalidEntryQuantityError())
         }
 
-        const batchExists = await this.batchesRepository.findById(
-          batch.batchId,
+        let batchStockExists = await this.batcheStocksRepository.exists(
+          batch.code,
+          batch.manufacturerId,
+          stockId,
         )
-        if (!batchExists) {
-          return left(new ResourceNotFoundError())
-        }
-
-        let batchStock =
-          await this.batcheStocksRepository.findByBatchIdAndStockId(
-            batch.batchId,
-            stockId,
+        if (!batchStockExists) {
+          let batchExists = await this.batchesRepository.exists(
+            batch.code,
+            batch.manufacturerId,
           )
 
-        if (!batchStock) {
-          batchStock = BatchStock.create({
-            batchId: new UniqueEntityId(batch.batchId),
+          if (!batchExists) {
+            batchExists = Batch.create({
+              code: batch.code,
+              expirationDate: batch.expirationDate,
+              manufacturerId: new UniqueEntityId(batch.manufacturerId),
+              manufacturingDate: batch.manufacturingDate,
+            })
+            await this.batchesRepository.create(batchExists)
+          }
+
+          batchStockExists = BatchStock.create({
+            batchId: batchExists.id,
             currentQuantity: batch.quantityToEntry,
             medicineVariantId: medicineVariant.id,
             stockId: new UniqueEntityId(stockId),
             medicineStockId: medicineStock.id,
           })
+          await this.batcheStocksRepository.create(batchStockExists)
+        }
 
-          await this.batcheStocksRepository.create(batchStock)
+        const medicineStockHasBatchStock = medicineStock.batchesStockIds.some(
+          (batchStockId) => batchStockId.equal(batchStockExists.id),
+        )
+        if (!medicineStockHasBatchStock) {
           await Promise.all([
             this.medicinesStockRepository.addBatchStock(
               medicineStock.id.toString(),
-              batchStock.id.toString(),
+              batchStockExists.id.toString(),
             ),
             this.medicinesStockRepository.replenish(
               medicineStock.id.toString(),
-              batchStock.quantity,
+              batchStockExists.quantity,
             ),
           ])
         } else {
           await Promise.all([
             this.batcheStocksRepository.replenish(
-              batchStock.id.toString(),
+              batchStockExists.id.toString(),
               batch.quantityToEntry,
             ),
             this.medicinesStockRepository.replenish(
@@ -155,7 +174,7 @@ export class RegisterMedicineEntryUseCase {
 
         totalMovementBatches += batch.quantityToEntry
         const entry = MedicineEntry.create({
-          batcheStockId: batchStock.id,
+          batcheStockId: batchStockExists.id,
           movementTypeId: new UniqueEntityId(movementTypeId),
           medicineStockId: medicineStock.id,
           operatorId: new UniqueEntityId(operatorId),
@@ -170,69 +189,6 @@ export class RegisterMedicineEntryUseCase {
         await this.medicineEntryRepository.create(entry)
       }
     }
-
-    let totalMovementNewBatches = 0
-
-    if (newBatches) {
-      for (const newBatch of newBatches) {
-        const {
-          code,
-          expirationDate,
-          manufacturerId,
-          manufacturingDate,
-          quantityToEntry,
-        } = newBatch
-
-        if (quantityToEntry <= 0) {
-          return left(new InvalidEntryQuantityError())
-        }
-
-        const batch = Batch.create({
-          code,
-          expirationDate,
-          manufacturerId: new UniqueEntityId(manufacturerId),
-          manufacturingDate,
-        })
-
-        await this.batchesRepository.create(batch)
-
-        const batchStock = BatchStock.create({
-          batchId: batch.id,
-          currentQuantity: quantityToEntry,
-          medicineVariantId: medicineVariant.id,
-          stockId: new UniqueEntityId(stockId),
-          medicineStockId: medicineStock.id,
-        })
-
-        await this.batcheStocksRepository.create(batchStock)
-        await this.medicinesStockRepository.addBatchStock(
-          medicineStock.id.toString(),
-          batchStock.id.toString(),
-        )
-        await this.medicinesStockRepository.replenish(
-          medicineStock.id.toString(),
-          quantityToEntry,
-        )
-
-        totalMovementNewBatches += quantityToEntry
-
-        const entry = MedicineEntry.create({
-          batcheStockId: batchStock.id,
-          movementTypeId: new UniqueEntityId(movementTypeId),
-          medicineStockId: medicineStock.id,
-          operatorId: new UniqueEntityId(operatorId),
-          quantity: totalMovementNewBatches,
-          entryDate,
-          nfNumber,
-        })
-
-        await this.medicineEntryRepository.create(entry)
-        await this.createMonthlyMedicineUtilizationUseCase.execute({
-          date: new Date(),
-        })
-      }
-    }
-
     return right(null)
   }
 }

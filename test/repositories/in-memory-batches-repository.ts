@@ -43,7 +43,10 @@ export class InMemoryBatchesRepository implements BatchesRepository {
     }
   }
 
-  async findManyByManufacturerId({ page }: PaginationParams, manufactrurerId: string): Promise<{ batches: Batch[], meta: Meta }> {
+  async findManyByManufacturerId(
+    { page }: PaginationParams,
+    manufactrurerId: string,
+  ): Promise<{ batches: Batch[]; meta: Meta }> {
     const batches = this.items
 
     const batchesFiltered = batches.filter((item) => {
@@ -61,5 +64,17 @@ export class InMemoryBatchesRepository implements BatchesRepository {
         totalCount: batchesFiltered.length,
       },
     }
+  }
+
+  async exists(code: string, manufacturerId: string): Promise<Batch | null> {
+    const batch = this.items.find(
+      (item) =>
+        item.code === code && item.manufacturerId.toString() === manufacturerId,
+    )
+    if (!batch) {
+      return null
+    }
+
+    return batch
   }
 }
