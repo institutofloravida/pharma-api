@@ -199,7 +199,9 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
         medicine: medicine.content,
         currentQuantity: batchStock.quantity,
         isAvailable: batch.expirationDate > new Date(),
-        isCloseToExpiration: batch.expirationDate < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        isCloseToExpiration:
+          batch.expirationDate <
+          new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         isExpired: batch.expirationDate < new Date(),
         medicineVariantId: medicineVariant.id,
         medicineStockId: medicineStock.id,
@@ -226,5 +228,30 @@ export class InMemoryBatchStocksRepository implements BatchStocksRepository {
         totalCount: batchesStocksFiltered.length,
       },
     }
+  }
+
+  async exists(
+    code: string,
+    manufacturerId: string,
+    stockId: string,
+  ): Promise<BatchStock | null> {
+    const batch = this.batchesRepository.items.find(
+      (item) =>
+        item.code === code && item.manufacturerId.toString() === manufacturerId,
+    )
+    if (!batch) {
+      return null
+    }
+
+    const batchStock = this.items.find(
+      (item) =>
+        item.batchId.equal(batch.id) &&
+        item.stockId.toString() === stockId,
+    )
+    if (!batchStock) {
+      return null
+    }
+
+    return batchStock
   }
 }

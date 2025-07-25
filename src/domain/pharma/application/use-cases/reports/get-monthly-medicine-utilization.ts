@@ -37,7 +37,6 @@ export class GetMonthlyMedicineUtilizationUseCase {
         year,
         stockId,
       })
-    console.log('use case: ', utilization)
 
     return right({
       utilization,

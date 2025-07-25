@@ -13,4 +13,8 @@ export abstract class BatchesRepository {
     params: PaginationParams,
     manufactrurerId: string
   ): Promise<{ batches: Batch[], meta: Meta }>
+  abstract exists(
+    code: string,
+    manufacturerId: string,
+  ): Promise<Batch | null>
 }

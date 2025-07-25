@@ -90,4 +90,19 @@ export class PrismaBatchesRepository implements BatchesRepository {
       },
     }
   }
+
+  async exists(code: string, manufacturerId: string): Promise<Batch | null> {
+    const batch = await this.prisma.batch.findFirst({
+      where: {
+        code,
+        manufacturerId,
+      },
+    })
+
+    if (!batch) {
+      return null
+    }
+
+    return PrismaBatchMapper.toDomain(batch)
+  }
 }

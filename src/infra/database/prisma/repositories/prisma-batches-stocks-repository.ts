@@ -210,4 +210,22 @@ export class PrismaBatchStocksRepository implements BatchStocksRepository {
       },
     }
   }
+
+  async exists(code: string, manufacturerId: string, stockId: string): Promise<BatchStock | null> {
+    const batchStock = await this.prisma.batcheStock.findFirst({
+      where: {
+        batch: {
+          code,
+          manufacturerId,
+        },
+        stockId,
+      },
+    })
+
+    if (!batchStock) {
+      return null
+    }
+
+    return PrismaBatchStockMapper.toDomain(batchStock)
+  }
 }
