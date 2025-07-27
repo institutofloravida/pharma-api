@@ -10,14 +10,10 @@ export function makeMedicineExit(
   id?: UniqueEntityId,
 ) {
   const medicineexit = MedicineExit.create({
-    batchestockId: new UniqueEntityId(),
-    dispensationId: undefined,
     exitType: ExitType.MOVEMENT_TYPE,
-    medicineStockId: new UniqueEntityId(),
     exitDate: new Date(),
-    movementTypeId: new UniqueEntityId(),
     operatorId: new UniqueEntityId(),
-    quantity: faker.number.int({ max: 100, min: 1 }),
+    stockId: new UniqueEntityId(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     ...override,

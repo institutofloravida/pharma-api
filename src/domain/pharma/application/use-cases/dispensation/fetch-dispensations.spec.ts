@@ -8,7 +8,6 @@ import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operato
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { makeOperator } from 'test/factories/make-operator'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
-import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
 import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
@@ -18,9 +17,11 @@ import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicin
 import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory-medicines-variants-repository'
 import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository'
 import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
+import { InMemoryAddressRepository } from 'test/repositories/in-memory-address-repository'
+import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
-let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
@@ -34,13 +35,18 @@ let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryPatientsRepository: InMemoryPatientsRepository
+let inMemoryAddressRepository: InMemoryAddressRepository
+let inMemoryPathologiesRepository: InMemoryPathologiesRepository
 let inMemoryDispensationsRepository: InMemoryDispensationsMedicinesRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 let sut: FetchDispensationsUseCase
 describe('Fetch Dispensations', () => {
   beforeEach(() => {
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
-    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
+    inMemoryAddressRepository = new InMemoryAddressRepository()
+    inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
 
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
@@ -62,7 +68,10 @@ describe('Fetch Dispensations', () => {
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
     )
-    inMemoryPatientsRepository = new InMemoryPatientsRepository()
+    inMemoryPatientsRepository = new InMemoryPatientsRepository(
+      inMemoryAddressRepository,
+      inMemoryPathologiesRepository,
+    )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -74,17 +83,13 @@ describe('Fetch Dispensations', () => {
       inMemoryBatchesRepository,
       inMemoryManufacturersRepository,
     )
-    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
-      inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryStocksRepository,
+    inMemoryBatchStocksRepository.setMedicinesStockRepository(
       inMemoryMedicinesStockRepository,
+    )
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
     )
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
       inMemoryInstitutionsRepository,
@@ -96,6 +101,13 @@ describe('Fetch Dispensations', () => {
         inMemoryPatientsRepository,
         inMemoryMedicinesStockRepository,
         inMemoryStocksRepository,
+        inMemoryPathologiesRepository,
+        inMemoryMedicinesRepository,
+        inMemoryMedicinesVariantsRepository,
+        inMemoryPharmaceuticalFormsRepository,
+        inMemoryUnitsMeasureRepository,
+        inMemoryMovimentationRepository,
+        inMemoryBatchStocksRepository,
       )
 
     sut = new FetchDispensationsUseCase(inMemoryDispensationsRepository)

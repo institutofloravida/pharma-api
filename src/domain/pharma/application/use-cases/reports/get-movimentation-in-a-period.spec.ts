@@ -29,7 +29,10 @@ import { InMemoryMedicinesExitsRepository } from 'test/repositories/in-memory-me
 import { addDays } from 'date-fns'
 import { makeMedicineExit } from 'test/factories/make-medicine-exit'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
+import { makeMovimentation } from 'test/factories/make-movimentation'
 
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
@@ -100,35 +103,36 @@ describe('Get Movimentation in a Period', () => {
       inMemoryMedicinesStockRepository,
     )
 
-    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository(
       inMemoryOperatorsRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
       inMemoryMedicinesRepository,
       inMemoryMedicinesVariantsRepository,
       inMemoryPharmaceuticalFormsRepository,
       inMemoryUnitsMeasureRepository,
-      inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryBatchesRepository,
+      inMemoryBatchStocksRepository,
       inMemoryMovementTypesRepository,
+    )
+
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
     )
 
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
       inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryMovimentationRepository,
     )
 
+    inMemoryMovimentationRepository.setEntriesRepository(inMemoryMedicinesEntriesRepository)
+    inMemoryMovimentationRepository.setExitsRepository(inMemoryMedicinesExitsRepository)
+
     sut = new GetMovimentationInAPeriodUseCase(
-      inMemoryMedicinesEntriesRepository,
-      inMemoryMedicinesExitsRepository,
+      inMemoryMovimentationRepository,
     )
   })
 
@@ -178,6 +182,7 @@ describe('Get Movimentation in a Period', () => {
       currentQuantity: 0,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
+      medicineStockId: medicineStock.id,
     })
     await inMemoryBatchStocksRepository.create(batchStock)
 
@@ -188,57 +193,87 @@ describe('Get Movimentation in a Period', () => {
     const movementType = makeMovementType()
     await inMemoryMovementTypesRepository.create(movementType)
 
-    await inMemoryMedicinesEntriesRepository.create(
-      makeMedicineEntry({
+    const entry = makeMedicineEntry({
+      operatorId: operator.id,
+      stockId: stock.id,
+    })
+    await inMemoryMedicinesEntriesRepository.create(entry)
+
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 10,
-        batcheStockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
-        entryDate: addDays(new Date(), 5),
+        batchStockId: batchStock.id,
+        direction: 'ENTRY',
+        dispensationId: undefined,
+        entryId: entry.id,
+        exitId: undefined,
         movementTypeId: movementType.id,
       }),
     )
-    await inMemoryMedicinesEntriesRepository.create(
-      makeMedicineEntry({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 20,
-        batcheStockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
-        entryDate: addDays(new Date(), 7),
+        batchStockId: batchStock.id,
+        direction: 'ENTRY',
+        dispensationId: undefined,
+        entryId: entry.id,
+        exitId: undefined,
         movementTypeId: movementType.id,
 
       }),
     )
-    await inMemoryMedicinesEntriesRepository.create(
-      makeMedicineEntry({
+
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 30,
-        batcheStockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
-        entryDate: addDays(new Date(), 10),
+        batchStockId: batchStock.id,
+        direction: 'ENTRY',
+        dispensationId: undefined,
+        entryId: entry.id,
+        exitId: undefined,
         movementTypeId: movementType.id,
 
       }),
     )
 
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    const exit1 = makeMedicineExit({
+      operatorId: operator.id,
+      stockId: stock.id,
+      exitType: ExitType.MOVEMENT_TYPE,
+    })
+    const exit2 = makeMedicineExit({
+      operatorId: operator.id,
+      stockId: stock.id,
+      exitType: ExitType.MOVEMENT_TYPE,
+
+    })
+
+    await Promise.all([
+      inMemoryMedicinesExitsRepository.create(exit1),
+      inMemoryMedicinesExitsRepository.create(exit2),
+    ])
+
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 10,
-        batchestockId: batchStock.id,
+        direction: 'EXIT',
+        dispensationId: undefined,
+        entryId: undefined,
+        exitId: exit1.id,
+        batchStockId: batchStock.id,
         movementTypeId: movementType.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
-        exitType: ExitType.MOVEMENT_TYPE,
       }),
     )
 
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 20,
-        batchestockId: batchStock.id,
+        direction: 'EXIT',
+        dispensationId: undefined,
+        entryId: undefined,
+        exitId: exit2.id,
+        batchStockId: batchStock.id,
         movementTypeId: movementType.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
       }),
     )
 

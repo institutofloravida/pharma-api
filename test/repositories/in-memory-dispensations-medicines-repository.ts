@@ -19,9 +19,11 @@ import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
 import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
 import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
 import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
+import { InMemoryMovimentationRepository } from './in-memory-movimentation-repository'
+import { InMemoryBatchStocksRepository } from './in-memory-batch-stocks-repository'
 
 export class InMemoryDispensationsMedicinesRepository
-  implements DispensationsMedicinesRepository {
+implements DispensationsMedicinesRepository {
   public items: Dispensation[] = []
   constructor(
     private exitsRepository: InMemoryMedicinesExitsRepository,
@@ -34,8 +36,9 @@ export class InMemoryDispensationsMedicinesRepository
     private medicinesVariantsRepository: InMemoryMedicinesVariantsRepository,
     private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
     private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
-
-  ) { }
+    private movimentationRepository: InMemoryMovimentationRepository,
+    private batchesStockRepository: InMemoryBatchStocksRepository,
+  ) {}
 
   async create(dispensation: Dispensation) {
     this.items.push(dispensation)
@@ -63,7 +66,7 @@ export class InMemoryDispensationsMedicinesRepository
         if (
           dispensationDate &&
           dispensation.dispensationDate.setHours(0, 0, 0, 0) !==
-          dispensationDate.setHours(0, 0, 0, 0)
+            dispensationDate.setHours(0, 0, 0, 0)
         ) {
           return false
         }
@@ -78,8 +81,8 @@ export class InMemoryDispensationsMedicinesRepository
     )
 
     const dispensationsMapped = dispensationsPaginated.map((dispensation) => {
-      const exitsOfDispensation = this.exitsRepository.items.filter((exit) =>
-        exit.dispensationId?.equal(dispensation.id),
+      const movimentationOfDispensation = this.movimentationRepository.items.filter((movimentation) =>
+        movimentation.dispensationId?.equal(dispensation.id),
       )
 
       const operator = this.operatorsRepository.items.find((operator) =>
@@ -101,7 +104,7 @@ export class InMemoryDispensationsMedicinesRepository
       return DispensationWithPatient.create({
         dispensationDate: dispensation.dispensationDate,
         dispensationId: dispensation.id,
-        items: exitsOfDispensation.length,
+        items: movimentationOfDispensation.length,
         operatorId: dispensation.operatorId,
         operator: operator.name,
         patientId: dispensation.operatorId,
@@ -137,7 +140,7 @@ export class InMemoryDispensationsMedicinesRepository
       (d) =>
         d.dispensationDate >= todayStart &&
         d.dispensationDate <
-        new Date(todayStart.getTime() + 24 * 60 * 60 * 1000),
+          new Date(todayStart.getTime() + 24 * 60 * 60 * 1000),
     )
     const todayTotal = todayDispensations.length
 
@@ -192,23 +195,23 @@ export class InMemoryDispensationsMedicinesRepository
     const dispensations = this.items
     const dispensationsFiltered = dispensations
       .filter((dispensation) => {
-        const exit = this.exitsRepository.items.find((exit) =>
-          exit.dispensationId?.equal(dispensation.id),
+        const movimentation = this.movimentationRepository.items.find((movimentation) =>
+          movimentation.dispensationId?.equal(dispensation.id),
         )
-        if (!exit) {
-          throw new Error('Exit not found for dispensation.')
+        if (!movimentation) {
+          throw new Error('movimentation not found for dispensation.')
         }
 
-        const medicineStock = this.medicinesStocksRepository.items.find(
-          (stock) => stock.id.equal(exit.medicineStockId),
+        const batchStock = this.batchesStockRepository.items.find(
+          (items) => items.id.equal(movimentation.batchestockId),
         )
 
-        if (!medicineStock) {
-          throw new Error('Medicine stock not found for exit.')
+        if (!batchStock) {
+          throw new Error('Batch stock not found for movimentation.')
         }
 
         const stock = this.stocksRepository.items.find((stock) =>
-          stock.id.equal(medicineStock.stockId),
+          stock.id.equal(batchStock.stockId),
         )
 
         if (!stock) {
@@ -221,14 +224,14 @@ export class InMemoryDispensationsMedicinesRepository
         if (
           startDate &&
           dispensation.dispensationDate <
-          new Date(startDate.setHours(0, 0, 0, 0))
+            new Date(startDate.setHours(0, 0, 0, 0))
         ) {
           return false
         }
         if (
           endDate &&
           dispensation.dispensationDate >
-          new Date(endDate.setHours(23, 59, 59, 999))
+            new Date(endDate.setHours(23, 59, 59, 999))
         ) {
           return false
         }
@@ -252,8 +255,8 @@ export class InMemoryDispensationsMedicinesRepository
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
     const dispensationsMapped = dispensationsFiltered.map((dispensation) => {
-      const exitsOfDispensation = this.exitsRepository.items.filter((exit) =>
-        exit.dispensationId?.equal(dispensation.id),
+      const movimentationOfDispensation = this.movimentationRepository.items.filter((movimentation) =>
+        movimentation.dispensationId?.equal(dispensation.id),
       )
 
       const operator = this.operatorsRepository.items.find((operator) =>
@@ -272,16 +275,44 @@ export class InMemoryDispensationsMedicinesRepository
         throw new Error('Pacient não encontrado.')
       }
 
-      const medicines = exitsOfDispensation.map((exit) => {
+      const movimentations = this.movimentationRepository.items
+
+      const dispensedByMedicineStock: Array<{ medicineStockId: UniqueEntityId; quantity: number }> = []
+
+      for (const movimentation of movimentations) {
+        // Pegue o batchStock
+        const batchStock = this.batchesStockRepository.items.find(
+          (b) => b.id.equal(movimentation.batchestockId),
+        )
+        if (!batchStock) continue
+
+        // Pegue o medicineStockId
+        const medicineStockId = batchStock.medicineStockId.toString()
+
+        const medicineStockAlreadyExists = dispensedByMedicineStock.find(
+          (item) => item.medicineStockId.toString() === medicineStockId,
+        )
+        if (medicineStockAlreadyExists) {
+          medicineStockAlreadyExists.quantity += movimentation.quantity
+          continue
+        }
+        dispensedByMedicineStock.push({
+          medicineStockId: new UniqueEntityId(medicineStockId),
+          quantity: movimentation.quantity,
+        })
+      }
+
+      const medicines = dispensedByMedicineStock.map((item) => {
         const medicineStock = this.medicinesStocksRepository.items.find(
-          (medicineStock) => medicineStock.id.equal(exit.medicineStockId),
+          (medicineStock) => medicineStock.id.equal(item.medicineStockId),
         )
         if (!medicineStock) {
           throw new Error('Medicine stock not found for exit.')
         }
 
-        const medicineVariant = this.medicinesVariantsRepository.items.find((medicineVariant) =>
-          medicineVariant.id.equal(medicineStock.medicineVariantId),
+        const medicineVariant = this.medicinesVariantsRepository.items.find(
+          (medicineVariant) =>
+            medicineVariant.id.equal(medicineStock.medicineVariantId),
         )
         if (!medicineVariant) {
           throw new Error('Medicine variant not found for exit.')
@@ -294,11 +325,12 @@ export class InMemoryDispensationsMedicinesRepository
           throw new Error('Medicine variant not found for exit.')
         }
 
-        const pharmaceuticalForm = this.pharmaceuticalFormsRepository.items.find(
-          (pharmaceuticalForm) => {
-            return pharmaceuticalForm.id.equal(pharmaceuticalForm.id)
-          },
-        )
+        const pharmaceuticalForm =
+          this.pharmaceuticalFormsRepository.items.find(
+            (pharmaceuticalForm) => {
+              return pharmaceuticalForm.id.equal(pharmaceuticalForm.id)
+            },
+          )
 
         if (!pharmaceuticalForm) {
           throw new Error(
@@ -318,24 +350,24 @@ export class InMemoryDispensationsMedicinesRepository
           )
         }
         return {
-           medicineStockId: medicineStock.id,
-           medicine: medicine.content,
-           pharmaceuticalForm: pharmaceuticalForm.content,
-           unitMeasure: unitMeasure.acronym,
-           complement: medicineVariant.complement,
-           quantity: exit.quantity
+          medicineStockId: medicineStock.id,
+          medicine: medicine.content,
+          pharmaceuticalForm: pharmaceuticalForm.content,
+          unitMeasure: unitMeasure.acronym,
+          complement: medicineVariant.complement,
+          quantity: item.quantity,
         }
       })
 
       return DispensationWithMedicines.create({
         dispensationDate: dispensation.dispensationDate,
         dispensationId: dispensation.id,
-        items: exitsOfDispensation.length,
+        items: movimentationOfDispensation.length,
         operatorId: dispensation.operatorId,
         operator: operator.name,
         patientId: dispensation.operatorId,
         patient: patient.name,
-        medicines: medicines
+        medicines,
       })
     })
 
@@ -354,23 +386,25 @@ export class InMemoryDispensationsMedicinesRepository
   ): Promise<{ dispenses: DispensationPerDay[]; meta: MetaReport }> {
     const dispensations = this.items
       .filter((dispensation) => {
+        const movimentation = this.movimentationRepository.items.find((movimentation) =>
+          movimentation.dispensationId?.equal(dispensation.id),
+        )
+        if (!movimentation) {
+          throw new Error('Movimentation not found for dispensation.')
+        }
+
+        if (!movimentation.exitId) {
+          throw new Error('Exit ID not found for movimentation.')
+        }
         const exit = this.exitsRepository.items.find((exit) =>
-          exit.dispensationId?.equal(dispensation.id),
+          exit.id.equal(movimentation.exitId ?? new UniqueEntityId()),
         )
         if (!exit) {
           throw new Error('Exit not found for dispensation.')
         }
 
-        const medicineStock = this.medicinesStocksRepository.items.find(
-          (stock) => stock.id.equal(exit.medicineStockId),
-        )
-
-        if (!medicineStock) {
-          throw new Error('Medicine stock not found for exit.')
-        }
-
         const stock = this.stocksRepository.items.find((stock) =>
-          stock.id.equal(medicineStock.stockId),
+          stock.id.equal(exit.stockId),
         )
 
         if (!stock) {
@@ -383,14 +417,14 @@ export class InMemoryDispensationsMedicinesRepository
         if (
           startDate &&
           dispensation.dispensationDate <
-          new Date(startDate.setHours(0, 0, 0, 0))
+            new Date(startDate.setHours(0, 0, 0, 0))
         ) {
           return false
         }
         if (
           endDate &&
           dispensation.dispensationDate >
-          new Date(endDate.setHours(23, 59, 59, 999))
+            new Date(endDate.setHours(23, 59, 59, 999))
         ) {
           return false
         }
@@ -429,28 +463,27 @@ export class InMemoryDispensationsMedicinesRepository
   async fetchMostTreatedPathologies(
     institutionId?: string,
   ): Promise<{ mostTreatedPathologies: MostTreatedPathology[] }> {
-    // Mapeia patologiaId -> { name, count }
     const pathologyCount: Record<string, { name: string; count: number }> = {}
 
-    // Filtra dispensas pela instituição, se necessário
     const dispensations = this.items.filter((dispensation) => {
       if (!institutionId) return true
+      const movimentation = this.movimentationRepository.items.find((item) =>
+        item.dispensationId?.equal(dispensation.id),
+      )
+      if (!movimentation) return false
+
       const exit = this.exitsRepository.items.find((exit) =>
-        exit.dispensationId?.equal(dispensation.id),
+        exit.id.equal(movimentation.exitId ?? new UniqueEntityId()),
       )
       if (!exit) return false
-      const medicineStock = this.medicinesStocksRepository.items.find(
-        (stock) => stock.id.equal(exit.medicineStockId),
-      )
-      if (!medicineStock) return false
+
       const stock = this.stocksRepository.items.find((stock) =>
-        stock.id.equal(medicineStock.stockId),
+        stock.id.equal(exit.stockId),
       )
       if (!stock) return false
       return stock.institutionId.equal(new UniqueEntityId(institutionId))
     })
 
-    // Conta patologias
     for (const dispensation of dispensations) {
       const patient = this.patientsRepository.items.find((p) =>
         p.id.equal(dispensation.patientId),
@@ -458,7 +491,6 @@ export class InMemoryDispensationsMedicinesRepository
       if (!patient) continue
       for (const pathologyId of patient.pathologiesIds) {
         const id = pathologyId.toString()
-        // Aqui você pode buscar o nome real da patologia se tiver um repositório de patologias
         const pathology = this.pathologiesRepository.items.find((p) =>
           p.id.equal(pathologyId),
         )
@@ -474,30 +506,35 @@ export class InMemoryDispensationsMedicinesRepository
       }
     }
 
-    // Monta array e ordena
     const allPathologies = Object.entries(pathologyCount)
       .map(([id, { name, count }]) => ({
         pathologyId: id,
         pathologyName: name,
         total: count,
-        percentage: 0, // inicializa com 0, será atualizado abaixo
+        percentage: 0,
       }))
       .sort((a, b) => b.total - a.total)
 
-    const totalDispensations = allPathologies.reduce((sum, p) => sum + p.total, 0)
+    const totalDispensations = allPathologies.reduce(
+      (sum, p) => sum + p.total,
+      0,
+    )
 
-    allPathologies.forEach(p => {
-      p.percentage = totalDispensations > 0
-        ? (p.total / totalDispensations) * 100
-        : 0
+    allPathologies.forEach((p) => {
+      p.percentage =
+        totalDispensations > 0
+          ? (p.total / totalDispensations) * 100
+          : 0
     })
 
-    // Pega as 4 primeiras, soma o resto como "Outros"
     const top4 = allPathologies.slice(0, 4)
-    const othersTotal = allPathologies.slice(4).reduce((sum, p) => sum + p.total, 0)
-    const othersPercentage = totalDispensations > 0
-      ? (othersTotal / totalDispensations) * 100
-      : 0
+    const othersTotal = allPathologies
+      .slice(4)
+      .reduce((sum, p) => sum + p.total, 0)
+    const othersPercentage =
+      totalDispensations > 0
+        ? (othersTotal / totalDispensations) * 100
+        : 0
 
     const result: MostTreatedPathology[] = [...top4]
     if (othersTotal > 0) {

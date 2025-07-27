@@ -25,6 +25,8 @@ import { makeBatchStock } from 'test/factories/make-batch-stock'
 import { makeOperator } from 'test/factories/make-operator'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
+import { makeMovimentation } from 'test/factories/make-movimentation'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
@@ -40,6 +42,7 @@ let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 
 let sut: FetchRegisterMedicinesEntriesUseCase
 describe('Fetch Register Medicines Entries', () => {
@@ -81,17 +84,11 @@ describe('Fetch Register Medicines Entries', () => {
       inMemoryManufacturersRepository,
     )
     inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
-
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
     inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
       inMemoryOperatorsRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryMovimentationRepository,
     )
 
     sut = new FetchRegisterMedicinesEntriesUseCase(inMemoryMedicinesEntriesRepository)
@@ -150,28 +147,43 @@ describe('Fetch Register Medicines Entries', () => {
     const movementType = makeMovementType()
     await inMemoryMovementTypesRepository.create(movementType)
 
-    await inMemoryMedicinesEntriesRepository.create(
-      makeMedicineEntry({
+    const entry = makeMedicineEntry({
+      operatorId: operator.id,
+      stockId: stock.id,
+    })
+    await inMemoryMedicinesEntriesRepository.create(entry)
+
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 10,
-        batcheStockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
+        batchStockId: batchStock.id,
+        direction: 'ENTRY',
+        dispensationId: undefined,
+        entryId: entry.id,
+        movementTypeId: movementType.id,
+        exitId: undefined,
       }),
     )
-    await inMemoryMedicinesEntriesRepository.create(
-      makeMedicineEntry({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 20,
-        batcheStockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
+        batchStockId: batchStock.id,
+        direction: 'ENTRY',
+        dispensationId: undefined,
+        entryId: entry.id,
+        movementTypeId: movementType.id,
+        exitId: undefined,
       }),
     )
-    await inMemoryMedicinesEntriesRepository.create(
-      makeMedicineEntry({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 30,
-        batcheStockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
+        batchStockId: batchStock.id,
+        direction: 'ENTRY',
+        dispensationId: undefined,
+        entryId: entry.id,
+        movementTypeId: movementType.id,
+        exitId: undefined,
       }),
     )
 
@@ -181,13 +193,8 @@ describe('Fetch Register Medicines Entries', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(result.value.medicinesEntries).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ quantityToEntry: 10 }),
-          expect.objectContaining({ quantityToEntry: 20 }),
-          expect.objectContaining({ quantityToEntry: 30 }),
-        ]),
-      )
+      expect(result.value.medicinesEntries).toHaveLength(1)
+      expect(inMemoryMovimentationRepository.items).toHaveLength(3)
     }
   })
 
@@ -210,51 +217,14 @@ describe('Fetch Register Medicines Entries', () => {
     })
     await inMemoryStocksRepository.create(stock)
 
-    const medicine = makeMedicine()
-    await inMemoryMedicinesRepository.create(medicine)
-
-    const pharmaceuticalForm = makePharmaceuticalForm()
-    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm)
-
-    const unitMeasure = makeUnitMeasure()
-    await inMemoryUnitsMeasureRepository.create(unitMeasure)
-
-    const medicineVariant = makeMedicineVariant({
-      medicineId: medicine.id,
-      pharmaceuticalFormId: pharmaceuticalForm.id,
-      unitMeasureId: unitMeasure.id,
-    })
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
-
-    const medicineStock = makeMedicineStock({
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-      batchesStockIds: [],
-    })
-    const batch = makeBatch()
-    await inMemoryBatchesRepository.create(batch)
-
-    const batchStock = makeBatchStock({
-      batchId: batch.id,
-      currentQuantity: 0,
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-    })
-    await inMemoryBatchStocksRepository.create(batchStock)
-
-    medicineStock.addBatchStockId(batchStock.id)
-
-    await inMemoryMedicinesStockRepository.create(medicineStock)
-
     const movementType = makeMovementType()
     await inMemoryMovementTypesRepository.create(movementType)
 
     for (let i = 1; i <= 22; i++) {
       await inMemoryMedicinesEntriesRepository.create(
         makeMedicineEntry({
-          batcheStockId: batchStock.id,
-          medicineStockId: medicineStock.id,
           operatorId: operator.id,
+          stockId: stock.id,
         }),
       )
     }
@@ -262,8 +232,7 @@ describe('Fetch Register Medicines Entries', () => {
     for (let i = 1; i <= 5; i++) {
       await inMemoryMedicinesEntriesRepository.create(
         makeMedicineEntry({
-          batcheStockId: batchStock.id,
-          medicineStockId: medicineStock.id,
+          stockId: stock.id,
           operatorId: operator2.id,
         }),
       )
@@ -278,8 +247,6 @@ describe('Fetch Register Medicines Entries', () => {
       institutionId: institution.id.toString(),
       operatorId: operator2.id.toString(),
       stockId: stock.id.toString(),
-      medicineId: medicine.id.toString(),
-      medicineVariantId: medicineVariant.id.toString(),
     })
     if (result.isRight() && result2.isRight()) {
       expect(result.value?.medicinesEntries).toHaveLength(7)

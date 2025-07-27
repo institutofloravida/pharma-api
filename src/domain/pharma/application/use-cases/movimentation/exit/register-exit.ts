@@ -16,6 +16,8 @@ import { NoBatchInStockFoundError } from '../../_errors/no-batch-in-stock-found-
 import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
 import { MedicineStockNotExistsError } from '../../stock/medicine-stock/_errors/medicine-stock-not-exists-error'
 import { MedicineVariantNotFoundError } from '../../auxiliary-records/medicine-variant/_errors/medicine-variant-not-found-error'
+import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation'
+import { MovimentationRepository } from '../../../repositories/movimentation-repository'
 
 interface RegisterExitUseCaseRequest {
   medicineStockId: string;
@@ -43,6 +45,7 @@ export class RegisterExitUseCase {
     private medicinesStockRepository: MedicinesStockRepository,
     private batchesStocksRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
+    private movimentationRepository: MovimentationRepository,
   ) {}
 
   async execute({
@@ -103,17 +106,24 @@ export class RegisterExitUseCase {
     ])
 
     const exit = MedicineExit.create({
-      batchestockId: new UniqueEntityId(batcheStockId),
       exitType,
-      medicineStockId: medicineStock.id,
       operatorId: new UniqueEntityId(operatorId),
-      quantity,
       exitDate,
-      movementTypeId: new UniqueEntityId(movementTypeId),
     })
-
     await this.medicineExitRepository.create(exit)
 
+    const movimentation = Movimentation.create({
+      batchStockId: new UniqueEntityId(batcheStockId),
+      direction: 'EXIT',
+      quantity,
+      dispensationId: undefined,
+      entryId: undefined,
+      exitId: exit.id,
+      movementTypeId: exitType === ExitType.MOVEMENT_TYPE
+        ? new UniqueEntityId(movementTypeId)
+        : undefined,
+    })
+    await this.movimentationRepository.create(movimentation)
     return right(null)
   }
 }

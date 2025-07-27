@@ -7,10 +7,12 @@ import { InMemoryInstitutionsRepository } from './in-memory-institutions-reposit
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { InMemoryMedicinesExitsRepository } from './in-memory-medicines-exits-repository'
 import { UseMedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/use-medicine-details'
-import  { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
-import  { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
-import  { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
-import  { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
+import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
+import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
+import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
+import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository'
+import { InMemoryMovimentationRepository } from './in-memory-movimentation-repository'
+import { InMemoryBatchStocksRepository } from './in-memory-batch-stocks-repository'
 
 export class InMemoryUseMedicinesRepository implements UseMedicinesRepository {
   public items: UseMedicine[] = []
@@ -24,6 +26,8 @@ export class InMemoryUseMedicinesRepository implements UseMedicinesRepository {
     private medicinesRepository: InMemoryMedicinesRepository,
     private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
     private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
+    private movimentationRepository: InMemoryMovimentationRepository,
+    private batchStockRepository: InMemoryBatchStocksRepository,
   ) {}
 
   async create(useMedicine: UseMedicine): Promise<void> {
@@ -106,28 +110,49 @@ export class InMemoryUseMedicinesRepository implements UseMedicinesRepository {
 
     const useMedicinesWithUsedCalculated = useMedicinesFiltered.map(
       (useMedicine) => {
+        const movimentations = this.movimentationRepository.items.filter(
+          (movimentation) => {
+            if (movimentation.direction !== 'EXIT') { return false }
+            const batchStock = this.batchStockRepository.items.find(
+              (batchStock) =>
+                batchStock.id.equal(movimentation.batchestockId),
+            )
+            if (!batchStock) {
+              throw new Error(
+                `Batch Stock with id "${movimentation.batchestockId}" not found`,
+              )
+            }
+
+            if (!batchStock.medicineStockId.equal(useMedicine.medicineStockId)) {
+              return false
+            }
+
+            return true
+          },
+        )
+
         const sumTotalMedicineUtilization =
-          this.medicinesExitsRepository.items.reduce((sum, exit) => {
+          movimentations.reduce((sum, movimentation) => {
+            const exit = this.medicinesExitsRepository.items.find(
+              (item) => item.id.equal(movimentation.exitId ?? new UniqueEntityId()),
+            )
+            if (!exit) {
+              throw new Error(
+                `Exit with id "${movimentation.exitId?.toString()}" not found`,
+              )
+            }
+
             if (
               exit.exitDate.getFullYear() !== year ||
               exit.exitDate.getMonth() !== month
             ) { return sum }
 
-            const medicineStock = this.medicinesStockRepository.items.find(
-              (medicineStock) => medicineStock.id.equal(exit.medicineStockId),
-            )
-            if (!medicineStock) {
-              throw new Error(
-                `Medicine Stock with id "${exit.medicineStockId}" Not Found`,
-              )
-            }
-
             const stock = this.stocksRepository.items.find((stock) =>
-              stock.id.equal(medicineStock.stockId),
+              stock.id.equal(exit.stockId),
             )
             if (!stock) {
               throw new Error(
-                `Stock with id "${medicineStock.stockId}" not found`,
+                `Stock with id "${exit.stockId}" not found`,
               )
             }
 
@@ -144,7 +169,7 @@ export class InMemoryUseMedicinesRepository implements UseMedicinesRepository {
 
             if (!institution.id.equal(new UniqueEntityId(institutionId))) { return sum }
 
-            return sum + exit.quantity
+            return sum + movimentation.quantity
           }, 0)
 
         const medicineStock = this.medicinesStockRepository.items.find(

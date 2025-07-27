@@ -18,6 +18,8 @@ import { AtLeastOneMustBePopulatedError } from '../_errors/at-least-one-must-be-
 import { StockNotFoundError } from '../../auxiliary-records/stock/_errors/stock-not-found-error'
 import { MedicineVariantNotFoundError } from '../../auxiliary-records/medicine-variant/_errors/medicine-variant-not-found-error'
 import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization'
+import { MovimentationRepository } from '../../../repositories/movimentation-repository'
+import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation'
 
 interface RegisterMedicineEntryUseCaseRequest {
   stockId: string;
@@ -47,6 +49,7 @@ export class RegisterMedicineEntryUseCase {
   constructor(
     private stocksRepository: StocksRepository,
     private medicineEntryRepository: MedicinesEntriesRepository,
+    private movimentationRepository:MovimentationRepository,
     private medicinesStockRepository: MedicinesStockRepository,
     private batcheStocksRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
@@ -74,6 +77,15 @@ export class RegisterMedicineEntryUseCase {
     if (!stock) {
       return left(new StockNotFoundError(stockId))
     }
+
+    const entry = MedicineEntry.create({
+      nfNumber,
+      entryDate,
+      operatorId: new UniqueEntityId(operatorId),
+      stockId: new UniqueEntityId(stockId),
+    })
+
+    await this.medicineEntryRepository.create(entry)
 
     for (const medicine of medicines) {
       const { batches, medicineVariantId } = medicine
@@ -108,7 +120,6 @@ export class RegisterMedicineEntryUseCase {
         await this.medicinesStockRepository.create(medicineStock)
       }
 
-      let totalMovementBatches = 0
       for await (const batch of batches) {
         if (batch.quantityToEntry <= 0) {
           return left(new InvalidEntryQuantityError())
@@ -172,22 +183,19 @@ export class RegisterMedicineEntryUseCase {
           ])
         }
 
-        totalMovementBatches += batch.quantityToEntry
-        const entry = MedicineEntry.create({
-          batcheStockId: batchStockExists.id,
+        const movimentation = Movimentation.create({
+          batchStockId: batchStockExists.id,
+          direction: 'ENTRY',
+          quantity: batch.quantityToEntry,
           movementTypeId: new UniqueEntityId(movementTypeId),
-          medicineStockId: medicineStock.id,
-          operatorId: new UniqueEntityId(operatorId),
-          quantity: totalMovementBatches,
-          nfNumber,
-          entryDate,
-        })
-        await this.createMonthlyMedicineUtilizationUseCase.execute({
-          date: new Date(),
+          entryId: entry.id,
         })
 
-        await this.medicineEntryRepository.create(entry)
+        await this.movimentationRepository.create(movimentation)
       }
+      await this.createMonthlyMedicineUtilizationUseCase.execute({
+        date: new Date(),
+      })
     }
     return right(null)
   }

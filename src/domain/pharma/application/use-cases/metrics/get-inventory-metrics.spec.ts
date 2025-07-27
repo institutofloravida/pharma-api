@@ -12,7 +12,6 @@ import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-unit
 import { InMemoryDispensationsMedicinesRepository } from 'test/repositories/in-memory-dispensations-medicines-repository'
 import { InMemoryPatientsRepository } from 'test/repositories/in-memory-patients-repository'
 import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
-import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 import { InMemoryMedicinesExitsRepository } from 'test/repositories/in-memory-medicines-exits-repository'
 import { makeInstitution } from 'test/factories/make-insitution'
 import { makePatient } from 'test/factories/make-patient'
@@ -29,9 +28,14 @@ import { makeManufacturer } from 'test/factories/make-manufacturer'
 import { GetInventoryMetricsUseCase } from './get-inventory-metrics'
 import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
 import { InMemoryAddressRepository } from 'test/repositories/in-memory-address-repository'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
+import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository'
 
-let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
+let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
+let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryPatientsRepository: InMemoryPatientsRepository
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
@@ -53,6 +57,8 @@ let sut: GetInventoryMetricsUseCase
 describe('Get Inventory Metrics', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
+
     inMemoryAddressRepository = new InMemoryAddressRepository()
     inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
@@ -101,19 +107,34 @@ describe('Get Inventory Metrics', () => {
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
       inMemoryInstitutionsRepository,
     )
-    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
-    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository(
       inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
       inMemoryMedicinesRepository,
       inMemoryMedicinesVariantsRepository,
       inMemoryPharmaceuticalFormsRepository,
       inMemoryUnitsMeasureRepository,
-      inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryBatchesRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryMovementTypesRepository,
     )
+
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMovimentationRepository.setEntriesRepository(inMemoryMedicinesEntriesRepository)
+    inMemoryMovimentationRepository.setExitsRepository(inMemoryMedicinesExitsRepository)
+
     inMemoryPatientsRepository = new InMemoryPatientsRepository(
       inMemoryAddressRepository,
       inMemoryPathologiesRepository,
@@ -126,6 +147,12 @@ describe('Get Inventory Metrics', () => {
         inMemoryMedicinesStockRepository,
         inMemoryStocksRepository,
         inMemoryPathologiesRepository,
+        inMemoryMedicinesRepository,
+        inMemoryMedicinesVariantsRepository,
+        inMemoryPharmaceuticalFormsRepository,
+        inMemoryUnitsMeasureRepository,
+        inMemoryMovimentationRepository,
+        inMemoryBatchStocksRepository,
 
       )
 

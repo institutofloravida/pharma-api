@@ -21,10 +21,10 @@ import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
 import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
-let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
-let inMemoryMovementTypes: InMemoryMovementTypesRepository
+let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
@@ -36,13 +36,13 @@ let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
 let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 let sut: RegisterExitUseCase
 
 describe('Register Exit', () => {
   beforeEach(() => {
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
-    inMemoryMovementTypes = new InMemoryMovementTypesRepository()
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
     inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
 
@@ -52,18 +52,13 @@ describe('Register Exit', () => {
     inMemoryStocksRepository = new InMemoryStocksRepository(
       inMemoryInstitutionsRepository,
     )
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
+
     inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
       inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryMovimentationRepository,
     )
     inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
     inMemoryBatchesRepository = new InMemoryBatchesRepository()
@@ -94,12 +89,14 @@ describe('Register Exit', () => {
         inMemoryPharmaceuticalFormsRepository,
         inMemoryUnitsMeasureRepository,
       )
+
     sut = new RegisterExitUseCase(
       inMemoryMedicinesExitsRepository,
       inMemoryMedicinesVariantsRepository,
       inMemoryMedicinesStockRepository,
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
+      inMemoryMovimentationRepository,
     )
   })
   it('shoult be able to register a new exit', async () => {
@@ -109,7 +106,7 @@ describe('Register Exit', () => {
       content: 'DONATION',
       direction: 'EXIT',
     })
-    await inMemoryMovementTypes.create(movementType)
+    await inMemoryMovementTypesRepository.create(movementType)
 
     const institution = makeInstitution()
     await inMemoryInstitutionsRepository.create(institution)
@@ -158,7 +155,7 @@ describe('Register Exit', () => {
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryMedicinesExitsRepository.items).toHaveLength(1)
-      expect(inMemoryMedicinesExitsRepository.items[0].quantity).toBe(
+      expect(inMemoryMovimentationRepository.items[0].quantity).toBe(
         quantityToExit,
       )
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
@@ -177,7 +174,7 @@ describe('Register Exit', () => {
       content: 'DONATION',
       direction: 'EXIT',
     })
-    await inMemoryMovementTypes.create(movementType)
+    await inMemoryMovementTypesRepository.create(movementType)
 
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)
@@ -242,7 +239,7 @@ describe('Register Exit', () => {
       content: 'DONATION',
       direction: 'EXIT',
     })
-    await inMemoryMovementTypes.create(movementType)
+    await inMemoryMovementTypesRepository.create(movementType)
 
     const stock = makeStock()
     await inMemoryStocksRepository.create(stock)

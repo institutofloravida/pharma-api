@@ -11,7 +11,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details'
 import { $Enums, Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation'
+import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
 
 @Injectable()
 export class PrismaMedicinesExitsRepository

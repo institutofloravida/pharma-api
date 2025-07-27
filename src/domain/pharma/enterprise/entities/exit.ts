@@ -10,43 +10,15 @@ export enum ExitType {
 }
 
 export interface MedicineExitProps {
-  medicineStockId: UniqueEntityId
-  batchestockId: UniqueEntityId
-  quantity: number
-  operatorId: UniqueEntityId
   exitType: ExitType
   exitDate: Date
-  dispensationId?: UniqueEntityId
-  movementTypeId?: UniqueEntityId
+  stockId: UniqueEntityId
+  operatorId: UniqueEntityId
   createdAt: Date
   updatedAt?: Date
 }
 
 export class MedicineExit extends Entity<MedicineExitProps> {
-  get medicineStockId() {
-    return this.props.medicineStockId
-  }
-
-  get batchestockId() {
-    return this.props.batchestockId
-  }
-
-  get quantity() {
-    return this.props.quantity
-  }
-
-  set quantity(value: number) {
-    if (value <= 0) {
-      throw new Error('Quantity must be greater than zero.')
-    }
-    this.props.quantity = value
-    this.touch()
-  }
-
-  get operatorId() {
-    return this.props.operatorId
-  }
-
   get exitType() {
     return this.props.exitType
   }
@@ -65,12 +37,22 @@ export class MedicineExit extends Entity<MedicineExitProps> {
     this.touch()
   }
 
-  get dispensationId() {
-    return this.props.dispensationId
+  get stockId() {
+    return this.props.stockId
   }
 
-  get movementTypeId() {
-    return this.props.movementTypeId
+  set stockId(value: UniqueEntityId) {
+    this.props.stockId = value
+    this.touch()
+  }
+
+  get operatorId() {
+    return this.props.operatorId
+  }
+
+  set operatorId(value: UniqueEntityId) {
+    this.props.operatorId = value
+    this.touch()
   }
 
   get createdAt() {
@@ -89,24 +71,6 @@ export class MedicineExit extends Entity<MedicineExitProps> {
     props: Optional<MedicineExitProps, 'createdAt' | 'exitDate'>,
     id?: UniqueEntityId,
   ) {
-    if (props.exitType === 'DISPENSATION') {
-      if (!props.dispensationId) {
-        throw new Error('dispensationId é obrigatório para saída tipo DISPENSATION')
-      }
-      if (props.movementTypeId) {
-        throw new Error('movementTypeId não deve ser informado para saída tipo DISPENSATION')
-      }
-    }
-
-    if (props.exitType === 'MOVEMENT_TYPE') {
-      if (!props.movementTypeId) {
-        throw new Error('movementTypeId é obrigatório para saída tipo MOVEMENT_TYPE')
-      }
-      if (props.dispensationId) {
-        throw new Error('dispensationId não deve ser informado para saída tipo MOVEMENT_TYPE')
-      }
-    }
-
     const medicineExit = new MedicineExit(
       {
         ...props,

@@ -7,7 +7,7 @@ import { Meta, type MetaReport } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { MedicineEntryWithMedicineVariantAndBatch } from '@/domain/pharma/enterprise/entities/value-objects/medicine-entry-with-medicine-batch-stock'
 import { PrismaMedicineEntryWithMedicineVariantAndBatchMapper } from '../mappers/prisma-medicine-entry-with-medicine-variant-and-bath'
-import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation'
+import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 @Injectable()

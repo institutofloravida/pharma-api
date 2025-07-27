@@ -16,6 +16,8 @@ import { Injectable } from '@nestjs/common'
 import { BatchStocksRepository } from '../../repositories/batch-stocks-repository'
 import { MedicinesVariantsRepository } from '../../repositories/medicine-variant-repository'
 import { MedicineStockNotFoundError } from '../stock/medicine-stock/_errors/medicine-stock-not-found-error'
+import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation'
+import type { MovimentationRepository } from '../../repositories/movimentation-repository'
 
 interface DispensationMedicineUseCaseRequest {
   medicineStockId: string;
@@ -46,6 +48,7 @@ export class DispensationMedicineUseCase {
     private medicinesStockRepository: MedicinesStockRepository,
     private batchestockskRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
+    private movimentationRepository: MovimentationRepository,
   ) {}
 
   async execute({
@@ -130,14 +133,18 @@ export class DispensationMedicineUseCase {
     await this.dispensationsMedicinesRepository.create(dispensation)
 
     for (const item of batchesStocks) {
+      const batchStock = await this.batchestockskRepository.findById(
+        item.batchStockId,
+      )
+      if (!batchStock) {
+        return left(new ResourceNotFoundError())
+      }
+
       const medicineExit = MedicineExit.create({
-        medicineStockId: medicineStock.id,
-        batchestockId: new UniqueEntityId(item.batchStockId),
         exitDate: dispensationDate,
         exitType: ExitType.DISPENSATION,
-        dispensationId: dispensation.id,
-        quantity: item.quantity,
         operatorId: new UniqueEntityId(operatorId),
+        stockId: batchStock.stockId,
       })
 
       await Promise.all([
@@ -151,6 +158,18 @@ export class DispensationMedicineUseCase {
           item.quantity,
         ),
       ])
+
+      const movimentation = Movimentation.create({
+        batchStockId: new UniqueEntityId(item.batchStockId),
+        exitId: medicineExit.id,
+        quantity: item.quantity,
+        direction: 'EXIT',
+        dispensationId: dispensation.id,
+        entryId: undefined,
+        movementTypeId: undefined,
+      })
+
+      await this.movimentationRepository.create(movimentation)
     }
 
     return right({ dispensation })

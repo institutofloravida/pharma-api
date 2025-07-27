@@ -7,7 +7,6 @@ import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operato
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { makeOperator } from 'test/factories/make-operator'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
-import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
 import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
 import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
@@ -29,9 +28,19 @@ import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
 import { makeStock } from 'test/factories/make-stock'
 import { makeUnitMeasure } from 'test/factories/make-unit-measure'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
+import { InMemoryAddressRepository } from 'test/repositories/in-memory-address-repository'
+import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
+import { makeMovimentation } from 'test/factories/make-movimentation'
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
+import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository'
 
-let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
+let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
+let inMemoryAddressRepository: InMemoryAddressRepository
+let inMemoryPathologiesRepository: InMemoryPathologiesRepository
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryStocksRepository: InMemoryStocksRepository
 let inMemoryBatchesRepository: InMemoryBatchesRepository
 let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
@@ -49,10 +58,11 @@ let inMemoryDispensationsRepository: InMemoryDispensationsMedicinesRepository
 let sut: FetchDispensesPerDayUseCase
 describe('Fetch Dispenses Per Day', () => {
   beforeEach(() => {
+    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
     inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
-    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
-
+    inMemoryAddressRepository = new InMemoryAddressRepository()
+    inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
     inMemoryStocksRepository = new InMemoryStocksRepository(inMemoryInstitutionsRepository)
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository = new InMemoryPharmaceuticalFormsRepository()
@@ -73,7 +83,10 @@ describe('Fetch Dispenses Per Day', () => {
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
     )
-    inMemoryPatientsRepository = new InMemoryPatientsRepository()
+    inMemoryPatientsRepository = new InMemoryPatientsRepository(
+      inMemoryAddressRepository,
+      inMemoryPathologiesRepository,
+    )
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -85,18 +98,35 @@ describe('Fetch Dispenses Per Day', () => {
       inMemoryBatchesRepository,
       inMemoryManufacturersRepository,
     )
-    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
+
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository(
       inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
       inMemoryMedicinesRepository,
       inMemoryMedicinesVariantsRepository,
       inMemoryPharmaceuticalFormsRepository,
       inMemoryUnitsMeasureRepository,
-      inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryBatchesRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryMovementTypesRepository,
     )
+
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMovimentationRepository.setEntriesRepository(inMemoryMedicinesEntriesRepository)
+    inMemoryMovimentationRepository.setExitsRepository(inMemoryMedicinesExitsRepository)
+
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
       inMemoryInstitutionsRepository,
     )
@@ -107,6 +137,13 @@ describe('Fetch Dispenses Per Day', () => {
         inMemoryPatientsRepository,
         inMemoryMedicinesStockRepository,
         inMemoryStocksRepository,
+        inMemoryPathologiesRepository,
+        inMemoryMedicinesRepository,
+        inMemoryMedicinesVariantsRepository,
+        inMemoryPharmaceuticalFormsRepository,
+        inMemoryUnitsMeasureRepository,
+        inMemoryMovimentationRepository,
+        inMemoryBatchStocksRepository,
       )
 
     sut = new FetchDispensesPerDayUseCase(inMemoryDispensationsRepository)
@@ -195,37 +232,61 @@ describe('Fetch Dispenses Per Day', () => {
       inMemoryDispensationsRepository.create(dispensation3),
     ])
 
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    const exit1 = makeMedicineExit({
+      operatorId: operator.id,
+      stockId: stock.id,
+      exitType: ExitType.DISPENSATION,
+    })
+
+    const exit2 = makeMedicineExit({
+      operatorId: operator.id,
+      stockId: stock.id,
+      exitType: ExitType.DISPENSATION,
+    })
+
+    const exit3 = makeMedicineExit({
+      operatorId: operator.id,
+      stockId: stock.id,
+      exitType: ExitType.DISPENSATION,
+    })
+
+    await Promise.all([
+      inMemoryMedicinesExitsRepository.create(exit1),
+      inMemoryMedicinesExitsRepository.create(exit2),
+      inMemoryMedicinesExitsRepository.create(exit3),
+    ])
+
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 10,
-        batchestockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
         dispensationId: dispensation1.id,
-        exitType: ExitType.DISPENSATION,
         movementTypeId: undefined,
+        batchStockId: batchStock.id,
+        direction: 'EXIT',
+        entryId: undefined,
+        exitId: exit1.id,
       }),
     )
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 20,
-        batchestockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
-        exitType: ExitType.DISPENSATION,
         dispensationId: dispensation2.id,
         movementTypeId: undefined,
+        batchStockId: batchStock.id,
+        direction: 'EXIT',
+        entryId: undefined,
+        exitId: exit2.id,
       }),
     )
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 30,
-        batchestockId: batchStock.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
-        exitType: ExitType.DISPENSATION,
         dispensationId: dispensation3.id,
         movementTypeId: undefined,
+        batchStockId: batchStock.id,
+        direction: 'EXIT',
+        entryId: undefined,
+        exitId: exit3.id,
       }),
     )
 

@@ -31,6 +31,7 @@ import { makeMedicineStock } from 'test/factories/make-medicine-stock'
 import { makeBatch } from 'test/factories/make-batch'
 import { makeBatchStock } from 'test/factories/make-batch-stock'
 import { InvalidEntryQuantityError } from '../../_errors/invalid-entry-quantity-error'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
@@ -48,6 +49,7 @@ let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryUseMedicinesRepository: InMemoryUseMedicinesRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 let createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase
 let sut: RegisterMedicineEntryUseCase
 
@@ -124,27 +126,21 @@ describe('Register Entry', () => {
     )
 
     inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
       inMemoryOperatorsRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
-      inMemoryMovementTypesRepository,
+      inMemoryMovimentationRepository,
     )
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
 
     sut = new RegisterMedicineEntryUseCase(
       inMemoryStocksRepository,
       inMemoryMedicinesEntriesRepository,
+      inMemoryMovimentationRepository,
       inMemoryMedicinesStockRepository,
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
       inMemoryMedicinesVariantsRepository,
       createMonthlyMedicineUtilizationUseCase,
-
     )
   })
   it('should be able to register a new entry', async () => {
@@ -228,15 +224,13 @@ describe('Register Entry', () => {
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(2)
-      expect(inMemoryMedicinesEntriesRepository.items[0].quantity).toBe(
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(1)
+      expect(inMemoryMovimentationRepository.items).toHaveLength(2)
+      expect(inMemoryMovimentationRepository.items[0].quantity).toBe(
         quantityToEntryMedicine1,
       )
-      expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
-        quantityToEntryMedicine1,
-      )
-      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
-        quantityToEntryMedicine1,
+      expect(inMemoryMedicinesStockRepository.items[1].quantity).toBe(
+        quantityToEntryMedicine2,
       )
     }
   })
@@ -457,7 +451,8 @@ describe('Register Entry', () => {
     expect(result1.isRight()).toBeTruthy()
     expect(result2.isRight()).toBeTruthy()
     if (result1.isRight()) {
-      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(3)
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(2)
+      expect(inMemoryMovimentationRepository.items).toHaveLength(3)
       expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
         quantityToEntryBatch + 10,
       )

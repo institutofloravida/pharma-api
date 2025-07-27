@@ -1,4 +1,4 @@
-import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation'
+import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
 
 export class MovimentationPresenter {
   static toHTTP(movimentation: Movimentation) {

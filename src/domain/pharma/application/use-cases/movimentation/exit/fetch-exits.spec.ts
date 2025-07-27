@@ -26,6 +26,8 @@ import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-man
 import { FetchMedicinesExitsUseCase } from './fetch-exits'
 import { makeMedicineExit } from 'test/factories/make-medicine-exit'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
+import { makeMovimentation } from 'test/factories/make-movimentation'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
@@ -41,6 +43,7 @@ let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 
 let sut: FetchMedicinesExitsUseCase
 describe('Fetch  Medicines Exits', () => {
@@ -82,18 +85,12 @@ describe('Fetch  Medicines Exits', () => {
       inMemoryManufacturersRepository,
     )
     inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
 
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
       inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryMovimentationRepository,
     )
 
     sut = new FetchMedicinesExitsUseCase(inMemoryMedicinesExitsRepository)
@@ -154,31 +151,62 @@ describe('Fetch  Medicines Exits', () => {
     const movementType = makeMovementType()
     await inMemoryMovementTypesRepository.create(movementType)
 
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    const exit1 = makeMedicineExit({
+      exitType: ExitType.MOVEMENT_TYPE,
+      operatorId: operator.id,
+      stockId: stock.id,
+      exitDate: new Date(),
+    })
+    const exit2 = makeMedicineExit({
+      exitType: ExitType.MOVEMENT_TYPE,
+      operatorId: operator.id,
+      stockId: stock.id,
+
+      exitDate: new Date(),
+    })
+    const exit3 = makeMedicineExit({
+      exitType: ExitType.MOVEMENT_TYPE,
+      operatorId: operator.id,
+      stockId: stock.id,
+      exitDate: new Date(),
+    })
+    await Promise.all([
+      inMemoryMedicinesExitsRepository.create(exit1),
+      inMemoryMedicinesExitsRepository.create(exit2),
+      inMemoryMedicinesExitsRepository.create(exit3),
+    ])
+
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 10,
-        batchestockId: batchStock.id,
+        batchStockId: batchStock.id,
         movementTypeId: movementType.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
+        exitId: exit1.id,
+        direction: 'EXIT',
+        dispensationId: undefined,
+        entryId: undefined,
       }),
     )
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 20,
-        batchestockId: batchStock.id,
+        batchStockId: batchStock.id,
         movementTypeId: movementType.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
+        exitId: exit2.id,
+        direction: 'EXIT',
+        dispensationId: undefined,
+        entryId: undefined,
       }),
     )
-    await inMemoryMedicinesExitsRepository.create(
-      makeMedicineExit({
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
         quantity: 30,
-        batchestockId: batchStock.id,
+        batchStockId: batchStock.id,
         movementTypeId: movementType.id,
-        medicineStockId: medicineStock.id,
-        operatorId: operator.id,
+        exitId: exit3.id,
+        direction: 'EXIT',
+        dispensationId: undefined,
+        entryId: undefined,
       }),
     )
 
@@ -201,79 +229,17 @@ describe('Fetch  Medicines Exits', () => {
     })
     await inMemoryOperatorsRepository.create(operator)
 
-    const operator2 = makeOperator({
-      institutionsIds: [institution.id],
-    })
-    await inMemoryOperatorsRepository.create(operator2)
-
     const stock = makeStock({
       institutionId: institution.id,
     })
     await inMemoryStocksRepository.create(stock)
 
-    const medicine = makeMedicine()
-    await inMemoryMedicinesRepository.create(medicine)
-
-    const pharmaceuticalForm = makePharmaceuticalForm()
-    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm)
-
-    const unitMeasure = makeUnitMeasure()
-    await inMemoryUnitsMeasureRepository.create(unitMeasure)
-
-    const medicineVariant = makeMedicineVariant({
-      medicineId: medicine.id,
-      pharmaceuticalFormId: pharmaceuticalForm.id,
-      unitMeasureId: unitMeasure.id,
-    })
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
-
-    const medicineStock = makeMedicineStock({
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-      batchesStockIds: [],
-    })
-    const batch = makeBatch()
-    await inMemoryBatchesRepository.create(batch)
-
-    const batchStock = makeBatchStock({
-      batchId: batch.id,
-      currentQuantity: 0,
-      medicineVariantId: medicineVariant.id,
-      stockId: stock.id,
-    })
-    await inMemoryBatchStocksRepository.create(batchStock)
-
-    medicineStock.addBatchStockId(batchStock.id)
-
-    await inMemoryMedicinesStockRepository.create(medicineStock)
-
-    const movementType = makeMovementType({ content: 'DONATION' })
-    await inMemoryMovementTypesRepository.create(movementType)
-
-    const movementType2 = makeMovementType({ content: 'THEFT' })
-    await inMemoryMovementTypesRepository.create(movementType2)
-
     for (let i = 1; i <= 22; i++) {
       await inMemoryMedicinesExitsRepository.create(
         makeMedicineExit({
-          batchestockId: batchStock.id,
-          movementTypeId: movementType.id,
-          medicineStockId: medicineStock.id,
           operatorId: operator.id,
           exitType: ExitType.MOVEMENT_TYPE,
-        }),
-      )
-    }
-
-    for (let i = 1; i <= 5; i++) {
-      await inMemoryMedicinesExitsRepository.create(
-        makeMedicineExit({
-          batchestockId: batchStock.id,
-          movementTypeId: movementType2.id,
-          medicineStockId: medicineStock.id,
-          operatorId: operator2.id,
-          exitType: ExitType.MOVEMENT_TYPE,
-
+          stockId: stock.id,
         }),
       )
     }
@@ -282,14 +248,9 @@ describe('Fetch  Medicines Exits', () => {
       page: 3,
       institutionId: institution.id.toString(),
     })
-    const result2 = await sut.execute({
-      page: 1,
-      institutionId: institution.id.toString(),
-      movementTypeId: movementType2.id.toString(),
-    })
-    if (result.isRight() && result2.isRight()) {
-      expect(result.value?.medicinesExits).toHaveLength(7)
-      expect(result2.value?.medicinesExits).toHaveLength(5)
+
+    if (result.isRight()) {
+      expect(result.value?.medicinesExits).toHaveLength(2)
     }
   })
 })

@@ -1,22 +1,21 @@
 import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { Meta } from '@/core/repositories/meta'
-import { MedicineEntryWithMedicineVariantAndBatch } from '@/domain/pharma/enterprise/entities/value-objects/medicine-entry-with-medicine-batch-stock'
 import { MedicinesEntriesRepository } from '../../../repositories/medicines-entries-repository'
+import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details'
 
 interface FetchRegisterMedicineEntryUseCaseRequest {
   institutionId: string,
-  medicineId?: string;
-  medicineVariantId?: string;
   stockId?: string;
   operatorId?: string;
+  entryDate?: Date;
   page: number;
 }
 
 type FetchRegisterMedicineEntryUseCaseResponse = Either<
   null,
   {
-    medicinesEntries: MedicineEntryWithMedicineVariantAndBatch[],
+    medicinesEntries: EntryDetails[],
     meta: Meta
   }
 >
@@ -32,21 +31,21 @@ export class FetchRegisterMedicinesEntriesUseCase {
     institutionId,
     operatorId,
     stockId,
-    medicineId,
-    medicineVariantId,
+    entryDate,
   }: FetchRegisterMedicineEntryUseCaseRequest): Promise<FetchRegisterMedicineEntryUseCaseResponse> {
-    const { medicinesEntries, meta } =
-      await this.medicinesEntriesRepository.findManyByInstitutionId(
+    const { entries, meta } =
+      await this.medicinesEntriesRepository.findMany(
         { page },
-        institutionId,
-        operatorId,
-        stockId,
-        medicineId,
-        medicineVariantId,
+        {
+          institutionId,
+          operatorId,
+          stockId,
+          entryDate,
+        },
       )
 
     return right({
-      medicinesEntries,
+      medicinesEntries: entries,
       meta: {
         page: meta.page,
         totalCount: meta.totalCount,

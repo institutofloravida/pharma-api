@@ -10,12 +10,9 @@ export function makeMedicineEntry(
   id?: UniqueEntityId,
 ) {
   const medicineentry = MedicineEntry.create({
-    batcheStockId: new UniqueEntityId(),
-    medicineStockId: new UniqueEntityId(),
     entryDate: new Date(),
-    movementTypeId: new UniqueEntityId(),
     operatorId: new UniqueEntityId(),
-    quantity: faker.number.int({ max: 100, min: 1 }),
+    stockId: new UniqueEntityId(),
     nfNumber: faker.string.numeric(44),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),

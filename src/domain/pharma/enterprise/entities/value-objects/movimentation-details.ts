@@ -3,7 +3,7 @@ import { ExitType } from '../exit'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MovementDirection } from '../movement-type'
 
-export interface MovimentationProps {
+export interface MovimentationDetailsProps {
   direction: MovementDirection
   operator: string
   operatorId: UniqueEntityId
@@ -28,7 +28,7 @@ export interface MovimentationProps {
   exitType?: ExitType
 }
 
-export class Movimentation extends ValueObject<MovimentationProps> {
+export class MovimentationDetails extends ValueObject<MovimentationDetailsProps> {
   get direction() {
     return this.props.direction
   }
@@ -117,7 +117,7 @@ export class Movimentation extends ValueObject<MovimentationProps> {
     return this.props.exitType
   }
 
-  static create(props: MovimentationProps) {
-    return new Movimentation(props)
+  static create(props: MovimentationDetailsProps) {
+    return new MovimentationDetails(props)
   }
 }

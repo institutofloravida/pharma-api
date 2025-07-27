@@ -24,10 +24,13 @@ import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-unit
 import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
 import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
 import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
-import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
+import { InMemoryAddressRepository } from 'test/repositories/in-memory-address-repository'
+import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
 
+let inMemoryAddressRepository: InMemoryAddressRepository
+let inMemoryPathologiesRepository: InMemoryPathologiesRepository
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
-let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
 let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
@@ -42,20 +45,27 @@ let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository
 let inMemoryDispensationsMedicinesRepository: InMemoryDispensationsMedicinesRepository
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 let sut: DispensationMedicineUseCase
 
 describe('Dispensation Medicine', () => {
   beforeEach(() => {
+    inMemoryAddressRepository = new InMemoryAddressRepository()
+    inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
+
     inMemoryTherapeuticClassesRepository =
       new InMemoryTherapeuticClassesRepository()
-    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
 
     inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
     inMemoryPharmaceuticalFormsRepository =
       new InMemoryPharmaceuticalFormsRepository()
     inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
-    inMemoryPatientsRepository = new InMemoryPatientsRepository()
+    inMemoryPatientsRepository = new InMemoryPatientsRepository(
+      inMemoryAddressRepository,
+      inMemoryPathologiesRepository,
+    )
     inMemoryStocksRepository = new InMemoryStocksRepository(
       inMemoryInstitutionsRepository,
     )
@@ -97,22 +107,24 @@ describe('Dispensation Medicine', () => {
     )
 
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
       inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
       inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
+      inMemoryMovimentationRepository,
     )
     inMemoryDispensationsMedicinesRepository =
       new InMemoryDispensationsMedicinesRepository(
         inMemoryMedicinesExitsRepository,
         inMemoryOperatorsRepository,
         inMemoryPatientsRepository,
+        inMemoryMedicinesStockRepository,
+        inMemoryStocksRepository,
+        inMemoryPathologiesRepository,
+        inMemoryMedicinesRepository,
+        inMemoryMedicinesVariantsRepository,
+        inMemoryPharmaceuticalFormsRepository,
+        inMemoryUnitsMeasureRepository,
+        inMemoryMovimentationRepository,
+        inMemoryBatchStocksRepository,
       )
 
     sut = new DispensationMedicineUseCase(
@@ -123,6 +135,7 @@ describe('Dispensation Medicine', () => {
       inMemoryMedicinesStockRepository,
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
+      inMemoryMovimentationRepository,
     )
   })
   it('should be able to dispense a medication', async () => {
