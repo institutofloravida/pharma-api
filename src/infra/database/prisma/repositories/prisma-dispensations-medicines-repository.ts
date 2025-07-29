@@ -64,7 +64,7 @@ implements DispensationsMedicinesRepository {
         operatorId: new UniqueEntityId(dispensation.operator.id),
         patientId: new UniqueEntityId(dispensation.patient.id),
         patient: dispensation.patient.name,
-        items: 0,
+        items: 1,
       })
     })
 

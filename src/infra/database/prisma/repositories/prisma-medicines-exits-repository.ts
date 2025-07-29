@@ -33,63 +33,74 @@ implements MedicinesExitsRepository {
       exitDate?: Date;
     },
   ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }> {
-    const {
-      exitDate,
-      exitType,
-      institutionId,
-      operatorId,
-    } = filters
+    const { exitDate, exitType, institutionId, operatorId } = filters
 
-    const whereClause: Prisma.ExitWhereInput = {
+    const whereClauses: string[] = []
+    const params: any[] = []
+    let paramIndex = 1
 
-      ...(institutionId && {
-        stock: {
-          institutionId: { equals: institutionId },
-        },
-      }),
-      ...(exitDate && {
-        exitDate: {
-          lte: exitDate,
-          gte: exitDate,
-        },
-      }),
-      ...(exitType && {
-        exitType: { equals: exitType },
-      }),
-      ...(operatorId && {
-        operatorId: { equals: operatorId },
-      }),
+    if (institutionId) {
+      whereClauses.push(`s.institution_id = $${paramIndex++}`)
+      params.push(institutionId)
+    }
+    if (operatorId) {
+      whereClauses.push(`e.operator_id = $${paramIndex++}`)
+      params.push(operatorId)
+    }
+    if (exitType) {
+      whereClauses.push(`e.exit_type = $${paramIndex++}`)
+      params.push(exitType)
+    }
+    if (exitDate) {
+      whereClauses.push(`e.exit_date::date = $${paramIndex++}::date`)
+      params.push(exitDate)
     }
 
-    const [medicinesExits, totalCount] = await this.prisma.$transaction([
-      this.prisma.exit.findMany({
-        where: whereClause,
-        take: 10,
-        skip: (page - 1) * 10,
-        include: {
-          stock: {
-            select: { name: true },
-          },
-          operator: {
-            select: { name: true },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      }),
-      this.prisma.exit.count({
-        where: whereClause,
-      }),
-    ])
+    const whereSQL = whereClauses.length > 0
+      ? `WHERE ${whereClauses.join(' AND ')}`
+      : ''
 
-    const medicinesExitsMapped = medicinesExits.map((exit) => {
+    const exits = await this.prisma.$queryRawUnsafe<any[]>(`
+    select 
+      e.id as "id",
+      e.exit_date as "exitDate",
+      o."name" as "operatorName",
+      s."name" as "stockName",
+      COUNT(distinct bs.medicine_stock_id) as "items"
+    from movimentation m
+    inner join "exits" e on e.id = m.exit_id
+    inner join batches_stocks bs on bs.id = m.batch_stock_id
+    inner join operators o on o.id = e.operator_id
+    inner join stocks s on s.id = e.stock_id
+    ${whereSQL}
+    group by e.id, o."name", s."name"
+    order by e.exit_date desc
+    limit 10 offset ${(page - 1) * 10}
+  `, ...params)
+
+    // Para totalCount, faz uma query separada
+    const totalCountResult = await this.prisma.$queryRawUnsafe<any[]>(`
+    select count(*)::int as count
+    from (
+      select e.id
+      from movimentation m
+      inner join "exits" e on e.id = m.exit_id
+      inner join batches_stocks bs on bs.id = m.batch_stock_id
+      inner join operators o on o.id = e.operator_id
+      inner join stocks s on s.id = e.stock_id
+      ${whereSQL}
+      group by e.id, o."name", s."name"
+    ) as sub
+  `, ...params)
+    const totalCount = totalCountResult[0]?.count || 0
+
+    const medicinesExitsMapped = exits.map((exit) => {
       return ExitDetails.create({
         exitDate: exit.exitDate,
-        operator: exit.operator.name,
-        stock: exit.stock.name,
+        operator: exit.operatorName,
+        stock: exit.stockName,
         exitId: new UniqueEntityId(exit.id),
-        items: 0,
+        items: Number(exit.items),
       })
     })
 
@@ -101,7 +112,6 @@ implements MedicinesExitsRepository {
       },
     }
   }
-
   // async fetchMovimentation(filters: {
   //   institutionId: string;
   //   startDate: Date;
