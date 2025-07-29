@@ -109,6 +109,7 @@ export class RegisterExitUseCase {
       exitType,
       operatorId: new UniqueEntityId(operatorId),
       exitDate,
+      stockId: batchestock.stockId,
     })
     await this.medicineExitRepository.create(exit)
 

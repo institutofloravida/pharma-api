@@ -1,27 +1,14 @@
-import { MedicineEntryWithMedicineVariantAndBatch } from '@/domain/pharma/enterprise/entities/value-objects/medicine-entry-with-medicine-batch-stock'
+import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details'
 
-export class MedicineEntryWithMedicineVariantAndBatchPresenter {
-  static toHTTP(medicineEntry: MedicineEntryWithMedicineVariantAndBatch) {
+export class MedicineEntryPresenter {
+  static toHTTP(entry: EntryDetails) {
     return {
-      medicineEntryId: medicineEntry.medicineEntryId.toString(),
-      stock: medicineEntry.stock,
-      stockId: medicineEntry.stockId.toString(),
-      medicine: medicineEntry.medicine,
-      medicineId: medicineEntry.medicineId.toString(),
-      medicineVariantId: medicineEntry.medicineVariantId.toString(),
-      dosage: medicineEntry.dosage,
-      operator: medicineEntry.operator,
-      operatorId: medicineEntry.operatorId.toString(),
-      pharmaceuticalForm: medicineEntry.pharmaceuticalForm,
-      pharmaceuticalFormId: medicineEntry.pharmaceuticalFormId.toString(),
-      unitMeasure: medicineEntry.unitMeasure,
-      unitMeasureId: medicineEntry.unitMeasureId.toString(),
-      batch: medicineEntry.batch,
-      batchId: medicineEntry.batchId.toString(),
-      quantityToEntry: medicineEntry.quantityToEntry,
-      createdAt: medicineEntry.createdAt,
-      updatedAt: medicineEntry.updatedAt,
-
+      entryId: entry.entryId,
+      stock: entry.stock,
+      entryDate: entry.entryDate,
+      nfNumber: entry.nfNumber,
+      operator: entry.operator,
+      items: entry.items,
     }
   }
 }

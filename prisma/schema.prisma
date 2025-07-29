@@ -55,6 +55,8 @@ model Stock {
 
   medicinesStocks MedicineStock[]
   batchestocks    BatcheStock[]
+  entries MedicineEntry[]
+  exits Exit[]
   institution     Institution?    @relation(fields: [institutionId], references: [id])
 
   @@map("stocks")
@@ -164,31 +166,7 @@ model MovementType {
   createdAt DateTime          @default(now()) @map("created_at")
   updatedAt DateTime?         @updatedAt @map("updated_at")
 
-  medicineEntries MedicineEntry[]
-  Exit            Exit[]
-}
-
-model MedicineEntry {
-  id              String    @id @default(cuid())
-  medicineStockId String    @map("medicine_stock_id")
-  batchStockId    String    @map("batch_stock_id")
-  quantity        Int
-  operatorId      String    @map("operator_id")
-  movementTypeId  String    @map("movement_type_id")
-  entryDate       DateTime  @default(now()) @map("entry_date")
-  nfNumber        String    @map("nf_number")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime? @updatedAt @map("updated_at")
-
-  medicineStock MedicineStock @relation(fields: [medicineStockId], references: [id])
-  batcheStock   BatcheStock   @relation(fields: [batchStockId], references: [id])
-  movementType  MovementType  @relation(fields: [movementTypeId], references: [id])
-  operator      Operator      @relation(fields: [operatorId], references: [id])
-
-  @@index([medicineStockId])
-  @@index([batchStockId])
-  @@index([movementTypeId])
-  @@map("medicines_entries")
+  movimentations  Movimentation[] 
 }
 
 model MedicineStock {
@@ -204,8 +182,6 @@ model MedicineStock {
   batchesStocks    BatcheStock[]
   medicineVariant  MedicineVariant @relation(fields: [medicineVariantId], references: [id])
   stock            Stock           @relation(fields: [stockId], references: [id])
-  medicinesEntries MedicineEntry[]
-  exits            Exit[]
   UseMedicine      UseMedicine[]
 
   @@index([medicineVariantId])
@@ -224,8 +200,7 @@ model BatcheStock {
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime? @updatedAt @map("updated_at")
 
-  exits            Exit[]
-  medicinesEntries MedicineEntry[]
+  movimentation Movimentation[]
   stock            Stock           @relation(fields: [stockId], references: [id])
   batch            Batch           @relation(fields: [batchId], references: [id])
   medicineVariant  MedicineVariant @relation(fields: [medicineVariantId], references: [id])
@@ -314,11 +289,48 @@ model Dispensation {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime? @updatedAt() @map("updated_at")
 
-  exitRecords Exit[]   @relation("DispensationExits")
+  movimentation Movimentation[]  
   patient     Patient  @relation(fields: [patientId], references: [id])
   operator    Operator @relation(fields: [operatorId], references: [id])
 
   @@map("dispensations")
+}
+
+model Movimentation {
+  id             String            @id @default(uuid())
+  direction      MovementDirection
+  batchStockId   String            @map("batch_stock_id")
+  quantity       Int
+  movementTypeId String?           @map("movement_type_id")
+  dispensationId String?           @map("dispensation_id")
+  exitId         String?           @map("exit_id")
+  entryId        String?           @map("entry_id")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime?         @updatedAt @map("updated_at")
+
+  entry        MedicineEntry? @relation(fields: [entryId], references: [id])
+  exit         Exit?          @relation(fields: [exitId], references: [id])
+  dispensation Dispensation?  @relation(fields: [dispensationId], references: [id])
+  batchStock   BatcheStock   @relation(fields: [batchStockId], references: [id])
+  movementType MovementType?  @relation(fields: [movementTypeId], references: [id])
+
+  @@map("movimentation")
+}
+
+model MedicineEntry {
+  id         String    @id @default(uuid())
+  operatorId String    @map("operator_id")
+  entryDate  DateTime  @default(now()) @map("entry_date")
+  stockId    String    @map("stock_id")
+  nfNumber   String    @map("nf_number")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  operator      Operator        @relation(fields: [operatorId], references: [id])
+  stock         Stock           @relation(fields: [stockId], references: [id])
+  movimentation Movimentation[]
+
+  @@map("medicines_entries")
 }
 
 enum ExitType {
@@ -328,23 +340,18 @@ enum ExitType {
 }
 
 model Exit {
-  id              String    @id @default(uuid())
-  medicineStockId String    @map("medicine_stock_id")
-  batchestockId   String    @map("batche_stock_id")
-  operatorId      String    @map("operator_id")
-  quantity        Int
-  exitType        ExitType  @map("exit_type")
-  exitDate        DateTime  @default(now()) @map("exit_date")
-  dispensationId  String?   @map("dispensation_id")
-  movementTypeId  String?   @map("movement_type_id")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime? @updatedAt @map("updated_at")
+  id         String   @id @default(uuid())
+  operatorId String   @map("operator_id")
+  exitType   ExitType @map("exit_type")
+  stockId    String   @map("stock_id")
 
-  operator      Operator      @relation(fields: [operatorId], references: [id])
-  batchestock   BatcheStock   @relation(fields: [batchestockId], references: [id])
-  medicineStock MedicineStock @relation(fields: [medicineStockId], references: [id])
-  dispensation  Dispensation? @relation("DispensationExits", fields: [dispensationId], references: [id])
-  movementType  MovementType? @relation(fields: [movementTypeId], references: [id])
+  exitDate  DateTime  @default(now()) @map("exit_date")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  operator      Operator        @relation(fields: [operatorId], references: [id])
+  stock         Stock           @relation(fields: [stockId], references: [id])
+  movimentation Movimentation[]
 
   @@map("exits")
 }

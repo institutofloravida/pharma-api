@@ -50,10 +50,6 @@ implements DispensationsMedicinesRepository {
         include: {
           operator: { select: { id: true, name: true } },
           patient: { select: { id: true, name: true } },
-          exitRecords: {
-            select: { medicineStockId: true },
-            distinct: ['medicineStockId'],
-          },
         },
         orderBy: { createdAt: 'desc' },
       }),
@@ -68,7 +64,7 @@ implements DispensationsMedicinesRepository {
         operatorId: new UniqueEntityId(dispensation.operator.id),
         patientId: new UniqueEntityId(dispensation.patient.id),
         patient: dispensation.patient.name,
-        items: dispensation.exitRecords.length,
+        items: 0,
       })
     })
 
@@ -103,9 +99,9 @@ implements DispensationsMedicinesRepository {
       await this.prisma.$transaction([
         this.prisma.dispensation.count({
           where: {
-            exitRecords: {
+            movimentation: {
               some: {
-                batchestock: {
+                batchStock: {
                   stock: {
                     institutionId,
                   },
@@ -120,9 +116,9 @@ implements DispensationsMedicinesRepository {
         }),
         this.prisma.dispensation.count({
           where: {
-            exitRecords: {
+            movimentation: {
               some: {
-                batchestock: {
+                batchStock: {
                   stock: {
                     institutionId,
                   },
@@ -136,9 +132,9 @@ implements DispensationsMedicinesRepository {
         }),
         this.prisma.dispensation.count({
           where: {
-            exitRecords: {
+            movimentation: {
               some: {
-                batchestock: {
+                batchStock: {
                   stock: {
                     institutionId,
                   },
@@ -183,11 +179,11 @@ implements DispensationsMedicinesRepository {
     operatorId?: string,
   ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }> {
     const whereClause: Prisma.DispensationWhereInput = {
-      exitRecords: {
+      movimentation: {
         some: {
-          batchestock: {
+          batchStock: {
             stock: {
-              institutionId: { equals: institutionId },
+              institutionId,
             },
           },
         },
@@ -204,24 +200,27 @@ implements DispensationsMedicinesRepository {
         include: {
           operator: { select: { id: true, name: true } },
           patient: { select: { id: true, name: true } },
-          exitRecords: {
+          movimentation: {
             select: {
-              medicineStockId: true,
               quantity: true,
-              medicineStock: {
+              batchStock: {
                 select: {
-                  medicineVariant: {
+                  medicineStockId: true,
+                  medicineStock: {
                     select: {
-                      medicine: true,
-                      pharmaceuticalForm: true,
-                      unitMeasure: true,
-                      complement: true,
+                      medicineVariant: {
+                        select: {
+                          medicine: true,
+                          pharmaceuticalForm: true,
+                          unitMeasure: true,
+                          complement: true,
+                        },
+                      },
                     },
                   },
                 },
               },
             },
-            distinct: ['medicineStockId'],
           },
         },
         orderBy: { dispensationDate: 'desc' },
@@ -237,17 +236,18 @@ implements DispensationsMedicinesRepository {
         operatorId: new UniqueEntityId(dispensation.operator.id),
         patientId: new UniqueEntityId(dispensation.patient.id),
         patient: dispensation.patient.name,
-        items: dispensation.exitRecords.length,
-        medicines: dispensation.exitRecords.map(exit => {
-          return {
-            medicineStockId: new UniqueEntityId(exit.medicineStockId),
-            medicine: exit.medicineStock.medicineVariant.medicine.name,
-            pharmaceuticalForm: exit.medicineStock.medicineVariant.pharmaceuticalForm.name,
-            unitMeasure: exit.medicineStock.medicineVariant.unitMeasure.name,
-            complement: exit.medicineStock.medicineVariant.complement,
-            quantity: exit.quantity,
-          }
-        }),
+        items: 0,
+        medicines: [],
+        // dispensation.exitRecords.map(exit => {
+        //   return {
+        //     medicineStockId: new UniqueEntityId(exit.medicineStockId),
+        //     medicine: exit.medicineStock.medicineVariant.medicine.name,
+        //     pharmaceuticalForm: exit.medicineStock.medicineVariant.pharmaceuticalForm.name,
+        //     unitMeasure: exit.medicineStock.medicineVariant.unitMeasure.name,
+        //     complement: exit.medicineStock.medicineVariant.complement,
+        //     quantity: exit.quantity,
+        //   }
+        // }),
       })
     })
 
@@ -265,9 +265,9 @@ implements DispensationsMedicinesRepository {
     endDate: Date,
   ): Promise<{ dispenses: DispensationPerDay[]; meta: MetaReport }> {
     const whereClause: Prisma.DispensationWhereInput = {
-      exitRecords: {
+      movimentation: {
         some: {
-          batchestock: {
+          batchStock: {
             stock: {
               institutionId: { equals: institutionId },
             },
@@ -323,8 +323,8 @@ implements DispensationsMedicinesRepository {
       JOIN "_PathologyToPatient" pp ON pp."A" = p.id
       JOIN "patients" pa ON pa.id = pp."B"
       JOIN "dispensations" d ON d."patient_id" = pa.id
-      JOIN "exits" e ON e."dispensation_id" = d.id
-      JOIN "batches_stocks" bs ON bs.id = e."batche_stock_id"
+      JOIN "movimentation" m ON m."dispensation_id" = d.id
+      JOIN "batches_stocks" bs ON bs.id = m."batch_stock_id"
       JOIN "stocks" s ON s.id = bs."stock_id"
       ${whereClause}
       GROUP BY p.id, p.name

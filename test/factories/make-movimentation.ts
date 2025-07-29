@@ -1,6 +1,9 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Movimentation, type MovimentationProps } from '@/domain/pharma/enterprise/entities/movimentation'
+import { PrismaMovimentationMapper } from '@/infra/database/prisma/mappers/prisma-movimentation-mapper'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
+import { Injectable } from '@nestjs/common'
 
 export function makeMovimentation(
   override: Partial<MovimentationProps> = {},
@@ -23,19 +26,19 @@ export function makeMovimentation(
   return movimentation
 }
 
-// @Injectable()
-// export class MovimentationFactory {
-//   constructor(private prisma: PrismaService) {}
+@Injectable()
+export class MovimentationFactory {
+  constructor(private prisma: PrismaService) {}
 
-//   async makePrismaMovimentation(data: Partial<MovimentationProps> = {}): Promise<Movimentation> {
-//     const movimentation = makeMovimentation(
-//       data,
-//     )
+  async makePrismaMovimentation(data: Partial<MovimentationProps> = {}): Promise<Movimentation> {
+    const movimentation = makeMovimentation(
+      data,
+    )
 
-//     await this.prisma.movimentation.create({
-//       data: PrismaMovimentationMapper.toPrisma(movimentation),
-//     })
+    await this.prisma.movimentation.create({
+      data: PrismaMovimentationMapper.toPrisma(movimentation),
+    })
 
-//     return movimentation
-//   }
-// }
+    return movimentation
+  }
+}

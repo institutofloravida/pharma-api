@@ -97,7 +97,7 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
   pf.name AS "pharmaceuticalForm",
   um2.acronym AS "unitMeasure",
   m.name AS "medicine",
-      COALESCE(SUM(e.quantity), 0) AS "totalUsed"
+      COALESCE(SUM(m2.quantity), 0) AS "totalUsed"
     FROM 
       "use_medicine" um
     INNER JOIN "medicines_stocks" ms ON ms.id = um."medicine_stock_id"
@@ -107,7 +107,9 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     INNER JOIN "unit_measures" um2 ON um2.id = mv."unit_measure_id"
     INNER JOIN "stocks" s ON s.id = ms."stock_id"
     LEFT JOIN "exits" e 
-      ON e."medicine_stock_id" = um."medicine_stock_id"
+      ON e."stock_id" = s."id"
+    LEFT JOIN "movimentation" m2 
+      ON m2."exit_id" = e."id"
       AND EXTRACT(YEAR FROM e."exit_date") = ${year}
       AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
     WHERE 
@@ -127,10 +129,10 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     >(
       Prisma.sql`
     SELECT 
-      COALESCE(SUM(e.quantity), 0) AS "totalGeneralUsed"
-    FROM "exits" e
-    INNER JOIN "medicines_stocks" ms ON ms.id = e."medicine_stock_id"
-    INNER JOIN "stocks" s ON s.id = ms."stock_id"
+      COALESCE(SUM(m.quantity), 0) AS "totalGeneralUsed"
+    FROM "movimentation" m
+    INNER JOIN "exits" e ON e.id = m."exit_id"
+    INNER JOIN "stocks" s ON s.id = e."stock_id"
     WHERE 
       s."institution_id" = ${institutionId}
       ${stockId

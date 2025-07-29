@@ -4,8 +4,8 @@ import { MetaReport } from '@/core/repositories/meta'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 
 import { MovementDirection } from '@/domain/pharma/enterprise/entities/movement-type'
-import type { MovimentationRepository } from '../../repositories/movimentation-repository'
-import type { MovimentationDetails } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
+import { MovimentationRepository } from '../../repositories/movimentation-repository'
+import { MovimentationDetails } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
 
 interface GetMovimentationInAPeriodUseCaseRequest {
   institutionId: string;

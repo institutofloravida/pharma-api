@@ -4,6 +4,7 @@ import { OperatorRole, PrismaClient } from './generated'
 const prisma = new PrismaClient()
 
 async function clearDatabase() {
+  await prisma.movimentation.deleteMany()
   await prisma.useMedicine.deleteMany()
   await prisma.exit.deleteMany()
   await prisma.dispensation.deleteMany()

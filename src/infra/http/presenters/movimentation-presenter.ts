@@ -1,7 +1,7 @@
-import { Movimentation } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
+import { MovimentationDetails } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
 
 export class MovimentationPresenter {
-  static toHTTP(movimentation: Movimentation) {
+  static toHTTP(movimentation: MovimentationDetails) {
     return {
       direction: movimentation.direction === 'ENTRY'
         ? 'ENTRADA'

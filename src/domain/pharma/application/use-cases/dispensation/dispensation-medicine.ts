@@ -17,7 +17,7 @@ import { BatchStocksRepository } from '../../repositories/batch-stocks-repositor
 import { MedicinesVariantsRepository } from '../../repositories/medicine-variant-repository'
 import { MedicineStockNotFoundError } from '../stock/medicine-stock/_errors/medicine-stock-not-found-error'
 import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation'
-import type { MovimentationRepository } from '../../repositories/movimentation-repository'
+import { MovimentationRepository } from '../../repositories/movimentation-repository'
 
 interface DispensationMedicineUseCaseRequest {
   medicineStockId: string;

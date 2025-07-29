@@ -28,24 +28,18 @@ export class FetchMedicinesExitsController {
     const {
       institutionId,
       page,
-      medicineId,
       operatorId,
-      batch,
       exitDate,
-      movementTypeId,
     } = queryParams
 
     const result = await this.fetchMedicinesExits.execute({
       page,
       institutionId,
-      medicineId,
       operatorId,
-      batch,
       exitDate: exitDate
         ? new Date(exitDate)
         : undefined,
       exitType: undefined,
-      movementTypeId,
     })
 
     if (result.isLeft()) {

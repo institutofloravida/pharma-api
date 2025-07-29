@@ -57,9 +57,9 @@ export class GetMovimentationInAPeriodController {
       throw new BadRequestException({})
     }
 
-    const { movimentations, meta } = result.value
+    const { movimentation, meta } = result.value
 
-    const movimentationsMapped = movimentations.map(MovimentationPresenter.toHTTP)
+    const movimentationsMapped = movimentation.map(MovimentationPresenter.toHTTP)
     return {
       movimentation: movimentationsMapped,
       meta,

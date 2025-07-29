@@ -1,37 +1,13 @@
-import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
-import { MedicineExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-exit-details'
+import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details'
 
 export class MedicineExitPresenter {
-  static toHTTP(medicineExit: MedicineExitDetails) {
-    let movementType
-
-    switch (medicineExit.exitType) {
-      case ExitType.DISPENSATION:
-        movementType = 'Dispensa'
-        break
-      case ExitType.EXPIRATION:
-        movementType = 'Vencido'
-        break
-      default:
-        movementType = medicineExit.movementType
-    }
-
+  static toHTTP(exit: ExitDetails) {
     return {
-      id: medicineExit.medicineExitId.toString(),
-      medicine: medicineExit.medicine.toString(),
-      dosage: medicineExit.dosage,
-      pharmaceuticalForm: medicineExit.pharmaceuticalForm,
-      unitMeasure: medicineExit.unitMeasure,
-      batch: medicineExit.batch,
-      batchestockId: medicineExit.batchestockId.toString(),
-      exitDate: medicineExit.exitDate,
-      stock: medicineExit.stock,
-      medicineStockId: medicineExit.medicineStockId.toString(),
-      movementType,
-      operator: medicineExit.operator,
-      quantity: medicineExit.quantity,
-      createdAt: medicineExit.createdAt,
-      updatedAt: medicineExit.updatedAt,
+      id: exit.exitId.toString(),
+      exitDate: exit.exitDate,
+      operator: exit.operator,
+      stock: exit.stock,
+      items: exit.items,
     }
   }
 }

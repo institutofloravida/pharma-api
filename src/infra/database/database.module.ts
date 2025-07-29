@@ -40,6 +40,8 @@ import { MovementTypesRepository } from '@/domain/pharma/application/repositorie
 import { PrismaMovementTypesRepository } from './prisma/repositories/prisma-movement-type-repository'
 import { UseMedicinesRepository } from '@/domain/pharma/application/repositories/use-medicine-repository'
 import { PrismaUseMedicinesRepository } from './prisma/repositories/prisma-use-medicine-repository'
+import { MovimentationRepository } from '@/domain/pharma/application/repositories/movimentation-repository'
+import { PrismaMovimentationRepository } from './prisma/repositories/prisma-movimentation-repository'
 
 @Module({
   providers: [
@@ -82,6 +84,7 @@ import { PrismaUseMedicinesRepository } from './prisma/repositories/prisma-use-m
     { provide: DispensationsMedicinesRepository, useClass: PrismaDispensationsMedicinesRepository },
     { provide: MovementTypesRepository, useClass: PrismaMovementTypesRepository },
     { provide: UseMedicinesRepository, useClass: PrismaUseMedicinesRepository },
+    { provide: MovimentationRepository, useClass: PrismaMovimentationRepository },
   ],
   exports: [
     PrismaService,
@@ -105,6 +108,7 @@ import { PrismaUseMedicinesRepository } from './prisma/repositories/prisma-use-m
     DispensationsMedicinesRepository,
     MovementTypesRepository,
     UseMedicinesRepository,
+    MovimentationRepository,
   ],
 })
 export class DatabaseModule {}

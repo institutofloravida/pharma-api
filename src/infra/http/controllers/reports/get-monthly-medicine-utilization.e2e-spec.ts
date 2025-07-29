@@ -23,6 +23,7 @@ import { UnitMeasureFactory } from 'test/factories/make-unit-measure'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 import { UseMedicineFactory } from 'test/factories/make-use-medicine'
+import { MovimentationFactory } from 'test/factories/make-movimentation'
 
 describe('Get Monthly Medicine Utilization (E2E)', () => {
   let app: INestApplication
@@ -41,6 +42,7 @@ describe('Get Monthly Medicine Utilization (E2E)', () => {
   let medicineFactory: MedicineFactory
   let therapeuticClassFactory: TherapeuticClassFactory
   let useMedicineFactory: UseMedicineFactory
+  let movimentationFactory: MovimentationFactory
   let prisma: PrismaService
 
   let jwt: JwtService
@@ -65,6 +67,7 @@ describe('Get Monthly Medicine Utilization (E2E)', () => {
         MovementTypeFactory,
         ManufacturerFactory,
         UseMedicineFactory,
+        MovimentationFactory,
       ],
     }).compile()
 
@@ -85,6 +88,7 @@ describe('Get Monthly Medicine Utilization (E2E)', () => {
     medicineFactory = moduleRef.get(MedicineFactory)
     therapeuticClassFactory = moduleRef.get(TherapeuticClassFactory)
     useMedicineFactory = moduleRef.get(UseMedicineFactory)
+    movimentationFactory = moduleRef.get(MovimentationFactory)
     prisma = moduleRef.get(PrismaService)
 
     jwt = moduleRef.get(JwtService)
@@ -192,25 +196,40 @@ describe('Get Monthly Medicine Utilization (E2E)', () => {
       content: 'DONATION',
       direction: 'EXIT',
     })
-    await Promise.all([
-      medicineExitFactory.makePrismaMedicineExit({
-        exitDate: new Date(2025, 0, 1),
-        operatorId: operator.id,
-        batchestockId: batchStock.id,
-        exitType: ExitType.MOVEMENT_TYPE,
-        medicineStockId: medicineStock.id,
-        movementTypeId: movementType.id,
-        quantity: 20,
 
+    const [exit1, exit2] = await Promise.all([
+      medicineExitFactory.makePrismaMedicineExit({
+        exitType: ExitType.MOVEMENT_TYPE,
+        operatorId: operator.id,
+        stockId: stock.id,
+        exitDate: new Date(2025, 0, 1),
       }),
       medicineExitFactory.makePrismaMedicineExit({
-        exitDate: new Date(2025, 0, 15),
-        operatorId: operator.id,
-        batchestockId: batchStock2.id,
         exitType: ExitType.MOVEMENT_TYPE,
-        medicineStockId: medicineStock.id,
+        operatorId: operator.id,
+        stockId: stock.id,
+        exitDate: new Date(2025, 0, 15),
+      }),
+    ])
+
+    await Promise.all([
+      movimentationFactory.makePrismaMovimentation({
+        batchStockId: batchStock.id,
+        movementTypeId: movementType.id,
+        quantity: 20,
+        direction: 'EXIT',
+        dispensationId: undefined,
+        entryId: undefined,
+        exitId: exit1.id,
+      }),
+      movimentationFactory.makePrismaMovimentation({
+        batchStockId: batchStock2.id,
         movementTypeId: movementType.id,
         quantity: 10,
+        direction: 'EXIT',
+        dispensationId: undefined,
+        entryId: undefined,
+        exitId: exit2.id,
       }),
     ])
 
