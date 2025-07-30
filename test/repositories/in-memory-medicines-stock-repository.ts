@@ -154,7 +154,6 @@ implements MedicinesStockRepository {
         throw new Error(`Estoque com Id ${stockId} não foi encontrado!`)
       }
       if (stockId && !stock.id.equal(new UniqueEntityId(stockId))) continue
-      console.log('yes')
 
       const medicine = await this.medicinesRepository.findByMedicineVariantId(
         medicineStock.medicineVariantId.toString(),
@@ -183,8 +182,6 @@ implements MedicinesStockRepository {
           `Variante de medicamento com id ${medicineStock.medicineVariantId.toString()} não foi encontrada`,
         )
       }
-      console.log('medicinevariant.id: ',medicineVariant.id)
-      console.log('medicinevariantid: ',medicineVariantId)
 
       if(medicineVariantId && !medicineVariant.id.equal(new UniqueEntityId(medicineVariantId))){
         continue

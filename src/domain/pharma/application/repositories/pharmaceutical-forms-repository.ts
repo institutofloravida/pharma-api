@@ -11,4 +11,5 @@ export abstract class PharmaceuticalFormsRepository {
     pharmaceuticalForms: PharmaceuticalForm[]
     meta: Meta
   }>
+  abstract delete(pharmaceuticalFormId: string): Promise<void>
 }

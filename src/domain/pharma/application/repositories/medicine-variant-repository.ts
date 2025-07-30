@@ -13,6 +13,8 @@ export abstract class MedicinesVariantsRepository {
     params: PaginationParams,
     filters: {
       medicineId?: string,
+      pharmaceuticalFormId: string,
+      unitMeasureId?: string
       content?: string
     }
   ): Promise<{

@@ -118,15 +118,25 @@ export class InMemoryMedicinesVariantsRepository
     {
       page,
     }: PaginationParams,
-    filters: { medicineId?: string; content?: string },
+    filters: {
+      medicineId?: string,
+      pharmaceuticalFormId: string,
+      unitMeasureId?: string
+      content?: string
+    },
   ): Promise<{
     medicinesVariants: MedicineVariantWithMedicine[];
     meta: Meta;
   }> {
-    const { content, medicineId } = filters
-
+    const { content, medicineId, pharmaceuticalFormId, unitMeasureId } = filters
     const medicinesVariantsWithMedicine = this.items
-      .filter((item) => item.medicineId.toString() === medicineId)
+    .filter((item) => {
+
+        if (medicineId && !(item.medicineId.toString() === medicineId)) return false
+        if (pharmaceuticalFormId && !item.pharmaceuticalFormId.equal(new UniqueEntityId(pharmaceuticalFormId))) return false
+        if (unitMeasureId && !item.unitMeasureId.equal(new UniqueEntityId(unitMeasureId))) return false
+        return true
+      })
       .map((medicineVariant) => {
         const medicine = this.medicinesRepository.items.find((medicine) => {
           return medicine.id.equal(medicineVariant.medicineId)
@@ -178,7 +188,13 @@ export class InMemoryMedicinesVariantsRepository
       })
 
     const medicinesVariantsWithMedicineFiltred = medicinesVariantsWithMedicine
-      .filter((item) => item.medicine.includes(content ?? ''))
+      .filter((item) => {
+        if(content && !item.medicine.includes(content ?? '')){
+          return false
+        }
+
+        return true
+      })
       .slice((page - 1) * 10, page * 10)
 
     return {

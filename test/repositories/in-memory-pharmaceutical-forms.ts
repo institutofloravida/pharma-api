@@ -5,7 +5,8 @@ import { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repos
 import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
 
 export class InMemoryPharmaceuticalFormsRepository
-implements PharmaceuticalFormsRepository {
+  implements PharmaceuticalFormsRepository {
+
   public items: PharmaceuticalForm[] = []
 
   async create(pharmaceuticalForm: PharmaceuticalForm) {
@@ -66,5 +67,11 @@ implements PharmaceuticalFormsRepository {
         totalCount: pharmaceuticalFormsFiltred.length,
       },
     }
+  }
+
+  async delete(pharmaceuticalFormId: string): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(new UniqueEntityId(pharmaceuticalFormId)))
+
+    this.items.splice(itemIndex)
   }
 }
