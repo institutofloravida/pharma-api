@@ -6,6 +6,7 @@ import { TherapeuticClass } from '@/domain/pharma/enterprise/entities/therapeuti
 
 export class InMemoryTherapeuticClassesRepository
 implements TherapeuticClassesRepository {
+  
   public items: TherapeuticClass[] = []
 
   async create(therapeuticClass: TherapeuticClass) {
@@ -67,5 +68,11 @@ implements TherapeuticClassesRepository {
         totalCount: therapeuticClassesFiltered.length,
       },
     }
+  }
+
+  async delete(therapeuticClassId: string): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(new UniqueEntityId(therapeuticClassId)))
+
+    this.items.splice(itemIndex)
   }
 }

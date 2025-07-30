@@ -13,4 +13,5 @@ export abstract class TherapeuticClassesRepository {
     params: PaginationParams,
     filters: { content?: string },
   ): Promise<{ therapeuticClasses: TherapeuticClass[]; meta: Meta }>
+  abstract delete(therapeuticClassId: string): Promise<void>
 }
