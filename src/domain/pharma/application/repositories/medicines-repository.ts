@@ -20,4 +20,5 @@ export abstract class MedicinesRepository {
     }
 
   ): Promise<{ medicines: Medicine[]; meta: Meta }>
+  abstract delete(medicineId: string): Promise<void>
 }

@@ -11,6 +11,7 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
     private therapeuticClassesRepository: InMemoryTherapeuticClassesRepository,
   ) {}
 
+
   public items: Medicine[] = []
 
   async create(medicine: Medicine) {
@@ -172,5 +173,11 @@ export class InMemoryMedicinesRepository implements MedicinesRepository {
         totalCount: medicinesFiltred.length,
       },
     }
+  }
+  
+  async delete(medicineId: string): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(new UniqueEntityId(medicineId)))
+
+    this.items.splice(itemIndex)
   }
 }
