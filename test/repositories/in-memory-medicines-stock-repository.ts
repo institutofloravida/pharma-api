@@ -141,20 +141,20 @@ implements MedicinesStockRepository {
 
   async findMany(
     { page }: PaginationParams,
-    filters: { stockId: string; medicineName?: string },
+    filters: { stockId?: string; medicineVariantId?: string, medicineName?: string },
   ): Promise<{ medicinesStock: MedicineStockDetails[]; meta: Meta }> {
-    const { stockId, medicineName } = filters
+    const { stockId, medicineName, medicineVariantId } = filters
 
     const medicinesStock = this.items
 
     const medicinesStockFiltered: MedicineStockDetails[] = []
-    const stock = await this.stocksRepository.findById(stockId)
-    if (!stock) {
-      throw new Error(`Estoque com Id ${stockId} não foi encontrado!`)
-    }
-
     for (const medicineStock of medicinesStock) {
-      if (!medicineStock.stockId.equal(new UniqueEntityId(stockId))) continue
+      const stock = await this.stocksRepository.findById(medicineStock.stockId.toString())
+      if (!stock) {
+        throw new Error(`Estoque com Id ${stockId} não foi encontrado!`)
+      }
+      if (stockId && !stock.id.equal(new UniqueEntityId(stockId))) continue
+      console.log('yes')
 
       const medicine = await this.medicinesRepository.findByMedicineVariantId(
         medicineStock.medicineVariantId.toString(),
@@ -182,6 +182,12 @@ implements MedicinesStockRepository {
         throw new Error(
           `Variante de medicamento com id ${medicineStock.medicineVariantId.toString()} não foi encontrada`,
         )
+      }
+      console.log('medicinevariant.id: ',medicineVariant.id)
+      console.log('medicinevariantid: ',medicineVariantId)
+
+      if(medicineVariantId && !medicineVariant.id.equal(new UniqueEntityId(medicineVariantId))){
+        continue
       }
 
       const pharmaceuticalForm =

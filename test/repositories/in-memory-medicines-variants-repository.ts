@@ -6,16 +6,18 @@ import { InMemoryMedicinesRepository } from './in-memory-medicines-repository'
 import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms'
 import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository'
 import { Meta } from '@/core/repositories/meta'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 export class InMemoryMedicinesVariantsRepository
-implements MedicinesVariantsRepository {
+  implements MedicinesVariantsRepository {
   public items: MedicineVariant[] = []
 
   constructor(
     private medicinesRepository: InMemoryMedicinesRepository,
     private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
     private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
-  ) {}
+  ) { }
+
 
   async create(medicinevariant: MedicineVariant) {
     this.items.push(medicinevariant)
@@ -186,5 +188,11 @@ implements MedicinesVariantsRepository {
         totalCount: medicinesVariantsWithMedicineFiltred.length,
       },
     }
+  }
+
+  async delete(medicineVariantId: string): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(new UniqueEntityId(medicineVariantId)))
+
+    this.items.splice(itemIndex)
   }
 }

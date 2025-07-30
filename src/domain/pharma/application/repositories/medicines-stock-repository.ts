@@ -31,7 +31,8 @@ export abstract class MedicinesStockRepository {
   abstract findMany(
     params: PaginationParams,
     filters: {
-      stockId: string;
+      stockId?: string;
+      medicineVariantId?: string
       medicineName?: string;
     },
   ): Promise<{ medicinesStock: MedicineStockDetails[]; meta: Meta }>

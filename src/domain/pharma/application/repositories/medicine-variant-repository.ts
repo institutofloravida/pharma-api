@@ -19,4 +19,5 @@ export abstract class MedicinesVariantsRepository {
     medicinesVariants: MedicineVariantWithMedicine[],
     meta: Meta
   }>
+  abstract delete(medicineVariantId: string): Promise<void>
 }
