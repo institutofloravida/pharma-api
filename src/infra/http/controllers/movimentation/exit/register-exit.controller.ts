@@ -34,22 +34,20 @@ export class RegisterMedicineExitController {
     @Body() body: RegisterExitDto,
   ) {
     const {
-      batcheStockId,
       exitType,
-      medicineStockId,
       movementTypeId,
-      quantity,
       exitDate,
+      stockId,
+      batches,
     } = body
 
     const result = await this.registerMedicineExit.execute({
-      batcheStockId,
       exitType,
-      medicineStockId,
       movementTypeId,
       operatorId: user.sub,
-      quantity,
       exitDate,
+      stockId,
+      batches,
     })
 
     if (result.isLeft()) {

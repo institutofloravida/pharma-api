@@ -215,10 +215,8 @@ describe('Fetch Exits (E2E)', () => {
       .query({
         page: 1,
         institutionId: institution.id.toString(),
-        medicineStockId: medicineStock.id.toString(),
         operator: operator.id.toString(),
         exitType: ExitType.MOVEMENT_TYPE,
-        movementTypeId: movementType.id.toString(),
       })
       .send()
     expect(response.statusCode).toBe(200)

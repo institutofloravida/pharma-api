@@ -13,17 +13,17 @@ import { MedicinesStockRepository } from '../../../repositories/medicines-stock-
 import { InsufficientQuantityBatchInStockError } from '../../_errors/insufficient-quantity-batch-in-stock-error'
 import { InvalidExitQuantityError } from '../../_errors/invalid-exit-quantity-error'
 import { NoBatchInStockFoundError } from '../../_errors/no-batch-in-stock-found-error'
-import { MedicinesVariantsRepository } from '../../../repositories/medicine-variant-repository'
-import { MedicineStockNotExistsError } from '../../stock/medicine-stock/_errors/medicine-stock-not-exists-error'
-import { MedicineVariantNotFoundError } from '../../auxiliary-records/medicine-variant/_errors/medicine-variant-not-found-error'
 import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation'
 import { MovimentationRepository } from '../../../repositories/movimentation-repository'
+import { AtLeastOneMustBePopulatedError } from '../_errors/at-least-one-must-be-populated-error'
 
 interface RegisterExitUseCaseRequest {
-  medicineStockId: string;
+  batches: {
+    batcheStockId: string;
+    quantity: number;
+  }[],
+  stockId: string;
   operatorId: string;
-  batcheStockId: string;
-  quantity: number;
   exitType: ExitType;
   movementTypeId?: string;
   exitDate?: Date;
@@ -41,7 +41,6 @@ type RegisterExitUseCaseResponse = Either<
 export class RegisterExitUseCase {
   constructor(
     private medicineExitRepository: MedicinesExitsRepository,
-    private medicinesVariantRepository: MedicinesVariantsRepository,
     private medicinesStockRepository: MedicinesStockRepository,
     private batchesStocksRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
@@ -49,82 +48,75 @@ export class RegisterExitUseCase {
   ) {}
 
   async execute({
-    medicineStockId,
     operatorId,
-    batcheStockId,
-    quantity,
     movementTypeId,
     exitDate,
     exitType,
+    stockId,
+    batches,
   }: RegisterExitUseCaseRequest): Promise<RegisterExitUseCaseResponse> {
-    const medicineStock =
-      await this.medicinesStockRepository.findById(medicineStockId)
-    if (!medicineStock) {
-      return left(new MedicineStockNotExistsError(medicineStockId))
+    if (batches.length <= 0) {
+      return left(new AtLeastOneMustBePopulatedError('É necessário ter pelo menos um lote para efetuar a saída '))
     }
-
-    const medicineVariant = await this.medicinesVariantRepository.findById(
-      medicineStock.medicineVariantId.toString(),
-    )
-    if (!medicineVariant) {
-      return left(new MedicineVariantNotFoundError(medicineStock.medicineVariantId.toString()))
+    for (const itemBatch of batches) {
+      if (itemBatch.quantity <= 0) {
+        return left(new InvalidExitQuantityError())
+      }
     }
-
-    const batchestock =
-      await this.batchesStocksRepository.findById(batcheStockId)
-    if (!batchestock) {
-      return left(new ResourceNotFoundError())
-    }
-
-    const batch = await this.batchesRepository.findById(
-      batchestock.batchId.toString(),
-    )
-    if (!batch) {
-      return left(new ResourceNotFoundError())
-    }
-
-    if (quantity <= 0) {
-      return left(new InvalidExitQuantityError())
-    }
-
-    if (quantity > batchestock.quantity) {
-      return left(
-        new InsufficientQuantityBatchInStockError(
-          medicineVariant.medicineId.toString(),
-          batch.code,
-          quantity,
-        ),
-      )
-    }
-
-    await Promise.all([
-      this.batchesStocksRepository.subtract(batcheStockId, quantity),
-      this.medicinesStockRepository.subtract(
-        medicineStock.id.toString(),
-        quantity,
-      ),
-    ])
 
     const exit = MedicineExit.create({
       exitType,
       operatorId: new UniqueEntityId(operatorId),
       exitDate,
-      stockId: batchestock.stockId,
+      stockId: new UniqueEntityId(stockId),
     })
     await this.medicineExitRepository.create(exit)
 
-    const movimentation = Movimentation.create({
-      batchStockId: new UniqueEntityId(batcheStockId),
-      direction: 'EXIT',
-      quantity,
-      dispensationId: undefined,
-      entryId: undefined,
-      exitId: exit.id,
-      movementTypeId: exitType === ExitType.MOVEMENT_TYPE
-        ? new UniqueEntityId(movementTypeId)
-        : undefined,
-    })
-    await this.movimentationRepository.create(movimentation)
+    for await (const itemBatch of batches) {
+      const batchestock =
+      await this.batchesStocksRepository.findById(itemBatch.batcheStockId)
+      if (!batchestock) {
+        return left(new ResourceNotFoundError())
+      }
+
+      const batch = await this.batchesRepository.findById(
+        batchestock.batchId.toString(),
+      )
+      if (!batch) {
+        return left(new ResourceNotFoundError())
+      }
+
+      if (itemBatch.quantity > batchestock.quantity) {
+        return left(
+          new InsufficientQuantityBatchInStockError(
+            itemBatch.batcheStockId,
+            batch.code,
+            itemBatch.quantity,
+          ),
+        )
+      }
+
+      const movimentation = Movimentation.create({
+        batchStockId: new UniqueEntityId(itemBatch.batcheStockId),
+        direction: 'EXIT',
+        quantity: itemBatch.quantity,
+        dispensationId: undefined,
+        entryId: undefined,
+        exitId: exit.id,
+        movementTypeId: exitType === ExitType.MOVEMENT_TYPE
+          ? new UniqueEntityId(movementTypeId)
+          : undefined,
+      })
+
+      await Promise.all([
+        this.batchesStocksRepository.subtract(itemBatch.batcheStockId, itemBatch.quantity),
+        this.medicinesStockRepository.subtract(
+          batchestock.medicineStockId.toString(),
+          itemBatch.quantity,
+        ),
+        this.movimentationRepository.create(movimentation),
+      ])
+    }
     return right(null)
   }
 }

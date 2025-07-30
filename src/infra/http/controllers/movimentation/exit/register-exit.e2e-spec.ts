@@ -157,11 +157,15 @@ describe('Register Medicine Exit (E2E)', () => {
       .post('/medicine/exit')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        medicineStockId: medicineStock.id.toString(),
-        batcheStockId: batchStock.id.toString(),
-        quantity: 30,
         movementTypeId: movementType.id.toString(),
         exitType: ExitType.MOVEMENT_TYPE,
+        stockId: stock.id.toString(),
+        batches: [
+          {
+            batcheStockId: batchStock.id.toString(),
+            quantity: 30,
+          },
+        ],
       })
 
     expect(response.statusCode).toBe(201)

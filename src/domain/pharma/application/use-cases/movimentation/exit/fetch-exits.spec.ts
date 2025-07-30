@@ -28,6 +28,7 @@ import { makeMedicineExit } from 'test/factories/make-medicine-exit'
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
 import { makeMovimentation } from 'test/factories/make-movimentation'
 import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
+import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository'
 
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
@@ -44,6 +45,7 @@ let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
 let inMemoryManufacturersRepository: InMemoryManufacturersRepository
 let inMemoryMovimentationRepository: InMemoryMovimentationRepository
+let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
 
 let sut: FetchMedicinesExitsUseCase
 describe('Fetch  Medicines Exits', () => {
@@ -85,7 +87,36 @@ describe('Fetch  Medicines Exits', () => {
       inMemoryManufacturersRepository,
     )
     inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
-    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository(
+      inMemoryOperatorsRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryBatchesRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryMovementTypesRepository,
+    )
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMovimentationRepository.setEntriesRepository(
+      inMemoryMedicinesEntriesRepository,
+    )
+    inMemoryMovimentationRepository.setExitsRepository(
+      inMemoryMedicinesExitsRepository,
+    )
 
     inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
       inMemoryOperatorsRepository,
