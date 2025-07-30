@@ -12,4 +12,5 @@ export abstract class UnitsMeasureRepository {
     unitsMeasure: UnitMeasure[]
     meta: Meta
   }>
+  abstract delete(unitMeasureId: string): Promise<void>
 }

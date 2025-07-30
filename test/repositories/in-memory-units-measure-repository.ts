@@ -5,6 +5,7 @@ import { UnitsMeasureRepository } from '@/domain/pharma/application/repositories
 import { UnitMeasure } from '@/domain/pharma/enterprise/entities/unitMeasure'
 
 export class InMemoryUnitsMeasureRepository implements UnitsMeasureRepository {
+  
   public items: UnitMeasure[] = []
 
   async create(unitMeasure: UnitMeasure) {
@@ -76,5 +77,11 @@ export class InMemoryUnitsMeasureRepository implements UnitsMeasureRepository {
         totalCount: unitsMeasureFiltered.length,
       },
     }
+  }
+
+  async delete(unitMeasureId: string): Promise<void> {
+    const itemIndex = this.items.findIndex(item => item.id.equal(new UniqueEntityId(unitMeasureId)))
+
+    this.items.splice(itemIndex)
   }
 }
