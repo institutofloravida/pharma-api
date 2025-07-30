@@ -98,4 +98,12 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
       },
     }
   }
+
+  async delete(pharmaceuticalFormId: string): Promise<void> {
+    await this.prisma.pharmaceuticalForm.delete({
+      where: {
+        id: pharmaceuticalFormId,
+      },
+    })
+  }
 }

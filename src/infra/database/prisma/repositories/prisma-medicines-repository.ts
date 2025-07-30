@@ -176,4 +176,12 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
       },
     }
   }
+
+  async delete(medicineId: string): Promise<void> {
+    await this.prisma.medicine.delete({
+      where: {
+        id: medicineId,
+      },
+    })
+  }
 }

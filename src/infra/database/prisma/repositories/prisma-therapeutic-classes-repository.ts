@@ -92,4 +92,12 @@ implements TherapeuticClassesRepository {
       },
     }
   }
+
+  async delete(therapeuticClassId: string): Promise<void> {
+    await this.prisma.therapeuticClass.delete({
+      where: {
+        id: therapeuticClassId,
+      },
+    })
+  }
 }

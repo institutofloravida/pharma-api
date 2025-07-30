@@ -131,4 +131,12 @@ export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {
       },
     }
   }
+
+  async delete(unitMeasureId: string): Promise<void> {
+    await this.prisma.unitMeasure.delete({
+      where: {
+        id: unitMeasureId,
+      },
+    })
+  }
 }

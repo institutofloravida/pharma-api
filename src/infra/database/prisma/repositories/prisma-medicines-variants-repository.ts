@@ -143,4 +143,12 @@ implements MedicinesVariantsRepository {
       },
     }
   }
+
+  async delete(medicineVariantId: string): Promise<void> {
+    await this.prisma.medicineVariant.delete({
+      where: {
+        id: medicineVariantId,
+      },
+    })
+  }
 }
