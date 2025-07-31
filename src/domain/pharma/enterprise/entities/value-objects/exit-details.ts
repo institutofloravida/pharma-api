@@ -1,9 +1,11 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ValueObject } from '@/core/entities/value-object'
+import type { ExitType } from '../exit'
 
 export interface ExitDetailsProps {
   exitId: UniqueEntityId
   exitDate: Date
+  exitType: ExitType,
   stock: string;
   operator: string;
   items: number;
@@ -16,6 +18,10 @@ export class ExitDetails extends ValueObject<ExitDetailsProps> {
 
   get exitDate() {
     return this.props.exitDate
+  }
+
+  get exitType() {
+    return this.props.exitType
   }
 
   get stock() {

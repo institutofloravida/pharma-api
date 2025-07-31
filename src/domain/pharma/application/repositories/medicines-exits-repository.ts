@@ -5,6 +5,7 @@ import { ExitDetails } from '../../enterprise/entities/value-objects/exit-detail
 
 export abstract class MedicinesExitsRepository {
   abstract create(medicineExit: MedicineExit): Promise<void>
+  abstract findById(id: string): Promise<ExitDetails | null>
   abstract findMany(
     params: PaginationParams,
     filters: {
@@ -14,23 +15,4 @@ export abstract class MedicinesExitsRepository {
       exitDate?: Date;
     },
   ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }>
-  // abstract fetchMovimentation(
-  //   filters: {
-  //     institutionId: string,
-  //     startDate: Date,
-  //     endDate: Date,
-  //     operatorId?: string,
-  //     medicineId?: string,
-  //     stockId?: string,
-  //     medicineVariantId?: string,
-  //     medicineStockId?: string,
-  //     batcheStockId?: string,
-  //     quantity?: number,
-  //     movementTypeId?: string,
-  //     exitType?: ExitType
-  //   }
-  // ): Promise<{
-  //   exitsMovimentation: Movimentation[],
-  //   meta: MetaReport;
-  // }>
 }

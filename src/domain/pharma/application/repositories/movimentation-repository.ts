@@ -9,9 +9,9 @@ export abstract class MovimentationRepository {
 
   abstract fetchMovimentation(
     filters: {
-      institutionId: string,
-      startDate: Date,
-      endDate: Date,
+      institutionId?: string,
+      startDate?: Date,
+      endDate?: Date,
       operatorId?: string,
       medicineId?: string,
       stockId?: string,
@@ -21,6 +21,8 @@ export abstract class MovimentationRepository {
       quantity?: number,
       movementTypeId?: string,
       direction?: MovementDirection
+      exitId?: string,
+      entryId?: string,
       exitType?: ExitType
     }
   ): Promise<{

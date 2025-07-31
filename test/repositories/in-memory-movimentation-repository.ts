@@ -69,15 +69,17 @@ implements MovimentationRepository {
   }
 
   async fetchMovimentation(filters: {
-    institutionId: string;
-    startDate: Date;
-    endDate: Date;
+    institutionId?: string;
+    startDate?: Date;
+    endDate?: Date;
     operatorId?: string;
     medicineId?: string;
     stockId?: string;
     medicineVariantId?: string;
     medicineStockId?: string;
     batcheStockId?: string;
+    exitId?: string,
+    entryId?: string,
     quantity?: number;
     movementTypeId?: string;
     direction?: MovementDirection;
@@ -97,12 +99,21 @@ implements MovimentationRepository {
       quantity,
       stockId,
       direction,
+      entryId, exitId,
     } = filters
 
     const exitsMovimentationFilteredAndMapped: MovimentationDetails[] = []
 
     for (const movimentation of this.items) {
       if (direction && movimentation.direction !== direction) {
+        continue
+      }
+
+      if (entryId && !movimentation.entryId?.equal(new UniqueEntityId(entryId))) {
+        continue
+      }
+
+      if (exitId && !movimentation.exitId?.equal(new UniqueEntityId(exitId))) {
         continue
       }
 
@@ -229,14 +240,14 @@ implements MovimentationRepository {
       if (
         startDate
       ) {
-        if (movimentation.direction === 'ENTRY' && movement.entryDate < new Date(startDate.setHours(0, 0, 0, 0))) { continue }
-        if (movimentation.direction === 'EXIT' && movement.exitDate < new Date(startDate.setHours(0, 0, 0, 0))) { continue }
+        if (startDate && movimentation.direction === 'ENTRY' && movement.entryDate < new Date(startDate.setHours(0, 0, 0, 0))) { continue }
+        if (startDate && movimentation.direction === 'EXIT' && movement.exitDate < new Date(startDate.setHours(0, 0, 0, 0))) { continue }
       }
       if (
         endDate
       ) {
-        if (movimentation.direction === 'ENTRY' && movement.entryDate > new Date(startDate.setHours(23, 59, 59, 999))) { continue }
-        if (movimentation.direction === 'EXIT' && movement.exitDate > new Date(startDate.setHours(23, 59, 59, 999))) { continue }
+        if (endDate && movimentation.direction === 'ENTRY' && movement.entryDate > new Date(endDate.setHours(23, 59, 59, 999))) { continue }
+        if (endDate && movimentation.direction === 'EXIT' && movement.exitDate > new Date(endDate.setHours(23, 59, 59, 999))) { continue }
       }
 
       if (

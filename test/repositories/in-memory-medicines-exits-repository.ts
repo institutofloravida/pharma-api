@@ -24,6 +24,50 @@ implements MedicinesExitsRepository {
     this.items.push(medicineExit)
   }
 
+  async findById(id: string): Promise<ExitDetails | null> {
+    const medicineExit = this.items.find((item) =>
+      item.id.equal(new UniqueEntityId(id)),
+    )
+
+    if (!medicineExit) {
+      return null
+    }
+
+    const operator = this.operatorsRepository.items.find((item) =>
+      item.id.equal(medicineExit.operatorId),
+    )
+
+    if (!operator) {
+      throw new Error(
+        `operator with id "${medicineExit.operatorId.toString()} does not exist."`,
+      )
+    }
+
+    const stock = this.stocksRepository.items.find((stock) =>
+      stock.id.equal(medicineExit.stockId),
+    )
+    if (!stock) {
+      throw new Error(
+        `stock with id "${medicineExit.stockId.toString()} does not exist."`,
+      )
+    }
+
+    const items = this.movimentationRepository.items.filter(movimentation => {
+      return movimentation.exitId
+        ? movimentation.exitId?.equal(medicineExit.id)
+        : false
+    })
+
+    return ExitDetails.create({
+      exitDate: medicineExit.exitDate,
+      stock: stock.content,
+      exitType: medicineExit.exitType,
+      operator: operator.name,
+      exitId: medicineExit.id,
+      items: items.length,
+    })
+  }
+
   async findMany(
     { page }: PaginationParams,
     filters: {
@@ -101,6 +145,7 @@ implements MedicinesExitsRepository {
         stock: stock.content,
         operator: operator.name,
         exitId: exit.id,
+        exitType: exit.exitType,
         items: items.length,
       })
 
