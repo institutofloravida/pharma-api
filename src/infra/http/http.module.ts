@@ -146,6 +146,8 @@ import { DeleteManufacturerController } from './controllers/auxiliary-records/ma
 import { DeleteManufacturerUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/delete-manufacturer'
 import { DeletePathologyController } from './controllers/auxiliary-records/pathology/delete-pathology.controller'
 import { DeletePathologyUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/pathology/delete-pathology'
+import { GetExitByDonationUseCase } from '@/domain/pharma/application/use-cases/reports/get-exit-by-donation-report'
+import { GetDonationReportController } from './controllers/reports/get-exit-by-donation-report.controller'
 
 @Module({
   imports: [DatabaseModule, EnvModule, CryptographyModule, ScheduleModule.forRoot()],
@@ -171,6 +173,7 @@ import { DeletePathologyUseCase } from '@/domain/pharma/application/use-cases/au
     GetPatientDetailsController,
     GetMovimentationInAPeriodController,
     GetMonthlyMedicineUtilizationController,
+    GetDonationReportController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -244,6 +247,7 @@ import { DeletePathologyUseCase } from '@/domain/pharma/application/use-cases/au
     GetPatientDetailsUseCase,
     GetMovimentationInAPeriodUseCase,
     GetMonthlyMedicineUtilizationUseCase,
+    GetExitByDonationUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,
