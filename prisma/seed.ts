@@ -1,5 +1,5 @@
 import { hash } from 'bcryptjs'
-import { OperatorRole, PrismaClient } from './generated'
+import { InstitutionType, OperatorRole, PrismaClient } from './generated'
 
 const prisma = new PrismaClient()
 
@@ -32,6 +32,9 @@ async function main() {
     data: {
       name: 'Instituto Flora Vida',
       cnpj: '01234567000189',
+      controlStock: true,
+      responsible: 'Joao da Silva',
+      type: InstitutionType.ONG,
       description: '',
     },
   })
@@ -39,13 +42,19 @@ async function main() {
     data: {
       name: 'Ubs - módulo 20',
       cnpj: '01234567000110',
+      controlStock: true,
+      responsible: 'Maria Oliveira',
+      type: InstitutionType.PUBLIC,
       description: '',
     },
   })
   const institution3 = await prisma.institution.create({
     data: {
-      name: 'Ubs - módulo 15',
+      name: 'Clínica São José',
       cnpj: '01234567000120',
+      controlStock: true,
+      responsible: 'Francisco Paulo',
+      type: InstitutionType.PRIVATE,
       description: '',
     },
   })

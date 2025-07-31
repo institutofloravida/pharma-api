@@ -142,6 +142,8 @@ import { CreateMonthlyMedicineUtilizationUseCase } from '@/domain/pharma/applica
 import { GetMonthlyMedicineUtilizationController } from './controllers/reports/get-monthly-medicine-utilization.controller'
 import { GetMonthlyMedicineUtilizationUseCase } from '@/domain/pharma/application/use-cases/reports/get-monthly-medicine-utilization'
 import { EnvModule } from '../env/env.module'
+import { DeleteManufacturerController } from './controllers/auxiliary-records/manufacturer/delete-manufacturer.controller'
+import { DeleteManufacturerUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/manufacturer/delete-manufacturer'
 
 @Module({
   imports: [DatabaseModule, EnvModule, CryptographyModule, ScheduleModule.forRoot()],
@@ -216,7 +218,7 @@ import { EnvModule } from '../env/env.module'
     UpdateMedicineController,
     UpdateMedicineVariantController,
     UpdatePatientController,
-
+    DeleteManufacturerController,
   ],
   providers: [
     AuthenticateOperatorUseCase,
@@ -288,6 +290,7 @@ import { EnvModule } from '../env/env.module'
     UpdateMedicineUseCase,
     UpdateMedicineVariantUseCase,
     UpdatePatientUseCase,
+    DeleteManufacturerUseCase,
   ],
 })
 export class HttpModule {}
