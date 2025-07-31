@@ -31,15 +31,25 @@ model Operator {
   @@map("operators")
 }
 
+enum InstitutionType {
+  PUBLIC
+  PRIVATE
+  ONG
+}
+
 model Institution {
-  id          String    @id @default(uuid())
-  name        String
-  cnpj        String    @unique
-  description String?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @updatedAt @map("updated_at")
+  id           String          @id @default(uuid())
+  name         String
+  cnpj         String          @unique
+  type         InstitutionType
+  responsible  String
+  controlStock Boolean         @map("control_stock")
+  description  String?
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime?       @updatedAt @map("updated_at")
 
   stocks    Stock[]
+  exits     Exit[]
   operators Operator[] @relation("OperatorInstitutions")
 
   @@map("institutions")
@@ -55,8 +65,8 @@ model Stock {
 
   medicinesStocks MedicineStock[]
   batchestocks    BatcheStock[]
-  entries MedicineEntry[]
-  exits Exit[]
+  entries         MedicineEntry[]
+  exits           Exit[]
   institution     Institution?    @relation(fields: [institutionId], references: [id])
 
   @@map("stocks")
@@ -166,7 +176,7 @@ model MovementType {
   createdAt DateTime          @default(now()) @map("created_at")
   updatedAt DateTime?         @updatedAt @map("updated_at")
 
-  movimentations  Movimentation[] 
+  movimentations Movimentation[]
 }
 
 model MedicineStock {
@@ -179,10 +189,10 @@ model MedicineStock {
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime? @updatedAt @map("updated_at")
 
-  batchesStocks    BatcheStock[]
-  medicineVariant  MedicineVariant @relation(fields: [medicineVariantId], references: [id])
-  stock            Stock           @relation(fields: [stockId], references: [id])
-  UseMedicine      UseMedicine[]
+  batchesStocks   BatcheStock[]
+  medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
+  stock           Stock           @relation(fields: [stockId], references: [id])
+  UseMedicine     UseMedicine[]
 
   @@index([medicineVariantId])
   @@index([stockId])
@@ -200,11 +210,11 @@ model BatcheStock {
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime? @updatedAt @map("updated_at")
 
-  movimentation Movimentation[]
-  stock            Stock           @relation(fields: [stockId], references: [id])
-  batch            Batch           @relation(fields: [batchId], references: [id])
-  medicineVariant  MedicineVariant @relation(fields: [medicineVariantId], references: [id])
-  medicineStock    MedicineStock?  @relation(fields: [medicineStockId], references: [id])
+  movimentation   Movimentation[]
+  stock           Stock           @relation(fields: [stockId], references: [id])
+  batch           Batch           @relation(fields: [batchId], references: [id])
+  medicineVariant MedicineVariant @relation(fields: [medicineVariantId], references: [id])
+  medicineStock   MedicineStock?  @relation(fields: [medicineStockId], references: [id])
 
   @@index([stockId])
   @@index([batchId])
@@ -289,9 +299,9 @@ model Dispensation {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime? @updatedAt() @map("updated_at")
 
-  movimentation Movimentation[]  
-  patient     Patient  @relation(fields: [patientId], references: [id])
-  operator    Operator @relation(fields: [operatorId], references: [id])
+  movimentation Movimentation[]
+  patient       Patient         @relation(fields: [patientId], references: [id])
+  operator      Operator        @relation(fields: [operatorId], references: [id])
 
   @@map("dispensations")
 }
@@ -311,7 +321,7 @@ model Movimentation {
   entry        MedicineEntry? @relation(fields: [entryId], references: [id])
   exit         Exit?          @relation(fields: [exitId], references: [id])
   dispensation Dispensation?  @relation(fields: [dispensationId], references: [id])
-  batchStock   BatcheStock   @relation(fields: [batchStockId], references: [id])
+  batchStock   BatcheStock    @relation(fields: [batchStockId], references: [id])
   movementType MovementType?  @relation(fields: [movementTypeId], references: [id])
 
   @@map("movimentation")
@@ -337,21 +347,23 @@ enum ExitType {
   DISPENSATION
   MOVEMENT_TYPE
   EXPIRATION
+  DONATION
 }
 
 model Exit {
-  id         String   @id @default(uuid())
-  operatorId String   @map("operator_id")
-  exitType   ExitType @map("exit_type")
-  stockId    String   @map("stock_id")
+  id                       String    @id @default(uuid())
+  operatorId               String    @map("operator_id")
+  exitType                 ExitType  @map("exit_type")
+  stockId                  String    @map("stock_id")
+  destinationInstitutionId String?   @map("destination_institution_id")
+  exitDate                 DateTime  @default(now()) @map("exit_date")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime? @updatedAt @map("updated_at")
 
-  exitDate  DateTime  @default(now()) @map("exit_date")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-
-  operator      Operator        @relation(fields: [operatorId], references: [id])
-  stock         Stock           @relation(fields: [stockId], references: [id])
-  movimentation Movimentation[]
+  destinationInstitution Institution?    @relation(fields: [destinationInstitutionId], references: [id])
+  operator               Operator        @relation(fields: [operatorId], references: [id])
+  stock                  Stock           @relation(fields: [stockId], references: [id])
+  movimentation          Movimentation[]
 
   @@map("exits")
 }

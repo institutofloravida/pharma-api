@@ -225,6 +225,98 @@ describe('Register Exit', () => {
       )
     }
   })
+  it('shoult be able to register a new exit with "DONATION" as exit type', async () => {
+    const quantityToExit = 5
+
+    const institution = makeInstitution()
+    await inMemoryInstitutionsRepository.create(institution)
+
+    const destinationInstitution = makeInstitution()
+    await inMemoryInstitutionsRepository.create(destinationInstitution)
+
+    const operator = makeOperator({
+      institutionsIds: [institution.id],
+    })
+    await inMemoryOperatorsRepository.create(operator)
+
+    const stock = makeStock({ institutionId: institution.id })
+    await inMemoryStocksRepository.create(stock)
+
+    const medicine = makeMedicine()
+    await inMemoryMedicinesRepository.create(medicine)
+
+    const pharmaceuticalForm = makePharmaceuticalForm()
+    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm)
+
+    const unitMeasure = makeUnitMeasure()
+    await inMemoryUnitsMeasureRepository.create(unitMeasure)
+
+    const medicineVariant = makeMedicineVariant({
+      medicineId: medicine.id,
+      pharmaceuticalFormId: pharmaceuticalForm.id,
+      unitMeasureId: unitMeasure.id,
+    })
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
+
+    const medicineStock = makeMedicineStock({
+      batchesStockIds: [],
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      currentQuantity: 30,
+    })
+
+    const batch1 = makeBatch()
+    await inMemoryBatchesRepository.create(batch1)
+
+    const batchestock1 = makeBatchStock({
+      batchId: batch1.id,
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      medicineStockId: medicineStock.id,
+      currentQuantity: 30,
+    })
+
+    await inMemoryMedicinesStockRepository.create(medicineStock)
+
+    await inMemoryBatchStocksRepository.create(batchestock1)
+    await inMemoryMedicinesStockRepository.addBatchStock(
+      medicineStock.id.toString(),
+      batchestock1.id.toString(),
+    )
+    const result = await sut.execute({
+      batches: [
+        {
+          batcheStockId: batchestock1.id.toString(),
+          quantity: quantityToExit,
+        },
+      ],
+      stockId: stock.id.toString(),
+      operatorId: operator.id.toString(),
+      exitType: ExitType.DONATION,
+      destinationInstitutionId: destinationInstitution.id.toString(),
+      movementTypeId: undefined,
+    })
+
+    expect(result.isRight()).toBeTruthy()
+    if (result.isRight()) {
+      expect(inMemoryMedicinesExitsRepository.items).toHaveLength(1)
+      expect(inMemoryMedicinesExitsRepository.items[0]).toEqual(
+        expect.objectContaining({
+          destinationInstitutionId: expect.objectContaining({
+            value: destinationInstitution.id.toString(),
+          }),
+        }))
+      expect(inMemoryMovimentationRepository.items[0].quantity).toBe(
+        quantityToExit,
+      )
+      expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
+        30 - quantityToExit,
+      )
+      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
+        30 - quantityToExit,
+      )
+    }
+  })
 
   it('shoult not be able to register a new exit with quantity less or equal zero', async () => {
     const quantityZeroToExit = 0

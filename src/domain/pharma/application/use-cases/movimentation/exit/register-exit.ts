@@ -26,6 +26,7 @@ interface RegisterExitUseCaseRequest {
   operatorId: string;
   exitType: ExitType;
   movementTypeId?: string;
+  destinationInstitutionId?: string;
   exitDate?: Date;
 }
 
@@ -54,6 +55,7 @@ export class RegisterExitUseCase {
     exitType,
     stockId,
     batches,
+    destinationInstitutionId,
   }: RegisterExitUseCaseRequest): Promise<RegisterExitUseCaseResponse> {
     if (batches.length <= 0) {
       return left(new AtLeastOneMustBePopulatedError('É necessário ter pelo menos um lote para efetuar a saída '))
@@ -64,11 +66,18 @@ export class RegisterExitUseCase {
       }
     }
 
+    if (destinationInstitutionId && exitType !== ExitType.DONATION) {
+      return left(new Error('A instituição de destino só pode ser informada quando o tipo de saída for DOAÇÃO'))
+    }
+
     const exit = MedicineExit.create({
       exitType,
       operatorId: new UniqueEntityId(operatorId),
       exitDate,
       stockId: new UniqueEntityId(stockId),
+      destinationInstitutionId: destinationInstitutionId
+        ? new UniqueEntityId(destinationInstitutionId)
+        : undefined,
     })
     await this.medicineExitRepository.create(exit)
 

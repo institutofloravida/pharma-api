@@ -39,6 +39,7 @@ export class RegisterMedicineExitController {
       exitDate,
       stockId,
       batches,
+      destinationInstitutionId,
     } = body
 
     const result = await this.registerMedicineExit.execute({
@@ -47,6 +48,7 @@ export class RegisterMedicineExitController {
       operatorId: user.sub,
       exitDate,
       stockId,
+      destinationInstitutionId,
       batches,
     })
 

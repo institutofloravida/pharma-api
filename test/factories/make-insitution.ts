@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Institution, type InstitutionProps } from '@/domain/pharma/enterprise/entities/institution'
+import { Institution, InstitutionType, type InstitutionProps } from '@/domain/pharma/enterprise/entities/institution'
 import { PrismaInstitutionMapper } from '@/infra/database/prisma/mappers/prisma-institution-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
@@ -12,6 +12,9 @@ export function makeInstitution(
   const institution = Institution.create({
     cnpj: faker.string.numeric({ length: 14 }),
     content: faker.company.name(),
+    controlStock: true,
+    responsible: faker.person.fullName(),
+    type: faker.helpers.arrayElement([InstitutionType.ONG, InstitutionType.PRIVATE, InstitutionType.PUBLIC]),
     description: faker.lorem.paragraph(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),

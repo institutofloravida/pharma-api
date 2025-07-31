@@ -6,6 +6,9 @@ export class InstitutionPresenter {
       id: institution.id.toString(),
       name: institution.content,
       cnpj: institution.cnpj,
+      controlStock: institution.controlStock,
+      responsible: institution.responsible,
+      type: institution.type,
       description: institution.description
         ? institution.description.length > 100
           ? `${institution.description.substring(0, 100)}...`

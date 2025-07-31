@@ -7,6 +7,7 @@ export enum ExitType {
   DISPENSATION = 'DISPENSATION',
   MOVEMENT_TYPE = 'MOVEMENT_TYPE',
   EXPIRATION = 'EXPIRATION',
+  DONATION = 'DONATION',
 }
 
 export interface MedicineExitProps {
@@ -14,6 +15,7 @@ export interface MedicineExitProps {
   exitDate: Date
   stockId: UniqueEntityId
   operatorId: UniqueEntityId
+  destinationInstitutionId?: UniqueEntityId | null
   createdAt: Date
   updatedAt?: Date
 }
@@ -52,6 +54,15 @@ export class MedicineExit extends Entity<MedicineExitProps> {
 
   set operatorId(value: UniqueEntityId) {
     this.props.operatorId = value
+    this.touch()
+  }
+
+  get destinationInstitutionId() {
+    return this.props.destinationInstitutionId
+  }
+
+  set destinationInstitutionId(value: UniqueEntityId | null | undefined) {
+    this.props.destinationInstitutionId = value
     this.touch()
   }
 

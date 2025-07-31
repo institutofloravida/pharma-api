@@ -22,12 +22,15 @@ export class CreateInstitutionController {
   @Post()
   @HttpCode(201)
   async handle(@Body() body: CreateInstitutionDTO) {
-    const { name, cnpj, description } = body
+    const { name, cnpj, description, controlStock, type, responsible } = body
 
     const result = await this.createInstitution.execute({
       cnpj,
       content: name,
       description,
+      controlStock,
+      responsible,
+      type,
     })
 
     if (result.isLeft()) {

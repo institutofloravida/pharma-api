@@ -1,3 +1,4 @@
+import { InstitutionType } from '@/domain/pharma/enterprise/entities/institution'
 import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
@@ -38,6 +39,9 @@ describe('Create institution (E2E)', () => {
       .send({
         name: 'institution test',
         cnpj: '12345678901234',
+        controlStock: true,
+        type: InstitutionType.ONG,
+        responsible: 'John Doe',
       })
 
     expect(response.statusCode).toBe(201)
