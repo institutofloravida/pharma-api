@@ -22,9 +22,9 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
   }
 
   async fetchMovimentation(filters: {
-    institutionId: string;
-    startDate: Date;
-    endDate: Date;
+    institutionId?: string;
+    startDate?: Date;
+    endDate?: Date;
     operatorId?: string;
     medicineId?: string;
     stockId?: string;
@@ -90,11 +90,13 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       ...(direction === 'EXIT'
         ? {
             exit: {
-              ...(startDate && {
-                exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
-              }),
-              ...(endDate && {
-                exitDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
+              ...((startDate || endDate) && {
+                ...(startDate && {
+                  exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
+                }),
+                ...(endDate && {
+                  exitDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
+                }),
               }),
               ...(exitType && {
                 exitType: { equals: $Enums.ExitType[exitType] },
@@ -103,14 +105,18 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           }
         : direction === 'ENTRY'
           ? {
-              entry: {
-                ...(startDate && {
-                  entryDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
-                }),
-                ...(endDate && {
-                  entryDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
-                }),
-              },
+              ...((startDate || endDate) && {
+                entry: {
+
+                  ...(startDate && {
+                    entryDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
+                  }),
+                  ...(endDate && {
+                    entryDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
+                  }),
+
+                },
+              }),
             }
           : {}),
       ...(!direction && (startDate || endDate)

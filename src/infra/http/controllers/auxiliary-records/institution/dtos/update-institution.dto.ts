@@ -1,5 +1,6 @@
+import { InstitutionType } from '@/domain/pharma/enterprise/entities/institution'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator'
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator'
 
 export class UpdateInstitutionDto {
   @ApiProperty({
@@ -8,7 +9,7 @@ export class UpdateInstitutionDto {
   })
   @IsNotEmpty()
   @IsString()
-  readonly name?: string
+  name: string
 
   @ApiProperty({
     example: '12345678000195',
@@ -17,7 +18,29 @@ export class UpdateInstitutionDto {
   @IsNotEmpty()
   @IsString()
   @Length(14, 14, { message: 'CNPJ deve ter 14 caracteres' })
-  readonly cnpj?: string
+  cnpj: string
+
+  @ApiProperty({
+    example: 'A leading institution in healthcare and research.',
+    description: 'A brief description of the institution.',
+  })
+  @IsString()
+  responsible: string
+
+  @ApiProperty({
+    example: true,
+    description: 'Indicates whether the institution controls stock.',
+  })
+  @IsBoolean()
+  controlStock: boolean
+
+  @ApiProperty({
+    example: 'ONG',
+    description: 'Tipo de Instituição',
+    enum: InstitutionType,
+  })
+  @IsEnum(InstitutionType)
+  type: InstitutionType
 
   @ApiPropertyOptional({
     example: 'Hospital referência na cidade.',
@@ -25,5 +48,5 @@ export class UpdateInstitutionDto {
   })
   @IsOptional()
   @IsString()
-  readonly description?: string | null
+  description?: string | null
 }

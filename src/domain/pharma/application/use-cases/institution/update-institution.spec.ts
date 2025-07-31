@@ -2,6 +2,7 @@ import { makeInstitution } from 'test/factories/make-insitution'
 import { UpdateInstitutionUseCase } from './update-institution'
 import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
 import { InstitutionWithSameContentAlreadyExistsError } from './_errors/institution-with-same-content-already-exists-error'
+import { InstitutionType } from '@/domain/pharma/enterprise/entities/institution'
 
 let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
 let sut: UpdateInstitutionUseCase
@@ -16,6 +17,9 @@ describe('Update Institution', () => {
       content: 'Institution 1',
       cnpj: '12345678902345',
       description: '',
+      controlStock: true,
+      responsible: 'Responsible Person',
+      type: InstitutionType.ONG,
 
     })
     await inMemoryInstitutionsRepository.create(institution)
@@ -25,12 +29,17 @@ describe('Update Institution', () => {
       content: 'Institution 2',
       cnpj: '12345678902344',
       description: 'some description',
+      controlStock: true,
+      responsible: 'Responsible Person',
+      type: InstitutionType.PUBLIC,
+
     })
 
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryInstitutionsRepository.items).toHaveLength(1)
       expect(inMemoryInstitutionsRepository.items[0].content).toBe('Institution 2')
+      expect(inMemoryInstitutionsRepository.items[0].type).toBe(InstitutionType.PUBLIC)
     }
   })
 
@@ -51,6 +60,9 @@ describe('Update Institution', () => {
       content: institution2.content,
       cnpj: institution.cnpj,
       description: institution.description,
+      controlStock: institution.controlStock,
+      responsible: institution.responsible,
+      type: institution.type,
     })
 
     expect(result.isLeft()).toBeTruthy()

@@ -1,15 +1,18 @@
 import { left, right, type Either } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error'
-import { Institution } from '@/domain/pharma/enterprise/entities/institution'
+import { Institution, type InstitutionType } from '@/domain/pharma/enterprise/entities/institution'
 import { InstitutionWithSameContentAlreadyExistsError } from './_errors/institution-with-same-content-already-exists-error'
 import { InstitutionWithSameCnpjAlreadyExistsError } from './_errors/institution-with-same-cnpj-already-exists-error'
 import { InstitutionsRepository } from '../../repositories/institutions-repository'
 
 interface updateInstitutionUseCaseRequest {
   institutionId: string
-  content?: string,
-  cnpj?: string,
+  content: string,
+  cnpj: string,
+  responsible: string,
+  controlStock: boolean,
+  type: InstitutionType,
   description?: string | null,
 }
 
@@ -23,7 +26,7 @@ type updateInstitutionUseCaseResponse = Either<
 @Injectable()
 export class UpdateInstitutionUseCase {
   constructor(private institutionRepository: InstitutionsRepository) { }
-  async execute({ content, institutionId, cnpj, description }: updateInstitutionUseCaseRequest): Promise<updateInstitutionUseCaseResponse> {
+  async execute({ content, institutionId, cnpj, description, controlStock, responsible, type }: updateInstitutionUseCaseRequest): Promise<updateInstitutionUseCaseResponse> {
     const institution = await this.institutionRepository.findById(institutionId)
     if (!institution) {
       return left(new ResourceNotFoundError())
@@ -43,14 +46,22 @@ export class UpdateInstitutionUseCase {
       }
       institution.content = content
     }
-    if (description) {
-      institution.description = description
-    }
 
-    await this.institutionRepository.save(institution)
+    const institutionUpdated = Institution.create({
+      updatedAt: new Date(),
+      createdAt: institution.createdAt,
+      cnpj,
+      content,
+      description: description ?? institution.description,
+      responsible,
+      controlStock,
+      type,
+    }, institution.id)
+
+    await this.institutionRepository.save(institutionUpdated)
 
     return right({
-      institution,
+      institution: institutionUpdated,
     })
   }
 }

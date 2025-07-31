@@ -8,14 +8,51 @@ import { PrismaService } from '../prisma.service'
 import { Injectable } from '@nestjs/common'
 import { Meta } from '@/core/repositories/meta'
 import { PaginationParams } from '@/core/repositories/pagination-params'
-import { Prisma } from 'prisma/generated'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details'
+import { PrismaExitDetailsMapper } from '../mappers/prisma-exit-details-mapper'
 
 @Injectable()
 export class PrismaMedicinesExitsRepository
 implements MedicinesExitsRepository {
   constructor(private prisma: PrismaService) {}
+  async findById(id: string): Promise<ExitDetails | null> {
+    const exit = await this.prisma.exit.findUnique({
+      where: { id },
+      include: {
+        operator: {
+          select: { name: true },
+        },
+        stock: {
+          select: { name: true },
+        },
+      },
+    })
+    if (!exit) return null
+
+    const items = await this.prisma.medicineStock.findMany({
+      distinct: ['id'],
+      where: {
+        batchesStocks: {
+          some: {
+            movimentation: {
+              some: {
+                exitId: exit.id,
+              },
+            },
+          },
+        },
+      },
+
+    })
+
+    return PrismaExitDetailsMapper.toDomain({
+      ...exit,
+      items: items.length,
+      operator: exit.operator.name,
+      stock: exit.stock.name,
+    })
+  }
 
   async create(medicineExit: MedicineExit): Promise<void> {
     const data = PrismaMedicineExitMapper.toPrisma(medicineExit)
@@ -56,13 +93,25 @@ implements MedicinesExitsRepository {
       params.push(exitDate)
     }
 
-    const whereSQL = whereClauses.length > 0
-      ? `WHERE ${whereClauses.join(' AND ')}`
-      : ''
+    const whereSQL =
+      whereClauses.length > 0
+        ? `WHERE ${whereClauses.join(' AND ')}`
+        : ''
 
-    const exits = await this.prisma.$queryRawUnsafe<any[]>(`
+    const exits = await this.prisma.$queryRawUnsafe<
+      {
+        id: string;
+        exitDate: Date;
+        operatorName: string;
+        stockName: string;
+        exitType: ExitType;
+        items: number;
+      }[]
+    >(
+      `
     select 
       e.id as "id",
+      e.exit_type as "exitType",
       e.exit_date as "exitDate",
       o."name" as "operatorName",
       s."name" as "stockName",
@@ -76,10 +125,15 @@ implements MedicinesExitsRepository {
     group by e.id, o."name", s."name"
     order by e.exit_date desc
     limit 10 offset ${(page - 1) * 10}
-  `, ...params)
+  `,
+      ...params,
+    )
 
     // Para totalCount, faz uma query separada
-    const totalCountResult = await this.prisma.$queryRawUnsafe<any[]>(`
+    const totalCountResult = await this.prisma.$queryRawUnsafe<
+      { count: number }[]
+    >(
+      `
     select count(*)::int as count
     from (
       select e.id
@@ -91,7 +145,9 @@ implements MedicinesExitsRepository {
       ${whereSQL}
       group by e.id, o."name", s."name"
     ) as sub
-  `, ...params)
+  `,
+      ...params,
+    )
     const totalCount = totalCountResult[0]?.count || 0
 
     const medicinesExitsMapped = exits.map((exit) => {
@@ -99,6 +155,7 @@ implements MedicinesExitsRepository {
         exitDate: exit.exitDate,
         operator: exit.operatorName,
         stock: exit.stockName,
+        exitType: exit.exitType,
         exitId: new UniqueEntityId(exit.id),
         items: Number(exit.items),
       })

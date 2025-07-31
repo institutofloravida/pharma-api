@@ -24,12 +24,15 @@ export class UpdateInstitutionController {
   async handle(
     @Param('id') institutionId: string,
     @Body() body: UpdateInstitutionDto) {
-    const { name, cnpj, description } = body
+    const { name, cnpj, description, controlStock, responsible, type } = body
 
     const result = await this.updateInstitution.execute({
       institutionId,
       cnpj,
       content: name,
+      controlStock,
+      responsible,
+      type,
       description,
     })
 
