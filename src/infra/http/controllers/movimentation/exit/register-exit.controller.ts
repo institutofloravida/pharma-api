@@ -21,7 +21,7 @@ import { Roles } from '@/infra/auth/role-decorator'
 @ApiTags('exit')
 @Controller('medicine/exit')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(OperatorRole.MANAGER, OperatorRole.COMMON)
+@Roles(OperatorRole.MANAGER, OperatorRole.SUPER_ADMIN)
 
 @UseGuards(JwtAuthGuard)
 export class RegisterMedicineExitController {

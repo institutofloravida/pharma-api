@@ -9,6 +9,7 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { MovimentationPresenter } from '../../presenters/movimentation-presenter'
 import { GetExitByDonationUseCase } from '@/domain/pharma/application/use-cases/reports/get-exit-by-donation-report'
+import { MedicineExitPresenter } from '../../presenters/medicine-exit-presenter'
 
 @ApiTags('reports')
 @ApiBearerAuth()
@@ -30,12 +31,12 @@ export class GetDonationReportController {
     }
 
     const { movimentation, exit, meta } = result.value
-
+    const exitsMapped = MedicineExitPresenter.toHTTP(exit)
     const movimentationsMapped = movimentation.map(MovimentationPresenter.toHTTP)
     return {
       movimentation: movimentationsMapped,
       meta,
-      exit,
+      exit: exitsMapped,
     }
   }
 }

@@ -34,6 +34,8 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
     quantity?: number;
     movementTypeId?: string;
     direction?: MovementDirection;
+    exitId?: string,
+    entryId?: string,
     exitType?: ExitType;
   }): Promise<{ movimentation: MovimentationDetails[]; meta: MetaReport }> {
     const {
@@ -50,9 +52,18 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       operatorId,
       quantity,
       stockId,
+      entryId,
+      exitId,
+
     } = filters
 
     const whereClause: Prisma.MovimentationWhereInput = {
+      ...(exitId && {
+        exitId: { equals: exitId },
+      }),
+      ...(entryId && {
+        entryId: { equals: entryId },
+      }),
       ...(direction && {
         direction: {
           equals: direction,

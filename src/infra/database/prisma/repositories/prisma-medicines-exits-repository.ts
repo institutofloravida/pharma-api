@@ -23,6 +23,12 @@ implements MedicinesExitsRepository {
         operator: {
           select: { name: true },
         },
+        destinationInstitution: {
+          select: {
+            name: true,
+            responsible: true,
+          },
+        },
         stock: {
           select: { name: true },
         },
@@ -48,6 +54,9 @@ implements MedicinesExitsRepository {
 
     return PrismaExitDetailsMapper.toDomain({
       ...exit,
+      destinationInstitution: exit.destinationInstitution?.name,
+      responsibleByInstitution: exit.destinationInstitution?.responsible,
+      exitType: exit.exitType,
       items: items.length,
       operator: exit.operator.name,
       stock: exit.stock.name,
@@ -104,6 +113,7 @@ implements MedicinesExitsRepository {
         exitDate: Date;
         operatorName: string;
         stockName: string;
+        destinationInstitution?: string;
         exitType: ExitType;
         items: number;
       }[]
@@ -115,14 +125,16 @@ implements MedicinesExitsRepository {
       e.exit_date as "exitDate",
       o."name" as "operatorName",
       s."name" as "stockName",
+     i."name" as "destinationInstitution",
       COUNT(distinct bs.medicine_stock_id) as "items"
     from movimentation m
     inner join "exits" e on e.id = m.exit_id
     inner join batches_stocks bs on bs.id = m.batch_stock_id
     inner join operators o on o.id = e.operator_id
     inner join stocks s on s.id = e.stock_id
+    left join institutions i on i.id = e.destination_institution_id
     ${whereSQL}
-    group by e.id, o."name", s."name"
+group by e.id, o."name", s."name", i."name"
     order by e.exit_date desc
     limit 10 offset ${(page - 1) * 10}
   `,
@@ -155,12 +167,12 @@ implements MedicinesExitsRepository {
         exitDate: exit.exitDate,
         operator: exit.operatorName,
         stock: exit.stockName,
+        destinationInstitution: exit.destinationInstitution,
         exitType: exit.exitType,
         exitId: new UniqueEntityId(exit.id),
         items: Number(exit.items),
       })
     })
-
     return {
       medicinesExits: medicinesExitsMapped,
       meta: {

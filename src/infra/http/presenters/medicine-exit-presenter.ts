@@ -5,6 +5,9 @@ export class MedicineExitPresenter {
     return {
       id: exit.exitId.toString(),
       exitDate: exit.exitDate,
+      destinationInstitution: exit.destinationInstitution,
+      responsibleByInstitution: exit.responsibleByInstitution,
+      exitType: exit.exitType,
       operator: exit.operator,
       stock: exit.stock,
       items: exit.items,

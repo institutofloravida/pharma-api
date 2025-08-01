@@ -41,7 +41,6 @@ export class RegisterExitDto {
   stockId: string
 
   @ApiPropertyOptional({ example: 'f5d0b1b2-62c5-4d0c-8b5e-8d50e3df7b7e', description: 'ID da instituição de destino da doação' })
-  @IsUUID()
   @IsOptional()
   destinationInstitutionId?: string
 
@@ -54,7 +53,6 @@ export class RegisterExitDto {
   exitType: ExitType
 
   @ApiPropertyOptional({ example: '75e5b24b-bf1b-4a1d-b0d5-cfcba1e587e1', description: 'ID do tipo de movimentação' })
-  @IsUUID()
   @IsOptional()
   movementTypeId?: string
 

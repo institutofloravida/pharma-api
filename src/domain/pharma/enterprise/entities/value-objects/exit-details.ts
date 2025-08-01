@@ -7,6 +7,8 @@ export interface ExitDetailsProps {
   exitDate: Date
   exitType: ExitType,
   stock: string;
+  destinationInstitution?: string;
+  responsibleByInstitution?: string;
   operator: string;
   items: number;
 }
@@ -30,6 +32,14 @@ export class ExitDetails extends ValueObject<ExitDetailsProps> {
 
   get operator() {
     return this.props.operator
+  }
+
+  get destinationInstitution() {
+    return this.props.destinationInstitution
+  }
+
+  get responsibleByInstitution() {
+    return this.props.responsibleByInstitution
   }
 
   get items() {

@@ -23,7 +23,7 @@ export class FetchMedicinesExitsController {
   @ApiResponse({ status: 201 })
   @ApiResponse({ status: 400 })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(OperatorRole.MANAGER, OperatorRole.COMMON)
+  @Roles(OperatorRole.MANAGER, OperatorRole.SUPER_ADMIN)
   async handle(@Query() queryParams: FetchMedicinesExitsDto) {
     const {
       institutionId,
