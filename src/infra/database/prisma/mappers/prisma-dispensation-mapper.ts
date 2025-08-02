@@ -1,10 +1,15 @@
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation'
-import { MedicineExit } from '@/domain/pharma/enterprise/entities/exit'
-import { Dispensation as PrismaDispensation, type Prisma } from 'prisma/generated'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Dispensation } from '@/domain/pharma/enterprise/entities/dispensation';
+import { MedicineExit } from '@/domain/pharma/enterprise/entities/exit';
+import {
+  Dispensation as PrismaDispensation,
+  type Prisma,
+} from 'prisma/generated';
 
 export class PrismaDispensationMapper {
-  static toDomain(raw: PrismaDispensation & { exitRecords: MedicineExit[] }): Dispensation {
+  static toDomain(
+    raw: PrismaDispensation & { exitRecords: MedicineExit[] },
+  ): Dispensation {
     return Dispensation.create(
       {
         operatorId: new UniqueEntityId(raw.operatorId),
@@ -14,7 +19,7 @@ export class PrismaDispensationMapper {
         updatedAt: raw.updatedAt,
       },
       new UniqueEntityId(raw.id),
-    )
+    );
   }
 
   static toPrisma(
@@ -27,6 +32,6 @@ export class PrismaDispensationMapper {
       operatorId: dispensation.operatorId.toString(),
       createdAt: dispensation.createdAt,
       updatedAt: dispensation.updatedAt,
-    }
+    };
   }
 }

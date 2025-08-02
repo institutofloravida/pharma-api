@@ -36,7 +36,6 @@ import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-mov
 import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository'
 
 let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
-
 let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryMovimentationRepository: InMemoryMovimentationRepository
 let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
@@ -126,6 +125,20 @@ describe('Get Dispense In A Period', () => {
       inMemoryMovementTypesRepository,
     )
 
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMovimentationRepository.setEntriesRepository(inMemoryMedicinesEntriesRepository)
+    inMemoryMovimentationRepository.setExitsRepository(inMemoryMedicinesExitsRepository)
     inMemoryDispensationsRepository =
       new InMemoryDispensationsMedicinesRepository(
         inMemoryMedicinesExitsRepository,
@@ -141,21 +154,6 @@ describe('Get Dispense In A Period', () => {
         inMemoryMovimentationRepository,
         inMemoryBatchStocksRepository,
       )
-    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryOperatorsRepository,
-      inMemoryStocksRepository,
-      inMemoryMovimentationRepository,
-    )
-
-    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
-      inMemoryOperatorsRepository,
-      inMemoryStocksRepository,
-      inMemoryMovimentationRepository,
-    )
-
-    inMemoryMovimentationRepository.setEntriesRepository(inMemoryMedicinesEntriesRepository)
-    inMemoryMovimentationRepository.setExitsRepository(inMemoryMedicinesExitsRepository)
-
     inMemoryPatientsRepository.setDispensationsRepository(
       inMemoryDispensationsRepository,
     )
@@ -201,7 +199,7 @@ describe('Get Dispense In A Period', () => {
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
       batchesStockIds: [],
-      currentQuantity: 50,
+      currentQuantity: 80,
     })
     const batch = makeBatch({
     })
@@ -244,6 +242,7 @@ describe('Get Dispense In A Period', () => {
     const exit1 = makeMedicineExit({
       exitType: ExitType.DISPENSATION,
       operatorId: operator.id,
+      dispensationId: dispensation.id,
       stockId: stock.id,
     })
 
@@ -251,6 +250,7 @@ describe('Get Dispense In A Period', () => {
       exitType: ExitType.DISPENSATION,
       operatorId: operator.id,
       stockId: stock.id,
+      dispensationId: dispensation2.id,
     })
 
     await Promise.all([
@@ -263,7 +263,7 @@ describe('Get Dispense In A Period', () => {
         quantity: 10,
         batchStockId: batchStock.id,
         movementTypeId: undefined,
-        dispensationId: dispensation.id,
+
         direction: 'EXIT',
         entryId: undefined,
         exitId: exit1.id,
@@ -275,14 +275,12 @@ describe('Get Dispense In A Period', () => {
         quantity: 20,
         batchStockId: batchStock.id,
         movementTypeId: undefined,
-        dispensationId: dispensation2.id,
         direction: 'EXIT',
         entryId: undefined,
         exitId: exit2.id,
       }),
     )
     vi.setSystemTime(new Date(2025, 2, 28))
-
     const result = await sut.execute({
       institutionId: institution.id.toString(),
       endDate: new Date(2025, 2, 14),

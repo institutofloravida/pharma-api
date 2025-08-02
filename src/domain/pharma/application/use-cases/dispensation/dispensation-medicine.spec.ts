@@ -27,7 +27,11 @@ import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operato
 import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
 import { InMemoryAddressRepository } from 'test/repositories/in-memory-address-repository'
 import { InMemoryPathologiesRepository } from 'test/repositories/in-memory-pathologies-repository'
+import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository'
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
 
+let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
+let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
 let inMemoryAddressRepository: InMemoryAddressRepository
 let inMemoryPathologiesRepository: InMemoryPathologiesRepository
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
@@ -50,9 +54,39 @@ let sut: DispensationMedicineUseCase
 
 describe('Dispensation Medicine', () => {
   beforeEach(() => {
+    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
     inMemoryAddressRepository = new InMemoryAddressRepository()
     inMemoryPathologiesRepository = new InMemoryPathologiesRepository()
-    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository(
+      inMemoryOperatorsRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryBatchesRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryMovementTypesRepository,
+    )
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    )
+
+    inMemoryMovimentationRepository.setEntriesRepository(
+      inMemoryMedicinesEntriesRepository,
+    )
+    inMemoryMovimentationRepository.setExitsRepository(
+      inMemoryMedicinesExitsRepository,
+    )
 
     inMemoryTherapeuticClassesRepository =
       new InMemoryTherapeuticClassesRepository()
@@ -139,7 +173,7 @@ describe('Dispensation Medicine', () => {
     )
   })
   it('should be able to dispense a medication', async () => {
-    const quantityToDispense = 5
+    const quantityToDispense = 10
     const institution = makeInstitution()
     await inMemoryInstitutionsRepository.create(institution)
 
@@ -159,6 +193,7 @@ describe('Dispensation Medicine', () => {
 
     const medicineStock = makeMedicineStock({
       batchesStockIds: [],
+      currentQuantity: 50,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
     })
@@ -169,38 +204,65 @@ describe('Dispensation Medicine', () => {
     const batch1 = makeBatch({
       manufacturerId: manufacturer.id,
     })
+
+    const batch2 = makeBatch({
+      manufacturerId: manufacturer.id,
+    })
     await inMemoryBatchesRepository.create(batch1)
+    await inMemoryBatchesRepository.create(batch2)
 
     const batchestock1 = makeBatchStock({
       batchId: batch1.id,
+      medicineStockId: medicineStock.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
       currentQuantity: 20,
     })
 
-    medicineStock.batchesStockIds = [batchestock1.id]
-    medicineStock.quantity = batchestock1.quantity
+    const batchestock2 = makeBatchStock({
+      batchId: batch2.id,
+      medicineStockId: medicineStock.id,
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      currentQuantity: 30,
+    })
+
+    medicineStock.batchesStockIds = [batchestock1.id, batchestock2.id]
 
     await inMemoryBatchStocksRepository.create(batchestock1)
+    await inMemoryBatchStocksRepository.create(batchestock2)
     await inMemoryMedicinesStockRepository.create(medicineStock)
 
     const result = await sut.execute({
-      medicineStockId: medicineStock.id.toString(),
-      operatorId: 'operator-1',
-      patientId: patient.id.toString(),
-      batchesStocks: [
+      medicines: [
         {
-          batchStockId: batchestock1.id.toString(),
-          quantity: quantityToDispense,
+          medicineStockId: medicineStock.id.toString(),
+          batchesStocks: [
+            {
+              batchStockId: batchestock1.id.toString(),
+              quantity: quantityToDispense,
+            },
+            {
+              batchStockId: batchestock2.id.toString(),
+              quantity: quantityToDispense,
+            },
+          ],
         },
       ],
+      stockId: stock.id.toString(),
+      dispensationDate: new Date(),
+      operatorId: 'operator-1',
+      patientId: patient.id.toString(),
     })
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
       expect(inMemoryDispensationsMedicinesRepository.items).toHaveLength(1)
-
+      expect(inMemoryMedicinesExitsRepository.items).toHaveLength(1)
       expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
-        20 - quantityToDispense,
+        20 - (quantityToDispense),
+      )
+      expect(inMemoryBatchStocksRepository.items[1].quantity).toBe(
+        30 - (quantityToDispense),
       )
     }
   })
@@ -255,13 +317,19 @@ describe('Dispensation Medicine', () => {
     await inMemoryMedicinesStockRepository.create(medicineStock)
 
     const result = await sut.execute({
-      medicineStockId: medicineStock.id.toString(),
       operatorId: 'operator-1',
+      stockId: stock.id.toString(),
+      dispensationDate: new Date(),
       patientId: patient.id.toString(),
-      batchesStocks: [
+      medicines: [
         {
-          batchStockId: batchestock1.id.toString(),
-          quantity: quantityToDispense,
+          medicineStockId: medicineStock.id.toString(),
+          batchesStocks: [
+            {
+              batchStockId: batchestock1.id.toString(),
+              quantity: quantityToDispense,
+            },
+          ],
         },
       ],
     })
@@ -299,6 +367,7 @@ describe('Dispensation Medicine', () => {
       batchId: batch1.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
+      medicineStockId: medicineStock.id,
       currentQuantity: 20,
     })
 
@@ -309,6 +378,7 @@ describe('Dispensation Medicine', () => {
       batchId: batch2.id,
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
+      medicineStockId: medicineStock.id,
       currentQuantity: 10,
     })
 
@@ -320,17 +390,23 @@ describe('Dispensation Medicine', () => {
     await inMemoryMedicinesStockRepository.create(medicineStock)
 
     const result = await sut.execute({
-      medicineStockId: medicineStock.id.toString(),
       operatorId: 'operator-1',
       patientId: patient.id.toString(),
-      batchesStocks: [
+      stockId: stock.id.toString(),
+      dispensationDate: new Date(),
+      medicines: [
         {
-          batchStockId: batchestock1.id.toString(),
-          quantity: 5,
-        },
-        {
-          batchStockId: batchestock2.id.toString(),
-          quantity: 10,
+          medicineStockId: medicineStock.id.toString(),
+          batchesStocks: [
+            {
+              batchStockId: batchestock1.id.toString(),
+              quantity: 5,
+            },
+            {
+              batchStockId: batchestock2.id.toString(),
+              quantity: 10,
+            },
+          ],
         },
       ],
     })

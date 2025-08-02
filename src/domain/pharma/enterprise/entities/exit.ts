@@ -15,6 +15,7 @@ export interface MedicineExitProps {
   exitDate: Date
   stockId: UniqueEntityId
   operatorId: UniqueEntityId
+  dispensationId?: UniqueEntityId
   destinationInstitutionId?: UniqueEntityId | null
   createdAt: Date
   updatedAt?: Date
@@ -50,6 +51,10 @@ export class MedicineExit extends Entity<MedicineExitProps> {
 
   get operatorId() {
     return this.props.operatorId
+  }
+
+  get dispensationId() {
+    return this.props.dispensationId
   }
 
   set operatorId(value: UniqueEntityId) {
