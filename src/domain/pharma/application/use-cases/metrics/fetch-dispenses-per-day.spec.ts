@@ -236,18 +236,21 @@ describe('Fetch Dispenses Per Day', () => {
       operatorId: operator.id,
       stockId: stock.id,
       exitType: ExitType.DISPENSATION,
+      dispensationId: dispensation1.id,
     })
 
     const exit2 = makeMedicineExit({
       operatorId: operator.id,
       stockId: stock.id,
       exitType: ExitType.DISPENSATION,
+      dispensationId: dispensation2.id,
     })
 
     const exit3 = makeMedicineExit({
       operatorId: operator.id,
       stockId: stock.id,
       exitType: ExitType.DISPENSATION,
+      dispensationId: dispensation3.id,
     })
 
     await Promise.all([
@@ -259,7 +262,7 @@ describe('Fetch Dispenses Per Day', () => {
     await inMemoryMovimentationRepository.create(
       makeMovimentation({
         quantity: 10,
-        dispensationId: dispensation1.id,
+
         movementTypeId: undefined,
         batchStockId: batchStock.id,
         direction: 'EXIT',
@@ -270,7 +273,6 @@ describe('Fetch Dispenses Per Day', () => {
     await inMemoryMovimentationRepository.create(
       makeMovimentation({
         quantity: 20,
-        dispensationId: dispensation2.id,
         movementTypeId: undefined,
         batchStockId: batchStock.id,
         direction: 'EXIT',
@@ -281,7 +283,6 @@ describe('Fetch Dispenses Per Day', () => {
     await inMemoryMovimentationRepository.create(
       makeMovimentation({
         quantity: 30,
-        dispensationId: dispensation3.id,
         movementTypeId: undefined,
         batchStockId: batchStock.id,
         direction: 'EXIT',

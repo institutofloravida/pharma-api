@@ -20,10 +20,13 @@ import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation
 import { MovimentationRepository } from '../../repositories/movimentation-repository'
 
 interface DispensationMedicineUseCaseRequest {
-  medicineStockId: string;
   patientId: string;
   operatorId: string;
-  batchesStocks: { batchStockId: string, quantity: number }[];
+  medicines: {
+    medicineStockId: string;
+    batchesStocks: { batchStockId: string; quantity: number }[];
+  }[];
+  stockId: string;
   dispensationDate?: Date;
 }
 
@@ -52,78 +55,12 @@ export class DispensationMedicineUseCase {
   ) {}
 
   async execute({
-    medicineStockId,
     patientId,
     operatorId,
-    batchesStocks,
     dispensationDate,
+    medicines,
+    stockId,
   }: DispensationMedicineUseCaseRequest): Promise<DispensationMedicineUseCaseResponse> {
-    const medicineStock =
-      await this.medicinesStockRepository.findById(
-        medicineStockId,
-      )
-    if (!medicineStock) {
-      return left(new MedicineStockNotFoundError(medicineStockId))
-    }
-    const medicineVariant =
-      await this.medicinesVariantsRepository.findById(medicineStock.medicineVariantId.toString())
-    if (!medicineVariant) {
-      return left(new ResourceNotFoundError())
-    }
-    const medicine = await this.medicinesRepository.findById(
-      medicineVariant.medicineId.toString(),
-    )
-    if (!medicine) {
-      return left(new ResourceNotFoundError())
-    }
-
-    let totalQuantityToDispense = 0
-
-    for (const item of batchesStocks) {
-      const batchestock = await this.batchestockskRepository.findById(
-        item.batchStockId,
-      )
-      if (!batchestock) {
-        return left(new ResourceNotFoundError())
-      }
-
-      const batch = await this.batchesRepository.findById(
-        batchestock.batchId.toString(),
-      )
-      if (!batch) {
-        return left(new ResourceNotFoundError())
-      }
-
-      const expirationDate = new Date(batch.expirationDate)
-
-      if (expirationDate <= new Date()) {
-        return left(
-          new ExpiredMedicineDispenseError(batch.code, medicine.content),
-        )
-      }
-
-      if (batchestock.quantity < item.quantity) {
-        return left(
-          new InsufficientQuantityBatchInStockError(
-            medicine.content,
-            batch.code,
-            batchestock.quantity,
-          ),
-        )
-      }
-
-      totalQuantityToDispense += item.quantity
-    }
-
-    if (medicineStock.quantity < totalQuantityToDispense) {
-      return left(
-        new InsufficientQuantityInStockError(
-          medicine.content,
-          medicineStock.quantity,
-        ),
-      )
-    }
-
     const dispensation = Dispensation.create({
       patientId: new UniqueEntityId(patientId),
       dispensationDate,
@@ -132,44 +69,101 @@ export class DispensationMedicineUseCase {
 
     await this.dispensationsMedicinesRepository.create(dispensation)
 
-    for (const item of batchesStocks) {
-      const batchStock = await this.batchestockskRepository.findById(
-        item.batchStockId,
+    const medicineExit = MedicineExit.create({
+      exitDate: dispensationDate,
+      exitType: ExitType.DISPENSATION,
+      operatorId: new UniqueEntityId(operatorId),
+      dispensationId: dispensation.id,
+      stockId: new UniqueEntityId(stockId),
+    })
+
+    await this.medicinesExitsRepository.create(medicineExit)
+
+    for await (const medicineStockToDispensation of medicines) {
+      const medicineStock =
+      await this.medicinesStockRepository.findById(medicineStockToDispensation.medicineStockId)
+      if (!medicineStock) {
+        return left(new MedicineStockNotFoundError(medicineStockToDispensation.medicineStockId))
+      }
+      const medicineVariant = await this.medicinesVariantsRepository.findById(
+        medicineStock.medicineVariantId.toString(),
       )
-      if (!batchStock) {
+      if (!medicineVariant) {
+        return left(new ResourceNotFoundError())
+      }
+      const medicine = await this.medicinesRepository.findById(
+        medicineVariant.medicineId.toString(),
+      )
+      if (!medicine) {
         return left(new ResourceNotFoundError())
       }
 
-      const medicineExit = MedicineExit.create({
-        exitDate: dispensationDate,
-        exitType: ExitType.DISPENSATION,
-        operatorId: new UniqueEntityId(operatorId),
-        stockId: batchStock.stockId,
-      })
+      // const totalQuantityToDispense = 0
 
-      await Promise.all([
-        this.medicinesExitsRepository.create(medicineExit),
-        this.batchestockskRepository.subtract(
-          item.batchStockId.toString(),
-          item.quantity,
-        ),
-        this.medicinesStockRepository.subtract(
-          medicineStock.id.toString(),
-          item.quantity,
-        ),
-      ])
+      for (const batcheStockToDispensation of medicineStockToDispensation.batchesStocks) {
+        const batchestock = await this.batchestockskRepository.findById(
+          batcheStockToDispensation.batchStockId,
+        )
+        if (!batchestock) {
+          return left(new ResourceNotFoundError())
+        }
 
-      const movimentation = Movimentation.create({
-        batchStockId: new UniqueEntityId(item.batchStockId),
-        exitId: medicineExit.id,
-        quantity: item.quantity,
-        direction: 'EXIT',
-        dispensationId: dispensation.id,
-        entryId: undefined,
-        movementTypeId: undefined,
-      })
+        const batch = await this.batchesRepository.findById(
+          batchestock.batchId.toString(),
+        )
+        if (!batch) {
+          return left(new ResourceNotFoundError())
+        }
 
-      await this.movimentationRepository.create(movimentation)
+        const expirationDate = new Date(batch.expirationDate)
+
+        if (expirationDate <= new Date()) {
+          return left(
+            new ExpiredMedicineDispenseError(batch.code, medicine.content),
+          )
+        }
+
+        if (batchestock.quantity < batcheStockToDispensation.quantity) {
+          return left(
+            new InsufficientQuantityBatchInStockError(
+              medicine.content,
+              batch.code,
+              batchestock.quantity,
+            ),
+          )
+        }
+
+        // totalQuantityToDispense += batcheStockToDispensation.quantity
+
+        const batchStock = await this.batchestockskRepository.findById(
+          batcheStockToDispensation.batchStockId,
+        )
+        if (!batchStock) {
+          return left(new ResourceNotFoundError())
+        }
+
+        await Promise.all([
+          this.batchestockskRepository.subtract(
+            batcheStockToDispensation.batchStockId.toString(),
+            batcheStockToDispensation.quantity,
+          ),
+          this.medicinesStockRepository.subtract(
+            medicineStock.id.toString(),
+            batcheStockToDispensation.quantity,
+          ),
+        ])
+
+        const movimentation = Movimentation.create({
+          batchStockId: new UniqueEntityId(batcheStockToDispensation.batchStockId),
+          exitId: medicineExit.id,
+          quantity: batcheStockToDispensation.quantity,
+          direction: 'EXIT',
+          entryId: undefined,
+          movementTypeId: undefined,
+        })
+
+        await this.movimentationRepository.create(movimentation)
+      }
     }
 
     return right({ dispensation })

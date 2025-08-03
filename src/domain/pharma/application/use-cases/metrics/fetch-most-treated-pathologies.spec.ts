@@ -262,17 +262,20 @@ describe('Fetch Most Treated Pathologies', () => {
       exitType: ExitType.DISPENSATION,
       operatorId: operator.id,
       stockId: stock.id,
+      dispensationId: dispensation1.id,
     })
 
     const exit2 = makeMedicineExit({
       exitType: ExitType.DISPENSATION,
       operatorId: operator.id,
       stockId: stock.id,
+      dispensationId: dispensation2.id,
     })
     const exit3 = makeMedicineExit({
       exitType: ExitType.DISPENSATION,
       operatorId: operator.id,
       stockId: stock.id,
+      dispensationId: dispensation3.id,
     })
 
     await Promise.all([
@@ -285,7 +288,7 @@ describe('Fetch Most Treated Pathologies', () => {
       makeMovimentation({
         quantity: 10,
         batchStockId: batchStock.id,
-        dispensationId: dispensation1.id,
+
         movementTypeId: undefined,
         direction: 'EXIT',
         entryId: undefined,
@@ -296,7 +299,7 @@ describe('Fetch Most Treated Pathologies', () => {
       makeMovimentation({
         quantity: 20,
         batchStockId: batchStock.id,
-        dispensationId: dispensation2.id,
+
         movementTypeId: undefined,
         direction: 'EXIT',
         entryId: undefined,
@@ -307,7 +310,7 @@ describe('Fetch Most Treated Pathologies', () => {
       makeMovimentation({
         quantity: 30,
         batchStockId: batchStock.id,
-        dispensationId: dispensation3.id,
+
         movementTypeId: undefined,
         direction: 'EXIT',
         entryId: undefined,

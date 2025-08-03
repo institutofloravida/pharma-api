@@ -1,6 +1,12 @@
-import { IsNotEmpty, IsUUID, IsArray, ValidateNested } from 'class-validator'
-import { Transform, Type } from 'class-transformer'
-import { ApiProperty } from '@nestjs/swagger'
+import {
+  IsNotEmpty,
+  IsUUID,
+  IsArray,
+  ValidateNested,
+  IsOptional,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BatchStockDto {
   @ApiProperty({
@@ -9,32 +15,24 @@ export class BatchStockDto {
   })
   @IsUUID()
   @IsNotEmpty()
-  batchStockId: string
+  batchStockId: string;
 
   @ApiProperty({
-    description: 'Quantidade disponível no lote',
+    description: 'Quantidade a ser dispensada do lote',
     example: 100,
   })
   @IsNotEmpty()
-  quantity: number
+  quantity: number;
 }
 
-export class DispensationDto {
+export class MedicineDispensationDto {
   @ApiProperty({
-    description: 'ID único da variante do medicamento',
+    description: 'ID do estoque da variante do medicamento',
     example: 'f6c1cbe7-9df6-44f1-8c53-9835dbd479e1',
   })
   @IsUUID()
   @IsNotEmpty()
-  medicineStockId: string
-
-  @ApiProperty({
-    description: 'ID único do paciente',
-    example: 'b2c3d4e5-f6a7-48b9-8e1c-2d3456f78901',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  patientId: string
+  medicineStockId: string;
 
   @ApiProperty({
     description: 'Lista de estoques dos lotes envolvidos na dispensação',
@@ -43,13 +41,41 @@ export class DispensationDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BatchStockDto)
-  batchesStocks: BatchStockDto[]
+  batchesStocks: BatchStockDto[];
+}
+
+export class DispensationDto {
+  @ApiProperty({
+    description: 'ID único do paciente',
+    example: 'b2c3d4e5-f6a7-48b9-8e1c-2d3456f78901',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  patientId: string;
 
   @ApiProperty({
-    description: 'Data de dispensação',
-    example: '2025-12-01',
+    description: 'Medicamentos a serem dispensados',
+    type: [MedicineDispensationDto],
   })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MedicineDispensationDto)
+  medicines: MedicineDispensationDto[];
+
+  @ApiProperty({
+    description: 'ID do estoque principal utilizado na dispensação',
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+  })
+  @IsUUID()
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value))
-  dispensationDate: Date
+  stockId: string;
+
+  @ApiProperty({
+    description: 'Data da dispensação (opcional, default para hoje)',
+    example: '2025-12-01',
+    required: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  dispensationDate?: Date;
 }

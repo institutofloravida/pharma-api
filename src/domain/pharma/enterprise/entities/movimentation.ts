@@ -8,7 +8,6 @@ export interface MovimentationProps {
   batchStockId: UniqueEntityId
   quantity: number
   movementTypeId?: UniqueEntityId
-  dispensationId?: UniqueEntityId
   exitId?: UniqueEntityId
   entryId?: UniqueEntityId
   createdAt: Date
@@ -34,10 +33,6 @@ export class Movimentation extends Entity<MovimentationProps> {
     }
     this.props.quantity = value
     this.touch()
-  }
-
-  get dispensationId() {
-    return this.props.dispensationId
   }
 
   get exitId() {
@@ -77,18 +72,6 @@ export class Movimentation extends Entity<MovimentationProps> {
     }
     if (props.direction === 'ENTRY' && !props.entryId) {
       throw new Error('entryId is required for ENTRY direction')
-    }
-
-    if (props.dispensationId) {
-      if (props.movementTypeId) {
-        throw new Error('movementTypeId não deve ser informado para saída tipo DISPENSATION')
-      }
-    }
-
-    if (props.movementTypeId) {
-      if (props.dispensationId) {
-        throw new Error('dispensationId não deve ser informado para saída tipo MOVEMENT_TYPE')
-      }
     }
 
     const movimentation = new Movimentation(

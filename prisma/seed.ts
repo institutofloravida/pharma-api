@@ -1,32 +1,32 @@
-import { hash } from 'bcryptjs'
-import { InstitutionType, OperatorRole, PrismaClient } from './generated'
+import { hash } from 'bcryptjs';
+import { InstitutionType, OperatorRole, PrismaClient } from './generated';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function clearDatabase() {
-  await prisma.movimentation.deleteMany()
-  await prisma.useMedicine.deleteMany()
-  await prisma.exit.deleteMany()
-  await prisma.dispensation.deleteMany()
-  await prisma.medicineEntry.deleteMany()
-  await prisma.batcheStock.deleteMany()
-  await prisma.medicineStock.deleteMany()
-  await prisma.medicineVariant.deleteMany()
-  await prisma.therapeuticClass.deleteMany()
-  await prisma.medicine.deleteMany()
-  await prisma.pharmaceuticalForm.deleteMany()
-  await prisma.unitMeasure.deleteMany()
-  await prisma.pathology.deleteMany()
-  await prisma.batch.deleteMany()
-  await prisma.manufacturer.deleteMany()
-  await prisma.stock.deleteMany()
-  await prisma.operator.deleteMany()
-  await prisma.institution.deleteMany()
-  await prisma.movementType.deleteMany()
+  await prisma.movimentation.deleteMany();
+  await prisma.useMedicine.deleteMany();
+  await prisma.exit.deleteMany();
+  await prisma.dispensation.deleteMany();
+  await prisma.medicineEntry.deleteMany();
+  await prisma.batcheStock.deleteMany();
+  await prisma.medicineStock.deleteMany();
+  await prisma.medicineVariant.deleteMany();
+  await prisma.therapeuticClass.deleteMany();
+  await prisma.medicine.deleteMany();
+  await prisma.pharmaceuticalForm.deleteMany();
+  await prisma.unitMeasure.deleteMany();
+  await prisma.pathology.deleteMany();
+  await prisma.batch.deleteMany();
+  await prisma.manufacturer.deleteMany();
+  await prisma.stock.deleteMany();
+  await prisma.operator.deleteMany();
+  await prisma.institution.deleteMany();
+  await prisma.movementType.deleteMany();
 }
 
 async function main() {
-  await clearDatabase()
+  await clearDatabase();
 
   const institution = await prisma.institution.create({
     data: {
@@ -37,7 +37,7 @@ async function main() {
       type: InstitutionType.ONG,
       description: '',
     },
-  })
+  });
   const institution2 = await prisma.institution.create({
     data: {
       name: 'Ubs - módulo 20',
@@ -47,7 +47,7 @@ async function main() {
       type: InstitutionType.PUBLIC,
       description: '',
     },
-  })
+  });
   const institution3 = await prisma.institution.create({
     data: {
       name: 'Clínica São José',
@@ -57,7 +57,7 @@ async function main() {
       type: InstitutionType.PRIVATE,
       description: '',
     },
-  })
+  });
 
   await prisma.operator.create({
     data: {
@@ -71,7 +71,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.operator.create({
     data: {
@@ -85,7 +85,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.operator.create({
     data: {
@@ -107,7 +107,7 @@ async function main() {
         ],
       },
     },
-  })
+  });
 
   await prisma.operator.create({
     data: {
@@ -129,7 +129,7 @@ async function main() {
         ],
       },
     },
-  })
+  });
 
   await prisma.operator.create({
     data: {
@@ -151,15 +151,15 @@ async function main() {
         ],
       },
     },
-  })
+  });
 
   await prisma.stock.createMany({
     data: [
-      { name: 'stock 01', institutionId: institution.id },
-      { name: 'stock 02', institutionId: institution2.id },
-      { name: 'stock 03', institutionId: institution.id },
+      { name: 'Estoque 01', institutionId: institution.id },
+      { name: 'Estoque 02', institutionId: institution2.id },
+      { name: 'Estoque 03', institutionId: institution.id },
     ],
-  })
+  });
 
   await prisma.manufacturer.createMany({
     data: [
@@ -180,7 +180,7 @@ async function main() {
       },
       {
         name: 'Aché',
-        cnpj: '44444444144',
+        cnpj: '44444444144333',
         description: 'Especializada em medicamentos e suplementos.',
       },
       {
@@ -189,7 +189,7 @@ async function main() {
         description: 'Maior farmacêutica brasileira.',
       },
     ],
-  })
+  });
 
   await prisma.pathology.createMany({
     data: [
@@ -219,39 +219,39 @@ async function main() {
       { name: 'Viroses Respiratórias' },
       { name: 'Candidíase Vaginal' },
     ],
-  })
+  });
 
   const unitMeasureMg = await prisma.unitMeasure.create({
     data: {
       name: 'miligrama',
       acronym: 'mg',
     },
-  })
+  });
 
   const unitMeasureMl = await prisma.unitMeasure.create({
     data: {
       name: 'mililitro',
       acronym: 'ml',
     },
-  })
+  });
 
   const pharmaceuticalFormComprimido = await prisma.pharmaceuticalForm.create({
     data: {
       name: 'Comprimido',
     },
-  })
+  });
 
   const pharmaceuticalFormCapsula = await prisma.pharmaceuticalForm.create({
     data: {
       name: 'Cápsula',
     },
-  })
+  });
 
   const therapeuticClasse01 = await prisma.therapeuticClass.create({
     data: {
       name: 'Analgésicos',
     },
-  })
+  });
 
   const medicine1 = await prisma.medicine.create({
     data: {
@@ -262,17 +262,16 @@ async function main() {
         },
       },
     },
+  });
 
-  })
-
-  await prisma.movementType.createMany(
-    {
-      data: [{
+  await prisma.movementType.createMany({
+    data: [
+      {
         name: 'DOAÇÃO',
         direction: 'ENTRY',
-      }],
-    },
-  )
+      },
+    ],
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -289,13 +288,13 @@ async function main() {
         unitMeasureId: unitMeasureMl.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse02 = await prisma.therapeuticClass.create({
     data: {
       name: 'Anti-inflamatórios',
     },
-  })
+  });
 
   const medicine2 = await prisma.medicine.create({
     data: {
@@ -306,7 +305,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -323,13 +322,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse03 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antibióticos',
     },
-  })
+  });
 
   const medicine3 = await prisma.medicine.create({
     data: {
@@ -340,7 +339,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -357,13 +356,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse04 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antifúngicos',
     },
-  })
+  });
 
   const medicine4 = await prisma.medicine.create({
     data: {
@@ -374,7 +373,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -391,13 +390,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse05 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antivirais',
     },
-  })
+  });
 
   const medicine5 = await prisma.medicine.create({
     data: {
@@ -408,7 +407,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -425,13 +424,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse06 = await prisma.therapeuticClass.create({
     data: {
       name: 'Anti-hipertensivos',
     },
-  })
+  });
 
   const medicine6 = await prisma.medicine.create({
     data: {
@@ -442,7 +441,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -459,13 +458,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse07 = await prisma.therapeuticClass.create({
     data: {
       name: 'Hipoglicemiantes',
     },
-  })
+  });
 
   const medicine7 = await prisma.medicine.create({
     data: {
@@ -476,7 +475,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -493,13 +492,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse08 = await prisma.therapeuticClass.create({
     data: {
       name: 'Anticoagulantes',
     },
-  })
+  });
 
   const medicine8 = await prisma.medicine.create({
     data: {
@@ -510,7 +509,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -527,13 +526,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse09 = await prisma.therapeuticClass.create({
     data: {
       name: 'Ansiolíticos',
     },
-  })
+  });
 
   const medicine9 = await prisma.medicine.create({
     data: {
@@ -544,7 +543,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -561,13 +560,13 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 
   const therapeuticClasse10 = await prisma.therapeuticClass.create({
     data: {
       name: 'Antidepressivos',
     },
-  })
+  });
 
   const medicine10 = await prisma.medicine.create({
     data: {
@@ -578,7 +577,7 @@ async function main() {
         },
       },
     },
-  })
+  });
 
   await prisma.medicineVariant.createMany({
     data: [
@@ -595,15 +594,15 @@ async function main() {
         unitMeasureId: unitMeasureMg.id,
       },
     ],
-  })
+  });
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

@@ -299,9 +299,9 @@ model Dispensation {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime? @updatedAt() @map("updated_at")
 
-  movimentation Movimentation[]
-  patient       Patient         @relation(fields: [patientId], references: [id])
-  operator      Operator        @relation(fields: [operatorId], references: [id])
+  patient  Patient  @relation(fields: [patientId], references: [id])
+  operator Operator @relation(fields: [operatorId], references: [id])
+  exit     Exit?
 
   @@map("dispensations")
 }
@@ -312,17 +312,16 @@ model Movimentation {
   batchStockId   String            @map("batch_stock_id")
   quantity       Int
   movementTypeId String?           @map("movement_type_id")
-  dispensationId String?           @map("dispensation_id")
   exitId         String?           @map("exit_id")
   entryId        String?           @map("entry_id")
   createdAt      DateTime          @default(now()) @map("created_at")
   updatedAt      DateTime?         @updatedAt @map("updated_at")
 
-  entry        MedicineEntry? @relation(fields: [entryId], references: [id])
-  exit         Exit?          @relation(fields: [exitId], references: [id])
-  dispensation Dispensation?  @relation(fields: [dispensationId], references: [id])
-  batchStock   BatcheStock    @relation(fields: [batchStockId], references: [id])
-  movementType MovementType?  @relation(fields: [movementTypeId], references: [id])
+  entry MedicineEntry? @relation(fields: [entryId], references: [id])
+  exit  Exit?          @relation(fields: [exitId], references: [id])
+
+  batchStock   BatcheStock   @relation(fields: [batchStockId], references: [id])
+  movementType MovementType? @relation(fields: [movementTypeId], references: [id])
 
   @@map("movimentation")
 }
@@ -356,10 +355,12 @@ model Exit {
   exitType                 ExitType  @map("exit_type")
   stockId                  String    @map("stock_id")
   destinationInstitutionId String?   @map("destination_institution_id")
+  dispensationId           String?   @unique @map("dispensation_id")
   exitDate                 DateTime  @default(now()) @map("exit_date")
   createdAt                DateTime  @default(now()) @map("created_at")
   updatedAt                DateTime? @updatedAt @map("updated_at")
 
+  dispensation           Dispensation?   @relation(fields: [dispensationId], references: [id])
   destinationInstitution Institution?    @relation(fields: [destinationInstitutionId], references: [id])
   operator               Operator        @relation(fields: [operatorId], references: [id])
   stock                  Stock           @relation(fields: [stockId], references: [id])

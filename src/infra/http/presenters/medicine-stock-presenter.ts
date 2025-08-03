@@ -1,4 +1,4 @@
-import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details'
+import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details';
 
 export class MedicineStockDetailsPresenter {
   static toHTTP(medicineStockDetails: MedicineStockDetails) {
@@ -11,7 +11,8 @@ export class MedicineStockDetailsPresenter {
       pharmaceuticalForm: medicineStockDetails.pharmaceuticalForm,
       unitMeasure: medicineStockDetails.unitMeasure,
       dosage: medicineStockDetails.dosage,
+      complement: medicineStockDetails.complement,
       quantity: medicineStockDetails.quantity,
-    }
+    };
   }
 }

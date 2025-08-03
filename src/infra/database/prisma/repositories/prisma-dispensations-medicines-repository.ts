@@ -1,36 +1,37 @@
-import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository'
+import { DispensationsMedicinesRepository } from '@/domain/pharma/application/repositories/dispensations-medicines-repository';
 import {
   Dispensation,
   type DispensationPerDay,
-} from '@/domain/pharma/enterprise/entities/dispensation'
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma.service'
-import { PrismaDispensationMapper } from '../mappers/prisma-dispensation-mapper'
-import { Meta, type MetaReport } from '@/core/repositories/meta'
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient'
-import { Prisma } from 'prisma/generated'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { MostTreatedPathology } from '@/domain/pharma/enterprise/entities/pathology'
-import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-medicines'
+} from '@/domain/pharma/enterprise/entities/dispensation';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { PrismaDispensationMapper } from '../mappers/prisma-dispensation-mapper';
+import { Meta, type MetaReport } from '@/core/repositories/meta';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { DispensationWithPatient } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-patient';
+import { $Enums, Prisma } from 'prisma/generated';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { MostTreatedPathology } from '@/domain/pharma/enterprise/entities/pathology';
+import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-medicines';
 
 @Injectable()
 export class PrismaDispensationsMedicinesRepository
-implements DispensationsMedicinesRepository {
-  constructor(private prisma: PrismaService) { }
+  implements DispensationsMedicinesRepository
+{
+  constructor(private prisma: PrismaService) {}
 
   async create(dispensation: Dispensation): Promise<void> {
-    const data = PrismaDispensationMapper.toPrisma(dispensation)
+    const data = PrismaDispensationMapper.toPrisma(dispensation);
     await this.prisma.dispensation.create({
       data,
-    })
+    });
   }
 
   async findMany(
     { page }: PaginationParams,
     filters: { patientId?: string; dispensationDate?: Date },
   ): Promise<{ dispensations: DispensationWithPatient[]; meta: Meta }> {
-    const { patientId, dispensationDate } = filters
+    const { patientId, dispensationDate } = filters;
 
     const whereClause: Prisma.DispensationWhereInput = {
       ...(patientId && { patientId: { equals: patientId } }),
@@ -40,9 +41,9 @@ implements DispensationsMedicinesRepository {
           lte: new Date(dispensationDate.setHours(23, 59, 59, 999)), // Fim do dia
         },
       }),
-    }
+    };
 
-    const [dispensations, totalCount] = await this.prisma.$transaction([
+    const [dispensations, totalCount, items] = await this.prisma.$transaction([
       this.prisma.dispensation.findMany({
         where: whereClause,
         take: 10,
@@ -54,7 +55,24 @@ implements DispensationsMedicinesRepository {
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.dispensation.count({ where: whereClause }),
-    ])
+      this.prisma.medicineStock.findMany({
+        distinct: ['id'],
+        where: {
+          batchesStocks: {
+            some: {
+              movimentation: {
+                some: {
+                  exit: {
+                    exitType: $Enums.ExitType.DISPENSATION,
+                    dispensation: whereClause,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
 
     const dispensationsMapped = dispensations.map((dispensation) => {
       return DispensationWithPatient.create({
@@ -64,9 +82,9 @@ implements DispensationsMedicinesRepository {
         operatorId: new UniqueEntityId(dispensation.operator.id),
         patientId: new UniqueEntityId(dispensation.patient.id),
         patient: dispensation.patient.name,
-        items: 1,
-      })
-    })
+        items: items.length,
+      });
+    });
 
     return {
       dispensations: dispensationsMapped,
@@ -74,14 +92,14 @@ implements DispensationsMedicinesRepository {
         page,
         totalCount,
       },
-    }
+    };
   }
 
   async getDispensationMetrics(institutionId: string): Promise<{
     today: { total: number; percentageAboveAverage: number };
     month: { total: number; percentageComparedToLastMonth: number };
   }> {
-    const now = new Date()
+    const now = new Date();
     const startOfMonth = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -90,20 +108,20 @@ implements DispensationsMedicinesRepository {
       0,
       0,
       0,
-    )
+    );
 
-    const today = new Date()
-    const startOfToday = new Date(today.setHours(0, 0, 0, 0))
-    const endOfToday = new Date(today.setHours(23, 59, 59, 999))
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    const endOfToday = new Date(today.setHours(23, 59, 59, 999));
     const [todayCount, monthCount, lastMonthCount] =
       await this.prisma.$transaction([
         this.prisma.dispensation.count({
           where: {
-            movimentation: {
-              some: {
-                batchStock: {
-                  stock: {
-                    institutionId,
+            exit: {
+              stock: {
+                institution: {
+                  id: {
+                    equals: institutionId,
                   },
                 },
               },
@@ -116,11 +134,11 @@ implements DispensationsMedicinesRepository {
         }),
         this.prisma.dispensation.count({
           where: {
-            movimentation: {
-              some: {
-                batchStock: {
-                  stock: {
-                    institutionId,
+            exit: {
+              stock: {
+                institution: {
+                  id: {
+                    equals: institutionId,
                   },
                 },
               },
@@ -132,11 +150,11 @@ implements DispensationsMedicinesRepository {
         }),
         this.prisma.dispensation.count({
           where: {
-            movimentation: {
-              some: {
-                batchStock: {
-                  stock: {
-                    institutionId,
+            exit: {
+              stock: {
+                institution: {
+                  id: {
+                    equals: institutionId,
                   },
                 },
               },
@@ -147,11 +165,9 @@ implements DispensationsMedicinesRepository {
             },
           },
         }),
-      ])
+      ]);
 
-    const averageLastMonth = lastMonthCount > 0
-      ? lastMonthCount / 30
-      : 0
+    const averageLastMonth = lastMonthCount > 0 ? lastMonthCount / 30 : 0;
 
     return {
       today: {
@@ -168,8 +184,114 @@ implements DispensationsMedicinesRepository {
             ? ((monthCount - lastMonthCount) / lastMonthCount) * 100
             : 0,
       },
-    }
+    };
   }
+
+  // async getDispensationsInAPeriod(
+  //   institutionId: string,
+  //   startDate?: Date,
+  //   endDate?: Date,
+  //   patientId?: string,
+  //   operatorId?: string,
+  // ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }> {
+  //   const whereClause: Prisma.DispensationWhereInput = {
+  //     exit: {
+  //       stock: {
+  //         institution: {
+  //           id: {
+  //             equals: institutionId,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     ...(startDate && {
+  //       dispensationDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
+  //     }),
+  //     ...(endDate && {
+  //       dispensationDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
+  //     }),
+  //     ...(patientId && { patientId: { equals: patientId } }),
+  //     ...(operatorId && { operatorId: { equals: operatorId } }),
+  //   };
+
+  //   const [dispensations, totalCount] = await this.prisma.$transaction([
+  //     this.prisma.dispensation.findMany({
+  //       where: whereClause,
+  //       include: {
+  //         operator: { select: { id: true, name: true } },
+  //         patient: { select: { id: true, name: true } },
+  //         exit: {
+  //           select: {
+  //             movimentation: {
+  //               select: {
+  //                 quantity: true,
+  //                 batchStock: {
+  //                   select: {
+  //                     medicineStockId: true,
+  //                     medicineStock: {
+  //                       select: {
+  //                         medicineVariant: {
+  //                           select: {
+  //                             medicine: true,
+  //                             pharmaceuticalForm: true,
+  //                             unitMeasure: true,
+  //                             complement: true,
+  //                           },
+  //                         },
+  //                       },
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //       orderBy: { dispensationDate: 'desc' },
+  //     }),
+  //     this.prisma.dispensation.count({ where: whereClause }),
+  //   ]);
+
+  //   const dispensationsMapped = dispensations.map((dispensation) => {
+  //     return DispensationWithMedicines.create({
+  //       dispensationDate: dispensation.dispensationDate,
+  //       dispensationId: new UniqueEntityId(dispensation.id),
+  //       operator: dispensation.operator.name,
+  //       operatorId: new UniqueEntityId(dispensation.operator.id),
+  //       patientId: new UniqueEntityId(dispensation.patient.id),
+  //       patient: dispensation.patient.name,
+  //       items: 0,
+  //       medicines:
+  //         dispensation.exit?.movimentation.map((movimentation) => {
+  //           return {
+  //             medicineStockId: new UniqueEntityId(
+  //               movimentation.batchStock.medicineStockId,
+  //             ),
+  //             medicine:
+  //               movimentation.batchStock.medicineStock?.medicineVariant.medicine
+  //                 .name ?? '',
+  //             pharmaceuticalForm:
+  //               movimentation.batchStock.medicineStock?.medicineVariant
+  //                 .pharmaceuticalForm.name ?? '',
+  //             unitMeasure:
+  //               movimentation.batchStock.medicineStock?.medicineVariant
+  //                 .unitMeasure.name ?? '',
+  //             complement:
+  //               movimentation.batchStock.medicineStock?.medicineVariant
+  //                 .complement ?? '',
+  //             quantity: movimentation.quantity,
+  //           };
+  //         }) ?? [],
+  //     });
+  //   });
+
+  //   return {
+  //     dispensations: dispensationsMapped,
+  //     meta: {
+  //       totalCount,
+  //     },
+  //   };
+  // }
 
   async getDispensationsInAPeriod(
     institutionId: string,
@@ -178,85 +300,115 @@ implements DispensationsMedicinesRepository {
     patientId?: string,
     operatorId?: string,
   ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }> {
-    const whereClause: Prisma.DispensationWhereInput = {
-      movimentation: {
-        some: {
-          batchStock: {
-            stock: {
-              institutionId,
-            },
-          },
-        },
-      },
-      ...(startDate && { dispensationDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) } }),
-      ...(endDate && { dispensationDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) } }),
-      ...(patientId && { patientId: { equals: patientId } }),
-      ...(operatorId && { operatorId: { equals: operatorId } }),
+    const whereClauses: string[] = ["e.exit_type = 'DISPENSATION'"];
+    const params: any[] = [];
+    let paramIndex = 1;
+
+    if (institutionId) {
+      whereClauses.push(`i.id = $${paramIndex++}`);
+      params.push(institutionId);
+    }
+    if (startDate) {
+      whereClauses.push(`d.dispensation_date >= $${paramIndex++}`);
+      params.push(new Date(startDate.setHours(0, 0, 0, 0)));
+    }
+    if (endDate) {
+      whereClauses.push(`d.dispensation_date <= $${paramIndex++}`);
+      params.push(new Date(endDate.setHours(23, 59, 59, 999)));
+    }
+    if (patientId) {
+      whereClauses.push(`p.id = $${paramIndex++}`);
+      params.push(patientId);
+    }
+    if (operatorId) {
+      whereClauses.push(`o.id = $${paramIndex++}`);
+      params.push(operatorId);
     }
 
-    const [dispensations, totalCount] = await this.prisma.$transaction([
-      this.prisma.dispensation.findMany({
-        where: whereClause,
-        include: {
-          operator: { select: { id: true, name: true } },
-          patient: { select: { id: true, name: true } },
-          movimentation: {
-            select: {
-              quantity: true,
-              batchStock: {
-                select: {
-                  medicineStockId: true,
-                  medicineStock: {
-                    select: {
-                      medicineVariant: {
-                        select: {
-                          medicine: true,
-                          pharmaceuticalForm: true,
-                          unitMeasure: true,
-                          complement: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        orderBy: { dispensationDate: 'desc' },
-      }),
-      this.prisma.dispensation.count({ where: whereClause }),
-    ])
+    const whereSQL =
+      whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
-    const dispensationsMapped = dispensations.map((dispensation) => {
-      return DispensationWithMedicines.create({
-        dispensationDate: dispensation.dispensationDate,
-        dispensationId: new UniqueEntityId(dispensation.id),
-        operator: dispensation.operator.name,
-        operatorId: new UniqueEntityId(dispensation.operator.id),
-        patientId: new UniqueEntityId(dispensation.patient.id),
-        patient: dispensation.patient.name,
-        items: 0,
-        medicines: [],
-        // dispensation.exitRecords.map(exit => {
-        //   return {
-        //     medicineStockId: new UniqueEntityId(exit.medicineStockId),
-        //     medicine: exit.medicineStock.medicineVariant.medicine.name,
-        //     pharmaceuticalForm: exit.medicineStock.medicineVariant.pharmaceuticalForm.name,
-        //     unitMeasure: exit.medicineStock.medicineVariant.unitMeasure.name,
-        //     complement: exit.medicineStock.medicineVariant.complement,
-        //     quantity: exit.quantity,
-        //   }
-        // }),
-      })
-    })
+    const dispensations = await this.prisma.$queryRawUnsafe<any[]>(
+      `
+    SELECT 
+      d.id as "dispensationId",
+      d.dispensation_date as "dispensationDate",
+      o.id as "operatorId",
+      o.name as "operatorName",
+      p.id as "patientId",
+      p.name as "patientName",
+      e.id as "exitId",
+      e.exit_date as "exitDate",
+      s.name as "stockName",
+      COUNT(DISTINCT meds."medicineStockId") as "items",
+      COALESCE(json_agg(
+        json_build_object(
+          'medicineStockId', meds."medicineStockId",
+          'medicine', meds.medicine,
+          'pharmaceuticalForm', meds."pharmaceuticalForm",
+          'unitMeasure', meds."unitMeasure",
+          'complement', meds.complement,
+          'quantity', meds.quantity
+        )
+      ) FILTER (WHERE meds."medicineStockId" IS NOT NULL), '[]') as medicines
+    FROM dispensations d
+    INNER JOIN "exits" e ON e.dispensation_id = d.id
+    INNER JOIN operators o ON o.id = e.operator_id
+    INNER JOIN patients p ON p.id = d.patient_id
+    INNER JOIN stocks s ON s.id = e.stock_id
+    INNER JOIN institutions i ON i.id = s.institution_id
+    LEFT JOIN LATERAL (
+      SELECT
+        bs.medicine_stock_id AS "medicineStockId",
+        m2.name AS medicine,
+        pf.name AS "pharmaceuticalForm",
+        um.name AS "unitMeasure",
+        mv.complement AS complement,
+        SUM(mtn.quantity) AS quantity
+      FROM movimentation mtn
+      INNER JOIN batches_stocks bs ON bs.id = mtn.batch_stock_id
+      INNER JOIN medicines_stocks ms ON ms.id = bs.medicine_stock_id
+      INNER JOIN medicines_variants mv ON mv.id = ms.medicine_variant_id
+      INNER JOIN medicines m2 ON m2.id = mv.medicine_id
+      INNER JOIN pharmaceutical_forms pf ON pf.id = mv.pharmaceutical_form_id
+      INNER JOIN unit_measures um ON um.id = mv.unit_measure_id
+      WHERE mtn.exit_id = e.id
+      GROUP BY bs.medicine_stock_id, m2.name, pf.name, um.name, mv.complement
+    ) meds ON TRUE
+    ${whereSQL}
+    GROUP BY d.id, d.dispensation_date, o.id, o.name, p.id, p.name, e.id, e.exit_date, s.name
+    ORDER BY d.dispensation_date DESC
+    `,
+      ...params,
+    );
+
+    const dispensationsMapped: DispensationWithMedicines[] = dispensations.map(
+      (row) =>
+        DispensationWithMedicines.create({
+          dispensationDate: row.dispensationDate,
+          dispensationId: new UniqueEntityId(row.dispensationId),
+          operator: row.operatorName,
+          operatorId: new UniqueEntityId(row.operatorId),
+          patientId: new UniqueEntityId(row.patientId),
+          patient: row.patientName,
+          items: Number(row.items),
+          medicines: (row.medicines as any[]).map((med) => ({
+            medicineStockId: new UniqueEntityId(med.medicineStockId),
+            medicine: med.medicine,
+            pharmaceuticalForm: med.pharmaceuticalForm,
+            unitMeasure: med.unitMeasure,
+            complement: med.complement,
+            quantity: med.quantity,
+          })),
+        }),
+    );
 
     return {
       dispensations: dispensationsMapped,
       meta: {
-        totalCount,
+        totalCount: dispensations.length,
       },
-    }
+    };
   }
 
   async fetchDispensesPerDay(
@@ -265,21 +417,29 @@ implements DispensationsMedicinesRepository {
     endDate: Date,
   ): Promise<{ dispenses: DispensationPerDay[]; meta: MetaReport }> {
     const whereClause: Prisma.DispensationWhereInput = {
-      movimentation: {
-        some: {
-          batchStock: {
-            stock: {
-              institutionId: { equals: institutionId },
+      exit: {
+        stock: {
+          institution: {
+            id: {
+              equals: institutionId,
             },
           },
         },
       },
-      dispensationDate: { gte: startDate, lte: endDate },
-    }
+      dispensationDate: { gte: new Date(startDate), lte: new Date(endDate) },
+    };
 
     const totalCount = await this.prisma.dispensation.count({
-      where: whereClause,
-    })
+      where: {
+        exit: {
+          stock: {
+            institutionId: {
+              equals: institutionId,
+            },
+          },
+        },
+      },
+    });
     const dispensesGroupedByDay = await this.prisma.dispensation.groupBy({
       by: ['dispensationDate'],
       where: whereClause,
@@ -289,21 +449,21 @@ implements DispensationsMedicinesRepository {
       orderBy: {
         dispensationDate: 'asc',
       },
-    })
+    });
 
     const dispensesPerDay: DispensationPerDay[] = dispensesGroupedByDay.map(
       (group) => ({
         dispensationDate: group.dispensationDate,
         total: group._count._all,
       }),
-    )
+    );
 
     return {
       dispenses: dispensesPerDay,
       meta: {
         totalCount,
       },
-    }
+    };
   }
 
   async fetchMostTreatedPathologies(
@@ -311,7 +471,7 @@ implements DispensationsMedicinesRepository {
   ): Promise<{ mostTreatedPathologies: MostTreatedPathology[] }> {
     const whereClause = institutionId
       ? `WHERE s."institution_id" = '${institutionId}'`
-      : ''
+      : '';
     const pathologies = await this.prisma.$queryRawUnsafe<
       Array<{ pathologyId: string; pathologyName: string; total: number }>
     >(
@@ -323,18 +483,19 @@ implements DispensationsMedicinesRepository {
       JOIN "_PathologyToPatient" pp ON pp."A" = p.id
       JOIN "patients" pa ON pa.id = pp."B"
       JOIN "dispensations" d ON d."patient_id" = pa.id
-      JOIN "movimentation" m ON m."dispensation_id" = d.id
+      JOIN "exits" e ON e."dispensation_id" = d.id
+      JOIN "movimentation" m ON m."exit_id" = e.id
       JOIN "batches_stocks" bs ON bs.id = m."batch_stock_id"
       JOIN "stocks" s ON s.id = bs."stock_id"
       ${whereClause}
       GROUP BY p.id, p.name
       ORDER BY total DESC`,
-    )
+    );
 
     const totalDispensations = pathologies.reduce(
       (sum, p) => sum + Number(p.total),
       0,
-    )
+    );
     const top4 = pathologies.slice(0, 4).map((p) => ({
       ...p,
       total: Number(p.total),
@@ -342,25 +503,23 @@ implements DispensationsMedicinesRepository {
         totalDispensations > 0
           ? (Number(p.total) / totalDispensations) * 100
           : 0,
-    }))
+    }));
     const othersTotal = pathologies
       .slice(4)
-      .reduce((sum, p) => sum + Number(p.total), 0)
+      .reduce((sum, p) => sum + Number(p.total), 0);
     const othersPercentage =
-      totalDispensations > 0
-        ? (othersTotal / totalDispensations) * 100
-        : 0
+      totalDispensations > 0 ? (othersTotal / totalDispensations) * 100 : 0;
 
-    const result: MostTreatedPathology[] = [...top4]
+    const result: MostTreatedPathology[] = [...top4];
     if (othersTotal > 0) {
       result.push({
         pathologyId: 'others',
         pathologyName: 'Outros',
         total: othersTotal,
         percentage: othersPercentage,
-      })
+      });
     }
 
-    return { mostTreatedPathologies: result }
+    return { mostTreatedPathologies: result };
   }
 }
