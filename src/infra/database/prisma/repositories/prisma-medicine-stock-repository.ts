@@ -1,26 +1,27 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma.service'
-import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository'
-import { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock'
-import { PrismaMedicineStockMapper } from '../mappers/prisma-medicine-stock-mapper'
-import { Meta } from '@/core/repositories/meta'
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details'
-import { Prisma } from 'prisma/generated'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory'
-import { MedicineStockInventoryDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-inventory-details'
-import { PrismaBatchMapper } from '../mappers/prisma-batch-mapper'
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { MedicinesStockRepository } from '@/domain/pharma/application/repositories/medicines-stock-repository';
+import { MedicineStock } from '@/domain/pharma/enterprise/entities/medicine-stock';
+import { PrismaMedicineStockMapper } from '../mappers/prisma-medicine-stock-mapper';
+import { Meta } from '@/core/repositories/meta';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { MedicineStockDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-details';
+import { Prisma } from 'prisma/generated';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { MedicineStockInventory } from '@/domain/pharma/enterprise/entities/medicine-stock-inventory';
+import { MedicineStockInventoryDetails } from '@/domain/pharma/enterprise/entities/value-objects/medicine-stock-inventory-details';
+import { PrismaBatchMapper } from '../mappers/prisma-batch-mapper';
 
 @Injectable()
 export class PrismaMedicinesStockRepository
-implements MedicinesStockRepository {
+  implements MedicinesStockRepository
+{
   constructor(private prisma: PrismaService) {}
 
   async create(medicineStock: MedicineStock): Promise<void> {
     await this.prisma.medicineStock.create({
       data: PrismaMedicineStockMapper.toPrisma(medicineStock),
-    })
+    });
   }
 
   async save(medicinestock: MedicineStock): Promise<void | null> {
@@ -29,10 +30,10 @@ implements MedicinesStockRepository {
         id: medicinestock.id.toString(),
       },
       data: PrismaMedicineStockMapper.toPrisma(medicinestock),
-    })
+    });
 
     if (!medicineStock) {
-      return null
+      return null;
     }
   }
 
@@ -51,7 +52,7 @@ implements MedicinesStockRepository {
           },
         },
       },
-    })
+    });
   }
 
   async replenish(
@@ -72,13 +73,13 @@ implements MedicinesStockRepository {
           },
         },
       },
-    })
+    });
 
     if (!medicineStock) {
-      return null
+      return null;
     }
 
-    return PrismaMedicineStockMapper.toDomain(medicineStock)
+    return PrismaMedicineStockMapper.toDomain(medicineStock);
   }
 
   async subtract(
@@ -99,13 +100,13 @@ implements MedicinesStockRepository {
           },
         },
       },
-    })
+    });
 
     if (!medicineStock) {
-      return null
+      return null;
     }
 
-    return PrismaMedicineStockMapper.toDomain(medicineStock)
+    return PrismaMedicineStockMapper.toDomain(medicineStock);
   }
 
   async findById(id: string): Promise<MedicineStock | null> {
@@ -120,13 +121,13 @@ implements MedicinesStockRepository {
           },
         },
       },
-    })
+    });
 
     if (!medicineStock) {
-      return null
+      return null;
     }
 
-    return PrismaMedicineStockMapper.toDomain(medicineStock)
+    return PrismaMedicineStockMapper.toDomain(medicineStock);
   }
 
   async findByMedicineVariantIdAndStockId(
@@ -145,13 +146,13 @@ implements MedicinesStockRepository {
           },
         },
       },
-    })
+    });
 
     if (!medicineStock) {
-      return null
+      return null;
     }
 
-    return PrismaMedicineStockMapper.toDomain(medicineStock)
+    return PrismaMedicineStockMapper.toDomain(medicineStock);
   }
 
   async medicineStockExists(
@@ -162,20 +163,20 @@ implements MedicinesStockRepository {
         medicineVariantId: medicineStock.medicineVariantId.toString(),
         stockId: medicineStock.stockId.toString(),
       },
-    })
+    });
 
     if (medicinesStock.length > 1) {
-      return null
+      return null;
     }
 
-    return medicineStock
+    return medicineStock;
   }
 
   async findMany(
     { page }: PaginationParams,
     filters: { stockId: string; medicineName?: string },
   ): Promise<{ medicinesStock: MedicineStockDetails[]; meta: Meta }> {
-    const { stockId, medicineName } = filters
+    const { stockId, medicineName } = filters;
 
     const whereClause: Prisma.MedicineStockWhereInput = {
       stockId,
@@ -187,7 +188,7 @@ implements MedicinesStockRepository {
           },
         },
       },
-    }
+    };
 
     const [medicinesStock, totalCount] = await this.prisma.$transaction([
       this.prisma.medicineStock.findMany({
@@ -208,7 +209,7 @@ implements MedicinesStockRepository {
       this.prisma.medicineStock.count({
         where: whereClause,
       }),
-    ])
+    ]);
 
     const medicinesStockMapped = await Promise.all(
       medicinesStock.map(async (medicineStock) => {
@@ -229,12 +230,13 @@ implements MedicinesStockRepository {
             _sum: {
               currentQuantity: true,
             },
-          })
+          });
 
         return MedicineStockDetails.create({
           id: new UniqueEntityId(medicineStock.id),
           dosage: medicineStock.medicineVariant.dosage,
           medicine: medicineStock.medicineVariant.medicine.name,
+          complement: medicineStock.medicineVariant.complement ?? undefined,
           pharmaceuticalForm:
             medicineStock.medicineVariant.pharmaceuticalForm.name,
           stock: medicineStock.stock.name,
@@ -253,9 +255,9 @@ implements MedicinesStockRepository {
           stockId: new UniqueEntityId(medicineStock.stockId),
           createdAt: medicineStock.createdAt,
           updatedAt: medicineStock.updatedAt,
-        })
+        });
       }),
-    )
+    );
 
     return {
       medicinesStock: medicinesStockMapped,
@@ -263,7 +265,7 @@ implements MedicinesStockRepository {
         page,
         totalCount,
       },
-    }
+    };
   }
 
   async fetchInventory(
@@ -277,7 +279,7 @@ implements MedicinesStockRepository {
       isLowStock?: boolean;
     },
   ): Promise<{ inventory: MedicineStockInventory[]; meta: Meta }> {
-    const { isLowStock, medicineName, stockId, therapeuticClasses } = filters
+    const { isLowStock, medicineName, stockId, therapeuticClasses } = filters;
     const whereClause: Prisma.MedicineStockWhereInput = {
       stock: {
         institution: {
@@ -305,7 +307,7 @@ implements MedicinesStockRepository {
           }),
         },
       },
-    }
+    };
 
     const [inventory, totalCount] = await this.prisma.$transaction([
       this.prisma.medicineStock.findMany({
@@ -342,7 +344,7 @@ implements MedicinesStockRepository {
       this.prisma.medicineStock.count({
         where: whereClause,
       }),
-    ])
+    ]);
 
     const inventoryMaped = await Promise.all(
       inventory.map(async (medicineStock) => {
@@ -363,7 +365,7 @@ implements MedicinesStockRepository {
             _sum: {
               currentQuantity: true,
             },
-          })
+          });
         return MedicineStockInventory.create({
           stockId: new UniqueEntityId(medicineStock.id),
           minimumLevel: medicineStock.minimumLevel,
@@ -386,9 +388,9 @@ implements MedicinesStockRepository {
           batchesStockIds: medicineStock.batchesStocks.map(
             (item) => new UniqueEntityId(item.id),
           ),
-        })
+        });
       }),
-    )
+    );
 
     return {
       inventory: inventoryMaped,
@@ -396,7 +398,7 @@ implements MedicinesStockRepository {
         page,
         totalCount,
       },
-    }
+    };
   }
 
   async getInventoryByMedicineStockId(
@@ -443,7 +445,7 @@ implements MedicinesStockRepository {
           },
         },
       },
-    })
+    });
 
     const [medicineStockTotalCurrent, medicineStockUnavailable] =
       await this.prisma.$transaction([
@@ -470,20 +472,20 @@ implements MedicinesStockRepository {
             currentQuantity: true,
           },
         }),
-      ])
+      ]);
     const totalCurrent = medicineStockTotalCurrent._sum.currentQuantity
       ? medicineStockTotalCurrent._sum.currentQuantity
-      : 0
+      : 0;
     const unavailable = medicineStockUnavailable._sum.currentQuantity
       ? medicineStockUnavailable._sum.currentQuantity
-      : 0
+      : 0;
 
     if (!inventory) {
-      return null
+      return null;
     }
 
     const batchesStock = inventory.batchesStocks.map((batchStock) => {
-      const batch = PrismaBatchMapper.toDomain(batchStock.batch)
+      const batch = PrismaBatchMapper.toDomain(batchStock.batch);
 
       return {
         id: new UniqueEntityId(batchStock.id),
@@ -494,8 +496,8 @@ implements MedicinesStockRepository {
         manufacturer: batchStock.batch.manufacturer.name,
         isCloseToExpiration: batch.isCloseToExpiration(),
         isExpired: batch.isExpired(),
-      }
-    })
+      };
+    });
 
     return MedicineStockInventoryDetails.create({
       medicineStockId: new UniqueEntityId(inventory.id),
@@ -511,12 +513,10 @@ implements MedicinesStockRepository {
         unavailable,
       },
       batchesStock,
-    })
+    });
   }
 
-  async getInventoryMetrics(
-    institutionId: string,
-  ): Promise<{
+  async getInventoryMetrics(institutionId: string): Promise<{
     quantity: {
       totalCurrent: number;
       available: number;
@@ -525,78 +525,81 @@ implements MedicinesStockRepository {
       expired: number;
     };
   }> {
-    const [totalCurrent, available, zero] =
-      await this.prisma.$transaction([
-        this.prisma.medicineStock.aggregate({
-          where: {
-            stock: {
-              institution: {
-                id: institutionId,
-              },
+    const [totalCurrent, available, zero] = await this.prisma.$transaction([
+      this.prisma.medicineStock.aggregate({
+        where: {
+          stock: {
+            institution: {
+              id: institutionId,
             },
-            currentQuantity: { gt: 0 },
           },
-          _sum: {
-            currentQuantity: true,
-          },
-        }),
-        this.prisma.batcheStock.aggregate({
-          where: {
-            stock: {
-              institution: {
-                id: institutionId,
-              },
+          currentQuantity: { gt: 0 },
+        },
+        _sum: {
+          currentQuantity: true,
+        },
+      }),
+      this.prisma.batcheStock.aggregate({
+        where: {
+          stock: {
+            institution: {
+              id: institutionId,
             },
-            batch: {
-              expirationDate: {
-                gt: new Date(),
-              },
+          },
+          batch: {
+            expirationDate: {
+              gt: new Date(),
             },
-            currentQuantity: { gt: 0 },
           },
-          _sum: {
-            currentQuantity: true,
-          },
-        }),
-        this.prisma.medicineStock.count({
-          where: {
-            stock: {
-              institution: {
-                id: institutionId,
-              },
+          currentQuantity: { gt: 0 },
+        },
+        _sum: {
+          currentQuantity: true,
+        },
+      }),
+      this.prisma.medicineStock.count({
+        where: {
+          stock: {
+            institution: {
+              id: institutionId,
             },
-            currentQuantity: 0,
           },
-        }),
-        this.prisma.batcheStock.aggregate({
-          where: {
-            stock: {
-              institution: {
-                id: institutionId,
-              },
+          currentQuantity: 0,
+        },
+      }),
+      this.prisma.batcheStock.aggregate({
+        where: {
+          stock: {
+            institution: {
+              id: institutionId,
             },
-            batch: {
-              expirationDate: {
-                gt: new Date(),
-              },
+          },
+          batch: {
+            expirationDate: {
+              gt: new Date(),
             },
-            currentQuantity: { gt: 0 },
           },
-          _sum: {
-            currentQuantity: true,
-          },
-        }),
-      ])
+          currentQuantity: { gt: 0 },
+        },
+        _sum: {
+          currentQuantity: true,
+        },
+      }),
+    ]);
 
     return {
       quantity: {
         totalCurrent: totalCurrent._sum.currentQuantity ?? 0,
         available: available._sum.currentQuantity ?? 0,
-        unavailable: (totalCurrent._sum.currentQuantity ?? 0) - (available._sum.currentQuantity ?? 0),
+        unavailable:
+          (totalCurrent._sum.currentQuantity ?? 0) -
+          (available._sum.currentQuantity ?? 0),
         zero,
-        expired: (totalCurrent._sum.currentQuantity ?? 0) - (available._sum.currentQuantity ?? 0),
+        expired:
+          (totalCurrent._sum.currentQuantity ?? 0) -
+          (available._sum.currentQuantity ?? 0),
       },
-    }
+    };
   }
 
   async fetchAll(): Promise<{ medicinesStock: MedicineStock[] }> {
@@ -608,17 +611,17 @@ implements MedicinesStockRepository {
           },
         },
       },
-    })
+    });
 
-    const medicinesStockMapped = medicinesStock.map(item => {
+    const medicinesStockMapped = medicinesStock.map((item) => {
       return PrismaMedicineStockMapper.toDomain({
         ...item,
         batchesStocks: item.batchesStocks,
-      })
-    })
+      });
+    });
 
     return {
       medicinesStock: medicinesStockMapped,
-    }
+    };
   }
 }

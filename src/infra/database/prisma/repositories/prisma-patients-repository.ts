@@ -1,35 +1,36 @@
-import { Meta } from '@/core/repositories/meta'
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { PatientsRepository } from '@/domain/pharma/application/repositories/patients-repository'
-import { Patient } from '@/domain/pharma/enterprise/entities/patient'
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma.service'
-import { PrismaPatientMapper } from '../mappers/prisma-patient-mapper'
-import { PatientDetails } from '@/domain/pharma/enterprise/entities/value-objects/patient-details'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { PrismaPathologyMapper } from '../mappers/prisma-pathology-mapper'
+import { Meta } from '@/core/repositories/meta';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { PatientsRepository } from '@/domain/pharma/application/repositories/patients-repository';
+import { Patient } from '@/domain/pharma/enterprise/entities/patient';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { PrismaPatientMapper } from '../mappers/prisma-patient-mapper';
+import { PatientDetails } from '@/domain/pharma/enterprise/entities/value-objects/patient-details';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { PrismaPathologyMapper } from '../mappers/prisma-pathology-mapper';
+import type { contains } from 'class-validator';
 
 @Injectable()
 export class PrismaPatientsRepository implements PatientsRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(patient: Patient): Promise<void> {
-    const patientMapped = PrismaPatientMapper.toPrisma(patient)
+    const patientMapped = PrismaPatientMapper.toPrisma(patient);
 
     await this.prisma.patient.create({
       data: patientMapped,
-    })
+    });
   }
 
   async save(patient: Patient): Promise<void> {
-    const patientMapped = PrismaPatientMapper.toPrisma(patient)
+    const patientMapped = PrismaPatientMapper.toPrisma(patient);
 
     await this.prisma.patient.update({
       data: patientMapped,
       where: {
         id: patient.id.toString(),
       },
-    })
+    });
   }
 
   async savePathologies(
@@ -39,13 +40,13 @@ export class PrismaPatientsRepository implements PatientsRepository {
     const patient = await this.prisma.patient.findUnique({
       where: { id: patientId },
       select: { pathologies: { select: { id: true } } },
-    })
+    });
 
-    const currentIds = patient?.pathologies.map((p) => p.id) ?? []
+    const currentIds = patient?.pathologies.map((p) => p.id) ?? [];
 
     const disconnectIds = currentIds.filter(
       (id) => !pathologiesIds.includes(id),
-    )
+    );
 
     await this.prisma.patient.update({
       where: { id: patientId },
@@ -55,7 +56,7 @@ export class PrismaPatientsRepository implements PatientsRepository {
           disconnect: disconnectIds.map((id) => ({ id })),
         },
       },
-    })
+    });
   }
 
   async findById(id: string): Promise<Patient | null> {
@@ -70,13 +71,13 @@ export class PrismaPatientsRepository implements PatientsRepository {
           },
         },
       },
-    })
+    });
 
     if (!patient) {
-      return null
+      return null;
     }
 
-    return PrismaPatientMapper.toDomain(patient)
+    return PrismaPatientMapper.toDomain(patient);
   }
 
   async findByIdWithDetails(id: string): Promise<PatientDetails | null> {
@@ -95,15 +96,15 @@ export class PrismaPatientsRepository implements PatientsRepository {
         },
         address: true,
       },
-    })
+    });
 
     if (!patient || !patient.address) {
-      return null
+      return null;
     }
 
     const pathologiesMapped = patient.pathologies.map(
       PrismaPathologyMapper.toDomain,
-    )
+    );
 
     const patientDetails = PatientDetails.create({
       patientId: new UniqueEntityId(patient.id),
@@ -127,9 +128,9 @@ export class PrismaPatientsRepository implements PatientsRepository {
         zipCode: patient.address.zipCode,
         id: new UniqueEntityId(patient.address.id),
       },
-    })
+    });
 
-    return patientDetails
+    return patientDetails;
   }
 
   async findByCpf(cpf: string): Promise<Patient | null> {
@@ -144,13 +145,13 @@ export class PrismaPatientsRepository implements PatientsRepository {
           },
         },
       },
-    })
+    });
 
     if (!patient) {
-      return null
+      return null;
     }
 
-    return PrismaPatientMapper.toDomain(patient)
+    return PrismaPatientMapper.toDomain(patient);
   }
 
   async findBySus(sus: string): Promise<Patient | null> {
@@ -165,13 +166,13 @@ export class PrismaPatientsRepository implements PatientsRepository {
           },
         },
       },
-    })
+    });
 
     if (!patient) {
-      return null
+      return null;
     }
 
-    return PrismaPatientMapper.toDomain(patient)
+    return PrismaPatientMapper.toDomain(patient);
   }
 
   async findMany(
@@ -186,17 +187,44 @@ export class PrismaPatientsRepository implements PatientsRepository {
     },
   ): Promise<{ patients: Patient[]; meta: Meta }> {
     const { birthDate, cpf, generalRegistration, name, pathologyId, sus } =
-      filters
+      filters;
 
     const [patients, patientsTotalCount] = await Promise.all([
       await this.prisma.patient.findMany({
         where: {
-          name: {
-            contains: name ?? '',
-            mode: 'insensitive',
-          },
+          ...(name &&
+            !sus && {
+              OR: [
+                {
+                  name: {
+                    contains: name,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  sus: {
+                    contains: name,
+                    mode: 'insensitive',
+                  },
+                },
+              ],
+            }),
+
+          // OR: [
+          //   {
+          //     sus: {
+          //       contains: name ?? '',
+          //       mode: 'insensitive',
+          //     },
+          //   },
+          // ],
           ...(cpf && { cpf }),
-          ...(sus && { sus }),
+          ...(sus && {
+            sus: {
+              contains: (sus || name) ?? '',
+              mode: 'insensitive',
+            },
+          }),
           ...(generalRegistration && { generalRegistration }),
           ...(birthDate && {
             birthDate: { gte: new Date(birthDate), lte: new Date(birthDate) },
@@ -233,18 +261,18 @@ export class PrismaPatientsRepository implements PatientsRepository {
           }),
         },
       }),
-    ])
+    ]);
 
     const patientsPaginated = patients.map((item) =>
       PrismaPatientMapper.toDomain(item),
-    )
+    );
     return {
       patients: patientsPaginated,
       meta: {
         page,
         totalCount: patientsTotalCount,
       },
-    }
+    };
   }
 
   async getPatientsMetrics(
@@ -261,11 +289,11 @@ export class PrismaPatientsRepository implements PatientsRepository {
         distinct: ['patientId'],
         select: { patientId: true },
       }),
-    ])
+    ]);
 
     return {
       total,
       receiveMonth: receiveMonth.length,
-    }
+    };
   }
 }
