@@ -1,24 +1,24 @@
-import { MetaReport } from '@/core/repositories/meta'
-import { MovimentationRepository } from '@/domain/pharma/application/repositories/movimentation-repository'
-import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
-import { MovementDirection } from '@/domain/pharma/enterprise/entities/movement-type'
-import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation'
-import { MovimentationDetails } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details'
-import { Injectable } from '@nestjs/common'
-import { PrismaMovimentationMapper } from '../mappers/prisma-movimentation-mapper'
-import { PrismaService } from '../prisma.service'
-import { $Enums, type Prisma } from 'prisma/generated'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { MetaReport } from "@/core/repositories/meta";
+import { MovimentationRepository } from "@/domain/pharma/application/repositories/movimentation-repository";
+import { ExitType } from "@/domain/pharma/enterprise/entities/exit";
+import { MovementDirection } from "@/domain/pharma/enterprise/entities/movement-type";
+import { Movimentation } from "@/domain/pharma/enterprise/entities/movimentation";
+import { MovimentationDetails } from "@/domain/pharma/enterprise/entities/value-objects/movimentation-details";
+import { Injectable } from "@nestjs/common";
+import { PrismaMovimentationMapper } from "../mappers/prisma-movimentation-mapper";
+import { PrismaService } from "../prisma.service";
+import { $Enums, type Prisma } from "prisma/generated";
+import { UniqueEntityId } from "@/core/entities/unique-entity-id";
 
 @Injectable()
 export class PrismaMovimentationRepository implements MovimentationRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(movimentation: Movimentation): Promise<void> {
-    const data = PrismaMovimentationMapper.toPrisma(movimentation)
+    const data = PrismaMovimentationMapper.toPrisma(movimentation);
     await this.prisma.movimentation.create({
       data,
-    })
+    });
   }
 
   async fetchMovimentation(filters: {
@@ -34,8 +34,8 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
     quantity?: number;
     movementTypeId?: string;
     direction?: MovementDirection;
-    exitId?: string,
-    entryId?: string,
+    exitId?: string;
+    entryId?: string;
     exitType?: ExitType;
   }): Promise<{ movimentation: MovimentationDetails[]; meta: MetaReport }> {
     const {
@@ -54,8 +54,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       stockId,
       entryId,
       exitId,
-
-    } = filters
+    } = filters;
 
     const whereClause: Prisma.MovimentationWhereInput = {
       ...(exitId && {
@@ -98,7 +97,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           },
         }),
       },
-      ...(direction === 'EXIT'
+      ...(direction === "EXIT"
         ? {
             exit: {
               ...((startDate || endDate) && {
@@ -106,7 +105,9 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
                   exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
                 }),
                 ...(endDate && {
-                  exitDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
+                  exitDate: {
+                    lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                  },
                 }),
               }),
               ...(exitType && {
@@ -114,32 +115,36 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
               }),
             },
           }
-        : direction === 'ENTRY'
-          ? {
-              ...((startDate || endDate) && {
-                entry: {
-
-                  ...(startDate && {
-                    entryDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
-                  }),
-                  ...(endDate && {
-                    entryDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
-                  }),
-
-                },
-              }),
-            }
-          : {}),
+        : direction === "ENTRY"
+        ? {
+            ...((startDate || endDate) && {
+              entry: {
+                ...(startDate && {
+                  entryDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
+                }),
+                ...(endDate && {
+                  entryDate: {
+                    lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                  },
+                }),
+              },
+            }),
+          }
+        : {}),
       ...(!direction && (startDate || endDate)
         ? {
             OR: [
               {
                 entry: {
                   ...(startDate && {
-                    entryDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
+                    entryDate: {
+                      gte: new Date(startDate.setHours(0, 0, 0, 0)),
+                    },
                   }),
                   ...(endDate && {
-                    entryDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
+                    entryDate: {
+                      lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                    },
                   }),
                 },
               },
@@ -149,7 +154,9 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
                     exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
                   }),
                   ...(endDate && {
-                    exitDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
+                    exitDate: {
+                      lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                    },
                   }),
                 },
               },
@@ -163,7 +170,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       ...(operatorId && {
         operatorId: { equals: operatorId },
       }),
-    }
+    };
 
     const [medicinesExits, totalCount] = await this.prisma.$transaction([
       this.prisma.movimentation.findMany({
@@ -214,67 +221,71 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           movementType: {
             select: { name: true },
           },
-
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
       }),
       this.prisma.movimentation.count({
         where: whereClause,
       }),
-    ])
+    ]);
 
     const movimentationMapped = medicinesExits.map((movimentation) => {
       return MovimentationDetails.create({
-        direction: 'EXIT',
-        medicineStockId: new UniqueEntityId(movimentation.batchStock.medicineStockId),
+        direction: movimentation.direction,
+        medicineStockId: new UniqueEntityId(
+          movimentation.batchStock.medicineStockId
+        ),
         batchStockId: new UniqueEntityId(movimentation.batchStockId),
         batchCode: movimentation.batchStock.batch.code,
         movementDate: movimentation.createdAt,
         exitType: movimentation.exit?.exitType
           ? ExitType[movimentation.exit.exitType]
           : undefined,
-        operator: movimentation.direction === 'ENTRY'
-          ? (movimentation.entry?.operator.name ?? '')
-          : (movimentation.exit?.operator.name ?? ''),
+        operator:
+          movimentation.direction === "ENTRY"
+            ? movimentation.entry?.operator.name ?? ""
+            : movimentation.exit?.operator.name ?? "",
         movementType:
-          movimentation.direction === 'ENTRY'
-            ? (movimentation.movementType?.name ?? '')
-            : (movimentation.exit?.exitType === 'MOVEMENT_TYPE'
-                ? (movimentation.movementType?.name ?? '')
-                : (movimentation.exit?.exitType ?? '')),
+          movimentation.direction === "ENTRY"
+            ? movimentation.movementType?.name ?? ""
+            : movimentation.exit?.exitType === "MOVEMENT_TYPE"
+            ? movimentation.movementType?.name ?? ""
+            : movimentation.exit?.exitType ?? "",
         stock: movimentation.batchStock.stock.name,
         medicine: movimentation.batchStock.medicineVariant.medicine.name,
         dosage: movimentation.batchStock.medicineVariant.dosage,
         pharmaceuticalForm:
           movimentation.batchStock.medicineVariant.pharmaceuticalForm.name,
-        unitMeasure: movimentation.batchStock.medicineVariant.unitMeasure.acronym,
+        unitMeasure:
+          movimentation.batchStock.medicineVariant.unitMeasure.acronym,
         quantity: movimentation.quantity,
         medicineId: new UniqueEntityId(
-          movimentation.batchStock.medicineVariant.medicine.id,
+          movimentation.batchStock.medicineVariant.medicine.id
         ),
         medicineVariantId: new UniqueEntityId(
-          movimentation.batchStock.medicineVariant.id,
+          movimentation.batchStock.medicineVariant.id
         ),
-        operatorId: movimentation.direction === 'ENTRY'
-          ? (new UniqueEntityId(movimentation.entry?.operator.id))
-          : (new UniqueEntityId(movimentation.exit?.operator.id)),
+        operatorId:
+          movimentation.direction === "ENTRY"
+            ? new UniqueEntityId(movimentation.entry?.operator.id)
+            : new UniqueEntityId(movimentation.exit?.operator.id),
         pharmaceuticalFormId: new UniqueEntityId(
-          movimentation.batchStock.medicineVariant.pharmaceuticalForm.id,
+          movimentation.batchStock.medicineVariant.pharmaceuticalForm.id
         ),
         stockId: new UniqueEntityId(),
         unitMeasureId: new UniqueEntityId(),
-        complement: '',
+        complement: "",
         movementTypeId: new UniqueEntityId(),
-      })
-    })
+      });
+    });
 
     return {
       movimentation: movimentationMapped,
       meta: {
         totalCount,
       },
-    }
+    };
   }
 }
