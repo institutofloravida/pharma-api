@@ -55,6 +55,7 @@ export class CreateTransferDto {
     example: 'f5d0b1b2-62c5-4d0c-8b5e-8d50e3df7b7e',
     description: 'ID do estoque de destino da transferência',
   })
+  @IsUUID()
   stockDestinationId: string;
 
   @ApiProperty({

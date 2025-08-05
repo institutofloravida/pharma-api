@@ -4,6 +4,8 @@ import { InstitutionType, OperatorRole, PrismaClient } from './generated';
 const prisma = new PrismaClient();
 
 async function clearDatabase() {
+  await prisma.address.deleteMany();
+  await prisma.patient.deleteMany();
   await prisma.movimentation.deleteMany();
   await prisma.useMedicine.deleteMany();
   await prisma.exit.deleteMany();
@@ -219,6 +221,36 @@ async function main() {
       { name: 'Viroses Respiratórias' },
       { name: 'Candidíase Vaginal' },
     ],
+  });
+
+  const pathology = await prisma.pathology.findFirst();
+
+  await prisma.address.create({
+    data: {
+      street: 'Rua das Flores',
+      number: '123',
+      neighborhood: 'Jardim das Rosas',
+      city: 'Parnaíba',
+      state: 'PI',
+      zipCode: '64208120',
+      complement: 'Apto 45',
+      patient: {
+        create: {
+          name: 'João da Silva',
+          birthDate: new Date('1990-01-01'),
+          gender: 'M',
+          race: 'MIXED',
+          sus: '111112222233333',
+          pathologies: {
+            ...(pathology && {
+              connect: {
+                id: pathology.id,
+              },
+            }),
+          },
+        },
+      },
+    },
   });
 
   const unitMeasureMg = await prisma.unitMeasure.create({

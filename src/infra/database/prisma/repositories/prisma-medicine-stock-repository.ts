@@ -322,6 +322,12 @@ export class PrismaMedicinesStockRepository
         skip: (page - 1) * 10,
         take: 10,
         include: {
+          stock: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           medicineVariant: {
             include: {
               pharmaceuticalForm: true,
@@ -367,11 +373,12 @@ export class PrismaMedicinesStockRepository
             },
           });
         return MedicineStockInventory.create({
-          stockId: new UniqueEntityId(medicineStock.id),
+          stockId: new UniqueEntityId(medicineStock.stock.id),
           minimumLevel: medicineStock.minimumLevel,
           dosage: medicineStock.medicineVariant.dosage,
           unitMeasure: medicineStock.medicineVariant.unitMeasure.acronym,
           medicine: medicineStock.medicineVariant.medicine.name,
+          complement: medicineStock.medicineVariant.complement ?? undefined,
           pharmaceuticalForm:
             medicineStock.medicineVariant.pharmaceuticalForm.name,
           quantity: {
@@ -381,6 +388,7 @@ export class PrismaMedicinesStockRepository
               medicineStock.currentQuantity -
               (totalQuantityBatchesOnStockExpired._sum.currentQuantity ?? 0),
           },
+          stock: medicineStock.stock.name,
           medicineStockId: new UniqueEntityId(medicineStock.id),
           medicineVariantId: new UniqueEntityId(
             medicineStock.medicineVariant.id,
@@ -409,6 +417,12 @@ export class PrismaMedicinesStockRepository
         id: medicineStockid,
       },
       include: {
+        stock: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         batchesStocks: {
           where: {
             currentQuantity: { gt: 0 },
@@ -430,6 +444,7 @@ export class PrismaMedicinesStockRepository
         },
         medicineVariant: {
           select: {
+            complement: true,
             dosage: true,
             unitMeasure: {
               select: {
@@ -502,9 +517,11 @@ export class PrismaMedicinesStockRepository
     return MedicineStockInventoryDetails.create({
       medicineStockId: new UniqueEntityId(inventory.id),
       dosage: inventory.medicineVariant.dosage,
+      stock: inventory.stock.name,
       unitMeasure: inventory.medicineVariant.unitMeasure.acronym,
       pharmaceuticalForm: inventory.medicineVariant.pharmaceuticalForm.name,
       minimumLevel: inventory.minimumLevel,
+      complement: inventory.medicineVariant.complement ?? undefined,
       medicine: inventory.medicineVariant.medicine.name,
       stockId: new UniqueEntityId(inventory.stockId),
       quantity: {

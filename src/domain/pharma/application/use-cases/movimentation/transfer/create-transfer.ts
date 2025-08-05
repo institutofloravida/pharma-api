@@ -59,6 +59,7 @@ export class CreateTransferUseCase {
       operatorId,
       stockId,
       movementTypeId: undefined,
+      transferId: transfer.id.toString(),
       destinationInstitutionId: undefined,
       exitDate: transferDate,
     });
