@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsOptional,
@@ -7,13 +7,15 @@ import {
   IsNumber,
   IsISO8601,
   IsNotEmpty,
-} from 'class-validator'
-import { Type } from 'class-transformer'
+  IsEnum,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { EntryType } from '@/domain/pharma/enterprise/entities/entry';
 
 class MedicineBatchDto {
   @ApiProperty({ description: 'Código do lote', example: 'ABCDE3' })
   @IsString()
-  code: string
+  code: string;
 
   @ApiProperty({
     description: 'Data de validade',
@@ -21,11 +23,11 @@ class MedicineBatchDto {
   })
   @IsISO8601({ strict: true })
   @IsNotEmpty()
-  expirationDate: Date
+  expirationDate: Date;
 
   @ApiProperty({ description: 'ID do fabricante', example: 'manufacturer123' })
   @IsString()
-  manufacturerId: string
+  manufacturerId: string;
 
   @ApiProperty({
     description: 'Data de fabricação',
@@ -34,14 +36,14 @@ class MedicineBatchDto {
   })
   @IsISO8601({ strict: true })
   @IsOptional()
-  manufacturingDate?: Date
+  manufacturingDate?: Date;
 
   @ApiProperty({
     description: 'Quantidade para entrada',
     example: 10,
   })
   @IsNumber()
-  quantityToEntry: number
+  quantityToEntry: number;
 }
 
 class MedicineEntryDto {
@@ -50,7 +52,7 @@ class MedicineEntryDto {
     example: 'variant123',
   })
   @IsString()
-  medicineVariantId: string
+  medicineVariantId: string;
 
   @ApiProperty({
     description: 'Lista de lotes para este medicamento',
@@ -59,21 +61,24 @@ class MedicineEntryDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => MedicineBatchDto)
-  batches: MedicineBatchDto[]
+  batches: MedicineBatchDto[];
 }
 
 export class RegisterMedicineEntryDto {
   @ApiProperty({ description: 'ID do estoque', example: 'stock123' })
   @IsString()
-  stockId: string
+  stockId: string;
 
-  @ApiProperty({ description: 'ID do tipo de movimento', example: 'moveType123' })
+  @ApiProperty({
+    description: 'ID do tipo de movimento',
+    example: 'moveType123',
+  })
   @IsString()
-  movementTypeId: string
+  movementTypeId: string;
 
   @ApiProperty({ description: 'Número da nota fiscal', example: 'NF123456' })
   @IsString()
-  nfNumber: string
+  nfNumber: string;
 
   @ApiProperty({
     description: 'Data da entrada',
@@ -82,7 +87,15 @@ export class RegisterMedicineEntryDto {
   })
   @IsISO8601({ strict: true })
   @IsOptional()
-  entryDate?: Date
+  entryDate?: Date;
+
+  @ApiProperty({
+    example: 'DONATION',
+    description: 'Tipo de entrada',
+    enum: EntryType,
+  })
+  @IsEnum(EntryType)
+  entryType: EntryType;
 
   @ApiProperty({
     description: 'Lista de medicamentos com lotes para entrada',
@@ -91,5 +104,5 @@ export class RegisterMedicineEntryDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => MedicineEntryDto)
-  medicines: MedicineEntryDto[]
+  medicines: MedicineEntryDto[];
 }

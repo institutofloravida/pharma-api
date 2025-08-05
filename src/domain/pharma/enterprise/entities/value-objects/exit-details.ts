@@ -1,11 +1,11 @@
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { ValueObject } from '@/core/entities/value-object'
-import type { ExitType } from '../exit'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { ValueObject } from '@/core/entities/value-object';
+import { ExitType } from '../exit';
 
 export interface ExitDetailsProps {
-  exitId: UniqueEntityId
-  exitDate: Date
-  exitType: ExitType,
+  exitId: UniqueEntityId;
+  exitDate: Date;
+  exitType: ExitType;
   stock: string;
   destinationInstitution?: string;
   responsibleByInstitution?: string;
@@ -15,38 +15,38 @@ export interface ExitDetailsProps {
 
 export class ExitDetails extends ValueObject<ExitDetailsProps> {
   get exitId() {
-    return this.props.exitId
+    return this.props.exitId;
   }
 
   get exitDate() {
-    return this.props.exitDate
+    return this.props.exitDate;
   }
 
   get exitType() {
-    return this.props.exitType
+    return this.props.exitType;
   }
 
   get stock() {
-    return this.props.stock
+    return this.props.stock;
   }
 
   get operator() {
-    return this.props.operator
+    return this.props.operator;
   }
 
   get destinationInstitution() {
-    return this.props.destinationInstitution
+    return this.props.destinationInstitution;
   }
 
   get responsibleByInstitution() {
-    return this.props.responsibleByInstitution
+    return this.props.responsibleByInstitution;
   }
 
   get items() {
-    return this.props.items
+    return this.props.items;
   }
 
   static create(props: ExitDetailsProps) {
-    return new ExitDetails(props)
+    return new ExitDetails(props);
   }
 }

@@ -26,6 +26,7 @@ interface RegisterExitUseCaseRequest {
   operatorId: string;
   exitType: ExitType;
   movementTypeId?: string;
+  transferId?: string;
   destinationInstitutionId?: string;
   exitDate?: Date;
 }
@@ -56,6 +57,7 @@ export class RegisterExitUseCase {
     stockId,
     batches,
     destinationInstitutionId,
+    transferId,
   }: RegisterExitUseCaseRequest): Promise<RegisterExitUseCaseResponse> {
     if (batches.length <= 0) {
       return left(
@@ -82,10 +84,15 @@ export class RegisterExitUseCase {
       exitType,
       operatorId: new UniqueEntityId(operatorId),
       exitDate,
+      transferId: transferId ? new UniqueEntityId(transferId) : undefined,
       stockId: new UniqueEntityId(stockId),
       destinationInstitutionId: destinationInstitutionId
         ? new UniqueEntityId(destinationInstitutionId)
         : undefined,
+      movementTypeId:
+        exitType === ExitType.MOVEMENT_TYPE
+          ? new UniqueEntityId(movementTypeId)
+          : undefined,
     });
     await this.medicineExitRepository.create(exit);
 
@@ -120,10 +127,6 @@ export class RegisterExitUseCase {
         quantity: itemBatch.quantity,
         entryId: undefined,
         exitId: exit.id,
-        movementTypeId:
-          exitType === ExitType.MOVEMENT_TYPE
-            ? new UniqueEntityId(movementTypeId)
-            : undefined,
       });
 
       await Promise.all([

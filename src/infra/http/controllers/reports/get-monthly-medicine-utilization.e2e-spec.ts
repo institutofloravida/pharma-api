@@ -204,6 +204,9 @@ describe('Get Monthly Medicine Utilization (E2E)', () => {
         dispensationId: undefined,
         stockId: stock.id,
         exitDate: new Date(2025, 0, 1),
+        movementTypeId: movementType.id,
+        destinationInstitutionId: undefined,
+        transferId: undefined,
       }),
       medicineExitFactory.makePrismaMedicineExit({
         exitType: ExitType.MOVEMENT_TYPE,
@@ -211,13 +214,15 @@ describe('Get Monthly Medicine Utilization (E2E)', () => {
         stockId: stock.id,
         dispensationId: undefined,
         exitDate: new Date(2025, 0, 15),
+        movementTypeId: movementType.id,
+        destinationInstitutionId: undefined,
+        transferId: undefined,
       }),
     ]);
 
     await Promise.all([
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
-        movementTypeId: movementType.id,
         quantity: 20,
         direction: 'EXIT',
         entryId: undefined,
@@ -225,7 +230,6 @@ describe('Get Monthly Medicine Utilization (E2E)', () => {
       }),
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
-        movementTypeId: movementType.id,
         quantity: 10,
         direction: 'EXIT',
         entryId: undefined,

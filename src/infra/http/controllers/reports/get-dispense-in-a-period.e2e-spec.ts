@@ -206,15 +206,21 @@ describe('Get Dispenses In A Period Report (E2E)', () => {
         exitType: ExitType.DISPENSATION,
         operatorId: operator.id,
         stockId: stock.id,
+        movementTypeId: undefined,
         dispensationId: dispensation1.id,
         exitDate: new Date(2025, 0, 1),
+        destinationInstitutionId: undefined,
+        transferId: undefined,
       }),
       medicineExitFactory.makePrismaMedicineExit({
         exitType: ExitType.DISPENSATION,
         operatorId: operator.id,
+        movementTypeId: undefined,
         stockId: stock.id,
         dispensationId: dispensation2.id,
         exitDate: new Date(2025, 0, 2),
+        destinationInstitutionId: undefined,
+        transferId: undefined,
       }),
     ]);
 
@@ -222,7 +228,6 @@ describe('Get Dispenses In A Period Report (E2E)', () => {
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
         quantity: 20,
-        movementTypeId: undefined,
         direction: 'EXIT',
         entryId: undefined,
         exitId: exit1.id,
@@ -230,7 +235,6 @@ describe('Get Dispenses In A Period Report (E2E)', () => {
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
         quantity: 10,
-        movementTypeId: undefined,
         direction: 'EXIT',
         entryId: undefined,
         exitId: exit2.id,

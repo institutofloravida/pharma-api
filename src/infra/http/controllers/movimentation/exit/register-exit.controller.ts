@@ -6,23 +6,22 @@ import {
   HttpCode,
   Post,
   UseGuards,
-} from '@nestjs/common'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { UserPayload } from '@/infra/auth/jwt-strategy'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { RegisterExitUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/register-exit'
-import { RegisterExitDto } from './dtos/register-exit.dto'
-import { RolesGuard } from '@/infra/auth/roles.guard'
-import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
-import { Roles } from '@/infra/auth/role-decorator'
+} from '@nestjs/common';
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard';
+import { CurrentUser } from '@/infra/auth/current-user-decorator';
+import { UserPayload } from '@/infra/auth/jwt-strategy';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { RegisterExitUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/register-exit';
+import { RegisterExitDto } from './dtos/register-exit.dto';
+import { RolesGuard } from '@/infra/auth/roles.guard';
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator';
+import { Roles } from '@/infra/auth/role-decorator';
 
 @ApiBearerAuth()
 @ApiTags('exit')
 @Controller('medicine/exit')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(OperatorRole.MANAGER, OperatorRole.SUPER_ADMIN)
-
 @UseGuards(JwtAuthGuard)
 export class RegisterMedicineExitController {
   constructor(private registerMedicineExit: RegisterExitUseCase) {}
@@ -40,7 +39,7 @@ export class RegisterMedicineExitController {
       stockId,
       batches,
       destinationInstitutionId,
-    } = body
+    } = body;
 
     const result = await this.registerMedicineExit.execute({
       exitType,
@@ -50,19 +49,19 @@ export class RegisterMedicineExitController {
       stockId,
       destinationInstitutionId,
       batches,
-    })
+    });
 
     if (result.isLeft()) {
-      const error = result.value
+      const error = result.value;
 
       switch (error.constructor) {
         case ConflictException:
-          throw new ConflictException(error.message)
+          throw new ConflictException(error.message);
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
       }
     }
 
-    return {}
+    return {};
   }
 }

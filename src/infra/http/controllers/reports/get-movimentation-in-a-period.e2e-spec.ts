@@ -191,6 +191,9 @@ describe('Get Movimentation (E2E)', () => {
         exitType: ExitType.MOVEMENT_TYPE,
         dispensationId: undefined,
         stockId: stock.id,
+        movementTypeId: movementType.id,
+        destinationInstitutionId: undefined,
+        transferId: undefined,
       }),
 
       medicineExitFactory.makePrismaMedicineExit({
@@ -199,13 +202,15 @@ describe('Get Movimentation (E2E)', () => {
         dispensationId: undefined,
         exitType: ExitType.MOVEMENT_TYPE,
         stockId: stock.id,
+        movementTypeId: movementType.id,
+        destinationInstitutionId: undefined,
+        transferId: undefined,
       }),
     ]);
 
     await Promise.all([
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
-        movementTypeId: movementType.id,
         quantity: 20,
         direction: 'EXIT',
         entryId: undefined,
@@ -213,10 +218,8 @@ describe('Get Movimentation (E2E)', () => {
       }),
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
-        movementTypeId: movementType.id,
         quantity: 10,
         direction: 'EXIT',
-
         entryId: undefined,
         exitId: exit2.id,
       }),

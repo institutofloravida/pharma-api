@@ -207,6 +207,8 @@ describe('Fetch Dispenses Per Day (E2E)', () => {
       exitType: ExitType.DISPENSATION,
       dispensationId: dispensation1.id,
       stockId: stock.id,
+      movementTypeId: undefined,
+      transferId: undefined,
     });
     const exit2 = await medicineExitFactory.makePrismaMedicineExit({
       exitDate: new Date(2025, 0, 2),
@@ -215,6 +217,8 @@ describe('Fetch Dispenses Per Day (E2E)', () => {
       exitType: ExitType.DISPENSATION,
       dispensationId: dispensation2.id,
       stockId: stock.id,
+      movementTypeId: undefined,
+      transferId: undefined,
     });
 
     const exit3 = await medicineExitFactory.makePrismaMedicineExit({
@@ -224,12 +228,13 @@ describe('Fetch Dispenses Per Day (E2E)', () => {
       exitType: ExitType.DISPENSATION,
       dispensationId: dispensation3.id,
       stockId: stock.id,
+      transferId: undefined,
+      movementTypeId: undefined,
     });
 
     await Promise.all([
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
-        movementTypeId: undefined,
         quantity: 20,
         direction: 'EXIT',
         entryId: undefined,
@@ -237,8 +242,6 @@ describe('Fetch Dispenses Per Day (E2E)', () => {
       }),
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
-        movementTypeId: undefined,
-
         quantity: 10,
         direction: 'EXIT',
         entryId: undefined,
@@ -246,8 +249,6 @@ describe('Fetch Dispenses Per Day (E2E)', () => {
       }),
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
-        movementTypeId: undefined,
-
         quantity: 5,
         direction: 'EXIT',
         entryId: undefined,

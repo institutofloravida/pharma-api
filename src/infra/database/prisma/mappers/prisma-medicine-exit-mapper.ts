@@ -11,6 +11,12 @@ export class PrismaMedicineExitMapper {
         exitType: ExitType[raw.exitType],
         operatorId: new UniqueEntityId(raw.operatorId),
         exitDate: raw.exitDate,
+        movementTypeId: raw.movementTypeId
+          ? new UniqueEntityId(raw.movementTypeId)
+          : undefined,
+        transferId: raw.transferId
+          ? new UniqueEntityId(raw.transferId)
+          : undefined,
         destinationInstitutionId: raw.destinationInstitutionId
           ? new UniqueEntityId(raw.destinationInstitutionId)
           : null,
@@ -31,6 +37,8 @@ export class PrismaMedicineExitMapper {
       exitType: $Enums.ExitType[exit.exitType],
       operatorId: exit.operatorId.toString(),
       stockId: exit.stockId.toString(),
+      transferId: exit.transferId ? exit.transferId.toString() : null,
+      movementTypeId: exit.movementTypeId?.toString(),
       dispensationId: exit.dispensationId
         ? exit.dispensationId.toString()
         : null,

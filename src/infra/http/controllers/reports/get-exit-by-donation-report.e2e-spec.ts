@@ -186,12 +186,13 @@ describe('Get Donation Report (E2E)', () => {
       stockId: stock.id,
       dispensationId: undefined,
       destinationInstitutionId: destinationInstitution.id,
+      transferId: undefined,
+      movementTypeId: undefined,
     });
 
     await Promise.all([
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
-        movementTypeId: undefined,
         quantity: 20,
         direction: 'EXIT',
         entryId: undefined,
@@ -199,7 +200,6 @@ describe('Get Donation Report (E2E)', () => {
       }),
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
-        movementTypeId: undefined,
         quantity: 10,
         direction: 'EXIT',
         entryId: undefined,

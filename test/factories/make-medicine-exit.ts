@@ -21,7 +21,10 @@ export function makeMedicineExit(
       dispensationId: new UniqueEntityId(),
       destinationInstitutionId: undefined,
       stockId: new UniqueEntityId(),
+      movementTypeId: undefined,
+      transferId: undefined,
       createdAt: faker.date.past(),
+
       updatedAt: faker.date.recent(),
       ...override,
     },

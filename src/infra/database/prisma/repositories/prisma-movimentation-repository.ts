@@ -1,14 +1,14 @@
-import { MetaReport } from "@/core/repositories/meta";
-import { MovimentationRepository } from "@/domain/pharma/application/repositories/movimentation-repository";
-import { ExitType } from "@/domain/pharma/enterprise/entities/exit";
-import { MovementDirection } from "@/domain/pharma/enterprise/entities/movement-type";
-import { Movimentation } from "@/domain/pharma/enterprise/entities/movimentation";
-import { MovimentationDetails } from "@/domain/pharma/enterprise/entities/value-objects/movimentation-details";
-import { Injectable } from "@nestjs/common";
-import { PrismaMovimentationMapper } from "../mappers/prisma-movimentation-mapper";
-import { PrismaService } from "../prisma.service";
-import { $Enums, type Prisma } from "prisma/generated";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
+import { MetaReport } from '@/core/repositories/meta';
+import { MovimentationRepository } from '@/domain/pharma/application/repositories/movimentation-repository';
+import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
+import { MovementDirection } from '@/domain/pharma/enterprise/entities/movement-type';
+import { Movimentation } from '@/domain/pharma/enterprise/entities/movimentation';
+import { MovimentationDetails } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details';
+import { Injectable } from '@nestjs/common';
+import { PrismaMovimentationMapper } from '../mappers/prisma-movimentation-mapper';
+import { PrismaService } from '../prisma.service';
+import { $Enums, type Prisma } from 'prisma/generated';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 
 @Injectable()
 export class PrismaMovimentationRepository implements MovimentationRepository {
@@ -57,6 +57,12 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
     } = filters;
 
     const whereClause: Prisma.MovimentationWhereInput = {
+      ...(movementTypeId && {
+        OR: [
+          { entry: { movementTypeId: { equals: movementTypeId } } },
+          { exit: { movementTypeId: { equals: movementTypeId } } },
+        ],
+      }),
       ...(exitId && {
         exitId: { equals: exitId },
       }),
@@ -97,7 +103,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           },
         }),
       },
-      ...(direction === "EXIT"
+      ...(direction === 'EXIT'
         ? {
             exit: {
               ...((startDate || endDate) && {
@@ -115,22 +121,24 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
               }),
             },
           }
-        : direction === "ENTRY"
-        ? {
-            ...((startDate || endDate) && {
-              entry: {
-                ...(startDate && {
-                  entryDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
-                }),
-                ...(endDate && {
-                  entryDate: {
-                    lte: new Date(endDate.setHours(23, 59, 59, 999)),
-                  },
-                }),
-              },
-            }),
-          }
-        : {}),
+        : direction === 'ENTRY'
+          ? {
+              ...((startDate || endDate) && {
+                entry: {
+                  ...(startDate && {
+                    entryDate: {
+                      gte: new Date(startDate.setHours(0, 0, 0, 0)),
+                    },
+                  }),
+                  ...(endDate && {
+                    entryDate: {
+                      lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                    },
+                  }),
+                },
+              }),
+            }
+          : {}),
       ...(!direction && (startDate || endDate)
         ? {
             OR: [
@@ -164,9 +172,6 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           }
         : {}),
 
-      ...(movementTypeId && {
-        movementTypeId: { equals: movementTypeId },
-      }),
       ...(operatorId && {
         operatorId: { equals: operatorId },
       }),
@@ -178,6 +183,10 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
         include: {
           entry: {
             select: {
+              entryType: true,
+              movementType: {
+                select: { name: true },
+              },
               operator: {
                 select: {
                   name: true,
@@ -188,6 +197,9 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           },
           exit: {
             select: {
+              movementType: {
+                select: { name: true },
+              },
               exitType: true,
               operator: {
                 select: {
@@ -218,12 +230,9 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
               stock: { select: { name: true } },
             },
           },
-          movementType: {
-            select: { name: true },
-          },
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       }),
       this.prisma.movimentation.count({
@@ -235,7 +244,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       return MovimentationDetails.create({
         direction: movimentation.direction,
         medicineStockId: new UniqueEntityId(
-          movimentation.batchStock.medicineStockId
+          movimentation.batchStock.medicineStockId,
         ),
         batchStockId: new UniqueEntityId(movimentation.batchStockId),
         batchCode: movimentation.batchStock.batch.code,
@@ -244,15 +253,17 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           ? ExitType[movimentation.exit.exitType]
           : undefined,
         operator:
-          movimentation.direction === "ENTRY"
-            ? movimentation.entry?.operator.name ?? ""
-            : movimentation.exit?.operator.name ?? "",
+          movimentation.direction === 'ENTRY'
+            ? (movimentation.entry?.operator.name ?? '')
+            : (movimentation.exit?.operator.name ?? ''),
         movementType:
-          movimentation.direction === "ENTRY"
-            ? movimentation.movementType?.name ?? ""
-            : movimentation.exit?.exitType === "MOVEMENT_TYPE"
-            ? movimentation.movementType?.name ?? ""
-            : movimentation.exit?.exitType ?? "",
+          movimentation.direction === 'ENTRY'
+            ? movimentation.entry?.entryType === 'MOVEMENT_TYPE'
+              ? (movimentation.entry.movementType?.name ?? '')
+              : undefined
+            : movimentation.exit?.exitType === 'MOVEMENT_TYPE'
+              ? (movimentation.exit.movementType?.name ?? '')
+              : (movimentation.exit?.exitType ?? ''),
         stock: movimentation.batchStock.stock.name,
         medicine: movimentation.batchStock.medicineVariant.medicine.name,
         dosage: movimentation.batchStock.medicineVariant.dosage,
@@ -262,21 +273,21 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           movimentation.batchStock.medicineVariant.unitMeasure.acronym,
         quantity: movimentation.quantity,
         medicineId: new UniqueEntityId(
-          movimentation.batchStock.medicineVariant.medicine.id
+          movimentation.batchStock.medicineVariant.medicine.id,
         ),
         medicineVariantId: new UniqueEntityId(
-          movimentation.batchStock.medicineVariant.id
+          movimentation.batchStock.medicineVariant.id,
         ),
         operatorId:
-          movimentation.direction === "ENTRY"
+          movimentation.direction === 'ENTRY'
             ? new UniqueEntityId(movimentation.entry?.operator.id)
             : new UniqueEntityId(movimentation.exit?.operator.id),
         pharmaceuticalFormId: new UniqueEntityId(
-          movimentation.batchStock.medicineVariant.pharmaceuticalForm.id
+          movimentation.batchStock.medicineVariant.pharmaceuticalForm.id,
         ),
         stockId: new UniqueEntityId(),
         unitMeasureId: new UniqueEntityId(),
-        complement: "",
+        complement: '',
         movementTypeId: new UniqueEntityId(),
       });
     });

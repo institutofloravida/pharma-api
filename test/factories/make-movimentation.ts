@@ -18,7 +18,6 @@ export function makeMovimentation(
       direction: 'ENTRY',
       quantity: faker.number.int({ min: 1, max: 100 }),
       entryId: new UniqueEntityId(),
-      movementTypeId: new UniqueEntityId(),
       exitId: undefined,
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),

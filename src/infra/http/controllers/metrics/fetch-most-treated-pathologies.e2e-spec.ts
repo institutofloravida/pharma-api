@@ -213,6 +213,7 @@ describe('Fetch Most Treated Pathologies (E2E)', () => {
         operatorId: operator.id,
         exitType: ExitType.DISPENSATION,
         stockId: stock.id,
+        movementTypeId: undefined,
         dispensationId: dispensation1.id,
       }),
       medicineExitFactory.makePrismaMedicineExit({
@@ -220,6 +221,7 @@ describe('Fetch Most Treated Pathologies (E2E)', () => {
         operatorId: operator.id,
         exitType: ExitType.DISPENSATION,
         stockId: stock.id,
+        movementTypeId: undefined,
         dispensationId: dispensation2.id,
       }),
 
@@ -228,6 +230,7 @@ describe('Fetch Most Treated Pathologies (E2E)', () => {
         operatorId: operator.id,
         exitType: ExitType.DISPENSATION,
         stockId: stock.id,
+        movementTypeId: undefined,
         dispensationId: dispensation3.id,
       }),
     ]);
@@ -235,7 +238,6 @@ describe('Fetch Most Treated Pathologies (E2E)', () => {
     await Promise.all([
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
-        movementTypeId: undefined,
         quantity: 20,
         direction: 'EXIT',
         entryId: undefined,
@@ -243,7 +245,6 @@ describe('Fetch Most Treated Pathologies (E2E)', () => {
       }),
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
-        movementTypeId: undefined,
         quantity: 10,
         direction: 'EXIT',
         entryId: undefined,
@@ -251,7 +252,6 @@ describe('Fetch Most Treated Pathologies (E2E)', () => {
       }),
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
-        movementTypeId: undefined,
         quantity: 5,
         direction: 'EXIT',
         entryId: undefined,

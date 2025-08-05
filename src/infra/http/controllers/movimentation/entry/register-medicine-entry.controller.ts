@@ -1,16 +1,18 @@
 import {
   BadRequestException,
-  Body, ConflictException, Controller,
+  Body,
+  ConflictException,
+  Controller,
   HttpCode,
   Post,
   UseGuards,
-} from '@nestjs/common'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/register-medicine-entry'
-import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { UserPayload } from '@/infra/auth/jwt-strategy'
-import { RegisterMedicineEntryDto } from './dtos/register-medicine-entry.dto'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+} from '@nestjs/common';
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard';
+import { RegisterMedicineEntryUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/register-medicine-entry';
+import { CurrentUser } from '@/infra/auth/current-user-decorator';
+import { UserPayload } from '@/infra/auth/jwt-strategy';
+import { RegisterMedicineEntryDto } from './dtos/register-medicine-entry.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('entry')
 @ApiBearerAuth()
@@ -25,7 +27,14 @@ export class RegisterMedicineEntryController {
     @CurrentUser() user: UserPayload,
     @Body() body: RegisterMedicineEntryDto,
   ) {
-    const { entryDate, movementTypeId, nfNumber, medicines, stockId } = body
+    const {
+      entryDate,
+      movementTypeId,
+      nfNumber,
+      medicines,
+      stockId,
+      entryType,
+    } = body;
 
     const result = await this.registerMedicineEntry.execute({
       medicines,
@@ -34,19 +43,21 @@ export class RegisterMedicineEntryController {
       stockId,
       entryDate,
       nfNumber,
-    })
+      entryType,
+      transferId: undefined,
+    });
 
     if (result.isLeft()) {
-      const error = result.value
+      const error = result.value;
 
       switch (error.constructor) {
         case ConflictException:
-          throw new ConflictException(error.message)
+          throw new ConflictException(error.message);
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
       }
     }
 
-    return {}
+    return {};
   }
 }

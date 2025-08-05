@@ -1,76 +1,80 @@
-import { RegisterMedicineEntryUseCase } from './register-medicine-entry'
-import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository'
-import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository'
-import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository'
-import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository'
-import { makeMedicine } from 'test/factories/make-medicine'
-import { makeStock } from 'test/factories/make-stock'
-import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository'
-import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
-import { makeMedicineVariant } from 'test/factories/make-medicine-variant'
-import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory-medicines-variants-repository'
-import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memory-pharmaceutical-forms'
-import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository'
-import { makeMovementType } from 'test/factories/make-movement-type'
-import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository'
-import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository'
-import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
-import { makeInstitution } from 'test/factories/make-insitution'
-import { makeOperator } from 'test/factories/make-operator'
-import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form'
-import { makeUnitMeasure } from 'test/factories/make-unit-measure'
-import { addYears } from 'date-fns'
-import { makeManufacturer } from 'test/factories/make-manufacturer'
-import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository'
-import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator'
-import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository'
-import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization'
-import { InMemoryUseMedicinesRepository } from 'test/repositories/in-memory-use-medicines-repository'
-import { InMemoryMedicinesExitsRepository } from 'test/repositories/in-memory-medicines-exits-repository'
-import { makeMedicineStock } from 'test/factories/make-medicine-stock'
-import { makeBatch } from 'test/factories/make-batch'
-import { makeBatchStock } from 'test/factories/make-batch-stock'
-import { InvalidEntryQuantityError } from '../../_errors/invalid-entry-quantity-error'
-import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository'
+import { RegisterMedicineEntryUseCase } from './register-medicine-entry';
+import { InMemoryBatchStocksRepository } from 'test/repositories/in-memory-batch-stocks-repository';
+import { InMemoryBatchesRepository } from 'test/repositories/in-memory-batches-repository';
+import { InMemoryMedicinesRepository } from 'test/repositories/in-memory-medicines-repository';
+import { InMemoryMedicinesStockRepository } from 'test/repositories/in-memory-medicines-stock-repository';
+import { makeMedicine } from 'test/factories/make-medicine';
+import { makeStock } from 'test/factories/make-stock';
+import { InMemoryStocksRepository } from 'test/repositories/in-memory-stocks-repository';
+import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository';
+import { makeMedicineVariant } from 'test/factories/make-medicine-variant';
+import { InMemoryMedicinesVariantsRepository } from 'test/repositories/in-memory-medicines-variants-repository';
+import { InMemoryPharmaceuticalFormsRepository } from 'test/repositories/in-memory-pharmaceutical-forms';
+import { InMemoryUnitsMeasureRepository } from 'test/repositories/in-memory-units-measure-repository';
+import { makeMovementType } from 'test/factories/make-movement-type';
+import { InMemoryMovementTypesRepository } from 'test/repositories/in-memory-movement-types-repository';
+import { InMemoryMedicinesEntriesRepository } from 'test/repositories/in-memory-medicines-entries-repository';
+import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository';
+import { makeInstitution } from 'test/factories/make-insitution';
+import { makeOperator } from 'test/factories/make-operator';
+import { makePharmaceuticalForm } from 'test/factories/make-pharmaceutical-form';
+import { makeUnitMeasure } from 'test/factories/make-unit-measure';
+import { addYears } from 'date-fns';
+import { makeManufacturer } from 'test/factories/make-manufacturer';
+import { InMemoryManufacturersRepository } from 'test/repositories/in-memory-manufacturers-repository';
+import { OperatorRole } from '@/domain/pharma/enterprise/entities/operator';
+import { InMemoryTherapeuticClassesRepository } from 'test/repositories/in-memory-therapeutic-classes-repository';
+import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization';
+import { InMemoryUseMedicinesRepository } from 'test/repositories/in-memory-use-medicines-repository';
+import { InMemoryMedicinesExitsRepository } from 'test/repositories/in-memory-medicines-exits-repository';
+import { makeMedicineStock } from 'test/factories/make-medicine-stock';
+import { makeBatch } from 'test/factories/make-batch';
+import { makeBatchStock } from 'test/factories/make-batch-stock';
+import { InvalidEntryQuantityError } from '../../_errors/invalid-entry-quantity-error';
+import { InMemoryMovimentationRepository } from 'test/repositories/in-memory-movimentation-repository';
+import { EntryType } from '@/domain/pharma/enterprise/entities/entry';
 
-let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository
-let inMemoryManufacturersRepository: InMemoryManufacturersRepository
-let inMemoryOperatorsRepository: InMemoryOperatorsRepository
-let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository
-let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository
-let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository
-let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
-let inMemoryStocksRepository: InMemoryStocksRepository
-let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository
-let inMemoryMedicinesRepository: InMemoryMedicinesRepository
-let inMemoryBatchesRepository: InMemoryBatchesRepository
-let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository
-let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository
-let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository
-let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository
-let inMemoryUseMedicinesRepository: InMemoryUseMedicinesRepository
-let inMemoryMovimentationRepository: InMemoryMovimentationRepository
-let createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase
-let sut: RegisterMedicineEntryUseCase
+let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository;
+let inMemoryManufacturersRepository: InMemoryManufacturersRepository;
+let inMemoryOperatorsRepository: InMemoryOperatorsRepository;
+let inMemoryMovementTypesRepository: InMemoryMovementTypesRepository;
+let inMemoryUnitsMeasureRepository: InMemoryUnitsMeasureRepository;
+let inMemoryPharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository;
+let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository;
+let inMemoryStocksRepository: InMemoryStocksRepository;
+let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository;
+let inMemoryMedicinesRepository: InMemoryMedicinesRepository;
+let inMemoryBatchesRepository: InMemoryBatchesRepository;
+let inMemoryBatchStocksRepository: InMemoryBatchStocksRepository;
+let inMemoryMedicinesStockRepository: InMemoryMedicinesStockRepository;
+let inMemoryMedicinesVariantsRepository: InMemoryMedicinesVariantsRepository;
+let inMemoryMedicinesExitsRepository: InMemoryMedicinesExitsRepository;
+let inMemoryUseMedicinesRepository: InMemoryUseMedicinesRepository;
+let inMemoryMovimentationRepository: InMemoryMovimentationRepository;
+let createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase;
+let sut: RegisterMedicineEntryUseCase;
 
 describe('Register Entry', () => {
   beforeEach(() => {
-    inMemoryTherapeuticClassesRepository = new InMemoryTherapeuticClassesRepository()
-    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
+    inMemoryTherapeuticClassesRepository =
+      new InMemoryTherapeuticClassesRepository();
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository();
     inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
       inMemoryInstitutionsRepository,
-    )
-    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository()
-    inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
+    );
+    inMemoryMovementTypesRepository = new InMemoryMovementTypesRepository();
+    inMemoryManufacturersRepository = new InMemoryManufacturersRepository();
     inMemoryPharmaceuticalFormsRepository =
-      new InMemoryPharmaceuticalFormsRepository()
-    inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository()
+      new InMemoryPharmaceuticalFormsRepository();
+    inMemoryUnitsMeasureRepository = new InMemoryUnitsMeasureRepository();
     inMemoryStocksRepository = new InMemoryStocksRepository(
       inMemoryInstitutionsRepository,
-    )
-    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(inMemoryTherapeuticClassesRepository)
-    inMemoryManufacturersRepository = new InMemoryManufacturersRepository()
-    inMemoryBatchesRepository = new InMemoryBatchesRepository()
+    );
+    inMemoryMedicinesRepository = new InMemoryMedicinesRepository(
+      inMemoryTherapeuticClassesRepository,
+    );
+    inMemoryManufacturersRepository = new InMemoryManufacturersRepository();
+    inMemoryBatchesRepository = new InMemoryBatchesRepository();
     inMemoryBatchStocksRepository = new InMemoryBatchStocksRepository(
       inMemoryBatchesRepository,
       inMemoryMedicinesRepository,
@@ -78,7 +82,7 @@ describe('Register Entry', () => {
       inMemoryStocksRepository,
       inMemoryUnitsMeasureRepository,
       inMemoryPharmaceuticalFormsRepository,
-    )
+    );
     inMemoryMedicinesStockRepository = new InMemoryMedicinesStockRepository(
       inMemoryInstitutionsRepository,
       inMemoryStocksRepository,
@@ -89,8 +93,10 @@ describe('Register Entry', () => {
       inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
       inMemoryManufacturersRepository,
-    )
-    inMemoryBatchStocksRepository.setMedicinesStockRepository(inMemoryMedicinesStockRepository)
+    );
+    inMemoryBatchStocksRepository.setMedicinesStockRepository(
+      inMemoryMedicinesStockRepository,
+    );
     inMemoryUseMedicinesRepository = new InMemoryUseMedicinesRepository(
       inMemoryMedicinesStockRepository,
       inMemoryStocksRepository,
@@ -100,37 +106,58 @@ describe('Register Entry', () => {
       inMemoryMedicinesRepository,
       inMemoryPharmaceuticalFormsRepository,
       inMemoryUnitsMeasureRepository,
+      inMemoryMovimentationRepository,
+      inMemoryBatchStocksRepository,
+    );
 
-    )
-
-    createMonthlyMedicineUtilizationUseCase = new CreateMonthlyMedicineUtilizationUseCase(
-      inMemoryUseMedicinesRepository, inMemoryMedicinesStockRepository)
+    createMonthlyMedicineUtilizationUseCase =
+      new CreateMonthlyMedicineUtilizationUseCase(
+        inMemoryUseMedicinesRepository,
+        inMemoryMedicinesStockRepository,
+      );
     inMemoryMedicinesVariantsRepository =
       new InMemoryMedicinesVariantsRepository(
         inMemoryMedicinesRepository,
         inMemoryPharmaceuticalFormsRepository,
         inMemoryUnitsMeasureRepository,
-      )
-
-    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
-      inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
-      inMemoryOperatorsRepository,
-      inMemoryMovementTypesRepository,
-      inMemoryMedicinesRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryStocksRepository,
-      inMemoryMedicinesStockRepository,
-    )
+      );
 
     inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
       inMemoryOperatorsRepository,
       inMemoryStocksRepository,
       inMemoryMovimentationRepository,
-    )
-    inMemoryMovimentationRepository = new InMemoryMovimentationRepository()
+    );
+    inMemoryMovimentationRepository = new InMemoryMovimentationRepository(
+      inMemoryOperatorsRepository,
+      inMemoryMedicinesStockRepository,
+      inMemoryStocksRepository,
+      inMemoryMedicinesRepository,
+      inMemoryMedicinesVariantsRepository,
+      inMemoryPharmaceuticalFormsRepository,
+      inMemoryUnitsMeasureRepository,
+      inMemoryBatchesRepository,
+      inMemoryBatchStocksRepository,
+      inMemoryMovementTypesRepository,
+    );
+
+    inMemoryMedicinesExitsRepository = new InMemoryMedicinesExitsRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    );
+
+    inMemoryMedicinesEntriesRepository = new InMemoryMedicinesEntriesRepository(
+      inMemoryOperatorsRepository,
+      inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+    );
+
+    inMemoryMovimentationRepository.setEntriesRepository(
+      inMemoryMedicinesEntriesRepository,
+    );
+    inMemoryMovimentationRepository.setExitsRepository(
+      inMemoryMedicinesExitsRepository,
+    );
 
     sut = new RegisterMedicineEntryUseCase(
       inMemoryStocksRepository,
@@ -141,57 +168,58 @@ describe('Register Entry', () => {
       inMemoryBatchesRepository,
       inMemoryMedicinesVariantsRepository,
       createMonthlyMedicineUtilizationUseCase,
-    )
-  })
+    );
+  });
   it('should be able to register a new entry', async () => {
-    const quantityToEntryMedicine1 = 20
-    const quantityToEntryMedicine2 = 30
+    const quantityToEntryMedicine1 = 20;
+    const quantityToEntryMedicine2 = 30;
 
-    const institution = makeInstitution()
-    await inMemoryInstitutionsRepository.create(institution)
+    const institution = makeInstitution();
+    await inMemoryInstitutionsRepository.create(institution);
 
     const operator = makeOperator({
       institutionsIds: [institution.id],
       role: OperatorRole.MANAGER,
-    })
+    });
 
-    const manufacturer = makeManufacturer()
-    await inMemoryManufacturersRepository.create(manufacturer)
+    const manufacturer = makeManufacturer();
+    await inMemoryManufacturersRepository.create(manufacturer);
 
-    const pharmaceuticalForm = makePharmaceuticalForm()
-    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm)
+    const pharmaceuticalForm = makePharmaceuticalForm();
+    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm);
 
-    const unitMeasure = makeUnitMeasure()
-    await inMemoryUnitsMeasureRepository.create(unitMeasure)
+    const unitMeasure = makeUnitMeasure();
+    await inMemoryUnitsMeasureRepository.create(unitMeasure);
 
     const stock = makeStock({
       institutionId: institution.id,
-    })
-    await inMemoryStocksRepository.create(stock)
+    });
+    await inMemoryStocksRepository.create(stock);
 
-    const medicine = makeMedicine()
-    await inMemoryMedicinesRepository.create(medicine)
+    const medicine = makeMedicine();
+    await inMemoryMedicinesRepository.create(medicine);
 
     const medicineVariant = makeMedicineVariant({
       medicineId: medicine.id,
       pharmaceuticalFormId: pharmaceuticalForm.id,
       unitMeasureId: unitMeasure.id,
-    })
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
+    });
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant);
 
     const medicineVariant2 = makeMedicineVariant({
       medicineId: medicine.id,
       pharmaceuticalFormId: pharmaceuticalForm.id,
       unitMeasureId: unitMeasure.id,
-    })
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant2)
+    });
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant2);
 
-    const movementType = makeMovementType()
-    await inMemoryMovementTypesRepository.create(movementType)
+    const movementType = makeMovementType();
+    await inMemoryMovementTypesRepository.create(movementType);
 
     const result = await sut.execute({
       stockId: stock.id.toString(),
-
+      entryType: EntryType.MOVEMENT_TYPE,
+      transferId: undefined,
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
       medicines: [
@@ -221,55 +249,55 @@ describe('Register Entry', () => {
         },
       ],
       nfNumber: '01234567890123456789012345678901234567891234',
-    })
-    expect(result.isRight()).toBeTruthy()
+    });
+    expect(result.isRight()).toBeTruthy();
     if (result.isRight()) {
-      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(1)
-      expect(inMemoryMovimentationRepository.items).toHaveLength(2)
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(1);
+      expect(inMemoryMovimentationRepository.items).toHaveLength(2);
       expect(inMemoryMovimentationRepository.items[0].quantity).toBe(
         quantityToEntryMedicine1,
-      )
+      );
       expect(inMemoryMedicinesStockRepository.items[1].quantity).toBe(
         quantityToEntryMedicine2,
-      )
+      );
     }
-  })
+  });
 
   it('should not be able to register a new entry with quantity less or equal zero', async () => {
-    const quantityToEntry = 20
+    const quantityToEntry = 20;
 
-    const institution = makeInstitution()
-    await inMemoryInstitutionsRepository.create(institution)
+    const institution = makeInstitution();
+    await inMemoryInstitutionsRepository.create(institution);
 
     const operator = makeOperator({
       institutionsIds: [institution.id],
       role: OperatorRole.MANAGER,
-    })
+    });
 
-    const manufacturer = makeManufacturer()
-    await inMemoryManufacturersRepository.create(manufacturer)
+    const manufacturer = makeManufacturer();
+    await inMemoryManufacturersRepository.create(manufacturer);
 
     const stock = makeStock({
       institutionId: institution.id,
-    })
-    await inMemoryStocksRepository.create(stock)
+    });
+    await inMemoryStocksRepository.create(stock);
 
-    const medicine = makeMedicine()
-    await inMemoryMedicinesRepository.create(medicine)
+    const medicine = makeMedicine();
+    await inMemoryMedicinesRepository.create(medicine);
 
     const medicineVariant = makeMedicineVariant({
       medicineId: medicine.id,
-    })
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
+    });
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant);
 
     const medicineStock = makeMedicineStock({
       batchesStockIds: [],
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
-    })
+    });
 
-    const batch = makeBatch({ manufacturerId: manufacturer.id })
-    await inMemoryBatchesRepository.create(batch)
+    const batch = makeBatch({ manufacturerId: manufacturer.id });
+    await inMemoryBatchesRepository.create(batch);
 
     const batchestock1 = makeBatchStock({
       currentQuantity: quantityToEntry,
@@ -277,96 +305,100 @@ describe('Register Entry', () => {
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
       medicineStockId: medicineStock.id,
-    })
+    });
 
-    await inMemoryMedicinesStockRepository.create(medicineStock)
-    await inMemoryBatchStocksRepository.create(batchestock1)
+    await inMemoryMedicinesStockRepository.create(medicineStock);
+    await inMemoryBatchStocksRepository.create(batchestock1);
     await inMemoryMedicinesStockRepository.replenish(
       medicineStock.id.toString(),
       quantityToEntry,
-    )
+    );
     await inMemoryMedicinesStockRepository.addBatchStock(
       medicineStock.id.toString(),
       batchestock1.id.toString(),
-    )
-    const movementType = makeMovementType()
-    await inMemoryMovementTypesRepository.create(movementType)
+    );
+    const movementType = makeMovementType();
+    await inMemoryMovementTypesRepository.create(movementType);
 
     const result = await sut.execute({
-      medicines: [{
-        medicineVariantId: medicineVariant.id.toString(),
-        batches: [
-          {
-            code: 'ABCDE10',
-            expirationDate: new Date(2025, 10, 5),
-            manufacturerId: manufacturer.id.toString(),
-            quantityToEntry: 0,
-          },
-        ],
-      }],
+      entryType: EntryType.MOVEMENT_TYPE,
+      transferId: undefined,
+      medicines: [
+        {
+          medicineVariantId: medicineVariant.id.toString(),
+          batches: [
+            {
+              code: 'ABCDE10',
+              expirationDate: new Date(2025, 10, 5),
+              manufacturerId: manufacturer.id.toString(),
+              quantityToEntry: 0,
+            },
+          ],
+        },
+      ],
       stockId: stock.id.toString(),
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
       nfNumber: '01234567890123456789012345678901234567891234',
-    })
+    });
 
-    expect(result.isLeft()).toBeTruthy()
+    expect(result.isLeft()).toBeTruthy();
     if (result.isLeft()) {
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
         quantityToEntry,
-      )
+      );
       expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
         quantityToEntry,
-      )
+      );
     }
-    expect(result.value).toBeInstanceOf(InvalidEntryQuantityError)
-  })
+    expect(result.value).toBeInstanceOf(InvalidEntryQuantityError);
+  });
   it('should be to keep stock updated for entries from different batches', async () => {
-    const quantityToEntryBatch = 10
-    const quantityToEntryBatch2 = 15
-    const quantityToEntryBatch3 = 20
+    const quantityToEntryBatch = 10;
+    const quantityToEntryBatch2 = 15;
+    const quantityToEntryBatch3 = 20;
 
-    const institution = makeInstitution()
-    await inMemoryInstitutionsRepository.create(institution)
+    const institution = makeInstitution();
+    await inMemoryInstitutionsRepository.create(institution);
 
     const operator = makeOperator({
       institutionsIds: [institution.id],
       role: OperatorRole.MANAGER,
-    })
+    });
 
-    await inMemoryOperatorsRepository.create(operator)
+    await inMemoryOperatorsRepository.create(operator);
 
     const stock = makeStock({
       institutionId: institution.id,
-    })
-    await inMemoryStocksRepository.create(stock)
+    });
+    await inMemoryStocksRepository.create(stock);
 
-    const pharmaceuticalForm = makePharmaceuticalForm()
-    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm)
+    const pharmaceuticalForm = makePharmaceuticalForm();
+    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm);
 
-    const unitMeasure = makeUnitMeasure()
-    await inMemoryUnitsMeasureRepository.create(unitMeasure)
+    const unitMeasure = makeUnitMeasure();
+    await inMemoryUnitsMeasureRepository.create(unitMeasure);
 
-    const medicine = makeMedicine({})
-    await inMemoryMedicinesRepository.create(medicine)
+    const medicine = makeMedicine({});
+    await inMemoryMedicinesRepository.create(medicine);
 
     const medicineVariant = makeMedicineVariant({
       medicineId: medicine.id,
       pharmaceuticalFormId: pharmaceuticalForm.id,
       unitMeasureId: unitMeasure.id,
-    })
+    });
 
-    await inMemoryMedicinesVariantsRepository.create(medicineVariant)
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant);
 
     const medicineStock = makeMedicineStock({
       batchesStockIds: [],
       medicineVariantId: medicineVariant.id,
       stockId: stock.id,
       currentQuantity: 0,
-    })
+    });
 
-    const batch = makeBatch()
-    await inMemoryBatchesRepository.create(batch)
+    const batch = makeBatch();
+    await inMemoryBatchesRepository.create(batch);
 
     const batchestock1 = makeBatchStock({
       batchId: batch.id,
@@ -374,10 +406,10 @@ describe('Register Entry', () => {
       stockId: stock.id,
       medicineStockId: medicineStock.id,
       currentQuantity: 10,
-    })
+    });
 
-    const batch2 = makeBatch()
-    await inMemoryBatchesRepository.create(batch2)
+    const batch2 = makeBatch();
+    await inMemoryBatchesRepository.create(batch2);
 
     const batchestock2 = makeBatchStock({
       batchId: batch2.id,
@@ -385,29 +417,33 @@ describe('Register Entry', () => {
       stockId: stock.id,
       medicineStockId: medicineStock.id,
       currentQuantity: 10,
-    })
+    });
 
-    await inMemoryMedicinesStockRepository.create(medicineStock)
-    await inMemoryBatchStocksRepository.create(batchestock1)
-    await inMemoryBatchStocksRepository.create(batchestock2)
+    await inMemoryMedicinesStockRepository.create(medicineStock);
+    await inMemoryBatchStocksRepository.create(batchestock1);
+    await inMemoryBatchStocksRepository.create(batchestock2);
     // medicineStock.batchesStockIds = [batchestock1.id, batchestock2.id]
     await inMemoryMedicinesStockRepository.addBatchStock(
       medicineStock.id.toString(),
       batchestock1.id.toString(),
-    )
+    );
     await inMemoryMedicinesStockRepository.addBatchStock(
       medicineStock.id.toString(),
       batchestock2.id.toString(),
-    )
-    await inMemoryMedicinesStockRepository.replenish(medicineStock.id.toString(), 20)
+    );
+    await inMemoryMedicinesStockRepository.replenish(
+      medicineStock.id.toString(),
+      20,
+    );
 
-    const movementType = makeMovementType()
-    await inMemoryMovementTypesRepository.create(movementType)
+    const movementType = makeMovementType();
+    await inMemoryMovementTypesRepository.create(movementType);
 
     const result1 = await sut.execute({
+      entryType: EntryType.MOVEMENT_TYPE,
+      transferId: undefined,
       medicines: [
         {
-
           medicineVariantId: medicineVariant.id.toString(),
           batches: [
             {
@@ -423,48 +459,56 @@ describe('Register Entry', () => {
               quantityToEntry: quantityToEntryBatch2,
             },
           ],
-        }],
+        },
+      ],
       nfNumber: '01234567890123456789012345678901234567891234',
       stockId: stock.id.toString(),
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
-    })
+    });
 
     const result2 = await sut.execute({
-      medicines: [{
-        medicineVariantId: medicineVariant.id.toString(),
-        batches: [
-          {
-            code: 'AZXD1',
-            expirationDate: addYears(new Date(), 1),
-            manufacturerId: 'asd',
-            quantityToEntry: quantityToEntryBatch3,
-          },
-        ],
-      }],
+      entryType: EntryType.MOVEMENT_TYPE,
+      transferId: undefined,
+      medicines: [
+        {
+          medicineVariantId: medicineVariant.id.toString(),
+          batches: [
+            {
+              code: 'AZXD1',
+              expirationDate: addYears(new Date(), 1),
+              manufacturerId: 'asd',
+              quantityToEntry: quantityToEntryBatch3,
+            },
+          ],
+        },
+      ],
       stockId: stock.id.toString(),
       nfNumber: '01234567890123456789012345678901234567891234',
       operatorId: operator.id.toString(),
       movementTypeId: movementType.id.toString(),
-    })
+    });
 
-    expect(result1.isRight()).toBeTruthy()
-    expect(result2.isRight()).toBeTruthy()
+    expect(result1.isRight()).toBeTruthy();
+    expect(result2.isRight()).toBeTruthy();
     if (result1.isRight()) {
-      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(2)
-      expect(inMemoryMovimentationRepository.items).toHaveLength(3)
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(2);
+      expect(inMemoryMovimentationRepository.items).toHaveLength(3);
       expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(
         quantityToEntryBatch + 10,
-      )
+      );
       expect(inMemoryBatchStocksRepository.items[1].quantity).toBe(
         quantityToEntryBatch2 + 10,
-      )
+      );
       expect(inMemoryBatchStocksRepository.items[2].quantity).toBe(
         quantityToEntryBatch3,
-      )
+      );
       expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(
-        quantityToEntryBatch + quantityToEntryBatch2 + quantityToEntryBatch3 + 20,
-      )
+        quantityToEntryBatch +
+          quantityToEntryBatch2 +
+          quantityToEntryBatch3 +
+          20,
+      );
     }
-  })
-})
+  });
+});

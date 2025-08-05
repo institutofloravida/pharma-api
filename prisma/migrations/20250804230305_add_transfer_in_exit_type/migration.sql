@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ExitType" ADD VALUE 'TRANSFER';

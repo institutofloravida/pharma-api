@@ -1,21 +1,23 @@
-import { MedicinesExitsRepository } from '@/domain/pharma/application/repositories/medicines-exits-repository'
+import { MedicinesExitsRepository } from '@/domain/pharma/application/repositories/medicines-exits-repository';
 import {
   ExitType,
   MedicineExit,
-} from '@/domain/pharma/enterprise/entities/exit'
-import { PrismaMedicineExitMapper } from '../mappers/prisma-medicine-exit-mapper'
-import { PrismaService } from '../prisma.service'
-import { Injectable } from '@nestjs/common'
-import { Meta } from '@/core/repositories/meta'
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details'
-import { PrismaExitDetailsMapper } from '../mappers/prisma-exit-details-mapper'
+} from '@/domain/pharma/enterprise/entities/exit';
+import { PrismaMedicineExitMapper } from '../mappers/prisma-medicine-exit-mapper';
+import { PrismaService } from '../prisma.service';
+import { Injectable } from '@nestjs/common';
+import { Meta } from '@/core/repositories/meta';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
+import { PrismaExitDetailsMapper } from '../mappers/prisma-exit-details-mapper';
 
 @Injectable()
 export class PrismaMedicinesExitsRepository
-implements MedicinesExitsRepository {
+  implements MedicinesExitsRepository
+{
   constructor(private prisma: PrismaService) {}
+
   async findById(id: string): Promise<ExitDetails | null> {
     const exit = await this.prisma.exit.findUnique({
       where: { id },
@@ -33,8 +35,8 @@ implements MedicinesExitsRepository {
           select: { name: true },
         },
       },
-    })
-    if (!exit) return null
+    });
+    if (!exit) return null;
 
     const items = await this.prisma.medicineStock.findMany({
       distinct: ['id'],
@@ -49,8 +51,7 @@ implements MedicinesExitsRepository {
           },
         },
       },
-
-    })
+    });
 
     return PrismaExitDetailsMapper.toDomain({
       ...exit,
@@ -60,14 +61,23 @@ implements MedicinesExitsRepository {
       items: items.length,
       operator: exit.operator.name,
       stock: exit.stock.name,
-    })
+    });
   }
 
   async create(medicineExit: MedicineExit): Promise<void> {
-    const data = PrismaMedicineExitMapper.toPrisma(medicineExit)
+    const data = PrismaMedicineExitMapper.toPrisma(medicineExit);
     await this.prisma.exit.create({
       data,
-    })
+    });
+  }
+
+  async findByTransferId(transferId: string): Promise<MedicineExit | null> {
+    const exit = await this.prisma.exit.findUnique({
+      where: { transferId },
+    });
+    if (!exit) return null;
+
+    return PrismaMedicineExitMapper.toDomain(exit);
   }
 
   async findMany(
@@ -79,33 +89,31 @@ implements MedicinesExitsRepository {
       exitDate?: Date;
     },
   ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }> {
-    const { exitDate, exitType, institutionId, operatorId } = filters
+    const { exitDate, exitType, institutionId, operatorId } = filters;
 
-    const whereClauses: string[] = []
-    const params: any[] = []
-    let paramIndex = 1
+    const whereClauses: string[] = [];
+    const params: any[] = [];
+    let paramIndex = 1;
 
     if (institutionId) {
-      whereClauses.push(`s.institution_id = $${paramIndex++}`)
-      params.push(institutionId)
+      whereClauses.push(`s.institution_id = $${paramIndex++}`);
+      params.push(institutionId);
     }
     if (operatorId) {
-      whereClauses.push(`e.operator_id = $${paramIndex++}`)
-      params.push(operatorId)
+      whereClauses.push(`e.operator_id = $${paramIndex++}`);
+      params.push(operatorId);
     }
     if (exitType) {
-      whereClauses.push(`e.exit_type = $${paramIndex++}`)
-      params.push(exitType)
+      whereClauses.push(`e.exit_type = $${paramIndex++}`);
+      params.push(exitType);
     }
     if (exitDate) {
-      whereClauses.push(`e.exit_date::date = $${paramIndex++}::date`)
-      params.push(exitDate)
+      whereClauses.push(`e.exit_date::date = $${paramIndex++}::date`);
+      params.push(exitDate);
     }
 
     const whereSQL =
-      whereClauses.length > 0
-        ? `WHERE ${whereClauses.join(' AND ')}`
-        : ''
+      whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
     const exits = await this.prisma.$queryRawUnsafe<
       {
@@ -139,7 +147,7 @@ group by e.id, o."name", s."name", i."name"
     limit 10 offset ${(page - 1) * 10}
   `,
       ...params,
-    )
+    );
 
     // Para totalCount, faz uma query separada
     const totalCountResult = await this.prisma.$queryRawUnsafe<
@@ -159,8 +167,8 @@ group by e.id, o."name", s."name", i."name"
     ) as sub
   `,
       ...params,
-    )
-    const totalCount = totalCountResult[0]?.count || 0
+    );
+    const totalCount = totalCountResult[0]?.count || 0;
 
     const medicinesExitsMapped = exits.map((exit) => {
       return ExitDetails.create({
@@ -171,14 +179,14 @@ group by e.id, o."name", s."name", i."name"
         exitType: exit.exitType,
         exitId: new UniqueEntityId(exit.id),
         items: Number(exit.items),
-      })
-    })
+      });
+    });
     return {
       medicinesExits: medicinesExitsMapped,
       meta: {
         page,
         totalCount,
       },
-    }
+    };
   }
 }

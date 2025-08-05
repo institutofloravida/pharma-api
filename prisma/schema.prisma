@@ -176,7 +176,8 @@ model MovementType {
   createdAt DateTime          @default(now()) @map("created_at")
   updatedAt DateTime?         @updatedAt @map("updated_at")
 
-  movimentations Movimentation[]
+  exits   Exit[]
+  entries MedicineEntry[]
 }
 
 model MedicineStock {
@@ -307,36 +308,44 @@ model Dispensation {
 }
 
 model Movimentation {
-  id             String            @id @default(uuid())
-  direction      MovementDirection
-  batchStockId   String            @map("batch_stock_id")
-  quantity       Int
-  movementTypeId String?           @map("movement_type_id")
-  exitId         String?           @map("exit_id")
-  entryId        String?           @map("entry_id")
-  createdAt      DateTime          @default(now()) @map("created_at")
-  updatedAt      DateTime?         @updatedAt @map("updated_at")
+  id           String            @id @default(uuid())
+  direction    MovementDirection
+  batchStockId String            @map("batch_stock_id")
+  quantity     Int
+  exitId       String?           @map("exit_id")
+  entryId      String?           @map("entry_id")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime?         @updatedAt @map("updated_at")
 
   entry MedicineEntry? @relation(fields: [entryId], references: [id])
   exit  Exit?          @relation(fields: [exitId], references: [id])
 
-  batchStock   BatcheStock   @relation(fields: [batchStockId], references: [id])
-  movementType MovementType? @relation(fields: [movementTypeId], references: [id])
+  batchStock BatcheStock @relation(fields: [batchStockId], references: [id])
 
   @@map("movimentation")
 }
 
-model MedicineEntry {
-  id         String    @id @default(uuid())
-  operatorId String    @map("operator_id")
-  entryDate  DateTime  @default(now()) @map("entry_date")
-  stockId    String    @map("stock_id")
-  nfNumber   String    @map("nf_number")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime? @updatedAt @map("updated_at")
+enum EntryType {
+  TRANSFER
+  MOVEMENT_TYPE
+}
 
+model MedicineEntry {
+  id             String    @id @default(uuid())
+  operatorId     String    @map("operator_id")
+  entryDate      DateTime  @default(now()) @map("entry_date")
+  stockId        String    @map("stock_id")
+  movementTypeId String?   @map("movement_type_id")
+  nfNumber       String?   @map("nf_number")
+  transferId     String?   @unique @map("transfer_id")
+  entryType      EntryType @map("entry_type")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime? @updatedAt @map("updated_at")
+
+  transfer      Transfer?       @relation(fields: [transferId], references: [id])
   operator      Operator        @relation(fields: [operatorId], references: [id])
   stock         Stock           @relation(fields: [stockId], references: [id])
+  movementType  MovementType?   @relation(fields: [movementTypeId], references: [id])
   movimentation Movimentation[]
 
   @@map("medicines_entries")
@@ -347,6 +356,7 @@ enum ExitType {
   MOVEMENT_TYPE
   EXPIRATION
   DONATION
+  TRANSFER
 }
 
 model Exit {
@@ -356,10 +366,14 @@ model Exit {
   stockId                  String    @map("stock_id")
   destinationInstitutionId String?   @map("destination_institution_id")
   dispensationId           String?   @unique @map("dispensation_id")
+  transferId               String?   @unique @map("transfer_id")
+  movementTypeId           String?   @map("movement_type_id")
   exitDate                 DateTime  @default(now()) @map("exit_date")
   createdAt                DateTime  @default(now()) @map("created_at")
   updatedAt                DateTime? @updatedAt @map("updated_at")
 
+  movementType           MovementType?   @relation(fields: [movementTypeId], references: [id])
+  transfer               Transfer?       @relation(fields: [transferId], references: [id])
   dispensation           Dispensation?   @relation(fields: [dispensationId], references: [id])
   destinationInstitution Institution?    @relation(fields: [destinationInstitutionId], references: [id])
   operator               Operator        @relation(fields: [operatorId], references: [id])
@@ -367,6 +381,25 @@ model Exit {
   movimentation          Movimentation[]
 
   @@map("exits")
+}
+
+enum TransferStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Transfer {
+  id                 String         @id @default(uuid())
+  stockDestinationId String         @map("stock_destination_id")
+  status             TransferStatus
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime?      @updatedAt @map("updated_at")
+
+  exit  Exit?
+  entry MedicineEntry?
+
+  @@map("transfers")
 }
 
 model UseMedicine {

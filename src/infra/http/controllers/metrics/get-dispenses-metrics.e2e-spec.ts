@@ -206,7 +206,10 @@ describe('Get Dispense Metrics (E2E)', () => {
         exitType: ExitType.DISPENSATION,
         operatorId: operator.id,
         stockId: stock.id,
+        movementTypeId: undefined,
         dispensationId: dispensation1.id,
+        destinationInstitutionId: undefined,
+        transferId: undefined,
         exitDate: new Date(2025, 0, 1),
       }),
       medicineExitFactory.makePrismaMedicineExit({
@@ -214,6 +217,9 @@ describe('Get Dispense Metrics (E2E)', () => {
         operatorId: operator.id,
         stockId: stock.id,
         dispensationId: dispensation2.id,
+        destinationInstitutionId: undefined,
+        transferId: undefined,
+        movementTypeId: undefined,
         exitDate: new Date(2025, 0, 2),
       }),
     ]);
@@ -222,7 +228,6 @@ describe('Get Dispense Metrics (E2E)', () => {
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock.id,
         quantity: 20,
-        movementTypeId: undefined,
         direction: 'EXIT',
         entryId: undefined,
         exitId: exit1.id,
@@ -230,7 +235,6 @@ describe('Get Dispense Metrics (E2E)', () => {
       movimentationFactory.makePrismaMovimentation({
         batchStockId: batchStock2.id,
         quantity: 10,
-        movementTypeId: undefined,
         direction: 'EXIT',
         entryId: undefined,
         exitId: exit2.id,

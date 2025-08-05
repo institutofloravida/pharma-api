@@ -13,9 +13,6 @@ export class PrismaMovimentationMapper {
         quantity: raw.quantity,
         entryId: raw.entryId ? new UniqueEntityId(raw.entryId) : undefined,
         exitId: raw.exitId ? new UniqueEntityId(raw.exitId) : undefined,
-        movementTypeId: raw.movementTypeId
-          ? new UniqueEntityId(raw.movementTypeId)
-          : undefined,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt ?? undefined,
       },
@@ -34,7 +31,6 @@ export class PrismaMovimentationMapper {
 
       entryId: movimentation.entryId?.toString(),
       exitId: movimentation.exitId?.toString(),
-      movementTypeId: movimentation.movementTypeId?.toString(),
       createdAt: movimentation.createdAt,
       updatedAt: movimentation.updatedAt,
     };
