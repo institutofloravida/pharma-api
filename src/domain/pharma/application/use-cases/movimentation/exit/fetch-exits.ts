@@ -1,9 +1,9 @@
-import { Either, right } from '@/core/either'
-import { Injectable } from '@nestjs/common'
-import { Meta } from '@/core/repositories/meta'
-import { MedicinesExitsRepository } from '../../../repositories/medicines-exits-repository'
-import { ExitType } from '@/domain/pharma/enterprise/entities/exit'
-import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details'
+import { Either, right } from '@/core/either';
+import { Injectable } from '@nestjs/common';
+import { Meta } from '@/core/repositories/meta';
+import { MedicinesExitsRepository } from '../../../repositories/medicines-exits-repository';
+import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
+import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
 
 interface FetchMedicineExitUseCaseRequest {
   page: number;
@@ -19,7 +19,7 @@ type FetchMedicineExitUseCaseResponse = Either<
     medicinesExits: ExitDetails[];
     meta: Meta;
   }
->
+>;
 
 @Injectable()
 export class FetchMedicinesExitsUseCase {
@@ -41,7 +41,7 @@ export class FetchMedicinesExitsUseCase {
           institutionId,
           operatorId,
         },
-      )
+      );
 
     return right({
       medicinesExits,
@@ -49,6 +49,6 @@ export class FetchMedicinesExitsUseCase {
         page: meta.page,
         totalCount: meta.totalCount,
       },
-    })
+    });
   }
 }

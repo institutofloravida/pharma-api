@@ -15,6 +15,7 @@ export class PrismaTransferMapper {
       {
         status: TransferStatus[raw.status],
         stockDestinationId: new UniqueEntityId(raw.stockDestinationId),
+        confirmedAt: raw.confirmedAt ? new Date(raw.confirmedAt) : null,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -26,6 +27,9 @@ export class PrismaTransferMapper {
     return {
       id: transfer.id.toString(),
       status: $Enums.TransferStatus[transfer.status],
+      confirmedAt: transfer.confirmedAt
+        ? transfer.confirmedAt.toISOString()
+        : null,
       stockDestinationId: transfer.stockDestinationId.toString(),
       createdAt: transfer.createdAt,
       updatedAt: transfer.updatedAt,

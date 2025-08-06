@@ -12,6 +12,7 @@ export enum TransferStatus {
 export interface TransferProps {
   status: TransferStatus;
   stockDestinationId: UniqueEntityId;
+  confirmedAt?: Date | null;
   createdAt: Date;
   updatedAt?: Date | null;
 }
@@ -32,6 +33,15 @@ export class Transfer extends Entity<TransferProps> {
 
   set stockDestinationId(value: UniqueEntityId) {
     this.props.stockDestinationId = value;
+    this.touch();
+  }
+
+  get confirmedAt() {
+    return this.props.confirmedAt;
+  }
+
+  set confirmedAt(value: Date | null | undefined) {
+    this.props.confirmedAt = value;
     this.touch();
   }
 

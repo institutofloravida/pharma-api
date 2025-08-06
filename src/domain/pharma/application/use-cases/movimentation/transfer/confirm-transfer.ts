@@ -139,6 +139,7 @@ export class ConfirmTransferUseCase {
 
     // confirm transfer
     transfer.status = TransferStatus.CONFIRMED;
+    transfer.confirmedAt = new Date();
     await this.transferRepository.save(transfer);
 
     return right({
