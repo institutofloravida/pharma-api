@@ -31,10 +31,9 @@ import { makeMedicineExit } from 'test/factories/make-medicine-exit';
 import { makeMovimentation } from 'test/factories/make-movimentation';
 import { makeTransfer } from 'test/factories/make-transfer';
 import { TransferStatus } from '@/domain/pharma/enterprise/entities/transfer';
-import { ConfirmTransferUseCase } from './confirm-transfer';
-import { RegisterMedicineEntryUseCase } from '../entry/register-medicine-entry';
-import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization';
-import { InMemoryUseMedicinesRepository } from 'test/repositories/in-memory-use-medicines-repository';
+import { GetTransferUseCase } from './get-transfer';
+import { TransferWithMovimentation } from '@/domain/pharma/enterprise/entities/value-objects/tranfer-with-movimentation';
+import { makeManufacturer } from 'test/factories/make-manufacturer';
 
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository;
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository;
@@ -53,13 +52,10 @@ let inMemoryManufacturersRepository: InMemoryManufacturersRepository;
 let inMemoryMovimentationRepository: InMemoryMovimentationRepository;
 let inMemoryMedicinesEntriesRepository: InMemoryMedicinesEntriesRepository;
 let inMemoryTransferRepository: InMemoryTransferRepository;
-let inMemoryUseMedicinesRepository: InMemoryUseMedicinesRepository;
 
-let createMonthlyMedicineUtilizationUseCase: CreateMonthlyMedicineUtilizationUseCase;
-let registerEntryUseCase: RegisterMedicineEntryUseCase;
-let sut: ConfirmTransferUseCase;
+let sut: GetTransferUseCase;
 
-describe('Confirm Transfer', () => {
+describe('Get Transfer', () => {
   beforeEach(() => {
     inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository();
     inMemoryTherapeuticClassesRepository =
@@ -142,49 +138,21 @@ describe('Confirm Transfer', () => {
       inMemoryMedicinesExitsRepository,
     );
 
-    inMemoryUseMedicinesRepository = new InMemoryUseMedicinesRepository(
-      inMemoryMedicinesStockRepository,
+    inMemoryTransferRepository = new InMemoryTransferRepository(
+      inMemoryOperatorsRepository,
       inMemoryStocksRepository,
+      inMemoryMovimentationRepository,
+      inMemoryMedicinesExitsRepository,
       inMemoryInstitutionsRepository,
-      inMemoryMedicinesExitsRepository,
-      inMemoryMedicinesVariantsRepository,
-      inMemoryMedicinesRepository,
-      inMemoryPharmaceuticalFormsRepository,
-      inMemoryUnitsMeasureRepository,
-      inMemoryMovimentationRepository,
-      inMemoryBatchStocksRepository,
-    );
-
-    createMonthlyMedicineUtilizationUseCase =
-      new CreateMonthlyMedicineUtilizationUseCase(
-        inMemoryUseMedicinesRepository,
-        inMemoryMedicinesStockRepository,
-      );
-
-    registerEntryUseCase = new RegisterMedicineEntryUseCase(
-      inMemoryStocksRepository,
-      inMemoryMedicinesEntriesRepository,
-      inMemoryMovimentationRepository,
-      inMemoryMedicinesStockRepository,
-      inMemoryBatchStocksRepository,
       inMemoryBatchesRepository,
-      inMemoryMedicinesVariantsRepository,
-      createMonthlyMedicineUtilizationUseCase,
-    );
-
-    inMemoryTransferRepository = new InMemoryTransferRepository();
-
-    sut = new ConfirmTransferUseCase(
-      inMemoryTransferRepository,
-      inMemoryMovimentationRepository,
-      inMemoryMedicinesExitsRepository,
-      registerEntryUseCase,
       inMemoryBatchStocksRepository,
-      inMemoryBatchesRepository,
+      inMemoryManufacturersRepository,
     );
+
+    sut = new GetTransferUseCase(inMemoryTransferRepository);
   });
 
-  it('shoult be able to register a new transfer', async () => {
+  it('shoult be able to get a transfer', async () => {
     const quantityToExit = 5;
 
     const institution = makeInstitution();
@@ -238,7 +206,12 @@ describe('Confirm Transfer', () => {
       currentQuantity: 30,
     });
 
-    const batch1 = makeBatch();
+    const manufacturer = makeManufacturer();
+    await inMemoryManufacturersRepository.create(manufacturer);
+
+    const batch1 = makeBatch({
+      manufacturerId: manufacturer.id,
+    });
     await inMemoryBatchesRepository.create(batch1);
 
     const batchestock1 = makeBatchStock({
@@ -285,38 +258,12 @@ describe('Confirm Transfer', () => {
     );
 
     const result = await sut.execute({
-      operatorId: operator2.id.toString(),
       transferId: transfer.id.toString(),
     });
 
     expect(result.isRight()).toBeTruthy();
-    console.log(inMemoryMovimentationRepository.items);
     if (result.isRight()) {
-      expect(inMemoryTransferRepository.items).toHaveLength(1);
-      expect(inMemoryTransferRepository.items[0].status).toBe(
-        TransferStatus.CONFIRMED,
-      );
-      expect(inMemoryBatchesRepository.items).toHaveLength(1);
-      expect(inMemoryBatchStocksRepository.items).toHaveLength(2);
-      expect(inMemoryMedicinesStockRepository.items).toHaveLength(2);
-      expect(inMemoryMedicinesExitsRepository.items).toHaveLength(1);
-      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(1);
-      expect(inMemoryMovimentationRepository.items).toHaveLength(2);
-      expect(inMemoryMovimentationRepository.items).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            quantity: quantityToExit,
-            direction: 'EXIT',
-          }),
-          expect.objectContaining({
-            quantity: quantityToExit,
-            direction: 'ENTRY',
-            entryId: expect.objectContaining({
-              value: expect.any(String),
-            }),
-          }),
-        ]),
-      );
+      expect(result.value.transfer).toBeInstanceOf(TransferWithMovimentation);
     }
   });
 });

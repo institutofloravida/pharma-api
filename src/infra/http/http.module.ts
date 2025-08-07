@@ -154,6 +154,8 @@ import { ConfirmTransferController } from './controllers/movimentation/transfer/
 import { ConfirmTransferUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/confirm-transfer';
 import { FetchTransfersController } from './controllers/movimentation/transfer/fetch-transfers.controller';
 import { FetchTransfersUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/fetch-transfers';
+import { GetTransferDetailsController } from './controllers/movimentation/transfer/get-transfer.controller';
+import { GetTransferUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/get-transfer';
 
 @Module({
   imports: [
@@ -185,6 +187,7 @@ import { FetchTransfersUseCase } from '@/domain/pharma/application/use-cases/mov
     GetMovimentationInAPeriodController,
     GetMonthlyMedicineUtilizationController,
     GetDonationReportController,
+    GetTransferDetailsController,
     DispensationPreviewController,
     CreateAccountOperatorController,
     CreateTherapeuticClassController,
@@ -262,6 +265,7 @@ import { FetchTransfersUseCase } from '@/domain/pharma/application/use-cases/mov
     GetMovimentationInAPeriodUseCase,
     GetMonthlyMedicineUtilizationUseCase,
     GetExitByDonationUseCase,
+    GetTransferUseCase,
     DispensationPreviewUseCase,
     RegisterOperatorUseCase,
     CreateTherapeuticClassUseCase,

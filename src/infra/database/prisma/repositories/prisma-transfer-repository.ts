@@ -9,8 +9,9 @@ import { PrismaService } from '../prisma.service';
 import { Meta } from '@/core/repositories/meta';
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { TransferDetails } from '@/domain/pharma/enterprise/entities/value-objects/tranfer-details';
-import { $Enums, type Prisma } from 'prisma/generated';
+import { $Enums, Prisma } from 'prisma/generated';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { TransferWithMovimentation } from '@/domain/pharma/enterprise/entities/value-objects/tranfer-with-movimentation';
 
 @Injectable()
 export class PrismaTransferRepository implements TransferRepository {
@@ -34,6 +35,98 @@ export class PrismaTransferRepository implements TransferRepository {
       where: { id: transfer.id.toString() },
       data,
     });
+  }
+
+  async findByIdWithMovimentation(
+    id: string,
+  ): Promise<TransferWithMovimentation | null> {
+    const transfer = await this.prisma.transfer.findUnique({
+      where: { id },
+      include: {
+        exit: {
+          include: {
+            movimentation: {
+              include: {
+                batchStock: {
+                  include: {
+                    batch: {
+                      select: {
+                        manufacturer: true,
+                        expirationDate: true,
+                        code: true,
+                      },
+                    },
+                    medicineVariant: {
+                      select: {
+                        medicine: true,
+                        pharmaceuticalForm: true,
+                        unitMeasure: true,
+                        dosage: true,
+                        complement: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+
+            stock: {
+              include: {
+                institution: true,
+              },
+            },
+            operator: true,
+          },
+        },
+        entry: {
+          include: {
+            stock: {
+              include: {
+                institution: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return transfer
+      ? TransferWithMovimentation.create({
+          transferId: new UniqueEntityId(transfer.id),
+          transferDate: transfer.exit ? transfer.exit.exitDate : new Date(),
+          operator: transfer.exit ? transfer.exit.operator.name : '',
+          status: TransferStatus[transfer.status],
+          institutionOrigin: transfer.exit?.stock.institution
+            ? transfer.exit.stock.institution.name
+            : '',
+          institutionDestination: transfer.entry?.stock.institution
+            ? transfer.entry.stock.institution.name
+            : '',
+          stockOrigin: transfer.exit ? transfer.exit.stock.name : '',
+          stockDestination: transfer.entry?.stock.name ?? '',
+          batches: transfer.exit?.movimentation
+            ? transfer.exit.movimentation.map((movimentation) => ({
+                medicine:
+                  movimentation.batchStock.medicineVariant.medicine.name,
+                pharmaceuticalForm:
+                  movimentation.batchStock.medicineVariant.pharmaceuticalForm
+                    .name,
+                unitMeasure:
+                  movimentation.batchStock.medicineVariant.unitMeasure.acronym,
+                dosage: movimentation.batchStock.medicineVariant.dosage,
+                complement:
+                  movimentation.batchStock.medicineVariant.complement ??
+                  undefined,
+                batchId: new UniqueEntityId(movimentation.batchStock.batchId),
+                code: movimentation.batchStock.batch.code,
+                manufacturer: movimentation.batchStock.batch.manufacturer.name,
+                expirationDate: movimentation.batchStock.batch.expirationDate,
+                quantity: movimentation.quantity,
+              }))
+            : [],
+          confirmedAt: transfer.confirmedAt ?? null,
+        })
+      : null;
   }
 
   async findMany(
