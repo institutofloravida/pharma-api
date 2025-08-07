@@ -8,8 +8,10 @@ export interface TransferDetailsProps {
   transferDate: Date;
   confirmedAt?: Date | null;
   institutionOrigin: string;
+  institutionOriginId: string;
   stockOrigin: string;
   institutionDestination?: string;
+  institutionDestinationId?: string;
   stockDestination: string;
   operator: string;
   batches: number;
@@ -44,8 +46,16 @@ export class TransferDetails extends ValueObject<TransferDetailsProps> {
     return this.props.institutionOrigin;
   }
 
+  get institutionOriginId() {
+    return this.props.institutionOriginId;
+  }
+
   get institutionDestination() {
     return this.props.institutionDestination;
+  }
+
+  get institutionDestinationId() {
+    return this.props.institutionDestinationId;
   }
 
   get operator() {

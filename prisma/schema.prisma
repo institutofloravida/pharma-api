@@ -65,6 +65,7 @@ model Stock {
 
   medicinesStocks MedicineStock[]
   batchestocks    BatcheStock[]
+  transfers       Transfer[]      @relation("TransferStockDestination")
   entries         MedicineEntry[]
   exits           Exit[]
   institution     Institution?    @relation(fields: [institutionId], references: [id])
@@ -398,6 +399,8 @@ model Transfer {
   confirmedAt        DateTime?      @map("confirmed_at")
   exit               Exit?
   entry              MedicineEntry?
+
+  stockDestination Stock @relation("TransferStockDestination", fields: [stockDestinationId], references: [id])
 
   @@map("transfers")
 }

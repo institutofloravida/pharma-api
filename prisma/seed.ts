@@ -4,6 +4,7 @@ import { InstitutionType, OperatorRole, PrismaClient } from './generated';
 const prisma = new PrismaClient();
 
 async function clearDatabase() {
+  await prisma.transfer.deleteMany();
   await prisma.address.deleteMany();
   await prisma.patient.deleteMany();
   await prisma.movimentation.deleteMany();

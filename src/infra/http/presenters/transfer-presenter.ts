@@ -5,7 +5,9 @@ export class TransferPresenter {
     return {
       transferId: transfer.transferId.toString(),
       institutionOrigin: transfer.institutionOrigin,
+      institutionOriginId: transfer.institutionOriginId,
       institutionDestination: transfer.institutionDestination,
+      institutionDestinationId: transfer.institutionDestinationId,
       stockOrigin: transfer.stockOrigin,
       stockDestination: transfer.stockDestination,
       status: transfer.status,

@@ -43,6 +43,14 @@ export class PrismaTransferRepository implements TransferRepository {
     const transfer = await this.prisma.transfer.findUnique({
       where: { id },
       include: {
+        stockDestination: {
+          select: {
+            name: true,
+            institution: {
+              select: { name: true },
+            },
+          },
+        },
         exit: {
           include: {
             movimentation: {
@@ -99,11 +107,11 @@ export class PrismaTransferRepository implements TransferRepository {
           institutionOrigin: transfer.exit?.stock.institution
             ? transfer.exit.stock.institution.name
             : '',
-          institutionDestination: transfer.entry?.stock.institution
-            ? transfer.entry.stock.institution.name
+          institutionDestination: transfer.stockDestination.institution
+            ? transfer.stockDestination.institution.name
             : '',
           stockOrigin: transfer.exit ? transfer.exit.stock.name : '',
-          stockDestination: transfer.entry?.stock.name ?? '',
+          stockDestination: transfer.stockDestination.name ?? '',
           batches: transfer.exit?.movimentation
             ? transfer.exit.movimentation.map((movimentation) => ({
                 medicine:
@@ -141,24 +149,35 @@ export class PrismaTransferRepository implements TransferRepository {
     const { institutionId, operatorId, status, transferDate } = filters;
 
     const whereClause: Prisma.TransferWhereInput = {
-      exit: {
-        stock: {
-          institutionId: {
-            equals: institutionId,
+      OR: [
+        {
+          exit: {
+            stock: {
+              institutionId,
+            },
           },
         },
-        ...(operatorId && {
-          operatorId: {
-            equals: operatorId,
+        {
+          stockDestination: {
+            institutionId,
           },
-        }),
-        ...(transferDate && {
-          exitDate: {
-            gte: transferDate,
-            lte: transferDate,
-          },
-        }),
-      },
+        },
+      ],
+      ...(operatorId || transferDate
+        ? {
+            exit: {
+              ...(operatorId && {
+                operatorId,
+              }),
+              ...(transferDate && {
+                exitDate: {
+                  gte: transferDate,
+                  lte: transferDate,
+                },
+              }),
+            },
+          }
+        : {}),
       ...(status && {
         status: {
           equals: $Enums.TransferStatus[status],
@@ -172,7 +191,16 @@ export class PrismaTransferRepository implements TransferRepository {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: { exit: { exitDate: 'desc' } },
+
         include: {
+          stockDestination: {
+            select: {
+              name: true,
+              institution: {
+                select: { name: true, id: true },
+              },
+            },
+          },
           exit: {
             select: {
               id: true,
@@ -184,7 +212,10 @@ export class PrismaTransferRepository implements TransferRepository {
                 },
               },
               stock: {
-                select: { name: true, institution: { select: { name: true } } },
+                select: {
+                  name: true,
+                  institution: { select: { name: true, id: true } },
+                },
               },
               operator: {
                 select: { name: true },
@@ -197,7 +228,7 @@ export class PrismaTransferRepository implements TransferRepository {
                 select: {
                   name: true,
                   institution: {
-                    select: { name: true },
+                    select: { name: true, id: true },
                   },
                 },
               },
@@ -213,13 +244,17 @@ export class PrismaTransferRepository implements TransferRepository {
         transferDate: transfer.exit?.exitDate || new Date(),
         operator: transfer.exit?.operator.name || '',
         stockOrigin: transfer.exit?.stock.name || '',
-        institutionDestination: transfer.entry?.stock.institution?.name || '',
+        institutionDestination:
+          transfer.stockDestination.institution?.name || '',
+        institutionDestinationId:
+          transfer.stockDestination.institution?.id || '',
         status: TransferStatus[transfer.status],
         transferId: new UniqueEntityId(transfer.id),
         confirmedAt: transfer.confirmedAt || null,
         batches: transfer.exit?.movimentation.length || 0,
-        stockDestination: transfer.entry?.stock.name || '',
+        stockDestination: transfer.stockDestination.name || '',
         institutionOrigin: transfer.exit?.stock.institution?.name || '',
+        institutionOriginId: transfer.exit?.stock.institution?.id || '',
       });
     });
     return {
