@@ -1,4 +1,4 @@
-import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-medicines'
+import { DispensationWithMedicines } from '@/domain/pharma/enterprise/entities/value-objects/dispensation-with-medicines';
 
 export class DispensationWithMedicinesPresenter {
   static toHTTP(dispensation: DispensationWithMedicines) {
@@ -10,7 +10,7 @@ export class DispensationWithMedicinesPresenter {
       operatorId: dispensation.operatorId.toString(),
       operator: dispensation.operator,
       items: dispensation.items,
-      medicines: dispensation.medicines.map(medicine => {
+      medicines: dispensation.medicines.map((medicine) => {
         return {
           medicine: medicine.medicine,
           pharmaceuticalForm: medicine.pharmaceuticalForm,
@@ -18,8 +18,9 @@ export class DispensationWithMedicinesPresenter {
           complement: medicine.complement ?? null,
           quantity: medicine.quantity,
           medicineStockId: medicine.medicineStockId.toString(),
-        }
+          dosage: medicine.dosage, // Ensure dosage is included
+        };
       }),
-    }
+    };
   }
 }

@@ -303,6 +303,10 @@ async function main() {
         name: 'DOAÇÃO',
         direction: 'ENTRY',
       },
+      {
+        name: 'PERDA/ROUBO/FURTO',
+        direction: 'ENTRY',
+      },
     ],
   });
 

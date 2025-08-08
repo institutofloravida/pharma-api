@@ -260,7 +260,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           movimentation.direction === 'ENTRY'
             ? movimentation.entry?.entryType === 'MOVEMENT_TYPE'
               ? (movimentation.entry.movementType?.name ?? '')
-              : undefined
+              : (movimentation.entry?.entryType ?? '')
             : movimentation.exit?.exitType === 'MOVEMENT_TYPE'
               ? (movimentation.exit.movementType?.name ?? '')
               : (movimentation.exit?.exitType ?? ''),

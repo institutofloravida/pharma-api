@@ -348,7 +348,8 @@ export class PrismaDispensationsMedicinesRepository
           'pharmaceuticalForm', meds."pharmaceuticalForm",
           'unitMeasure', meds."unitMeasure",
           'complement', meds.complement,
-          'quantity', meds.quantity
+          'quantity', meds.quantity,
+          'dosage', meds.dosage
         )
       ) FILTER (WHERE meds."medicineStockId" IS NOT NULL), '[]') as medicines
     FROM dispensations d
@@ -362,7 +363,8 @@ export class PrismaDispensationsMedicinesRepository
         bs.medicine_stock_id AS "medicineStockId",
         m2.name AS medicine,
         pf.name AS "pharmaceuticalForm",
-        um.name AS "unitMeasure",
+        um.acronym AS "unitMeasure",
+        mv.dosage AS "dosage",
         mv.complement AS complement,
         SUM(mtn.quantity) AS quantity
       FROM movimentation mtn
@@ -373,7 +375,7 @@ export class PrismaDispensationsMedicinesRepository
       INNER JOIN pharmaceutical_forms pf ON pf.id = mv.pharmaceutical_form_id
       INNER JOIN unit_measures um ON um.id = mv.unit_measure_id
       WHERE mtn.exit_id = e.id
-      GROUP BY bs.medicine_stock_id, m2.name, pf.name, um.name, mv.complement
+      GROUP BY bs.medicine_stock_id, m2.name, pf.name, um.name, mv.complement, um.acronym, mv.dosage
     ) meds ON TRUE
     ${whereSQL}
     GROUP BY d.id, d.dispensation_date, o.id, o.name, p.id, p.name, e.id, e.exit_date, s.name
@@ -398,6 +400,7 @@ export class PrismaDispensationsMedicinesRepository
             pharmaceuticalForm: med.pharmaceuticalForm,
             unitMeasure: med.unitMeasure,
             complement: med.complement,
+            dosage: med.dosage,
             quantity: med.quantity,
           })),
         }),

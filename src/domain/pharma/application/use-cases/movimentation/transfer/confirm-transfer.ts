@@ -40,7 +40,6 @@ export class ConfirmTransferUseCase {
     operatorId,
     transferId,
   }: confirmTransferUseCaseRequest): Promise<confirmTransferUseCaseResponse> {
-    // find transfer
     const transfer = await this.transferRepository.findById(transferId);
 
     if (!transfer) {
@@ -51,7 +50,6 @@ export class ConfirmTransferUseCase {
       return left(new Error('Transfer already completed'));
     }
 
-    // find exit
     const exit = await this.exitsRepository.findByTransferId(
       transfer.id.toString(),
     );
@@ -60,7 +58,6 @@ export class ConfirmTransferUseCase {
       return left(new Error('Exit not found for this transfer'));
     }
 
-    // fetch movimentation by exit
     const movimentations =
       await this.movimentationRepository.fetchMovimentation({
         exitId: exit.id.toString(),
@@ -125,7 +122,6 @@ export class ConfirmTransferUseCase {
       }
     }
 
-    // register entry
     await this.registerEntryUseCase.execute({
       entryType: EntryType.TRANSFER,
       movementTypeId: undefined,
@@ -137,7 +133,6 @@ export class ConfirmTransferUseCase {
       entryDate: new Date(),
     });
 
-    // confirm transfer
     transfer.status = TransferStatus.CONFIRMED;
     transfer.confirmedAt = new Date();
     await this.transferRepository.save(transfer);
