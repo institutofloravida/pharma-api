@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 async function clearDatabase() {
   await prisma.transfer.deleteMany();
   await prisma.address.deleteMany();
-  await prisma.patient.deleteMany();
   await prisma.movimentation.deleteMany();
   await prisma.useMedicine.deleteMany();
   await prisma.exit.deleteMany();
@@ -26,6 +25,7 @@ async function clearDatabase() {
   await prisma.operator.deleteMany();
   await prisma.institution.deleteMany();
   await prisma.movementType.deleteMany();
+  await prisma.patient.deleteMany();
 }
 
 async function main() {
