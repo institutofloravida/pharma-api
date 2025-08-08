@@ -330,7 +330,7 @@ export class PrismaDispensationsMedicinesRepository
 
     const dispensations = await this.prisma.$queryRawUnsafe<any[]>(
       `
-    SELECT 
+    SELECT
       d.id as "dispensationId",
       d.dispensation_date as "dispensationDate",
       o.id as "operatorId",
@@ -419,45 +419,39 @@ export class PrismaDispensationsMedicinesRepository
     startDate: Date,
     endDate: Date,
   ): Promise<{ dispenses: DispensationPerDay[]; meta: MetaReport }> {
-    const whereClause: Prisma.DispensationWhereInput = {
-      exit: {
-        stock: {
-          institution: {
-            id: {
-              equals: institutionId,
-            },
-          },
-        },
-      },
-      dispensationDate: { gte: new Date(startDate), lte: new Date(endDate) },
-    };
+    const dispensesGroupedByDay = await this.prisma.$queryRawUnsafe<
+      Array<{ dispensationDate: Date; total: number }>
+    >(
+      `
+    SELECT
+      DATE(d."dispensation_date") AS "dispensationDate",
+      COUNT(*) AS total
+    FROM "dispensations" d
+    INNER JOIN "exits" e ON e."dispensation_id" = d.id
+    INNER JOIN "stocks" s ON s.id = e."stock_id"
+    WHERE s."institution_id" = $1
+      AND d."dispensation_date" >= $2
+      AND d."dispensation_date" <= $3
+    GROUP BY DATE(d."dispensation_date")
+    ORDER BY DATE(d."dispensation_date") ASC
+    `,
+      institutionId,
+      startDate,
+      endDate,
+    );
 
-    const totalCount = await this.prisma.dispensation.count({
-      where: {
-        exit: {
-          stock: {
-            institutionId: {
-              equals: institutionId,
-            },
-          },
-        },
-      },
-    });
-    const dispensesGroupedByDay = await this.prisma.dispensation.groupBy({
-      by: ['dispensationDate'],
-      where: whereClause,
-      _count: {
-        _all: true,
-      },
-      orderBy: {
-        dispensationDate: 'asc',
-      },
-    });
+    const totalCount = dispensesGroupedByDay.reduce(
+      (acc, curr) => acc + Number(curr.total),
+      0,
+    );
 
     const dispensesPerDay: DispensationPerDay[] = dispensesGroupedByDay.map(
       (group) => ({
-        dispensationDate: group.dispensationDate,
-        total: group._count._all,
+        dispensationDate:
+          group.dispensationDate instanceof Date
+            ? group.dispensationDate.toISOString().split('T')[0]
+            : group.dispensationDate,
+        total: Number(group.total),
       }),
     );
 

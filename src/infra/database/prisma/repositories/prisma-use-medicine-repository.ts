@@ -1,33 +1,33 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma.service'
-import { UseMedicinesRepository } from '@/domain/pharma/application/repositories/use-medicine-repository'
-import { UseMedicine } from '@/domain/pharma/enterprise/entities/use-medicine'
-import { PrismaUseMedicineMapper } from '../mappers/prisma-use-medicine-maper'
-import { MetaReport } from '@/core/repositories/meta'
-import { Prisma } from 'prisma/generated'
-import { UseMedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/use-medicine-details'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { UseMedicinesRepository } from '@/domain/pharma/application/repositories/use-medicine-repository';
+import { UseMedicine } from '@/domain/pharma/enterprise/entities/use-medicine';
+import { PrismaUseMedicineMapper } from '../mappers/prisma-use-medicine-maper';
+import { MetaReport } from '@/core/repositories/meta';
+import { Prisma } from 'prisma/generated';
+import { UseMedicineDetails } from '@/domain/pharma/enterprise/entities/value-objects/use-medicine-details';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 
 @Injectable()
 export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(useMedicine: UseMedicine): Promise<void> {
-    const data = PrismaUseMedicineMapper.toPrisma(useMedicine)
+    const data = PrismaUseMedicineMapper.toPrisma(useMedicine);
     await this.prisma.useMedicine.create({
       data,
-    })
+    });
   }
 
   async save(useMedicine: UseMedicine): Promise<void> {
-    const data = PrismaUseMedicineMapper.toPrisma(useMedicine)
+    const data = PrismaUseMedicineMapper.toPrisma(useMedicine);
 
     await this.prisma.useMedicine.update({
       where: {
         id: useMedicine.id.toString(),
       },
       data,
-    })
+    });
   }
 
   async findByMedicineStockIdAndYearAndMonth(
@@ -43,13 +43,13 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
           year,
         },
       },
-    })
+    });
 
     if (!useMedicine) {
-      return null
+      return null;
     }
 
-    return PrismaUseMedicineMapper.toDomain(useMedicine)
+    return PrismaUseMedicineMapper.toDomain(useMedicine);
   }
 
   async fetchMonthlyMedicinesUtilization(filters: {
@@ -62,33 +62,33 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     totalUtilization: number;
     meta: MetaReport;
   }> {
-    const { institutionId, month, year, stockId } = filters
+    const { institutionId, month, year, stockId } = filters;
     const useMedicinesWithTotalUsed = await this.prisma.$queryRaw<
-  Array<{
-    id: string;
-    year: number;
-    month: number;
-    previousBalance: number;
-    medicineStockId: string;
-    currentBalance: number;
-    used: number;
-    totalUsed: number;
-    medicine: string;
-    dosage: string;
-    unitMeasure: string;
-    pharmaceuticalForm: string;
-    complement?: string;
-    createdAt: Date;
-    updatedAt: Date | null;
-  }>
->(
+      Array<{
+        id: string;
+        year: number;
+        month: number;
+        previousBalance: number;
+        medicineStockId: string;
+        currentBalance: number;
+        used: number;
+        totalUsed: number;
+        medicine: string;
+        dosage: string;
+        unitMeasure: string;
+        pharmaceuticalForm: string;
+        complement?: string;
+        createdAt: Date;
+        updatedAt: Date | null;
+      }>
+    >(
       Prisma.sql`
     SELECT 
      um.id,
   um.year,
   um.month,
   um.previous_balance AS "previousBalance",
-  um.current_balance AS "currentBalance",
+  ms.current_quantity AS "currentBalance",
   um.medicine_stock_id AS "medicineStockId",
   um.created_at AS "createdAt",
   um.updated_at AS "updatedAt",
@@ -114,15 +114,14 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
       AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
     WHERE 
       s."institution_id" = ${institutionId}
-      ${stockId
-? Prisma.sql`AND s.id = ${stockId}`
-: Prisma.empty}
+      ${stockId ? Prisma.sql`AND s.id = ${stockId}` : Prisma.empty}
+
       AND um.year = ${year}
       AND um.month = ${month}
     GROUP BY 
-      um.id, mv."complement", mv."dosage", pf."name", um2."acronym", m."name"
+      um.id, mv."complement", mv."dosage", pf."name", um2."acronym", m."name", ms."current_quantity"
   `,
-    )
+    );
 
     const [totalGeneralResult] = await this.prisma.$queryRaw<
       Array<{ totalGeneralUsed: bigint }>
@@ -135,13 +134,11 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     INNER JOIN "stocks" s ON s.id = e."stock_id"
     WHERE 
       s."institution_id" = ${institutionId}
-      ${stockId
-? Prisma.sql`AND s.id = ${stockId}`
-: Prisma.sql``}
+      ${stockId ? Prisma.sql`AND s.id = ${stockId}` : Prisma.sql``}
       AND EXTRACT(YEAR FROM e."exit_date") = ${year}
       AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
   `,
-    )
+    );
 
     const utilization = useMedicinesWithTotalUsed.map((useMedicine) => {
       return UseMedicineDetails.create({
@@ -159,14 +156,14 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
         updatedAt: useMedicine.updatedAt,
         year: useMedicine.year,
         used: Number(useMedicine.totalUsed),
-      })
-    })
+      });
+    });
     return {
       meta: {
         totalCount: utilization.length,
       },
       totalUtilization: Number(totalGeneralResult.totalGeneralUsed),
       utilization,
-    }
+    };
   }
 }
