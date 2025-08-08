@@ -305,7 +305,7 @@ async function main() {
       },
       {
         name: 'PERDA/ROUBO/FURTO',
-        direction: 'ENTRY',
+        direction: 'EXIT',
       },
     ],
   });
