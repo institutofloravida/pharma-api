@@ -1,34 +1,36 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma.service'
-import { MedicinesVariantsRepository } from '@/domain/pharma/application/repositories/medicine-variant-repository'
-import { MedicineVariant } from '@/domain/pharma/enterprise/entities/medicine-variant'
-import { PrismaMedicineVariantMapper } from '../mappers/prisma-medicine-variant-mapper'
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine'
-import { PrismaMedicineVariantWithMedicineMapper } from '../mappers/prisma-medicine-variant-with-medicine-mapper'
-import { Meta } from '@/core/repositories/meta'
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { MedicinesVariantsRepository } from '@/domain/pharma/application/repositories/medicine-variant-repository';
+import { MedicineVariant } from '@/domain/pharma/enterprise/entities/medicine-variant';
+import { PrismaMedicineVariantMapper } from '../mappers/prisma-medicine-variant-mapper';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { MedicineVariantWithMedicine } from '@/domain/pharma/enterprise/entities/value-objects/medicine-variant-with-medicine';
+import { PrismaMedicineVariantWithMedicineMapper } from '../mappers/prisma-medicine-variant-with-medicine-mapper';
+import { Meta } from '@/core/repositories/meta';
+import type { Prisma } from 'prisma/generated';
 
 @Injectable()
 export class PrismaMedicinesVariantsRepository
-implements MedicinesVariantsRepository {
+  implements MedicinesVariantsRepository
+{
   constructor(private prisma: PrismaService) {}
 
   async create(medicineVariant: MedicineVariant): Promise<void> {
-    const data = PrismaMedicineVariantMapper.toPrisma(medicineVariant)
+    const data = PrismaMedicineVariantMapper.toPrisma(medicineVariant);
     await this.prisma.medicineVariant.create({
       data,
-    })
+    });
   }
 
   async save(medicineVariant: MedicineVariant): Promise<void> {
-    const data = PrismaMedicineVariantMapper.toPrisma(medicineVariant)
+    const data = PrismaMedicineVariantMapper.toPrisma(medicineVariant);
 
     await this.prisma.medicineVariant.update({
       where: {
         id: medicineVariant.id.toString(),
       },
       data,
-    })
+    });
   }
 
   async medicineVariantExists(
@@ -41,13 +43,13 @@ implements MedicinesVariantsRepository {
         pharmaceuticalFormId: medicineVariant.pharmaceuticalFormId.toString(),
         unitMeasureId: medicineVariant.unitMeasureId.toString(),
       },
-    })
+    });
 
     if (!medicineVariantRecord) {
-      return null
+      return null;
     }
 
-    return PrismaMedicineVariantMapper.toDomain(medicineVariantRecord)
+    return PrismaMedicineVariantMapper.toDomain(medicineVariantRecord);
   }
 
   async findById(id: string): Promise<MedicineVariant | null> {
@@ -55,13 +57,13 @@ implements MedicinesVariantsRepository {
       where: {
         id,
       },
-    })
+    });
 
     if (!medicineVariant) {
-      return null
+      return null;
     }
 
-    return PrismaMedicineVariantMapper.toDomain(medicineVariant)
+    return PrismaMedicineVariantMapper.toDomain(medicineVariant);
   }
 
   async findByIdWithDetails(
@@ -76,64 +78,68 @@ implements MedicinesVariantsRepository {
         pharmaceuticalForm: true,
         unitMeasure: true,
       },
-    })
+    });
 
     if (!medicineVariant) {
-      return null
+      return null;
     }
 
-    return PrismaMedicineVariantWithMedicineMapper.toDomain(medicineVariant)
+    return PrismaMedicineVariantWithMedicineMapper.toDomain(medicineVariant);
   }
 
   async findMany(
-    { page }: PaginationParams,
-    filters?: { medicineId?: string; content?: string },
+    { page, perPage = 10 }: PaginationParams,
+    filters?: {
+      medicineId?: string;
+      pharmaceuticalFormId?: string;
+      unitMeasureId?: string;
+      content?: string;
+    },
   ): Promise<{
     medicinesVariants: MedicineVariantWithMedicine[];
     meta: Meta;
   }> {
-    const pageSize = 10
-
-    const { content, medicineId } = filters ?? {}
-
-    const medicineVariants = await this.prisma.medicineVariant.findMany({
-      where: {
+    const { content, medicineId, pharmaceuticalFormId, unitMeasureId } =
+      filters ?? {};
+    const whereClause: Prisma.MedicineVariantWhereInput = {
+      ...(medicineId && {
         medicineId,
-        AND: {
-          medicine: {
-            name: {
-              contains: content ?? '',
-              mode: 'insensitive',
-            },
+      }),
+      ...(pharmaceuticalFormId && {
+        pharmaceuticalFormId,
+      }),
+      ...(unitMeasureId && {
+        unitMeasureId,
+      }),
+      AND: {
+        medicine: {
+          name: {
+            contains: content ?? '',
+            mode: 'insensitive',
           },
         },
       },
-      include: {
-        medicine: true,
-        pharmaceuticalForm: true,
-        unitMeasure: true,
-      },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    })
+    };
 
-    const totalCount = await this.prisma.medicineVariant.count({
-      where: {
-        medicineId,
-        AND: {
-          medicine: {
-            name: {
-              contains: content ?? '',
-              mode: 'insensitive',
-            },
-          },
+    const [medicinesVariants, totalCount] = await Promise.all([
+      this.prisma.medicineVariant.findMany({
+        where: whereClause,
+        include: {
+          medicine: true,
+          pharmaceuticalForm: true,
+          unitMeasure: true,
         },
-      },
-    })
+        skip: (page - 1) * perPage,
+        take: perPage,
+      }),
+      this.prisma.medicineVariant.count({
+        where: whereClause,
+      }),
+    ]);
 
-    const medicineVariantsMappered = medicineVariants.map(
+    const medicineVariantsMappered = medicinesVariants.map(
       PrismaMedicineVariantWithMedicineMapper.toDomain,
-    )
+    );
 
     return {
       medicinesVariants: medicineVariantsMappered,
@@ -141,7 +147,7 @@ implements MedicinesVariantsRepository {
         page,
         totalCount,
       },
-    }
+    };
   }
 
   async delete(medicineVariantId: string): Promise<void> {
@@ -149,6 +155,6 @@ implements MedicinesVariantsRepository {
       where: {
         id: medicineVariantId,
       },
-    })
+    });
   }
 }

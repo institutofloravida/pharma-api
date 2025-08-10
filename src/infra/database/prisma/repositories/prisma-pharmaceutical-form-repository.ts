@@ -1,31 +1,32 @@
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repositories/pharmaceutical-forms-repository'
-import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form'
-import { PrismaService } from '../prisma.service'
-import { PrismaPharmaceuticalFormMapper } from '../mappers/prisma-pharmaceutical-form'
-import { Injectable } from '@nestjs/common'
-import { Meta } from '@/core/repositories/meta'
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { PharmaceuticalFormsRepository } from '@/domain/pharma/application/repositories/pharmaceutical-forms-repository';
+import { PharmaceuticalForm } from '@/domain/pharma/enterprise/entities/pharmaceutical-form';
+import { PrismaService } from '../prisma.service';
+import { PrismaPharmaceuticalFormMapper } from '../mappers/prisma-pharmaceutical-form';
+import { Injectable } from '@nestjs/common';
+import { Meta } from '@/core/repositories/meta';
+import type { Prisma } from 'prisma/generated';
 
 @Injectable()
-export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsRepository {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+export class PrismaPharmaceuticalFormsRepository
+  implements PharmaceuticalFormsRepository
+{
+  constructor(private prisma: PrismaService) {}
 
   async create(pharmaceuticalForm: PharmaceuticalForm): Promise<void> {
     await this.prisma.pharmaceuticalForm.create({
       data: PrismaPharmaceuticalFormMapper.toPrisma(pharmaceuticalForm),
-    })
+    });
   }
 
   async save(pharmaceuticalForm: PharmaceuticalForm): Promise<void> {
-    const data = PrismaPharmaceuticalFormMapper.toPrisma(pharmaceuticalForm)
+    const data = PrismaPharmaceuticalFormMapper.toPrisma(pharmaceuticalForm);
     await this.prisma.pharmaceuticalForm.update({
       where: {
         id: pharmaceuticalForm.id.toString(),
       },
       data,
-    })
+    });
   }
 
   async findById(id: string): Promise<PharmaceuticalForm | null> {
@@ -33,11 +34,11 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
       where: {
         id,
       },
-    })
+    });
 
-    if (!pharmaceuticalForm) return null
+    if (!pharmaceuticalForm) return null;
 
-    return PrismaPharmaceuticalFormMapper.toDomain(pharmaceuticalForm)
+    return PrismaPharmaceuticalFormMapper.toDomain(pharmaceuticalForm);
   }
 
   async findByContent(content: string): Promise<PharmaceuticalForm | null> {
@@ -48,47 +49,46 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
           mode: 'insensitive',
         },
       },
-
-    })
+    });
 
     if (!pharmaceuticalForm) {
-      return null
+      return null;
     }
 
-    return PrismaPharmaceuticalFormMapper.toDomain(pharmaceuticalForm)
+    return PrismaPharmaceuticalFormMapper.toDomain(pharmaceuticalForm);
   }
 
-  async findMany({ page }: PaginationParams, content?: string): Promise<{
-    pharmaceuticalForms: PharmaceuticalForm[]
-    meta: Meta
+  async findMany(
+    { page, perPage = 10 }: PaginationParams,
+    content?: string,
+  ): Promise<{
+    pharmaceuticalForms: PharmaceuticalForm[];
+    meta: Meta;
   }> {
-    const pageSize = 10
+    const whereClause: Prisma.PharmaceuticalFormWhereInput = {
+      name: {
+        contains: content ?? '',
+        mode: 'insensitive',
+      },
+    };
 
-    const pharmaceuticalForms = await this.prisma.pharmaceuticalForm.findMany({
-      where: {
-        name: {
-          contains: content ?? '',
-          mode: 'insensitive',
-
+    const [pharmaceuticalForms, totalCount] = await this.prisma.$transaction([
+      this.prisma.pharmaceuticalForm.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: 'desc',
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: pageSize,
-      skip: (page - 1) * pageSize,
-    })
+        take: perPage,
+        skip: (page - 1) * perPage,
+      }),
+      this.prisma.pharmaceuticalForm.count({
+        where: whereClause,
+      }),
+    ]);
 
-    const totalCount = await this.prisma.pharmaceuticalForm.count({
-      where: {
-        name: {
-          contains: content ?? '',
-          mode: 'insensitive',
-        },
-      },
-    })
-
-    const pharmaceuticalFormMappered = pharmaceuticalForms.map(PrismaPharmaceuticalFormMapper.toDomain)
+    const pharmaceuticalFormMappered = pharmaceuticalForms.map(
+      PrismaPharmaceuticalFormMapper.toDomain,
+    );
 
     return {
       pharmaceuticalForms: pharmaceuticalFormMappered,
@@ -96,7 +96,7 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
         page,
         totalCount,
       },
-    }
+    };
   }
 
   async delete(pharmaceuticalFormId: string): Promise<void> {
@@ -104,6 +104,6 @@ export class PrismaPharmaceuticalFormsRepository implements PharmaceuticalFormsR
       where: {
         id: pharmaceuticalFormId,
       },
-    })
+    });
   }
 }
