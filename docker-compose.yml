@@ -1,18 +1,19 @@
+version: "3.8"
+
 services:
   postgres:
-    container_name: pharma
+    container_name: pharma-db
     image: bitnami/postgresql:latest
     environment:
-      - POSTGRESQL_USERNAME=docker
-      - POSTGRESQL_PASSWORD=docker
-      - POSTGRESQL_DATABASE=pharma
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - ./data/postgres:/bitnami/postgresql
-    
+
   app:
-    entrypoint: ["/bin/sh", "-c", "npx prisma migrate deploy && npm run seed:js && npm run start:prod"]
     build: .
     container_name: pharma-api
     ports:
@@ -21,3 +22,10 @@ services:
       - .env
     depends_on:
       - postgres
+    command: >
+      sh -c "
+        npm run test &&
+        npm run test:e2e &&
+        npx prisma migrate deploy &&
+        npm run start:prod
+      "
