@@ -2,7 +2,7 @@
 set -e
 
 echo "📦 Pullando última versão..."
-git pull origin main
+git pull origin master
 
 echo "🛠️ Buildando containers..."
 docker compose build --no-cache
