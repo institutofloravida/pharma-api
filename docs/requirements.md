@@ -20,10 +20,10 @@
 - ✅ Deve ser possível cadastrar um lote de medicamentos;
 - ✅ Deve ser possível cadastrar um usuário(pessoa que recebe o medicamento);
 
-- [ ] Deve ser possível visualizar alertas de medicamentos a vencer
+- ✅ Deve ser possível visualizar alertas de medicamentos a vencer
 - ✅ Deve ser possível realizar a dispensação de um medicamento(FEFO);
-- ✅ Deve ser possível rebecer os lotes com as respectivas quantidades a 
-      serem dispensadas (dada uma quantidade x), respeitando o FEFO.
+- ✅ Deve ser possível rebecer os lotes com as respectivas quantidades a
+  serem dispensadas (dada uma quantidade x), respeitando o FEFO.
 - ✅ Deve ser possível registrar o recebimento de medicamentos;
 - ✅ deve ser possível registrar a saída de medicamentos
 - ✅ deve ser possível lista os items de invetário.
@@ -31,11 +31,16 @@
 
   ### Relatótórios
 
-  - [ ]
+  - ✅ Dispensas no período
+  - ✅ Movimentação
+  - ✅ Termo de doação
+  - ✅ Utilização
 
   ### Dashboard
 
-  - [ ]
+  - ✅ metricas
+  - ✅ Gráficos
+  - [ ] tabela de movimentações
 
 ## RNs (Regras de negócio)
 
