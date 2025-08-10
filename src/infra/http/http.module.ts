@@ -162,6 +162,8 @@ import { DeletePharmaceuticalFormUseCase } from '@/domain/pharma/application/use
 import { DeletePharmaceuticalFormController } from './controllers/auxiliary-records/pharmaceutical-form/delete-pharmaceutical-form.controller';
 import { DeleteUnitMeasureController } from './controllers/auxiliary-records/unit-measure/delete-unit-measure.controller';
 import { DeleteUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/unit-measure/delete-unit-measure';
+import { DeleteMedicineUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine/delete-medicine';
+import { DeleteMedicineController } from './controllers/medicine/medicine/delete-medicine.controller';
 
 @Module({
   imports: [
@@ -251,6 +253,7 @@ import { DeleteUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/
     DeleteTherapeuticClassController,
     DeletePharmaceuticalFormController,
     DeleteUnitMeasureController,
+    DeleteMedicineController,
   ],
   providers: [
     AuthenticateOperatorUseCase,
@@ -332,6 +335,7 @@ import { DeleteUnitMeasureUseCase } from '@/domain/pharma/application/use-cases/
     DeleteTherapeuticClassUseCase,
     DeletePharmaceuticalFormUseCase,
     DeleteUnitMeasureUseCase,
+    DeleteMedicineUseCase,
   ],
 })
 export class HttpModule {}
