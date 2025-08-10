@@ -8,6 +8,7 @@ import { PrismaPatientMapper } from '../mappers/prisma-patient-mapper';
 import { PatientDetails } from '@/domain/pharma/enterprise/entities/value-objects/patient-details';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { PrismaPathologyMapper } from '../mappers/prisma-pathology-mapper';
+import type { Prisma } from 'prisma/generated';
 
 @Injectable()
 export class PrismaPatientsRepository implements PatientsRepository {
@@ -188,54 +189,49 @@ export class PrismaPatientsRepository implements PatientsRepository {
     const { birthDate, cpf, generalRegistration, name, pathologyId, sus } =
       filters;
 
-    const [patients, patientsTotalCount] = await Promise.all([
-      await this.prisma.patient.findMany({
-        where: {
-          ...(name &&
-            !sus && {
-              OR: [
-                {
-                  name: {
-                    contains: name,
-                    mode: 'insensitive',
-                  },
-                },
-                {
-                  sus: {
-                    contains: name,
-                    mode: 'insensitive',
-                  },
-                },
-              ],
-            }),
-
-          // OR: [
-          //   {
-          //     sus: {
-          //       contains: name ?? '',
-          //       mode: 'insensitive',
-          //     },
-          //   },
-          // ],
-          ...(cpf && { cpf }),
-          ...(sus && {
-            sus: {
-              contains: (sus || name) ?? '',
-              mode: 'insensitive',
-            },
-          }),
-          ...(generalRegistration && { generalRegistration }),
-          ...(birthDate && {
-            birthDate: { gte: new Date(birthDate), lte: new Date(birthDate) },
-          }),
-          ...(pathologyId && {
-            pathologies: {
-              some: {
-                id: pathologyId,
+    const whereClause: Prisma.PatientWhereInput = {
+      ...(name &&
+        !sus && {
+          OR: [
+            {
+              name: {
+                contains: name,
+                mode: 'insensitive',
               },
             },
-          }),
+            {
+              sus: {
+                contains: name,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
+      ...(cpf && { cpf }),
+      ...(sus && {
+        sus: {
+          contains: (sus || name) ?? '',
+          mode: 'insensitive',
         },
+      }),
+      ...(generalRegistration && { generalRegistration }),
+      ...(birthDate && {
+        birthDate: { gte: new Date(birthDate), lte: new Date(birthDate) },
+      }),
+      ...(pathologyId && {
+        pathologies: {
+          some: {
+            id: {
+              equals: pathologyId,
+            },
+          },
+        },
+      }),
+    };
+
+    const [patients, patientsTotalCount] = await Promise.all([
+      await this.prisma.patient.findMany({
+        where: whereClause,
         include: {
           pathologies: {
             select: {
@@ -247,18 +243,7 @@ export class PrismaPatientsRepository implements PatientsRepository {
         skip: (page - 1) * 10,
       }),
       await this.prisma.patient.count({
-        where: {
-          name: {
-            contains: name ?? '',
-            mode: 'insensitive',
-          },
-          ...(cpf && { cpf }),
-          ...(sus && { sus }),
-          ...(generalRegistration && { generalRegistration }),
-          ...(birthDate && {
-            birthDate: { gte: new Date(birthDate), lte: new Date(birthDate) },
-          }),
-        },
+        where: whereClause,
       }),
     ]);
 

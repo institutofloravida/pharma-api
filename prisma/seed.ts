@@ -83,9 +83,14 @@ async function main() {
       passwordHash: await hash('12345678', 8),
       role: OperatorRole.MANAGER,
       institutions: {
-        connect: {
-          id: institution.id,
-        },
+        connect: [
+          {
+            id: institution3.id,
+          },
+          {
+            id: institution.id,
+          },
+        ],
       },
     },
   });
