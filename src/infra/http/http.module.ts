@@ -156,6 +156,8 @@ import { FetchTransfersController } from './controllers/movimentation/transfer/f
 import { FetchTransfersUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/fetch-transfers';
 import { GetTransferDetailsController } from './controllers/movimentation/transfer/get-transfer.controller';
 import { GetTransferUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/get-transfer';
+import { DeleteTherapeuticClassController } from './controllers/auxiliary-records/therapeutic-class/delete-therapeutic-class.controller';
+import { DeleteTherapeuticClassUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/therapeutic-class/delete-therapeutic-class';
 
 @Module({
   imports: [
@@ -242,6 +244,7 @@ import { GetTransferUseCase } from '@/domain/pharma/application/use-cases/movime
     UpdatePatientController,
     DeleteManufacturerController,
     DeletePathologyController,
+    DeleteTherapeuticClassController,
   ],
   providers: [
     AuthenticateOperatorUseCase,
@@ -320,6 +323,7 @@ import { GetTransferUseCase } from '@/domain/pharma/application/use-cases/movime
     UpdatePatientUseCase,
     DeleteManufacturerUseCase,
     DeletePathologyUseCase,
+    DeleteTherapeuticClassUseCase,
   ],
 })
 export class HttpModule {}
