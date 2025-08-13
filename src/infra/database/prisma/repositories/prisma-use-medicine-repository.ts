@@ -83,44 +83,42 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
       }>
     >(
       Prisma.sql`
-    SELECT 
-     um.id,
-  um.year,
-  um.month,
-  um.previous_balance AS "previousBalance",
-  ms.current_quantity AS "currentBalance",
-  um.medicine_stock_id AS "medicineStockId",
-  um.created_at AS "createdAt",
-  um.updated_at AS "updatedAt",
-  mv.complement,
-  mv.dosage,
-  pf.name AS "pharmaceuticalForm",
-  um2.acronym AS "unitMeasure",
-  m.name AS "medicine",
-      COALESCE(SUM(m2.quantity), 0) AS "totalUsed"
-    FROM 
-      "use_medicine" um
-    INNER JOIN "medicines_stocks" ms ON ms.id = um."medicine_stock_id"
-    INNER JOIN "medicines_variants" mv ON mv.id = ms."medicine_variant_id"
-    INNER JOIN "medicines" m ON m.id = mv."medicine_id"
-    INNER JOIN "pharmaceutical_forms" pf ON pf.id = mv."pharmaceutical_form_id"
-    INNER JOIN "unit_measures" um2 ON um2.id = mv."unit_measure_id"
-    INNER JOIN "stocks" s ON s.id = ms."stock_id"
-    LEFT JOIN "exits" e 
-      ON e."stock_id" = s."id"
-    LEFT JOIN "movimentation" m2 
-      ON m2."exit_id" = e."id"
-      AND EXTRACT(YEAR FROM e."exit_date") = ${year}
-      AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
-    WHERE 
-      s."institution_id" = ${institutionId}
-      ${stockId ? Prisma.sql`AND s.id = ${stockId}` : Prisma.empty}
-
-      AND um.year = ${year}
-      AND um.month = ${month}
-    GROUP BY 
-      um.id, mv."complement", mv."dosage", pf."name", um2."acronym", m."name", ms."current_quantity"
-  `,
+  SELECT 
+    um.id,
+    um.year,
+    um.month,
+    um.previous_balance AS "previousBalance",
+    ms.current_quantity AS "currentBalance",
+    um.medicine_stock_id AS "medicineStockId",
+    um.created_at AS "createdAt",
+    um.updated_at AS "updatedAt",
+    mv.complement,
+    mv.dosage,
+    pf.name AS "pharmaceuticalForm",
+    um2.acronym AS "unitMeasure",
+    m.name AS "medicine",
+    COALESCE(SUM(CASE WHEN mov.direction = 'EXIT' THEN mov.quantity ELSE 0 END), 0) AS "totalUsed"
+  FROM 
+    "use_medicine" um
+  INNER JOIN "medicines_stocks" ms ON ms.id = um."medicine_stock_id"
+  INNER JOIN "medicines_variants" mv ON mv.id = ms."medicine_variant_id"
+  INNER JOIN "medicines" m ON m.id = mv."medicine_id"
+  INNER JOIN "pharmaceutical_forms" pf ON pf.id = mv."pharmaceutical_form_id"
+  INNER JOIN "unit_measures" um2 ON um2.id = mv."unit_measure_id"
+  INNER JOIN "stocks" s ON s.id = ms."stock_id"
+  LEFT JOIN "batches_stocks" bs ON bs."medicine_stock_id" = ms.id
+  LEFT JOIN "movimentation" mov ON mov."batch_stock_id" = bs.id
+  LEFT JOIN "exits" e ON e.id = mov."exit_id" 
+    AND EXTRACT(YEAR FROM e."exit_date") = ${year}
+    AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
+  WHERE 
+    s."institution_id" = ${institutionId}
+    ${stockId ? Prisma.sql`AND s.id = ${stockId}` : Prisma.empty}
+    AND um.year = ${year}
+    AND um.month = ${month}
+  GROUP BY 
+    um."id", mv."complement", mv."dosage", pf."name", um2."acronym", m."name", ms."current_quantity"
+`,
     );
 
     const [totalGeneralResult] = await this.prisma.$queryRaw<
