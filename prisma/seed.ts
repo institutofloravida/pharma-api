@@ -268,8 +268,14 @@ async function main() {
 
   const unitMeasureMl = await prisma.unitMeasure.create({
     data: {
-      name: 'mililitro',
-      acronym: 'ml',
+      name: 'miligrama por mililitro',
+      acronym: 'mg/ml',
+    },
+  });
+
+  await prisma.pharmaceuticalForm.create({
+    data: {
+      name: 'Creme',
     },
   });
 

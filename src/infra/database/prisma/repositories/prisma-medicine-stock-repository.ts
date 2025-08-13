@@ -174,13 +174,20 @@ export class PrismaMedicinesStockRepository
 
   async findMany(
     { page }: PaginationParams,
-    filters: { stockId: string; medicineName?: string },
+    filters: {
+      stockId: string;
+      medicineName?: string;
+      medicineVariantId?: string;
+    },
   ): Promise<{ medicinesStock: MedicineStockDetails[]; meta: Meta }> {
-    const { stockId, medicineName } = filters;
+    const { stockId, medicineName, medicineVariantId } = filters;
 
     const whereClause: Prisma.MedicineStockWhereInput = {
       stockId,
       medicineVariant: {
+        ...(medicineVariantId && {
+          id: medicineVariantId,
+        }),
         medicine: {
           name: {
             contains: medicineName ?? '',
