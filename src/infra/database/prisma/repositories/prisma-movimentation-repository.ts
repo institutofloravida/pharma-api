@@ -1,4 +1,4 @@
-import { MetaReport } from '@/core/repositories/meta';
+import { type Meta } from '@/core/repositories/meta';
 import { MovimentationRepository } from '@/domain/pharma/application/repositories/movimentation-repository';
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
 import { MovementDirection } from '@/domain/pharma/enterprise/entities/movement-type';
@@ -9,6 +9,7 @@ import { PrismaMovimentationMapper } from '../mappers/prisma-movimentation-mappe
 import { PrismaService } from '../prisma.service';
 import { $Enums, type Prisma } from 'prisma/generated';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { PaginationParams } from '@/core/repositories/pagination-params';
 
 @Injectable()
 export class PrismaMovimentationRepository implements MovimentationRepository {
@@ -21,23 +22,26 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
     });
   }
 
-  async fetchMovimentation(filters: {
-    institutionId?: string;
-    startDate?: Date;
-    endDate?: Date;
-    operatorId?: string;
-    medicineId?: string;
-    stockId?: string;
-    medicineVariantId?: string;
-    medicineStockId?: string;
-    batcheStockId?: string;
-    quantity?: number;
-    movementTypeId?: string;
-    direction?: MovementDirection;
-    exitId?: string;
-    entryId?: string;
-    exitType?: ExitType;
-  }): Promise<{ movimentation: MovimentationDetails[]; meta: MetaReport }> {
+  async fetchMovimentation(
+    filters: {
+      institutionId?: string;
+      startDate?: Date;
+      endDate?: Date;
+      operatorId?: string;
+      medicineId?: string;
+      stockId?: string;
+      medicineVariantId?: string;
+      medicineStockId?: string;
+      batcheStockId?: string;
+      quantity?: number;
+      movementTypeId?: string;
+      direction?: MovementDirection;
+      exitId?: string;
+      entryId?: string;
+      exitType?: ExitType;
+    },
+    params: PaginationParams,
+  ): Promise<{ movimentation: MovimentationDetails[]; meta: Meta }> {
     const {
       endDate,
       institutionId,
@@ -234,6 +238,12 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
         orderBy: {
           createdAt: 'desc',
         },
+        ...(params && params.page
+          ? {
+              take: params.perPage ?? 10,
+              skip: (params.page - 1) * (params.perPage ?? 10),
+            }
+          : {}),
       }),
       this.prisma.movimentation.count({
         where: whereClause,
@@ -242,6 +252,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
 
     const movimentationMapped = medicinesExits.map((movimentation) => {
       return MovimentationDetails.create({
+        id: new UniqueEntityId(movimentation.id),
         direction: movimentation.direction,
         medicineStockId: new UniqueEntityId(
           movimentation.batchStock.medicineStockId,
@@ -296,6 +307,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       movimentation: movimentationMapped,
       meta: {
         totalCount,
+        page: params && params.page ? params.page : 1,
       },
     };
   }

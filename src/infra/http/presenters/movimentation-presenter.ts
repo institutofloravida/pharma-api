@@ -3,7 +3,8 @@ import { MovimentationDetails } from '@/domain/pharma/enterprise/entities/value-
 export class MovimentationPresenter {
   static toHTTP(movimentation: MovimentationDetails) {
     return {
-      direction: movimentation.direction === 'ENTRY' ? 'ENTRADA' : 'SAÍDA',
+      id: movimentation.id,
+      direction: movimentation.direction,
       medicine: movimentation.medicine,
       batchCode: movimentation.batchCode,
       complement: movimentation.complement,

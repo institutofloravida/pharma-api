@@ -166,6 +166,8 @@ import { DeleteMedicineUseCase } from '@/domain/pharma/application/use-cases/aux
 import { DeleteMedicineController } from './controllers/medicine/medicine/delete-medicine.controller';
 import { DeleteMedicineVariantController } from './controllers/medicine/medicine-variant/delete-medicine-variant.controller';
 import { DeleteMedicineVariantUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/medicine-variant/delete-medicine-variant';
+import { FetchMovimentationUseCase } from '@/domain/pharma/application/use-cases/movimentation/fetch-movimentation';
+import { FetchMovimentationsController } from './controllers/movimentation/fetch-movimentation.controller';
 
 @Module({
   imports: [
@@ -239,6 +241,7 @@ import { DeleteMedicineVariantUseCase } from '@/domain/pharma/application/use-ca
     FetchDispensesPerDayController,
     FetchMostTreatedPathologiesController,
     FetchTransfersController,
+    FetchMovimentationsController,
     UpdateInstitutionController,
     UpdatePathologyController,
     UpdateTherapeuticClassController,
@@ -322,6 +325,7 @@ import { DeleteMedicineVariantUseCase } from '@/domain/pharma/application/use-ca
     FetchDispensesPerDayUseCase,
     FetchMostTreatedPathologiesUseCase,
     FetchTransfersUseCase,
+    FetchMovimentationUseCase,
     UpdateInstitutionUseCase,
     UpdatePathologyUseCase,
     UpdateTherapeuticClassUseCase,

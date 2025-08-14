@@ -4,6 +4,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { MovementDirection } from '../movement-type';
 
 export interface MovimentationDetailsProps {
+  id: UniqueEntityId;
   direction: MovementDirection;
   operator: string;
   operatorId: UniqueEntityId;
@@ -29,6 +30,10 @@ export interface MovimentationDetailsProps {
 }
 
 export class MovimentationDetails extends ValueObject<MovimentationDetailsProps> {
+  get id() {
+    return this.props.id;
+  }
+
   get direction() {
     return this.props.direction;
   }

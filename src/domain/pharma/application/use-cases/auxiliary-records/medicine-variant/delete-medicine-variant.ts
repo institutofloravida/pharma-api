@@ -31,14 +31,11 @@ export class DeleteMedicineVariantUseCase {
       return left(new MedicineVariantNotFoundError(medicineVariantId));
     }
 
-    const { medicinesStock, meta } =
-      await this.medicinesStocksRepository.findMany(
-        { page: 1 },
-        { medicineVariantId: medicinevariant.id.toString() },
-      );
+    const { meta } = await this.medicinesStocksRepository.findMany(
+      { page: 1 },
+      { medicineVariantId: medicinevariant.id.toString() },
+    );
 
-    console.log('medicinesStock', medicinesStock);
-    console.log('meta', meta);
     const medicineVariantHasMedicineStockDependency = meta.totalCount;
 
     if (medicineVariantHasMedicineStockDependency > 0) {

@@ -290,7 +290,6 @@ describe('Confirm Transfer', () => {
     });
 
     expect(result.isRight()).toBeTruthy();
-    console.log(inMemoryMovimentationRepository.items);
     if (result.isRight()) {
       expect(inMemoryTransferRepository.items).toHaveLength(1);
       expect(inMemoryTransferRepository.items[0].status).toBe(
