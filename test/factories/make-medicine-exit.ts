@@ -23,8 +23,8 @@ export function makeMedicineExit(
       stockId: new UniqueEntityId(),
       movementTypeId: undefined,
       transferId: undefined,
+      reverseAt: undefined,
       createdAt: faker.date.past(),
-
       updatedAt: faker.date.recent(),
       ...override,
     },

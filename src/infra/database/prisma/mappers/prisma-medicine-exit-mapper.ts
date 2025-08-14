@@ -24,6 +24,7 @@ export class PrismaMedicineExitMapper {
           ? new UniqueEntityId(raw.dispensationId)
           : undefined,
         stockId: new UniqueEntityId(raw.stockId),
+        reverseAt: raw.reverseAt,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt ?? undefined,
       },
@@ -46,6 +47,7 @@ export class PrismaMedicineExitMapper {
         ? exit.destinationInstitutionId.toString()
         : null,
       exitDate: exit.exitDate,
+      reverseAt: exit.reverseAt,
       createdAt: exit.createdAt,
       updatedAt: exit.updatedAt,
     };

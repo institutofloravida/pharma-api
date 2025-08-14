@@ -329,6 +329,7 @@ model Movimentation {
 enum EntryType {
   TRANSFER
   MOVEMENT_TYPE
+  INVENTORY
 }
 
 model MedicineEntry {
@@ -358,6 +359,7 @@ enum ExitType {
   EXPIRATION
   DONATION
   TRANSFER
+  INVENTORY
 }
 
 model Exit {
@@ -370,6 +372,7 @@ model Exit {
   transferId               String?   @unique @map("transfer_id")
   movementTypeId           String?   @map("movement_type_id")
   exitDate                 DateTime  @default(now()) @map("exit_date")
+  reverseAt                DateTime? @map("reverse_at")
   createdAt                DateTime  @default(now()) @map("created_at")
   updatedAt                DateTime? @updatedAt @map("updated_at")
 
