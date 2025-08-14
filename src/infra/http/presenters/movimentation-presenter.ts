@@ -22,9 +22,11 @@ export class MovimentationPresenter {
               ? 'TRANSFERÊNCIA'
               : movimentation.movementType === 'DONATION'
                 ? 'DOAÇÃO'
-                : movimentation.movementType
-                  ? movimentation.movementType
-                  : 'Desconhecido',
+                : movimentation.movementType === 'INVENTORY'
+                  ? 'INVENTÁRIO'
+                  : movimentation.movementType
+                    ? movimentation.movementType
+                    : 'Desconhecido',
       operator: movimentation.operator,
       quantity: movimentation.quantity,
     };

@@ -108,7 +108,8 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
   INNER JOIN "stocks" s ON s.id = ms."stock_id"
   LEFT JOIN "batches_stocks" bs ON bs."medicine_stock_id" = ms.id
   LEFT JOIN "movimentation" mov ON mov."batch_stock_id" = bs.id
-  LEFT JOIN "exits" e ON e.id = mov."exit_id" 
+  INNER JOIN "exits" e ON e.id = mov."exit_id" 
+    AND e."reverse_at" IS NULL
     AND EXTRACT(YEAR FROM e."exit_date") = ${year}
     AND EXTRACT(MONTH FROM e."exit_date") = ${month + 1}
   WHERE 

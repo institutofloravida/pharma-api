@@ -1,4 +1,4 @@
-import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details'
+import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
 
 export class MedicineExitPresenter {
   static toHTTP(exit: ExitDetails) {
@@ -9,8 +9,9 @@ export class MedicineExitPresenter {
       responsibleByInstitution: exit.responsibleByInstitution,
       exitType: exit.exitType,
       operator: exit.operator,
+      reverseAt: exit.reverseAt ?? null,
       stock: exit.stock,
       items: exit.items,
-    }
+    };
   }
 }

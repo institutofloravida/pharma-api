@@ -147,6 +147,7 @@ export class PrismaMedicinesExitsRepository
         destinationInstitution?: string;
         exitType: ExitType;
         items: number;
+        reverseAt?: Date | null;
       }[]
     >(
       `
@@ -157,6 +158,7 @@ export class PrismaMedicinesExitsRepository
       o."name" as "operatorName",
       s."name" as "stockName",
       s."id" as "stockId",
+      e.reverse_at as "reverseAt",
      i."name" as "destinationInstitution",
       COUNT(distinct bs.medicine_stock_id) as "items"
     from movimentation m
@@ -166,7 +168,7 @@ export class PrismaMedicinesExitsRepository
     inner join stocks s on s.id = e.stock_id
     left join institutions i on i.id = e.destination_institution_id
     ${whereSQL}
-group by e.id, o."name", s."name", i."name"
+group by e.id, o."name", s."name", i."name", s."id"
     order by e.exit_date desc
     limit 10 offset ${(page - 1) * 10}
   `,
@@ -202,6 +204,7 @@ group by e.id, o."name", s."name", i."name"
         stockId: new UniqueEntityId(exit.stockId),
         destinationInstitution: exit.destinationInstitution,
         exitType: exit.exitType,
+        reverseAt: exit.reverseAt ?? null,
         exitId: new UniqueEntityId(exit.id),
         items: Number(exit.items),
       });

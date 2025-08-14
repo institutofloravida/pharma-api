@@ -10,6 +10,7 @@ export interface ExitDetailsProps {
   stockId: UniqueEntityId;
   destinationInstitution?: string;
   responsibleByInstitution?: string;
+  reverseAt?: Date | null;
   operator: string;
   items: number;
 }
@@ -45,6 +46,10 @@ export class ExitDetails extends ValueObject<ExitDetailsProps> {
 
   get responsibleByInstitution() {
     return this.props.responsibleByInstitution;
+  }
+
+  get reverseAt() {
+    return this.props.reverseAt;
   }
 
   get items() {
