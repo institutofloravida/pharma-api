@@ -25,7 +25,18 @@ export class InMemoryMedicinesExitsRepository
     this.items.push(medicineExit);
   }
 
-  async findById(id: string): Promise<ExitDetails | null> {
+  async findById(id: string): Promise<MedicineExit | null> {
+    const medicineExit = this.items.find((item) =>
+      item.id.equal(new UniqueEntityId(id)),
+    );
+
+    if (!medicineExit) {
+      return null;
+    }
+    return medicineExit;
+  }
+
+  async findByIdWithDetails(id: string): Promise<ExitDetails | null> {
     const medicineExit = this.items.find((item) =>
       item.id.equal(new UniqueEntityId(id)),
     );
@@ -64,6 +75,7 @@ export class InMemoryMedicinesExitsRepository
       stock: stock.content,
       exitType: medicineExit.exitType,
       operator: operator.name,
+      stockId: stock.id,
       exitId: medicineExit.id,
       items: items.length,
     });
@@ -78,6 +90,13 @@ export class InMemoryMedicinesExitsRepository
     }
 
     return exit;
+  }
+
+  async save(medicineExit: MedicineExit): Promise<void> {
+    const itemIndex = this.items.findIndex((exit) =>
+      exit.id.equal(medicineExit.id),
+    );
+    this.items[itemIndex] = medicineExit;
   }
 
   async findMany(
@@ -153,6 +172,7 @@ export class InMemoryMedicinesExitsRepository
         exitDate: exit.exitDate,
         stock: stock.content,
         operator: operator.name,
+        stockId: stock.id,
         exitId: exit.id,
         exitType: exit.exitType,
         items: items.length,

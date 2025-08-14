@@ -6,6 +6,7 @@ import { Optional } from '@/core/types/optional';
 export enum EntryType {
   MOVEMENT_TYPE = 'MOVEMENT_TYPE',
   TRANSFER = 'TRANSFER',
+  INVENTORY = 'INVENTORY',
 }
 
 export interface MedicineEntryProps {

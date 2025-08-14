@@ -18,7 +18,27 @@ export class PrismaMedicinesExitsRepository
 {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: string): Promise<ExitDetails | null> {
+  async create(medicineExit: MedicineExit): Promise<void> {
+    const data = PrismaMedicineExitMapper.toPrisma(medicineExit);
+    await this.prisma.exit.create({
+      data,
+    });
+  }
+
+  async findById(id: string): Promise<MedicineExit | null> {
+    const exit = await this.prisma.exit.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!exit) {
+      return null;
+    }
+
+    return PrismaMedicineExitMapper.toDomain(exit);
+  }
+
+  async findByIdWithDetails(id: string): Promise<ExitDetails | null> {
     const exit = await this.prisma.exit.findUnique({
       where: { id },
       include: {
@@ -64,13 +84,6 @@ export class PrismaMedicinesExitsRepository
     });
   }
 
-  async create(medicineExit: MedicineExit): Promise<void> {
-    const data = PrismaMedicineExitMapper.toPrisma(medicineExit);
-    await this.prisma.exit.create({
-      data,
-    });
-  }
-
   async findByTransferId(transferId: string): Promise<MedicineExit | null> {
     const exit = await this.prisma.exit.findUnique({
       where: { transferId },
@@ -78,6 +91,15 @@ export class PrismaMedicinesExitsRepository
     if (!exit) return null;
 
     return PrismaMedicineExitMapper.toDomain(exit);
+  }
+
+  async save(medicineExit: MedicineExit): Promise<void> {
+    const data = PrismaMedicineExitMapper.toPrisma(medicineExit);
+
+    await this.prisma.exit.update({
+      where: { id: medicineExit.id.toString() },
+      data,
+    });
   }
 
   async findMany(
@@ -121,6 +143,7 @@ export class PrismaMedicinesExitsRepository
         exitDate: Date;
         operatorName: string;
         stockName: string;
+        stockId: string;
         destinationInstitution?: string;
         exitType: ExitType;
         items: number;
@@ -133,6 +156,7 @@ export class PrismaMedicinesExitsRepository
       e.exit_date as "exitDate",
       o."name" as "operatorName",
       s."name" as "stockName",
+      s."id" as "stockId",
      i."name" as "destinationInstitution",
       COUNT(distinct bs.medicine_stock_id) as "items"
     from movimentation m
@@ -175,6 +199,7 @@ group by e.id, o."name", s."name", i."name"
         exitDate: exit.exitDate,
         operator: exit.operatorName,
         stock: exit.stockName,
+        stockId: new UniqueEntityId(exit.stockId),
         destinationInstitution: exit.destinationInstitution,
         exitType: exit.exitType,
         exitId: new UniqueEntityId(exit.id),

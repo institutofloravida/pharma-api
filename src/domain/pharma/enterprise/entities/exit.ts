@@ -9,6 +9,7 @@ export enum ExitType {
   EXPIRATION = 'EXPIRATION',
   DONATION = 'DONATION',
   TRANSFER = 'TRANSFER',
+  INVENTORY = 'INVENTORY',
 }
 
 export interface MedicineExitProps {
@@ -20,6 +21,7 @@ export interface MedicineExitProps {
   transferId?: UniqueEntityId;
   movementTypeId?: UniqueEntityId;
   destinationInstitutionId?: UniqueEntityId | null;
+  reverseAt?: Date | null;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -89,6 +91,15 @@ export class MedicineExit extends Entity<MedicineExitProps> {
 
   set destinationInstitutionId(value: UniqueEntityId | null | undefined) {
     this.props.destinationInstitutionId = value;
+    this.touch();
+  }
+
+  get reverseAt() {
+    return this.props.reverseAt;
+  }
+
+  set reverseAt(value: Date | null | undefined) {
+    this.props.reverseAt = value;
     this.touch();
   }
 

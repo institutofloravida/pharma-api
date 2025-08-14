@@ -5,8 +5,10 @@ import { ExitDetails } from '../../enterprise/entities/value-objects/exit-detail
 
 export abstract class MedicinesExitsRepository {
   abstract create(medicineExit: MedicineExit): Promise<void>;
-  abstract findById(id: string): Promise<ExitDetails | null>;
+  abstract findByIdWithDetails(id: string): Promise<ExitDetails | null>;
+  abstract findById(id: string): Promise<MedicineExit | null>;
   abstract findByTransferId(transferId: string): Promise<MedicineExit | null>;
+  abstract save(medicineExit: MedicineExit): Promise<void>;
   abstract findMany(
     params: PaginationParams,
     filters: {
