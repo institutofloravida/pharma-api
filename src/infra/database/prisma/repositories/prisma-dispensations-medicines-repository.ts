@@ -114,6 +114,7 @@ export class PrismaDispensationsMedicinesRepository
         this.prisma.dispensation.count({
           where: {
             exit: {
+              reverseAt: null,
               stock: {
                 institution: {
                   id: {
@@ -131,6 +132,7 @@ export class PrismaDispensationsMedicinesRepository
         this.prisma.dispensation.count({
           where: {
             exit: {
+              reverseAt: null,
               stock: {
                 institution: {
                   id: {
@@ -147,6 +149,7 @@ export class PrismaDispensationsMedicinesRepository
         this.prisma.dispensation.count({
           where: {
             exit: {
+              reverseAt: null,
               stock: {
                 institution: {
                   id: {
@@ -182,112 +185,6 @@ export class PrismaDispensationsMedicinesRepository
       },
     };
   }
-
-  // async getDispensationsInAPeriod(
-  //   institutionId: string,
-  //   startDate?: Date,
-  //   endDate?: Date,
-  //   patientId?: string,
-  //   operatorId?: string,
-  // ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }> {
-  //   const whereClause: Prisma.DispensationWhereInput = {
-  //     exit: {
-  //       stock: {
-  //         institution: {
-  //           id: {
-  //             equals: institutionId,
-  //           },
-  //         },
-  //       },
-  //     },
-  //     ...(startDate && {
-  //       dispensationDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
-  //     }),
-  //     ...(endDate && {
-  //       dispensationDate: { lte: new Date(endDate.setHours(23, 59, 59, 999)) },
-  //     }),
-  //     ...(patientId && { patientId: { equals: patientId } }),
-  //     ...(operatorId && { operatorId: { equals: operatorId } }),
-  //   };
-
-  //   const [dispensations, totalCount] = await this.prisma.$transaction([
-  //     this.prisma.dispensation.findMany({
-  //       where: whereClause,
-  //       include: {
-  //         operator: { select: { id: true, name: true } },
-  //         patient: { select: { id: true, name: true } },
-  //         exit: {
-  //           select: {
-  //             movimentation: {
-  //               select: {
-  //                 quantity: true,
-  //                 batchStock: {
-  //                   select: {
-  //                     medicineStockId: true,
-  //                     medicineStock: {
-  //                       select: {
-  //                         medicineVariant: {
-  //                           select: {
-  //                             medicine: true,
-  //                             pharmaceuticalForm: true,
-  //                             unitMeasure: true,
-  //                             complement: true,
-  //                           },
-  //                         },
-  //                       },
-  //                     },
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       orderBy: { dispensationDate: 'desc' },
-  //     }),
-  //     this.prisma.dispensation.count({ where: whereClause }),
-  //   ]);
-
-  //   const dispensationsMapped = dispensations.map((dispensation) => {
-  //     return DispensationWithMedicines.create({
-  //       dispensationDate: dispensation.dispensationDate,
-  //       dispensationId: new UniqueEntityId(dispensation.id),
-  //       operator: dispensation.operator.name,
-  //       operatorId: new UniqueEntityId(dispensation.operator.id),
-  //       patientId: new UniqueEntityId(dispensation.patient.id),
-  //       patient: dispensation.patient.name,
-  //       items: 0,
-  //       medicines:
-  //         dispensation.exit?.movimentation.map((movimentation) => {
-  //           return {
-  //             medicineStockId: new UniqueEntityId(
-  //               movimentation.batchStock.medicineStockId,
-  //             ),
-  //             medicine:
-  //               movimentation.batchStock.medicineStock?.medicineVariant.medicine
-  //                 .name ?? '',
-  //             pharmaceuticalForm:
-  //               movimentation.batchStock.medicineStock?.medicineVariant
-  //                 .pharmaceuticalForm.name ?? '',
-  //             unitMeasure:
-  //               movimentation.batchStock.medicineStock?.medicineVariant
-  //                 .unitMeasure.name ?? '',
-  //             complement:
-  //               movimentation.batchStock.medicineStock?.medicineVariant
-  //                 .complement ?? '',
-  //             quantity: movimentation.quantity,
-  //           };
-  //         }) ?? [],
-  //     });
-  //   });
-
-  //   return {
-  //     dispensations: dispensationsMapped,
-  //     meta: {
-  //       totalCount,
-  //     },
-  //   };
-  // }
 
   async getDispensationsInAPeriod(
     institutionId: string,
@@ -349,7 +246,7 @@ export class PrismaDispensationsMedicinesRepository
         )
       ) FILTER (WHERE meds."medicineStockId" IS NOT NULL), '[]') as medicines
     FROM dispensations d
-    INNER JOIN "exits" e ON e.dispensation_id = d.id
+    INNER JOIN "exits" e ON e.dispensation_id = d.id AND e.reverse_at IS NULL
     INNER JOIN operators o ON o.id = e.operator_id
     INNER JOIN patients p ON p.id = d.patient_id
     INNER JOIN stocks s ON s.id = e.stock_id
@@ -423,7 +320,7 @@ export class PrismaDispensationsMedicinesRepository
       DATE(d."dispensation_date") AS "dispensationDate",
       COUNT(*) AS total
     FROM "dispensations" d
-    INNER JOIN "exits" e ON e."dispensation_id" = d.id
+    INNER JOIN "exits" e ON e."dispensation_id" = d.id AND e.reverse_at IS NULL
     INNER JOIN "stocks" s ON s.id = e."stock_id"
     WHERE s."institution_id" = $1
       AND d."dispensation_date" >= $2
@@ -471,15 +368,15 @@ export class PrismaDispensationsMedicinesRepository
       `SELECT
         p.id AS "pathologyId",
         p.name AS "pathologyName",
-        COUNT(*) AS total
+        COUNT(DISTINCT d.id) AS total
       FROM "pathology" p
-      JOIN "_PathologyToPatient" pp ON pp."A" = p.id
-      JOIN "patients" pa ON pa.id = pp."B"
-      JOIN "dispensations" d ON d."patient_id" = pa.id
-      JOIN "exits" e ON e."dispensation_id" = d.id
-      JOIN "movimentation" m ON m."exit_id" = e.id
-      JOIN "batches_stocks" bs ON bs.id = m."batch_stock_id"
-      JOIN "stocks" s ON s.id = bs."stock_id"
+      INNER JOIN "_PathologyToPatient" pp ON pp."A" = p.id
+      INNER JOIN "patients" pa ON pa.id = pp."B"
+      INNER JOIN "dispensations" d ON d."patient_id" = pa.id
+      INNER JOIN "exits" e ON e."dispensation_id" = d.id AND e.reverse_at IS NULL
+      INNER JOIN "movimentation" m ON m."exit_id" = e.id
+      INNER JOIN "batches_stocks" bs ON bs.id = m."batch_stock_id"
+      INNER JOIN "stocks" s ON s.id = bs."stock_id"
       ${whereClause}
       GROUP BY p.id, p.name
       ORDER BY total DESC`,

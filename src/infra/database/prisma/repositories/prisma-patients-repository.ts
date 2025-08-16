@@ -266,6 +266,9 @@ export class PrismaPatientsRepository implements PatientsRepository {
       this.prisma.patient.count(),
       this.prisma.dispensation.findMany({
         where: {
+          exit: {
+            reverseAt: null,
+          },
           createdAt: {
             gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
           },
