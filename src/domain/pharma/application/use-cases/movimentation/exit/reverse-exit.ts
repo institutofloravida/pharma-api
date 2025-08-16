@@ -7,6 +7,7 @@ import { BatchStocksRepository } from '../../../repositories/batch-stocks-reposi
 import { EntryType } from '@/domain/pharma/enterprise/entities/entry';
 import { BatchesRepository } from '../../../repositories/batches-repository';
 import { ExitNotFoundError } from './_errors/exit-not-found-error';
+import { ExitAlreadyReversedError } from './_errors/exit-already-reversed-error';
 
 interface reverseExitUseCaseRequest {
   exitId: string;
@@ -33,6 +34,9 @@ export class ReverseExitUseCase {
 
     if (!exit) {
       return left(new ExitNotFoundError(exitId));
+    }
+    if (exit.reverseAt) {
+      return left(new ExitAlreadyReversedError(exitId));
     }
 
     const movimentationOfExit =

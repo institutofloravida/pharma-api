@@ -32,6 +32,7 @@ import { RegisterMedicineEntryUseCase } from '../entry/register-medicine-entry';
 import { CreateMonthlyMedicineUtilizationUseCase } from '../../use-medicine/create-monthly-medicine-utilization';
 import { InMemoryUseMedicinesRepository } from 'test/repositories/in-memory-use-medicines-repository';
 import { ReverseExitUseCase } from './reverse-exit';
+import { ExitAlreadyReversedError } from './_errors/exit-already-reversed-error';
 
 let inMemoryOperatorsRepository: InMemoryOperatorsRepository;
 let inMemoryTherapeuticClassesRepository: InMemoryTherapeuticClassesRepository;
@@ -300,6 +301,121 @@ describe('Reverse Exit', () => {
           }),
         ]),
       );
+    }
+  });
+  it('should not be able to reverse a exit already done', async () => {
+    const quantityToExit = 5;
+
+    const institution = makeInstitution();
+    await inMemoryInstitutionsRepository.create(institution);
+
+    const institution2 = makeInstitution();
+    await inMemoryInstitutionsRepository.create(institution2);
+
+    const operator = makeOperator({
+      institutionsIds: [institution.id],
+    });
+
+    const operator2 = makeOperator({
+      institutionsIds: [institution2.id],
+    });
+    await inMemoryOperatorsRepository.create(operator);
+    await inMemoryOperatorsRepository.create(operator2);
+
+    const movementType = makeMovementType({
+      content: 'loss',
+      direction: 'EXIT',
+    });
+    await inMemoryMovementTypesRepository.create(movementType);
+
+    const stock = makeStock({ institutionId: institution.id });
+    await inMemoryStocksRepository.create(stock);
+
+    const stockDestination = makeStock({ institutionId: institution2.id });
+    await inMemoryStocksRepository.create(stockDestination);
+
+    const medicine = makeMedicine();
+    await inMemoryMedicinesRepository.create(medicine);
+
+    const pharmaceuticalForm = makePharmaceuticalForm();
+    await inMemoryPharmaceuticalFormsRepository.create(pharmaceuticalForm);
+
+    const unitMeasure = makeUnitMeasure();
+    await inMemoryUnitsMeasureRepository.create(unitMeasure);
+
+    const medicineVariant = makeMedicineVariant({
+      medicineId: medicine.id,
+      pharmaceuticalFormId: pharmaceuticalForm.id,
+      unitMeasureId: unitMeasure.id,
+    });
+    await inMemoryMedicinesVariantsRepository.create(medicineVariant);
+
+    const medicineStock = makeMedicineStock({
+      batchesStockIds: [],
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      currentQuantity: 30,
+    });
+
+    const batch1 = makeBatch();
+    await inMemoryBatchesRepository.create(batch1);
+
+    const batchestock1 = makeBatchStock({
+      batchId: batch1.id,
+      medicineVariantId: medicineVariant.id,
+      stockId: stock.id,
+      medicineStockId: medicineStock.id,
+      currentQuantity: 30,
+    });
+
+    await inMemoryMedicinesStockRepository.create(medicineStock);
+
+    await inMemoryBatchStocksRepository.create(batchestock1);
+    await inMemoryMedicinesStockRepository.addBatchStock(
+      medicineStock.id.toString(),
+      batchestock1.id.toString(),
+    );
+
+    const exit1 = makeMedicineExit({
+      exitType: ExitType.MOVEMENT_TYPE,
+      operatorId: operator.id,
+      stockId: stock.id,
+      movementTypeId: movementType.id,
+      destinationInstitutionId: undefined,
+      dispensationId: undefined,
+      transferId: undefined,
+      reverseAt: new Date(),
+      exitDate: new Date(),
+    });
+
+    await inMemoryMedicinesExitsRepository.create(exit1);
+    await inMemoryMovimentationRepository.create(
+      makeMovimentation({
+        quantity: quantityToExit,
+        batchStockId: batchestock1.id,
+        exitId: exit1.id,
+        direction: 'EXIT',
+        entryId: undefined,
+      }),
+    );
+
+    const result = await sut.execute({
+      operatorId: operator2.id.toString(),
+      exitId: exit1.id.toString(),
+    });
+
+    expect(result.isLeft()).toBeTruthy();
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ExitAlreadyReversedError);
+      expect(inMemoryMedicinesExitsRepository.items[0].reverseAt).toEqual(
+        expect.any(Date),
+      );
+      expect(inMemoryBatchesRepository.items).toHaveLength(1);
+      expect(inMemoryBatchStocksRepository.items[0].quantity).toBe(30);
+      expect(inMemoryMedicinesStockRepository.items[0].quantity).toBe(30);
+      expect(inMemoryMedicinesExitsRepository.items).toHaveLength(1);
+      expect(inMemoryMedicinesEntriesRepository.items).toHaveLength(0);
+      expect(inMemoryMovimentationRepository.items).toHaveLength(1);
     }
   });
 });

@@ -43,35 +43,29 @@ export class PrismaDispensationsMedicinesRepository
       }),
     };
 
-    const [dispensations, totalCount, items] = await this.prisma.$transaction([
+    const [dispensations, totalCount] = await this.prisma.$transaction([
       this.prisma.dispensation.findMany({
         where: whereClause,
         take: 10,
         skip: (Math.max(1, page) - 1) * 10,
         include: {
+          exit: {
+            select: {
+              id: true,
+              reverseAt: true,
+              _count: {
+                select: {
+                  movimentation: true,
+                },
+              },
+            },
+          },
           operator: { select: { id: true, name: true } },
           patient: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.dispensation.count({ where: whereClause }),
-      this.prisma.medicineStock.findMany({
-        distinct: ['id'],
-        where: {
-          batchesStocks: {
-            some: {
-              movimentation: {
-                some: {
-                  exit: {
-                    exitType: $Enums.ExitType.DISPENSATION,
-                    dispensation: whereClause,
-                  },
-                },
-              },
-            },
-          },
-        },
-      }),
     ]);
 
     const dispensationsMapped = dispensations.map((dispensation) => {
@@ -82,7 +76,9 @@ export class PrismaDispensationsMedicinesRepository
         operatorId: new UniqueEntityId(dispensation.operator.id),
         patientId: new UniqueEntityId(dispensation.patient.id),
         patient: dispensation.patient.name,
-        items: items.length,
+        items: dispensation.exit?._count.movimentation ?? 0,
+        exitId: new UniqueEntityId(dispensation.exit?.id),
+        reversedAt: dispensation.exit?.reverseAt,
       });
     });
 
