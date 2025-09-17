@@ -25,14 +25,15 @@ export class FetchMedicinesExitsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(OperatorRole.MANAGER, OperatorRole.SUPER_ADMIN)
   async handle(@Query() queryParams: FetchMedicinesExitsDto) {
-    const { institutionId, page, operatorId, exitDate } = queryParams;
+    const { institutionId, page, operatorId, exitDate, exitType } = queryParams;
+    console.log('exitType:', exitType);
 
     const result = await this.fetchMedicinesExits.execute({
       page,
       institutionId,
       operatorId,
       exitDate: exitDate ? new Date(exitDate) : undefined,
-      exitType: undefined,
+      exitType,
     });
 
     if (result.isLeft()) {

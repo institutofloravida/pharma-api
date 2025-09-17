@@ -1,6 +1,14 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsString, IsOptional, IsInt, Min, IsISO8601 } from 'class-validator'
-import { Transform } from 'class-transformer'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  Min,
+  IsISO8601,
+  IsEnum,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
+import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
 
 export class FetchMedicinesExitsDto {
   @ApiProperty({
@@ -8,16 +16,7 @@ export class FetchMedicinesExitsDto {
     example: 'institution123',
   })
   @IsString()
-  institutionId: string
-
-  @ApiPropertyOptional({
-    description: 'ID do medicamento (opcional)',
-    example: 'medicine123',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  medicineId?: string
+  institutionId: string;
 
   @ApiPropertyOptional({
     description: 'ID do operador (opcional)',
@@ -26,25 +25,16 @@ export class FetchMedicinesExitsDto {
   })
   @IsOptional()
   @IsString()
-  operatorId?: string
+  operatorId?: string;
 
   @ApiPropertyOptional({
-    description: 'lote do medicamento',
-    example: 'ABC01',
-    required: false,
+    example: 'DONATION',
+    description: 'Tipo de saída',
+    enum: ExitType,
   })
+  @IsEnum(ExitType)
   @IsOptional()
-  @IsString()
-  batch?: string
-
-  @ApiPropertyOptional({
-    description: 'ID do tipo de movimento (opcional)',
-    example: 'movemenType123',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  movementTypeId?: string
+  exitType: ExitType;
 
   @ApiPropertyOptional({
     description: 'Data da saída',
@@ -52,7 +42,7 @@ export class FetchMedicinesExitsDto {
   })
   @IsISO8601({ strict: true })
   @IsOptional()
-  exitDate?: string
+  exitDate?: string;
 
   @ApiProperty({
     description: 'Número da página para a consulta',
@@ -62,5 +52,5 @@ export class FetchMedicinesExitsDto {
   @Min(1)
   @IsOptional()
   @Transform(({ value }) => Number(value) || 1)
-  page: number = 1
+  page: number = 1;
 }
