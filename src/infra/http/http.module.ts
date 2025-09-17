@@ -170,6 +170,8 @@ import { FetchMovimentationUseCase } from '@/domain/pharma/application/use-cases
 import { FetchMovimentationsController } from './controllers/movimentation/fetch-movimentation.controller';
 import { ReverseExitUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/reverse-exit';
 import { ReverseExitController } from './controllers/movimentation/exit/reverse-exit.controller';
+import { DeactivateOperatorController } from './controllers/operator/deactivate-operator.controller';
+import { DeactivateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/deactivate-operator';
 
 @Module({
   imports: [
@@ -218,6 +220,7 @@ import { ReverseExitController } from './controllers/movimentation/exit/reverse-
     CreateMonthlyMedicineUtilizationController,
     CreateTransferController,
     ConfirmTransferController,
+    DeactivateOperatorController,
     DispensationController,
     RegisterMedicineEntryController,
     RegisterMedicineExitController,
@@ -266,6 +269,7 @@ import { ReverseExitController } from './controllers/movimentation/exit/reverse-
   ],
   providers: [
     AuthenticateOperatorUseCase,
+    DeactivateOperatorUseCase,
     GetOperatorDetailsUseCase,
     GetInstitutionUseCase,
     GetPathologyUseCase,
