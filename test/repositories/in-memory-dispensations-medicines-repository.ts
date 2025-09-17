@@ -50,9 +50,10 @@ export class InMemoryDispensationsMedicinesRepository
     filters: {
       patientId?: string;
       dispensationDate?: Date;
+      operatorId?: string;
     },
   ): Promise<{ dispensations: DispensationWithPatient[]; meta: Meta }> {
-    const { patientId, dispensationDate } = filters;
+    const { patientId, dispensationDate, operatorId } = filters;
     const dispensations = this.items;
 
     const dispensationsFiltered = dispensations
@@ -60,6 +61,13 @@ export class InMemoryDispensationsMedicinesRepository
         if (
           patientId &&
           !dispensation.patientId.equal(new UniqueEntityId(patientId))
+        ) {
+          return false;
+        }
+
+        if (
+          operatorId &&
+          !dispensation.operatorId.equal(new UniqueEntityId(operatorId))
         ) {
           return false;
         }

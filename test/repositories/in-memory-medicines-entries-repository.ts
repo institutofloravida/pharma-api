@@ -1,93 +1,107 @@
-import { MedicinesEntriesRepository } from '@/domain/pharma/application/repositories/medicines-entries-repository'
-import { MedicineEntry } from '@/domain/pharma/enterprise/entities/entry'
-import { InMemoryStocksRepository } from './in-memory-stocks-repository'
-import { InMemoryOperatorsRepository } from './in-memory-operators-repository'
-import { Meta } from '@/core/repositories/meta'
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { InMemoryMovimentationRepository } from './in-memory-movimentation-repository'
+import { MedicinesEntriesRepository } from '@/domain/pharma/application/repositories/medicines-entries-repository';
+import { MedicineEntry } from '@/domain/pharma/enterprise/entities/entry';
+import { InMemoryStocksRepository } from './in-memory-stocks-repository';
+import { InMemoryOperatorsRepository } from './in-memory-operators-repository';
+import { Meta } from '@/core/repositories/meta';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { InMemoryMovimentationRepository } from './in-memory-movimentation-repository';
 
 export class InMemoryMedicinesEntriesRepository
-implements MedicinesEntriesRepository {
+  implements MedicinesEntriesRepository
+{
   constructor(
     private operatorsRepository: InMemoryOperatorsRepository,
     private stocksRepository: InMemoryStocksRepository,
     private movimentationRepository: InMemoryMovimentationRepository,
   ) {}
 
-  public items: MedicineEntry[] = []
+  public items: MedicineEntry[] = [];
 
   async create(medicineEntry: MedicineEntry) {
-    this.items.push(medicineEntry)
+    this.items.push(medicineEntry);
   }
 
   async findMany(
     { page, perPage = 10 }: PaginationParams,
     filters: {
-      institutionId: string;
+      institutionId?: string;
       operatorId?: string;
       stockId?: string;
       entryDate?: Date;
     },
   ): Promise<{ entries: EntryDetails[]; meta: Meta }> {
-    const { institutionId, entryDate, operatorId, stockId } = filters
-    const medicinesEntries = this.items
+    const { institutionId, entryDate, operatorId, stockId } = filters;
+    const medicinesEntries = this.items;
 
     const filteredByInstitution = medicinesEntries.filter((medicineEntry) => {
       const stock = this.stocksRepository.items.find((stock) => {
-        return stock.id.equal(medicineEntry.stockId)
-      })
+        return stock.id.equal(medicineEntry.stockId);
+      });
       if (!stock) {
         throw new Error(
           `stock with id "${medicineEntry.stockId} does not exist."`,
-        )
+        );
       }
-      if (!stock.institutionId.equal(new UniqueEntityId(institutionId))) {
-        return false
-      }
-
-      if (stockId && !medicineEntry.stockId.equal(new UniqueEntityId(stockId))) {
-        return false
-      }
-
-      if (operatorId && !medicineEntry.operatorId.equal(new UniqueEntityId(operatorId))) {
-        return false
-      }
-      if (entryDate && medicineEntry.entryDate.toISOString().split('T')[0] !== entryDate.toISOString().split('T')[0]) {
-        return false
+      if (
+        institutionId &&
+        !stock.institutionId.equal(new UniqueEntityId(institutionId))
+      ) {
+        return false;
       }
 
-      return true
-    })
+      if (
+        stockId &&
+        !medicineEntry.stockId.equal(new UniqueEntityId(stockId))
+      ) {
+        return false;
+      }
+
+      if (
+        operatorId &&
+        !medicineEntry.operatorId.equal(new UniqueEntityId(operatorId))
+      ) {
+        return false;
+      }
+      if (
+        entryDate &&
+        medicineEntry.entryDate.toISOString().split('T')[0] !==
+          entryDate.toISOString().split('T')[0]
+      ) {
+        return false;
+      }
+
+      return true;
+    });
 
     const medicinesEntriesMapped = filteredByInstitution.map(
       (medicineEntryMapped) => {
         const stock = this.stocksRepository.items.find((stock) =>
           stock.id.equal(medicineEntryMapped.stockId),
-        )
+        );
 
         if (!stock) {
           throw new Error(
             `stock with id "${medicineEntryMapped.stockId.toString()} does not exist."`,
-          )
+          );
         }
 
         const operator = this.operatorsRepository.items.find((operator) =>
           operator.id.equal(medicineEntryMapped.operatorId),
-        )
+        );
 
         if (!operator) {
           throw new Error(
             `operator with id "${medicineEntryMapped.id.toString()} does not exist."`,
-          )
+          );
         }
 
         const items = this.movimentationRepository.items.filter((item) => {
           return item.entryId
             ? item.entryId.equal(medicineEntryMapped.id)
-            : false
-        })
+            : false;
+        });
 
         return EntryDetails.create({
           stock: stock.content,
@@ -96,12 +110,14 @@ implements MedicinesEntriesRepository {
           operator: operator.name,
           items: items.length,
           nfNumber: medicineEntryMapped.nfNumber,
-        })
+        });
       },
-    )
+    );
 
-    const medicinesEntriesFilteredAndPaginated =
-      medicinesEntriesMapped.slice((page - 1) * perPage, page * perPage)
+    const medicinesEntriesFilteredAndPaginated = medicinesEntriesMapped.slice(
+      (page - 1) * perPage,
+      page * perPage,
+    );
 
     return {
       entries: medicinesEntriesFilteredAndPaginated,
@@ -109,7 +125,7 @@ implements MedicinesEntriesRepository {
         page,
         totalCount: medicinesEntriesMapped.length,
       },
-    }
+    };
   }
 
   // async fetchMovimentation(filters: {

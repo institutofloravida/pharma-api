@@ -12,7 +12,7 @@ export abstract class MedicinesExitsRepository {
   abstract findMany(
     params: PaginationParams,
     filters: {
-      institutionId: string;
+      institutionId?: string;
       operatorId?: string;
       exitType?: ExitType;
       exitDate?: Date;
