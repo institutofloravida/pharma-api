@@ -1,49 +1,71 @@
-import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository'
-import { FakerHasher } from 'test/cryptography/fake-hasher'
-import { AuthenticateOperatorUseCase } from './authenticate-operator'
-import { FakeEncrypter } from 'test/cryptography/fake-encrypter'
-import { makeOperator } from 'test/factories/make-operator'
-import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository'
+import { InMemoryOperatorsRepository } from 'test/repositories/in-memory-operators-repository';
+import { FakerHasher } from 'test/cryptography/fake-hasher';
+import { AuthenticateOperatorUseCase } from './authenticate-operator';
+import { FakeEncrypter } from 'test/cryptography/fake-encrypter';
+import { makeOperator } from 'test/factories/make-operator';
+import { InMemoryInstitutionsRepository } from 'test/repositories/in-memory-institutions-repository';
+import { OperatorIsNotActiveError } from './_errors/operator-is-not-active-error';
 
-let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository
-let inMemoryOperatorsRepository: InMemoryOperatorsRepository
-let fakeHasher: FakerHasher
-let fakeEncrypter: FakeEncrypter
-let sut: AuthenticateOperatorUseCase
+let inMemoryInstitutionsRepository: InMemoryInstitutionsRepository;
+let inMemoryOperatorsRepository: InMemoryOperatorsRepository;
+let fakeHasher: FakerHasher;
+let fakeEncrypter: FakeEncrypter;
+let sut: AuthenticateOperatorUseCase;
 
 describe('Authenticate Operator', () => {
   beforeEach(() => {
-    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository()
-    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(inMemoryInstitutionsRepository)
-    fakeHasher = new FakerHasher()
-    fakeEncrypter = new FakeEncrypter()
-    sut = new AuthenticateOperatorUseCase(inMemoryOperatorsRepository, fakeHasher, fakeEncrypter)
-  })
+    inMemoryInstitutionsRepository = new InMemoryInstitutionsRepository();
+    inMemoryOperatorsRepository = new InMemoryOperatorsRepository(
+      inMemoryInstitutionsRepository,
+    );
+    fakeHasher = new FakerHasher();
+    fakeEncrypter = new FakeEncrypter();
+    sut = new AuthenticateOperatorUseCase(
+      inMemoryOperatorsRepository,
+      fakeHasher,
+      fakeEncrypter,
+    );
+  });
   it('shoult be able to authenticate a operator', async () => {
     const operator = makeOperator({
       email: 'teste@gmail.com',
       passwordHash: await fakeHasher.hash('1234567'),
-    })
-    inMemoryOperatorsRepository.create(operator)
+    });
+    inMemoryOperatorsRepository.create(operator);
     const result = await sut.execute({
       email: operator.email,
       password: '1234567',
-    })
-    expect(result.isRight()).toBeTruthy()
+    });
+    expect(result.isRight()).toBeTruthy();
     expect(result.value).toEqual({
       accessToken: expect.any(String),
-    })
-  })
+    });
+  });
   it('shoult not be able to authenticate a operator with bad credentials', async () => {
     const operator = makeOperator({
       email: 'teste@gmail.com',
       passwordHash: await fakeHasher.hash('1234567'),
-    })
-    inMemoryOperatorsRepository.create(operator)
+    });
+    inMemoryOperatorsRepository.create(operator);
     const result = await sut.execute({
       email: operator.email,
       password: '1234567asasas',
-    })
-    expect(result.isLeft()).toBeTruthy()
-  })
-})
+    });
+    expect(result.isLeft()).toBeTruthy();
+  });
+
+  it('shoult not be able to authenticate a operator if it is inactive', async () => {
+    const operator = makeOperator({
+      email: 'teste@gmail.com',
+      passwordHash: await fakeHasher.hash('1234567'),
+      active: false,
+    });
+    inMemoryOperatorsRepository.create(operator);
+    const result = await sut.execute({
+      email: operator.email,
+      password: '1234567asasas',
+    });
+    expect(result.isLeft()).toBeTruthy();
+    expect(result.value).toBeInstanceOf(OperatorIsNotActiveError);
+  });
+});

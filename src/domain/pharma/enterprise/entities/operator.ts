@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { Optional } from '@/core/types/optional'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Entity } from '@/core/entities/entity'
+import { Optional } from '@/core/types/optional';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Entity } from '@/core/entities/entity';
 
 export enum OperatorRole {
   COMMON = 'COMMON',
@@ -10,113 +10,132 @@ export enum OperatorRole {
 }
 
 export interface OperatorProps {
-  name: string
-  email: string
-  passwordHash: string
-  institutionsIds: UniqueEntityId[]
-  role: OperatorRole
-  createdAt: Date
-  updatedAt?: Date | null
+  name: string;
+  email: string;
+  passwordHash: string;
+  institutionsIds: UniqueEntityId[];
+  role: OperatorRole;
+  active: boolean;
+  createdAt: Date;
+  updatedAt?: Date | null;
 }
 
 export class Operator extends Entity<OperatorProps> {
   get name() {
-    return this.props.name
+    return this.props.name;
   }
 
   set name(value) {
-    this.props.name = value
-    this.touch()
+    this.props.name = value;
+    this.touch();
   }
 
   get email() {
-    return this.props.email
+    return this.props.email;
   }
 
   set email(value) {
-    this.props.email = value
-    this.touch()
+    this.props.email = value;
+    this.touch();
   }
 
   get passwordHash() {
-    return this.props.passwordHash
+    return this.props.passwordHash;
   }
 
   set passwordHash(value) {
-    this.props.passwordHash = value
-    this.touch()
+    this.props.passwordHash = value;
+    this.touch();
   }
 
   get institutionsIds() {
-    return this.props.institutionsIds
+    return this.props.institutionsIds;
   }
 
   set institutionsIds(value) {
-    this.props.institutionsIds = value
-    this.touch()
+    this.props.institutionsIds = value;
+    this.touch();
   }
 
   get role() {
-    return this.props.role
+    return this.props.role;
+  }
+
+  get active() {
+    return this.props.active;
   }
 
   set role(role: OperatorRole) {
-    this.props.role = role
+    this.props.role = role;
   }
 
   public assignRole(value: OperatorRole) {
-    this.props.role = value
-    this.touch()
+    this.props.role = value;
+    this.touch();
   }
 
   get createdAt() {
-    return this.props.createdAt
+    return this.props.createdAt;
   }
 
   get updatedAt() {
-    return this.props.updatedAt
+    return this.props.updatedAt;
+  }
+
+  public deactivate() {
+    this.props.active = false;
+    this.touch();
   }
 
   public includesInstitution(institutionId: UniqueEntityId) {
-    return this.props.institutionsIds.find(item => item.equal(institutionId))
+    return this.props.institutionsIds.find((item) => item.equal(institutionId));
   }
 
   public isSuperAdmin() {
-    return this.role === OperatorRole.SUPER_ADMIN
+    return this.role === OperatorRole.SUPER_ADMIN;
   }
 
   public isManager() {
-    return this.role === OperatorRole.MANAGER
+    return this.role === OperatorRole.MANAGER;
   }
 
   public isCommon() {
-    return this.role === OperatorRole.COMMON
+    return this.role === OperatorRole.COMMON;
   }
 
   public canManageInstitution(institutionId: UniqueEntityId): boolean {
-    return this.role === OperatorRole.SUPER_ADMIN ||
-           (this.role === OperatorRole.MANAGER && this.institutionsIds.includes(institutionId))
+    return (
+      this.role === OperatorRole.SUPER_ADMIN ||
+      (this.role === OperatorRole.MANAGER &&
+        this.institutionsIds.includes(institutionId))
+    );
   }
 
   public canManageOperators(): boolean {
-    return this.role === OperatorRole.SUPER_ADMIN || this.role === OperatorRole.MANAGER
+    return (
+      this.role === OperatorRole.SUPER_ADMIN ||
+      this.role === OperatorRole.MANAGER
+    );
   }
 
   private touch() {
-    this.props.updatedAt = new Date()
+    this.props.updatedAt = new Date();
   }
 
   static create(
     props: Optional<OperatorProps, 'createdAt' | 'role' | 'institutionsIds'>,
     id?: UniqueEntityId,
   ) {
-    const operator = new Operator({
-      ...props,
-      createdAt: props.createdAt ?? new Date(),
-      role: props.role ?? OperatorRole.COMMON,
-      institutionsIds: props.institutionsIds ?? [],
-    }, id)
+    const operator = new Operator(
+      {
+        ...props,
+        createdAt: props.createdAt ?? new Date(),
+        role: props.role ?? OperatorRole.COMMON,
+        institutionsIds: props.institutionsIds ?? [],
+      },
+      id,
+    );
 
-    return operator
+    return operator;
   }
 }

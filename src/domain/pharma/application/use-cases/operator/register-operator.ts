@@ -1,16 +1,16 @@
-import { left, right, type Either } from '@/core/either'
+import { left, right, type Either } from '@/core/either';
 
 import {
   Operator,
   OperatorRole,
-} from '@/domain/pharma/enterprise/entities/operator'
-import { OperatorsRepository } from '../../repositories/operators-repository'
-import { OperatorAlreadyExistsError } from './_errors/operator-already-exists-error'
-import { HashGenerator } from '../../cryptography/hash-generator'
-import { Injectable } from '@nestjs/common'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { NoAssociatedInstitutionError } from './_errors/no-associated-institution-error'
-import { InstitutionsRepository } from '../../repositories/institutions-repository'
+} from '@/domain/pharma/enterprise/entities/operator';
+import { OperatorsRepository } from '../../repositories/operators-repository';
+import { OperatorAlreadyExistsError } from './_errors/operator-already-exists-error';
+import { HashGenerator } from '../../cryptography/hash-generator';
+import { Injectable } from '@nestjs/common';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { NoAssociatedInstitutionError } from './_errors/no-associated-institution-error';
+import { InstitutionsRepository } from '../../repositories/institutions-repository';
 
 interface createOperatorUseCaseRequest {
   name: string;
@@ -21,12 +21,11 @@ interface createOperatorUseCaseRequest {
 }
 
 type createOperatorUseCaseResponse = Either<
-  OperatorAlreadyExistsError |
-  NoAssociatedInstitutionError,
+  OperatorAlreadyExistsError | NoAssociatedInstitutionError,
   {
     operator: Operator;
   }
->
+>;
 
 @Injectable()
 export class RegisterOperatorUseCase {
@@ -43,31 +42,35 @@ export class RegisterOperatorUseCase {
     role = OperatorRole.COMMON,
     institutionsIds,
   }: createOperatorUseCaseRequest): Promise<createOperatorUseCaseResponse> {
-    if ((role.toString() !== OperatorRole.SUPER_ADMIN.toString()) && institutionsIds.length < 1) {
-      return left(new NoAssociatedInstitutionError())
+    if (
+      role.toString() !== OperatorRole.SUPER_ADMIN.toString() &&
+      institutionsIds.length < 1
+    ) {
+      return left(new NoAssociatedInstitutionError());
     }
     const operatorWithSameEmail =
-      await this.operatorRepository.findByEmail(email)
+      await this.operatorRepository.findByEmail(email);
     if (operatorWithSameEmail) {
-      return left(new OperatorAlreadyExistsError(email))
+      return left(new OperatorAlreadyExistsError(email));
     }
 
-    const passwordHash = await this.hashGenerator.hash(password)
+    const passwordHash = await this.hashGenerator.hash(password);
 
     const operator = Operator.create({
       name,
       email,
       passwordHash,
       role,
+      active: true,
       institutionsIds: institutionsIds.map(
         (institution) => new UniqueEntityId(institution),
       ),
-    })
+    });
 
-    await this.operatorRepository.create(operator)
+    await this.operatorRepository.create(operator);
 
     return right({
       operator,
-    })
+    });
   }
 }

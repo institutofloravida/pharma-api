@@ -20,6 +20,7 @@ model Operator {
   email        String       @unique
   passwordHash String       @map("password_hash")
   role         OperatorRole @default(COMMON)
+  active       Boolean      @default(true)
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime?    @updatedAt @map("updated_at")
 

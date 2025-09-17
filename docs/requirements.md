@@ -15,6 +15,7 @@
 - ✅ Deve ser possível cadastrar uma patologia;
 - ✅ Deve ser possível cadastrar um estoque;
 - ✅ Deve ser possível cadastrar um operador;
+- [ ] Deve ser possível desativar um operador;
 - ✅ Deve ser possível cadastrar uma forma farmacêutica;
 - ✅ Deve ser possível cadastrar uma instituição;
 - ✅ Deve ser possível cadastrar um lote de medicamentos;
