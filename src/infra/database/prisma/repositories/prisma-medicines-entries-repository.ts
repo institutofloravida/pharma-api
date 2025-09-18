@@ -24,7 +24,7 @@ export class PrismaMedicinesEntriesRepository
   async findMany(
     { page }: PaginationParams,
     filters: {
-      institutionId: string;
+      institutionId?: string;
       operatorId?: string;
       stockId?: string;
       entryDate?: Date;

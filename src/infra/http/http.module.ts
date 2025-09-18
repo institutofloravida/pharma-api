@@ -172,6 +172,8 @@ import { ReverseExitUseCase } from '@/domain/pharma/application/use-cases/movime
 import { ReverseExitController } from './controllers/movimentation/exit/reverse-exit.controller';
 import { DeactivateOperatorController } from './controllers/operator/deactivate-operator.controller';
 import { DeactivateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/deactivate-operator';
+import { DeleteOperatorController } from './controllers/operator/delete-operator.controller';
+import { DeleteOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/delete-operator';
 
 @Module({
   imports: [
@@ -182,6 +184,7 @@ import { DeactivateOperatorUseCase } from '@/domain/pharma/application/use-cases
   ],
   controllers: [
     AuthenticateOperatorController,
+    DeleteOperatorController,
     ValidateTokenController,
     GetOperatorDetailsController,
     GetInstitutionController,
@@ -269,6 +272,7 @@ import { DeactivateOperatorUseCase } from '@/domain/pharma/application/use-cases
   ],
   providers: [
     AuthenticateOperatorUseCase,
+    DeleteOperatorUseCase,
     DeactivateOperatorUseCase,
     GetOperatorDetailsUseCase,
     GetInstitutionUseCase,

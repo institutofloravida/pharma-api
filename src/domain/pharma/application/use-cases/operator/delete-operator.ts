@@ -2,16 +2,19 @@ import { left, right, type Either } from '@/core/either';
 import { Injectable } from '@nestjs/common';
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error';
 import { OperatorsRepository } from '../../repositories/operators-repository';
-import type { MedicinesEntriesRepository } from '../../repositories/medicines-entries-repository';
-import type { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository';
-import type { DispensationsMedicinesRepository } from '../../repositories/dispensations-medicines-repository';
+import { MedicinesEntriesRepository } from '../../repositories/medicines-entries-repository';
+import { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository';
+import { DispensationsMedicinesRepository } from '../../repositories/dispensations-medicines-repository';
 import { OperatorAlreadyHasCarriedOperationsError } from './_errors/operator-has-already-carried-out-operations-error';
 
 interface deleteOperatorUseCaseRequest {
   operatorId: string;
 }
 
-type deleteOperatorUseCaseResponse = Either<ResourceNotFoundError, null>;
+type deleteOperatorUseCaseResponse = Either<
+  OperatorAlreadyHasCarriedOperationsError | ResourceNotFoundError,
+  null
+>;
 
 @Injectable()
 export class DeleteOperatorUseCase {

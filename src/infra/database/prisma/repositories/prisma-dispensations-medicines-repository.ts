@@ -29,12 +29,17 @@ export class PrismaDispensationsMedicinesRepository
 
   async findMany(
     { page }: PaginationParams,
-    filters: { patientId?: string; dispensationDate?: Date },
+    filters: {
+      patientId?: string;
+      dispensationDate?: Date;
+      operatorId?: string;
+    },
   ): Promise<{ dispensations: DispensationWithPatient[]; meta: Meta }> {
-    const { patientId, dispensationDate } = filters;
+    const { patientId, dispensationDate, operatorId } = filters;
 
     const whereClause: Prisma.DispensationWhereInput = {
       ...(patientId && { patientId: { equals: patientId } }),
+      ...(operatorId && { operatorId: { equals: operatorId } }),
       ...(dispensationDate && {
         dispensationDate: {
           gte: new Date(dispensationDate.setHours(0, 0, 0, 0)), // Início do dia
