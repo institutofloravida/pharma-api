@@ -648,4 +648,18 @@ export class PrismaMedicinesStockRepository
       medicinesStock: medicinesStockMapped,
     };
   }
+
+  async stockIsZero(stockId: string): Promise<boolean> {
+    const medicinesStockWithQuantityGreaterThanZero =
+      await this.prisma.medicineStock.count({
+        where: {
+          stockId,
+          currentQuantity: {
+            gt: 0,
+          },
+        },
+      });
+
+    return medicinesStockWithQuantityGreaterThanZero === 0;
+  }
 }
