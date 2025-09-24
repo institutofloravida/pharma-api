@@ -174,6 +174,8 @@ import { DeactivateOperatorController } from './controllers/operator/deactivate-
 import { DeactivateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/deactivate-operator';
 import { DeleteOperatorController } from './controllers/operator/delete-operator.controller';
 import { DeleteOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/delete-operator';
+import { ActivateOperatorController } from './controllers/operator/activate-operator.controller';
+import { ActivateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/activate-operator';
 
 @Module({
   imports: [
@@ -183,6 +185,7 @@ import { DeleteOperatorUseCase } from '@/domain/pharma/application/use-cases/ope
     ScheduleModule.forRoot(),
   ],
   controllers: [
+    ActivateOperatorController,
     AuthenticateOperatorController,
     DeleteOperatorController,
     ValidateTokenController,
@@ -271,6 +274,7 @@ import { DeleteOperatorUseCase } from '@/domain/pharma/application/use-cases/ope
     DeleteMedicineVariantController,
   ],
   providers: [
+    ActivateOperatorUseCase,
     AuthenticateOperatorUseCase,
     DeleteOperatorUseCase,
     DeactivateOperatorUseCase,
