@@ -91,6 +91,7 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
       ...operator,
       id: new UniqueEntityId(operator.id),
       role: OperatorRole[operator.role],
+      status: operator.active,
       institutions: operator.institutions.map((institution) => {
         return {
           id: new UniqueEntityId(institution.id),

@@ -1,4 +1,4 @@
-import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution'
+import { OperatorWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/operator-with-institution';
 
 export class OperatorWithInstitutionPresenter {
   static toHTTP(operator: OperatorWithInstitution) {
@@ -7,14 +7,15 @@ export class OperatorWithInstitutionPresenter {
       name: operator.name,
       email: operator.email,
       role: operator.role,
-      institutions: operator.institutions.map(institution => {
+      status: operator.status,
+      institutions: operator.institutions.map((institution) => {
         return {
           id: institution.id.toString(),
           name: institution.name,
-        }
+        };
       }),
       createdAt: operator.createdAt,
       updatedAt: operator.updatedAt,
-    }
+    };
   }
 }

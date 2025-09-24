@@ -87,6 +87,11 @@ export class Operator extends Entity<OperatorProps> {
     this.touch();
   }
 
+  public activate() {
+    this.props.active = true;
+    this.touch();
+  }
+
   public includesInstitution(institutionId: UniqueEntityId) {
     return this.props.institutionsIds.find((item) => item.equal(institutionId));
   }
