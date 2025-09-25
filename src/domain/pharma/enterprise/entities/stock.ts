@@ -33,6 +33,16 @@ export class Stock extends AuxiliaryRecord<StockProps> {
     this.touch();
   }
 
+  public activate() {
+    this.props.status = true;
+    this.touch();
+  }
+
+  public deactivate() {
+    this.props.status = false;
+    this.touch();
+  }
+
   static create(
     props: Optional<StockProps, 'createdAt' | 'status'>,
     id?: UniqueEntityId,
