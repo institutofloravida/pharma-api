@@ -10,7 +10,8 @@ import request from 'supertest';
 import { InstitutionFactory } from 'test/factories/make-insitution';
 import { OperatorFactory } from 'test/factories/make-operator';
 import { StockFactory } from 'test/factories/make-stock';
-describe('Activate Stock (E2E)', () => {
+
+describe('Deactivate Stock (E2E)', () => {
   let app: INestApplication;
   let institutionFactory: InstitutionFactory;
   let operatorFactory: OperatorFactory;
@@ -37,7 +38,7 @@ describe('Activate Stock (E2E)', () => {
     await app.init();
   });
 
-  test('[PATCH] /stock/:id/activate', async () => {
+  test('[PATCH] /stock/:id/deactivate', async () => {
     const user = await operatorFactory.makePrismaOperator({
       role: OperatorRole.MANAGER,
     });
@@ -47,12 +48,12 @@ describe('Activate Stock (E2E)', () => {
     const institution = await institutionFactory.makePrismaInstitution();
 
     const stock = await stockFactory.makePrismaStock({
-      status: false,
+      status: true,
       institutionId: institution.id,
     });
 
     const response = await request(app.getHttpServer())
-      .patch(`/stock/${stock.id.toString()}/activate`)
+      .patch(`/stock/${stock.id.toString()}/deactivate`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send();
 
@@ -63,10 +64,9 @@ describe('Activate Stock (E2E)', () => {
         id: stock.id.toString(),
       },
     });
-
     expect(stockOnDataBase).toEqual(
       expect.objectContaining({
-        status: true,
+        status: false,
       }),
     );
   });
