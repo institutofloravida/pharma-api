@@ -109,9 +109,10 @@ export class PrismaMedicinesExitsRepository
       operatorId?: string;
       exitType?: ExitType;
       exitDate?: Date;
+      stockId?: string;
     },
   ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }> {
-    const { exitDate, exitType, institutionId, operatorId } = filters;
+    const { exitDate, exitType, institutionId, operatorId, stockId } = filters;
     const whereClauses: string[] = [];
     const params: any[] = [];
     let paramIndex = 1;
@@ -131,6 +132,11 @@ export class PrismaMedicinesExitsRepository
     if (exitDate) {
       whereClauses.push(`e.exit_date::date = $${paramIndex++}::date`);
       params.push(exitDate);
+    }
+
+    if (stockId) {
+      whereClauses.push(`e.stock_id = $${paramIndex++}`);
+      params.push(stockId);
     }
 
     const whereSQL =

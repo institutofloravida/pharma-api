@@ -1,26 +1,24 @@
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Meta } from '@/core/repositories/meta'
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository'
-import {
-  StocksRepository,
-} from '@/domain/pharma/application/repositories/stocks-repository'
-import { Stock } from '@/domain/pharma/enterprise/entities/stock'
-import { StockWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/stock-with-institution'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Meta } from '@/core/repositories/meta';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { InstitutionsRepository } from '@/domain/pharma/application/repositories/institutions-repository';
+import { StocksRepository } from '@/domain/pharma/application/repositories/stocks-repository';
+import { Stock } from '@/domain/pharma/enterprise/entities/stock';
+import { StockWithInstitution } from '@/domain/pharma/enterprise/entities/value-objects/stock-with-institution';
 
 export class InMemoryStocksRepository implements StocksRepository {
   constructor(private institutionsRepository: InstitutionsRepository) {}
 
-  public items: Stock[] = []
+  public items: Stock[] = [];
 
   async create(stock: Stock) {
-    this.items.push(stock)
+    this.items.push(stock);
   }
 
   async save(stock: Stock): Promise<void> {
-    const itemIndex = this.items.findIndex(item => item.id.equal(stock.id))
+    const itemIndex = this.items.findIndex((item) => item.id.equal(stock.id));
 
-    this.items[itemIndex] = stock
+    this.items[itemIndex] = stock;
   }
 
   async findByContent(content: string, institutionId: string) {
@@ -28,31 +26,39 @@ export class InMemoryStocksRepository implements StocksRepository {
       (item) =>
         item.content.toLowerCase().trim() === content.toLowerCase().trim() &&
         item.institutionId.toString() === institutionId,
-    )
+    );
     if (!stock) {
-      return null
+      return null;
     }
-    return stock
+    return stock;
   }
 
   async findById(id: string): Promise<Stock | null> {
-    const stock = this.items.find((item) => item.id.equal(new UniqueEntityId(id)))
+    const stock = this.items.find((item) =>
+      item.id.equal(new UniqueEntityId(id)),
+    );
     if (!stock) {
-      return null
+      return null;
     }
 
-    return stock
+    return stock;
   }
 
   async findByIdWithDetails(id: string): Promise<StockWithInstitution | null> {
-    const stock = this.items.find((item) => item.id.equal(new UniqueEntityId(id)))
+    const stock = this.items.find((item) =>
+      item.id.equal(new UniqueEntityId(id)),
+    );
     if (!stock) {
-      return null
+      return null;
     }
 
-    const institution = await this.institutionsRepository.findById(stock.institutionId.toString())
+    const institution = await this.institutionsRepository.findById(
+      stock.institutionId.toString(),
+    );
     if (!institution) {
-      throw new Error(`Instituição com id "${stock.institutionId.toString()}" não foi encontrada!`)
+      throw new Error(
+        `Instituição com id "${stock.institutionId.toString()}" não foi encontrada!`,
+      );
     }
 
     return StockWithInstitution.create({
@@ -63,7 +69,7 @@ export class InMemoryStocksRepository implements StocksRepository {
       institutionName: institution.content,
       createdAt: stock.createdAt,
       updatedAt: stock.updatedAt,
-    })
+    });
   }
 
   async findManyByInstitutionsId(
@@ -73,9 +79,9 @@ export class InMemoryStocksRepository implements StocksRepository {
     const stocks = this.items
       .filter((item) => institutionsIds.includes(item.institutionId.toString()))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 10, page * 10)
+      .slice((page - 1) * 10, page * 10);
 
-    return stocks
+    return stocks;
   }
 
   async findManyWithInstitution(
@@ -86,27 +92,29 @@ export class InMemoryStocksRepository implements StocksRepository {
   ): Promise<{ stocks: StockWithInstitution[]; meta: Meta }> {
     let stocks = this.items.sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-    )
+    );
 
     if (!isSuper) {
       stocks = stocks.filter((item) =>
         institutionsIds
           ? institutionsIds.includes(item.institutionId.toString())
           : false,
-      )
+      );
     }
-    const stocksFiltered = stocks.filter(item => {
-      return item.content.includes(content ?? '')
-    })
-    const stocksPaginated = stocksFiltered.slice((page - 1) * 10, page * 10)
+    const stocksFiltered = stocks.filter((item) => {
+      return item.content.includes(content ?? '');
+    });
+    const stocksPaginated = stocksFiltered.slice((page - 1) * 10, page * 10);
 
     const stocksWithInstitution = await Promise.all(
       stocksPaginated.map(async (stock) => {
         const institution = await this.institutionsRepository.findById(
           stock.institutionId.toString(),
-        )
+        );
         if (!institution) {
-          throw new Error(`Instituição com id "${stock.institutionId.toString()}" não foi encontrada!`)
+          throw new Error(
+            `Instituição com id "${stock.institutionId.toString()}" não foi encontrada!`,
+          );
         }
 
         return StockWithInstitution.create({
@@ -117,9 +125,9 @@ export class InMemoryStocksRepository implements StocksRepository {
           institutionName: institution.content,
           createdAt: stock.createdAt,
           updatedAt: stock.updatedAt,
-        })
+        });
       }),
-    )
+    );
 
     return {
       stocks: stocksWithInstitution,
@@ -127,6 +135,13 @@ export class InMemoryStocksRepository implements StocksRepository {
         page,
         totalCount: stocksFiltered.length,
       },
-    }
+    };
+  }
+
+  async delete(stockId: string): Promise<void> {
+    const stockIndex = this.items.findIndex((item) =>
+      item.id.equal(new UniqueEntityId(stockId)),
+    );
+    this.items.splice(stockIndex, 1);
   }
 }

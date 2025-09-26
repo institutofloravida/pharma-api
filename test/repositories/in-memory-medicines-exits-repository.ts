@@ -106,9 +106,10 @@ export class InMemoryMedicinesExitsRepository
       operatorId?: string;
       exitType?: ExitType;
       exitDate?: Date;
+      stockId?: string;
     },
   ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }> {
-    const { institutionId, exitDate, exitType, operatorId } = filters;
+    const { institutionId, exitDate, exitType, operatorId, stockId } = filters;
     const medicinesExitsFilteredAndMapped: ExitDetails[] = [];
 
     for (const exit of this.items) {
@@ -129,6 +130,9 @@ export class InMemoryMedicinesExitsRepository
         throw new Error(
           `stock with id "${exit.stockId.toString()} does not exist."`,
         );
+      }
+      if (stockId && !stock.id.equal(new UniqueEntityId(stockId))) {
+        continue;
       }
 
       if (

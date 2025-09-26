@@ -16,6 +16,7 @@ export abstract class MedicinesExitsRepository {
       operatorId?: string;
       exitType?: ExitType;
       exitDate?: Date;
+      stockId?: string;
     },
   ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }>;
 }

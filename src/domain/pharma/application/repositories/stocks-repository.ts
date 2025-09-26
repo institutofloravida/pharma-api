@@ -20,4 +20,5 @@ export abstract class StocksRepository {
     content?: string,
     isSuper?: boolean,
   ): Promise<{ stocks: StockWithInstitution[]; meta: Meta }>;
+  abstract delete(stockId: string): Promise<void>;
 }
