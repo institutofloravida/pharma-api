@@ -176,6 +176,8 @@ import { DeleteOperatorController } from './controllers/operator/delete-operator
 import { DeleteOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/delete-operator';
 import { ActivateOperatorController } from './controllers/operator/activate-operator.controller';
 import { ActivateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/activate-operator';
+import { ActivateStockController } from './controllers/auxiliary-records/stock/ativate-stock.controller';
+import { ActivateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/activate-stock';
 
 @Module({
   imports: [
@@ -186,6 +188,7 @@ import { ActivateOperatorUseCase } from '@/domain/pharma/application/use-cases/o
   ],
   controllers: [
     ActivateOperatorController,
+    ActivateStockController,
     AuthenticateOperatorController,
     DeleteOperatorController,
     ValidateTokenController,
@@ -275,6 +278,7 @@ import { ActivateOperatorUseCase } from '@/domain/pharma/application/use-cases/o
   ],
   providers: [
     ActivateOperatorUseCase,
+    ActivateStockUseCase,
     AuthenticateOperatorUseCase,
     DeleteOperatorUseCase,
     DeactivateOperatorUseCase,
