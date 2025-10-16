@@ -1,11 +1,11 @@
-import { Either, right } from '@/core/either'
-import { Injectable } from '@nestjs/common'
-import { Meta } from '@/core/repositories/meta'
-import { MedicinesEntriesRepository } from '../../../repositories/medicines-entries-repository'
-import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details'
+import { Either, right } from '@/core/either';
+import { Injectable } from '@nestjs/common';
+import { Meta } from '@/core/repositories/meta';
+import { MedicinesEntriesRepository } from '../../../repositories/medicines-entries-repository';
+import { EntryWithStock } from '@/domain/pharma/enterprise/entities/value-objects/entry-with-stock';
 
 interface FetchRegisterMedicineEntryUseCaseRequest {
-  institutionId: string,
+  institutionId: string;
   stockId?: string;
   operatorId?: string;
   entryDate?: Date;
@@ -15,16 +15,14 @@ interface FetchRegisterMedicineEntryUseCaseRequest {
 type FetchRegisterMedicineEntryUseCaseResponse = Either<
   null,
   {
-    medicinesEntries: EntryDetails[],
-    meta: Meta
+    medicinesEntries: EntryWithStock[];
+    meta: Meta;
   }
->
+>;
 
 @Injectable()
 export class FetchRegisterMedicinesEntriesUseCase {
-  constructor(
-    private medicinesEntriesRepository: MedicinesEntriesRepository,
-  ) {}
+  constructor(private medicinesEntriesRepository: MedicinesEntriesRepository) {}
 
   async execute({
     page,
@@ -33,16 +31,15 @@ export class FetchRegisterMedicinesEntriesUseCase {
     stockId,
     entryDate,
   }: FetchRegisterMedicineEntryUseCaseRequest): Promise<FetchRegisterMedicineEntryUseCaseResponse> {
-    const { entries, meta } =
-      await this.medicinesEntriesRepository.findMany(
-        { page },
-        {
-          institutionId,
-          operatorId,
-          stockId,
-          entryDate,
-        },
-      )
+    const { entries, meta } = await this.medicinesEntriesRepository.findMany(
+      { page },
+      {
+        institutionId,
+        operatorId,
+        stockId,
+        entryDate,
+      },
+    );
 
     return right({
       medicinesEntries: entries,
@@ -50,6 +47,6 @@ export class FetchRegisterMedicinesEntriesUseCase {
         page: meta.page,
         totalCount: meta.totalCount,
       },
-    })
+    });
   }
 }

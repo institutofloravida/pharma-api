@@ -1,7 +1,8 @@
 import { Meta } from '@/core/repositories/meta';
 import { MedicineEntry } from '../../enterprise/entities/entry';
 import { PaginationParams } from '@/core/repositories/pagination-params';
-import { EntryDetails } from '../../enterprise/entities/value-objects/entry-details';
+import { EntryWithStock } from '../../enterprise/entities/value-objects/entry-with-stock';
+import type { EntryDetails } from '../../enterprise/entities/value-objects/entry-details';
 
 export abstract class MedicinesEntriesRepository {
   abstract create(medicineEntry: MedicineEntry): Promise<void>;
@@ -13,5 +14,6 @@ export abstract class MedicinesEntriesRepository {
       stockId?: string;
       entryDate?: Date;
     },
-  ): Promise<{ entries: EntryDetails[]; meta: Meta }>;
+  ): Promise<{ entries: EntryWithStock[]; meta: Meta }>;
+  abstract findByIdWithDetails(entryId: string): Promise<EntryDetails | null>;
 }

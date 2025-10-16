@@ -5,7 +5,7 @@ import { MedicineEntry } from '@/domain/pharma/enterprise/entities/entry';
 import { PrismaMedicineEntryMapper } from '../mappers/prisma-medicine-entry-mapper';
 import { Meta } from '@/core/repositories/meta';
 import { PaginationParams } from '@/core/repositories/pagination-params';
-import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details';
+import { EntryWithStock } from '@/domain/pharma/enterprise/entities/value-objects/entry-with-stock';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class PrismaMedicinesEntriesRepository
       stockId?: string;
       entryDate?: Date;
     },
-  ): Promise<{ entries: EntryDetails[]; meta: Meta }> {
+  ): Promise<{ entries: EntryWithStock[]; meta: Meta }> {
     const { institutionId, entryDate, operatorId, stockId } = filters;
 
     const whereClauses: string[] = [];
@@ -99,7 +99,7 @@ export class PrismaMedicinesEntriesRepository
     const medicinesEntriesFilteredMapped = entries.map((item) => {
       const operator = operators.find((o) => o.id === item.operatorId);
       const stock = stocks.find((s) => s.id === item.stockId);
-      return EntryDetails.create({
+      return EntryWithStock.create({
         entryDate: item.entryDate,
         operator: operator?.name || '',
         stock: stock?.name || '',

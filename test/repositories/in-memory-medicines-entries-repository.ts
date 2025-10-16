@@ -4,9 +4,21 @@ import { InMemoryStocksRepository } from './in-memory-stocks-repository';
 import { InMemoryOperatorsRepository } from './in-memory-operators-repository';
 import { Meta } from '@/core/repositories/meta';
 import { PaginationParams } from '@/core/repositories/pagination-params';
-import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details';
+import { EntryWithStock } from '@/domain/pharma/enterprise/entities/value-objects/entry-with-stock';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { InMemoryMovimentationRepository } from './in-memory-movimentation-repository';
+import {
+  EntryDetails,
+  type EntryDetailsMedicineProps,
+} from '@/domain/pharma/enterprise/entities/value-objects/entry-details';
+import { InMemoryMovementTypesRepository } from './in-memory-movement-types-repository';
+import { InMemoryBatchStocksRepository } from './in-memory-batch-stocks-repository';
+import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-variants-repository';
+import { InMemoryMedicinesRepository } from './in-memory-medicines-repository';
+import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms';
+import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository';
+import { InMemoryBatchesRepository } from './in-memory-batches-repository';
+import { InMemoryManufacturersRepository } from './in-memory-manufacturers-repository';
 
 export class InMemoryMedicinesEntriesRepository
   implements MedicinesEntriesRepository
@@ -15,6 +27,14 @@ export class InMemoryMedicinesEntriesRepository
     private operatorsRepository: InMemoryOperatorsRepository,
     private stocksRepository: InMemoryStocksRepository,
     private movimentationRepository: InMemoryMovimentationRepository,
+    private movementTypesRepository: InMemoryMovementTypesRepository,
+    private batchesStockRepository: InMemoryBatchStocksRepository,
+    private medicinesVariantRepository: InMemoryMedicinesVariantsRepository,
+    private medicinesRepository: InMemoryMedicinesRepository,
+    private pharmaceuticalFormsRepository: InMemoryPharmaceuticalFormsRepository,
+    private unitsMeasureRepository: InMemoryUnitsMeasureRepository,
+    private batchesRepository: InMemoryBatchesRepository,
+    private manufacturersRepository: InMemoryManufacturersRepository,
   ) {}
 
   public items: MedicineEntry[] = [];
@@ -31,7 +51,7 @@ export class InMemoryMedicinesEntriesRepository
       stockId?: string;
       entryDate?: Date;
     },
-  ): Promise<{ entries: EntryDetails[]; meta: Meta }> {
+  ): Promise<{ entries: EntryWithStock[]; meta: Meta }> {
     const { institutionId, entryDate, operatorId, stockId } = filters;
     const medicinesEntries = this.items;
 
@@ -103,7 +123,7 @@ export class InMemoryMedicinesEntriesRepository
             : false;
         });
 
-        return EntryDetails.create({
+        return EntryWithStock.create({
           stock: stock.content,
           entryDate: medicineEntryMapped.entryDate,
           entryId: medicineEntryMapped.id,
@@ -128,266 +148,161 @@ export class InMemoryMedicinesEntriesRepository
     };
   }
 
-  // async fetchMovimentation(filters: {
-  //   institutionId: string;
-  //   startDate: Date;
-  //   endDate: Date;
-  //   operatorId?: string;
-  //   medicineId?: string;
-  //   stockId?: string;
-  //   medicineVariantId?: string;
-  //   medicineStockId?: string;
-  //   batcheStockId?: string;
-  //   quantity?: number;
-  //   movementTypeId?: string;
-  // }): Promise<{ entriesMovimentation: Movimentation[]; meta: MetaReport }> {
-  //   const {
-  //     institutionId,
-  //     startDate,
-  //     endDate,
-  //     batcheStockId,
-  //     medicineId,
-  //     quantity,
-  //     stockId,
-  //     medicineStockId,
-  //     medicineVariantId,
-  //     movementTypeId,
-  //     operatorId,
-  //   } = filters
-  //   const medicinesEntries = this.items
+  async findByIdWithDetails(entryId: string): Promise<EntryDetails | null> {
+    const entry = this.items.find((entry) =>
+      entry.id.equal(new UniqueEntityId(entryId)),
+    );
+    if (!entry) {
+      return null;
+    }
 
-  //   const filteredByInstitution = medicinesEntries.filter((medicineEntry) => {
-  //     const batchStock = this.batchStocksRepository.items.find((item) =>
-  //       item.id.equal(medicineEntry.batcheStockId),
-  //     )
-  //     if (!batchStock) {
-  //       throw new Error(
-  //         `Batchstock with id "${medicineEntry.batcheStockId.toString()} does not exist."`,
-  //       )
-  //     }
+    const stock = this.stocksRepository.items.find((stock) =>
+      stock.id.equal(entry.stockId),
+    );
 
-  //     const batch = this.batchesRepository.items.find((batch) =>
-  //       batch.id.equal(batchStock.batchId),
-  //     )
-  //     if (!batch) {
-  //       throw new Error(
-  //         `batch with id "${batchStock.batchId.toString} does not exist."`,
-  //       )
-  //     }
-  //     const stock = this.stocksRepository.items.find((stock) => {
-  //       return stock.id.equal(batchStock.stockId)
-  //     })
-  //     if (!stock) {
-  //       throw new Error(
-  //         `stock with id "${batchStock.stockId.toString()} does not exist."`,
-  //       )
-  //     }
+    if (!stock) {
+      throw new Error(
+        `stock with id "${entry.stockId.toString()} does not exist."`,
+      );
+    }
 
-  //     return stock.institutionId.equal(new UniqueEntityId(institutionId))
-  //   })
+    const operator = this.operatorsRepository.items.find((operator) =>
+      operator.id.equal(entry.operatorId),
+    );
 
-  //   const medicinesEntriesMapped = filteredByInstitution.map(
-  //     (medicineEntryMapped) => {
-  //       const medicineStock = this.medicinesStockRepository.items.find(
-  //         (medicineStock) => {
-  //           return medicineStock.id.equal(medicineEntryMapped.medicineStockId)
-  //         },
-  //       )
-  //       if (!medicineStock) {
-  //         throw new Error(
-  //           `medicine stock with id "${medicineEntryMapped.medicineStockId.toString()} does not exist."`,
-  //         )
-  //       }
+    if (!operator) {
+      throw new Error(
+        `operator with id "${entry.operatorId.toString()} does not exist."`,
+      );
+    }
+    let movementType;
+    if (entry.movementTypeId) {
+      movementType = this.movementTypesRepository.items.find((movementType) =>
+        movementType.id.equal(entry.movementTypeId!),
+      );
 
-  //       const medicineVariant = this.medicinesVariantsRepository.items.find(
-  //         (medicineVariant) =>
-  //           medicineVariant.id.equal(medicineStock.medicineVariantId),
-  //       )
+      if (!movementType) {
+        throw new Error(
+          `movement type with id "${entry.movementTypeId.toString()} does not exist."`,
+        );
+      }
+    }
 
-  //       if (!medicineVariant) {
-  //         throw new Error(
-  //           `Medicine variant with id "${medicineStock.medicineVariantId.toString()} does not exist."`,
-  //         )
-  //       }
+    const movimentations = this.movimentationRepository.items.filter(
+      (movement) => movement.entryId?.equal(new UniqueEntityId(entryId)),
+    );
+    const medicines: EntryDetailsMedicineProps[] = [];
 
-  //       const medicine = this.medicinesRepository.items.find((medicine) =>
-  //         medicine.id.equal(medicineVariant.medicineId),
-  //       )
+    for (const movement of movimentations) {
+      const batchStock = this.batchesStockRepository.items.find((item) =>
+        item.id.equal(movement.batchestockId),
+      );
 
-  //       if (!medicine) {
-  //         throw new Error(
-  //           `medicine with id "${medicineVariant.medicineId.toString()} does not exist."`,
-  //         )
-  //       }
+      if (!batchStock) {
+        throw new Error(
+          `batch stock with id "${movement.batchestockId.toString()} does not exist."`,
+        );
+      }
 
-  //       const pharmaceuticalForm =
-  //         this.pharmaceuticalFormsRepository.items.find((pharmaceuticalForm) =>
-  //           pharmaceuticalForm.id.equal(medicineVariant.pharmaceuticalFormId),
-  //         )
+      const medicineIsAdded = medicines.find(
+        (item) =>
+          item.medicineStockId === batchStock.medicineStockId.toString(),
+      );
 
-  //       if (!pharmaceuticalForm) {
-  //         throw new Error(
-  //           `Pharmaceutical form with id "${medicineVariant.pharmaceuticalFormId} does not exist."`,
-  //         )
-  //       }
+      if (!medicineIsAdded) {
+        const medicineVariant = this.medicinesVariantRepository.items.find(
+          (item) =>
+            item.id.toString() === batchStock.medicineVariantId.toString(),
+        );
 
-  //       const unitMeasure = this.unitsMeasureRepository.items.find(
-  //         (unitMeasure) => unitMeasure.id.equal(medicineVariant.unitMeasureId),
-  //       )
+        if (!medicineVariant) {
+          throw new Error(
+            `medicine variant with id "${batchStock.medicineVariantId.toString()} does not exist."`,
+          );
+        }
 
-  //       if (!unitMeasure) {
-  //         throw new Error(
-  //           `Unit measure with id "${medicineVariant.unitMeasureId} does not exist."`,
-  //         )
-  //       }
+        const medicine = this.medicinesRepository.items.find((item) =>
+          item.id.equal(medicineVariant.medicineId),
+        );
+        if (!medicine) {
+          throw new Error(
+            `medicine with id "${medicineVariant.medicineId.toString()} does not exist."`,
+          );
+        }
 
-  //       const batchStock = this.batchStocksRepository.items.find((item) =>
-  //         item.id.equal(medicineEntryMapped.batcheStockId),
-  //       )
-  //       if (!batchStock) {
-  //         throw new Error(
-  //           `Batchstock with id "${medicineEntryMapped.batcheStockId.toString()} does not exist."`,
-  //         )
-  //       }
+        const pharmaceuticalForm =
+          this.pharmaceuticalFormsRepository.items.find((item) =>
+            item.id.equal(medicineVariant.pharmaceuticalFormId),
+          );
+        if (!pharmaceuticalForm) {
+          throw new Error(
+            `pharmaceutical form id "${medicineVariant.pharmaceuticalFormId.toString()} does not exist."`,
+          );
+        }
 
-  //       const stock = this.stocksRepository.items.find((stock) =>
-  //         stock.id.equal(batchStock.stockId),
-  //       )
+        const unitMeasure = this.unitsMeasureRepository.items.find((item) =>
+          item.id.equal(medicineVariant.unitMeasureId),
+        );
+        if (!unitMeasure) {
+          throw new Error(
+            `unit measure id "${medicineVariant.unitMeasureId.toString()} does not exist."`,
+          );
+        }
 
-  //       if (!stock) {
-  //         throw new Error(
-  //           `stock with id "${batchStock.stockId.toString()} does not exist."`,
-  //         )
-  //       }
+        medicines.push({
+          batches: [],
+          dosage: medicineVariant.dosage,
+          medicineName: medicine.content,
+          medicineStockId: batchStock.medicineStockId.toString(),
+          pharmaceuticalForm: pharmaceuticalForm.content,
+          unitMeasure: unitMeasure.content,
+          complement: medicineVariant.complement ?? undefined,
+        });
+      }
 
-  //       const operator = this.operatorsRepository.items.find((operator) =>
-  //         operator.id.equal(medicineEntryMapped.operatorId),
-  //       )
+      const medicineIndex = medicines.findIndex(
+        (item) =>
+          item.medicineStockId === batchStock.medicineStockId.toString(),
+      );
 
-  //       if (!operator) {
-  //         throw new Error(
-  //           `operator with id "${medicineEntryMapped.id.toString()} does not exist."`,
-  //         )
-  //       }
+      const batch = this.batchesRepository.items.find((item) =>
+        item.id.equal(batchStock.batchId),
+      );
 
-  //       const batch = this.batchesRepository.items.find((batch) =>
-  //         batch.id.equal(batchStock.batchId),
-  //       )
+      if (!batch) {
+        throw new Error(
+          `batch with id "${batchStock.batchId.toString()} does not exist."`,
+        );
+      }
 
-  //       if (!batch) {
-  //         throw new Error(
-  //           `batch with id "${batchStock.batchId.toString()} does not exist."`,
-  //         )
-  //       }
+      const manufacturer = this.manufacturersRepository.items.find((item) =>
+        item.id.equal(batch.manufacturerId),
+      );
 
-  //       const movementType = this.movementTypeRepository.items.find((movementType) =>
-  //         movementType.id.equal(medicineEntryMapped.movementTypeId),
-  //       )
+      if (!manufacturer) {
+        throw new Error(
+          `manufacturer with id "${batch.manufacturerId.toString()} does not exist."`,
+        );
+      }
 
-  //       if (!movementType) {
-  //         throw new Error(
-  //           `movement type with id "${medicineEntryMapped.movementTypeId.toString()} does not exist."`,
-  //         )
-  //       }
+      medicines[medicineIndex].batches.push({
+        batchNumber: batch.code,
+        expirationDate: batch.expirationDate,
+        manufacturingDate: batch.manufacturingDate ?? undefined,
+        manufacturer: manufacturer.content,
+        quantity: movement.quantity,
+      });
+    }
 
-  //       return Movimentation.create({
-  //         direction: 'ENTRY',
-  //         medicine: medicine.content,
-  //         dosage: medicineVariant.dosage,
-  //         pharmaceuticalForm: pharmaceuticalForm.content,
-  //         unitMeasure: unitMeasure.acronym,
-  //         stock: stock.content,
-  //         operator: operator.name,
-  //         batchCode: batch.code,
-  //         quantity: medicineEntryMapped.quantity,
-  //         movementDate: medicineEntryMapped.entryDate,
-  //         complement: medicineVariant.complement,
-  //         medicineVariantId: medicineVariant.id,
-  //         movementType: movementType.content,
-  //         batchStockId: medicineEntryMapped.batcheStockId,
-  //         medicineId: medicine.id,
-  //         operatorId: operator.id,
-  //         medicineStockId: medicineStock.id,
-  //         pharmaceuticalFormId: pharmaceuticalForm.id,
-  //         stockId: stock.id,
-  //         unitMeasureId: unitMeasure.id,
-  //         movementTypeId: movementType.id,
-  //         exitType: undefined,
-  //       })
-  //     },
-  //   )
-
-  //   const entriesMovimentationByFilters = medicinesEntriesMapped.filter((item) => {
-  //     if (
-  //       startDate &&
-  //         item.movementDate <
-  //           new Date(startDate.setHours(0, 0, 0, 0))
-  //     ) {
-  //       return false
-  //     }
-  //     if (
-  //       endDate &&
-  //         item.movementDate >
-  //           new Date(endDate.setHours(23, 59, 59, 999))
-  //     ) {
-  //       return false
-  //     }
-
-  //     if (
-  //       operatorId &&
-  //       !item.operatorId.equal(new UniqueEntityId(operatorId))
-  //     ) {
-  //       return null
-  //     }
-  //     if (stockId && !item.stockId.equal(new UniqueEntityId(stockId))) {
-  //       return null
-  //     }
-  //     if (
-  //       medicineId &&
-  //       !item.medicineId.equal(new UniqueEntityId(medicineId))
-  //     ) {
-  //       return null
-  //     }
-  //     if (
-  //       medicineVariantId &&
-  //       !item.medicineVariantId.equal(new UniqueEntityId(medicineVariantId))
-  //     ) {
-  //       return null
-  //     }
-
-  //     if (
-  //       batcheStockId &&
-  //       !item.batchStockId.equal(new UniqueEntityId(batcheStockId))
-  //     ) {
-  //       return null
-  //     }
-
-  //     if (
-  //       medicineStockId &&
-  //       !item.medicineStockId.equal(new UniqueEntityId(medicineStockId))
-  //     ) {
-  //       return null
-  //     }
-
-  //     if (
-  //       movementTypeId &&
-  //       !item.movementTypeId.equal(new UniqueEntityId(movementTypeId))
-  //     ) {
-  //       return null
-  //     }
-
-  //     if (quantity && (item.quantity !== quantity)) {
-  //       return null
-  //     }
-
-  //     return true
-  //   })
-
-  //   return {
-  //     entriesMovimentation: entriesMovimentationByFilters,
-  //     meta: {
-  //       totalCount: entriesMovimentationByFilters.length,
-  //     },
-  //   }
-  // }
+    return EntryDetails.create({
+      entryId: entry.id,
+      entryDate: entry.entryDate,
+      operator: operator.name,
+      stock: stock.content,
+      nfNumber: entry.nfNumber ?? '',
+      entryType: entry.entryType,
+      movementType: movementType ? movementType.content : null,
+      medicines,
+    });
+  }
 }

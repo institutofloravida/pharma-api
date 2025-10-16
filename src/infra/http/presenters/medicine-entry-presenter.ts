@@ -1,7 +1,7 @@
-import { EntryDetails } from '@/domain/pharma/enterprise/entities/value-objects/entry-details'
+import { EntryWithStock } from '@/domain/pharma/enterprise/entities/value-objects/entry-with-stock';
 
 export class MedicineEntryPresenter {
-  static toHTTP(entry: EntryDetails) {
+  static toHTTP(entry: EntryWithStock) {
     return {
       entryId: entry.entryId,
       stock: entry.stock,
@@ -9,6 +9,6 @@ export class MedicineEntryPresenter {
       nfNumber: entry.nfNumber,
       operator: entry.operator,
       items: entry.items,
-    }
+    };
   }
 }
