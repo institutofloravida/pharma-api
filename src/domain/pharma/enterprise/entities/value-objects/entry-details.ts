@@ -22,7 +22,7 @@ export interface EntryDetailsMedicineProps {
 
 export interface EntryDetailsProps {
   entryId: UniqueEntityId;
-  nfNumber: string;
+  nfNumber?: string;
   entryDate: Date;
   stock: string;
   operator: string;

@@ -182,6 +182,8 @@ import { DeactivateStockController } from './controllers/auxiliary-records/stock
 import { DeactivateStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/deactivate-stock';
 import { DeleteStockController } from './controllers/auxiliary-records/stock/delete-stock.controller';
 import { DeleteStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/delete-stock';
+import { GetEntryDetailsController } from './controllers/movimentation/entry/get-entry-details.controller';
+import { GetEntryDetailsUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/get-entry-details';
 
 @Module({
   imports: [
@@ -245,6 +247,7 @@ import { DeleteStockUseCase } from '@/domain/pharma/application/use-cases/auxili
     FetchMostTreatedPathologiesController,
     FetchTransfersController,
     FetchMovimentationsController,
+    GetEntryDetailsController,
     GetOperatorDetailsController,
     GetInstitutionController,
     GetPathologyController,
@@ -336,6 +339,7 @@ import { DeleteStockUseCase } from '@/domain/pharma/application/use-cases/auxili
     FetchMostTreatedPathologiesUseCase,
     FetchTransfersUseCase,
     FetchMovimentationUseCase,
+    GetEntryDetailsUseCase,
     GetOperatorDetailsUseCase,
     GetInstitutionUseCase,
     GetPathologyUseCase,
