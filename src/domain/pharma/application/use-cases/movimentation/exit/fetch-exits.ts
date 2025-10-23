@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Meta } from '@/core/repositories/meta';
 import { MedicinesExitsRepository } from '../../../repositories/medicines-exits-repository';
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
-import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
+import { ExitWithStock } from '@/domain/pharma/enterprise/entities/value-objects/exit-with-stock';
 
 interface FetchMedicineExitUseCaseRequest {
   page: number;
@@ -16,7 +16,7 @@ interface FetchMedicineExitUseCaseRequest {
 type FetchMedicineExitUseCaseResponse = Either<
   null,
   {
-    medicinesExits: ExitDetails[];
+    medicinesExits: ExitWithStock[];
     meta: Meta;
   }
 >;

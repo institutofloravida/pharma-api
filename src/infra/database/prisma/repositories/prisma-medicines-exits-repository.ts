@@ -9,7 +9,7 @@ import { Injectable } from '@nestjs/common';
 import { Meta } from '@/core/repositories/meta';
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
+import { ExitWithStock } from '@/domain/pharma/enterprise/entities/value-objects/exit-with-stock';
 import { PrismaExitDetailsMapper } from '../mappers/prisma-exit-details-mapper';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class PrismaMedicinesExitsRepository
     return PrismaMedicineExitMapper.toDomain(exit);
   }
 
-  async findByIdWithDetails(id: string): Promise<ExitDetails | null> {
+  async findByIdWithStock(id: string): Promise<ExitWithStock | null> {
     const exit = await this.prisma.exit.findUnique({
       where: { id },
       include: {
@@ -111,7 +111,7 @@ export class PrismaMedicinesExitsRepository
       exitDate?: Date;
       stockId?: string;
     },
-  ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }> {
+  ): Promise<{ medicinesExits: ExitWithStock[]; meta: Meta }> {
     const { exitDate, exitType, institutionId, operatorId, stockId } = filters;
     const whereClauses: string[] = [];
     const params: any[] = [];
@@ -202,7 +202,7 @@ group by e.id, o."name", s."name", i."name", s."id"
     const totalCount = totalCountResult[0]?.count || 0;
 
     const medicinesExitsMapped = exits.map((exit) => {
-      return ExitDetails.create({
+      return ExitWithStock.create({
         exitDate: exit.exitDate,
         operator: exit.operatorName,
         stock: exit.stockName,

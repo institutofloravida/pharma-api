@@ -1,13 +1,15 @@
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { MedicineExit, ExitType } from '../../enterprise/entities/exit';
 import { Meta } from '@/core/repositories/meta';
+import { ExitWithStock } from '../../enterprise/entities/value-objects/exit-with-stock';
 import { ExitDetails } from '../../enterprise/entities/value-objects/exit-details';
 
 export abstract class MedicinesExitsRepository {
   abstract create(medicineExit: MedicineExit): Promise<void>;
-  abstract findByIdWithDetails(id: string): Promise<ExitDetails | null>;
+  abstract findByIdWithStock(id: string): Promise<ExitWithStock | null>;
   abstract findById(id: string): Promise<MedicineExit | null>;
   abstract findByTransferId(transferId: string): Promise<MedicineExit | null>;
+  abstract findByIdWithDetails(id: string): Promise<ExitDetails | null>;
   abstract save(medicineExit: MedicineExit): Promise<void>;
   abstract findMany(
     params: PaginationParams,
@@ -18,5 +20,5 @@ export abstract class MedicinesExitsRepository {
       exitDate?: Date;
       stockId?: string;
     },
-  ): Promise<{ medicinesExits: ExitDetails[]; meta: Meta }>;
+  ): Promise<{ medicinesExits: ExitWithStock[]; meta: Meta }>;
 }

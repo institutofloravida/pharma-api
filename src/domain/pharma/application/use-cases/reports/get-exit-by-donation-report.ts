@@ -2,7 +2,7 @@ import { Either, left, right } from '@/core/either';
 import { Injectable } from '@nestjs/common';
 import { MetaReport } from '@/core/repositories/meta';
 import { MovimentationDetails } from '@/domain/pharma/enterprise/entities/value-objects/movimentation-details';
-import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
+import { ExitWithStock } from '@/domain/pharma/enterprise/entities/value-objects/exit-with-stock';
 import { MovimentationRepository } from '../../repositories/movimentation-repository';
 import { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository';
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error';
@@ -15,7 +15,7 @@ interface GetExitByDonationUseCaseRequest {
 type GetExitByDonationUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    exit: ExitDetails;
+    exit: ExitWithStock;
     movimentation: MovimentationDetails[];
     meta: MetaReport;
   }
@@ -31,7 +31,7 @@ export class GetExitByDonationUseCase {
   async execute({
     exitId,
   }: GetExitByDonationUseCaseRequest): Promise<GetExitByDonationUseCaseResponse> {
-    const exit = await this.exitsRepository.findByIdWithDetails(exitId);
+    const exit = await this.exitsRepository.findByIdWithStock(exitId);
     if (!exit) {
       return left(new ResourceNotFoundError('Exit not found'));
     }

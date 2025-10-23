@@ -1,7 +1,7 @@
-import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
+import { ExitWithStock } from '@/domain/pharma/enterprise/entities/value-objects/exit-with-stock';
 
 export class MedicineExitPresenter {
-  static toHTTP(exit: ExitDetails) {
+  static toHTTP(exit: ExitWithStock) {
     return {
       id: exit.exitId.toString(),
       exitDate: exit.exitDate,

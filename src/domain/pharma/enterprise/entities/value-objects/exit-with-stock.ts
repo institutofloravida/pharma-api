@@ -2,38 +2,20 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ValueObject } from '@/core/entities/value-object';
 import { ExitType } from '../exit';
 
-export interface ExitDetailsBatchProps {
-  batchNumber: string;
-  manufacturer: string;
-  manufacturingDate?: Date;
-  expirationDate: Date;
-  quantity: number;
-}
-
-export interface ExitDetailsMedicineProps {
-  medicineStockId: string;
-  medicineName: string;
-  dosage: string;
-  pharmaceuticalForm: string;
-  unitMeasure: string;
-  complement?: string;
-  batches: ExitDetailsBatchProps[];
-}
-
-export interface ExitDetailsProps {
+export interface ExitWithStockProps {
   exitId: UniqueEntityId;
   exitDate: Date;
   exitType: ExitType;
   stock: string;
-  movementType?: string;
+  stockId: UniqueEntityId;
   destinationInstitution?: string;
   responsibleByInstitution?: string;
   reverseAt?: Date | null;
   operator: string;
-  medicines: ExitDetailsMedicineProps[];
+  items: number;
 }
 
-export class ExitDetails extends ValueObject<ExitDetailsProps> {
+export class ExitWithStock extends ValueObject<ExitWithStockProps> {
   get exitId() {
     return this.props.exitId;
   }
@@ -50,12 +32,12 @@ export class ExitDetails extends ValueObject<ExitDetailsProps> {
     return this.props.stock;
   }
 
-  get operator() {
-    return this.props.operator;
+  get stockId() {
+    return this.props.stockId;
   }
 
-  get movementType() {
-    return this.props.movementType;
+  get operator() {
+    return this.props.operator;
   }
 
   get destinationInstitution() {
@@ -70,11 +52,11 @@ export class ExitDetails extends ValueObject<ExitDetailsProps> {
     return this.props.reverseAt;
   }
 
-  get medicines() {
-    return this.props.medicines;
+  get items() {
+    return this.props.items;
   }
 
-  static create(props: ExitDetailsProps) {
-    return new ExitDetails(props);
+  static create(props: ExitWithStockProps) {
+    return new ExitWithStock(props);
   }
 }
