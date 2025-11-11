@@ -20,9 +20,9 @@ import { InMemoryMedicinesVariantsRepository } from './in-memory-medicines-varia
 import { InMemoryMedicinesRepository } from './in-memory-medicines-repository';
 import { InMemoryPharmaceuticalFormsRepository } from './in-memory-pharmaceutical-forms';
 import { InMemoryUnitsMeasureRepository } from './in-memory-units-measure-repository';
-import type { InMemoryBatchesRepository } from './in-memory-batches-repository';
-import type { InMemoryManufacturersRepository } from './in-memory-manufacturers-repository';
-import type { InMemoryInstitutionsRepository } from './in-memory-institutions-repository';
+import { InMemoryBatchesRepository } from './in-memory-batches-repository';
+import { InMemoryManufacturersRepository } from './in-memory-manufacturers-repository';
+import { InMemoryInstitutionsRepository } from './in-memory-institutions-repository';
 
 export class InMemoryMedicinesExitsRepository
   implements MedicinesExitsRepository

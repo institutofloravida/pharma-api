@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ValueObject } from '@/core/entities/value-object';
-import type { TransferStatus } from '../transfer';
+import { TransferStatus } from '../transfer';
 
 export interface TransferWithMovimentationProps {
   transferId: UniqueEntityId;

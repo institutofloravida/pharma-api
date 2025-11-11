@@ -184,6 +184,8 @@ import { DeleteStockController } from './controllers/auxiliary-records/stock/del
 import { DeleteStockUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/delete-stock';
 import { GetEntryDetailsController } from './controllers/movimentation/entry/get-entry-details.controller';
 import { GetEntryDetailsUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/get-entry-details';
+import { GetExitDetailsController } from './controllers/movimentation/exit/get-exit-details.controller';
+import { GetExitDetailsUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/get-exit-details';
 
 @Module({
   imports: [
@@ -269,6 +271,7 @@ import { GetEntryDetailsUseCase } from '@/domain/pharma/application/use-cases/mo
     GetMonthlyMedicineUtilizationController,
     GetDonationReportController,
     GetTransferDetailsController,
+    GetExitDetailsController,
     RegisterMedicineEntryController,
     RegisterMedicineExitController,
     ReverseExitController,
@@ -361,6 +364,7 @@ import { GetEntryDetailsUseCase } from '@/domain/pharma/application/use-cases/mo
     GetMonthlyMedicineUtilizationUseCase,
     GetExitByDonationUseCase,
     GetTransferUseCase,
+    GetExitDetailsUseCase,
     RegisterOperatorUseCase,
     RegisterExitUseCase,
     ReverseExitUseCase,

@@ -1,11 +1,11 @@
-import type { Meta } from '@/core/repositories/meta';
+import { Meta } from '@/core/repositories/meta';
 import {
   Transfer,
   type TransferStatus,
 } from '../../enterprise/entities/transfer';
-import type { PaginationParams } from '@/core/repositories/pagination-params';
-import type { TransferDetails } from '../../enterprise/entities/value-objects/tranfer-details';
-import type { TransferWithMovimentation } from '../../enterprise/entities/value-objects/tranfer-with-movimentation';
+import { PaginationParams } from '@/core/repositories/pagination-params';
+import { TransferDetails } from '../../enterprise/entities/value-objects/tranfer-details';
+import { TransferWithMovimentation } from '../../enterprise/entities/value-objects/tranfer-with-movimentation';
 
 export abstract class TransferRepository {
   abstract create(transfer: Transfer): Promise<void>;

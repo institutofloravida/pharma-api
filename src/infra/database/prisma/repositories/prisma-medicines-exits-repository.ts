@@ -11,6 +11,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ExitWithStock } from '@/domain/pharma/enterprise/entities/value-objects/exit-with-stock';
 import { PrismaExitDetailsMapper } from '../mappers/prisma-exit-details-mapper';
+import { ExitDetails } from '@/domain/pharma/enterprise/entities/value-objects/exit-details';
 
 @Injectable()
 export class PrismaMedicinesExitsRepository
@@ -81,6 +82,76 @@ export class PrismaMedicinesExitsRepository
       items: items.length,
       operator: exit.operator.name,
       stock: exit.stock.name,
+    });
+  }
+
+  async findByIdWithDetails(id: string): Promise<ExitDetails | null> {
+    const exit = await this.prisma.exit.findUnique({
+      where: { id },
+      include: {
+        operator: {
+          select: { name: true },
+        },
+        stock: {
+          select: { name: true },
+        },
+        movimentation: {
+          include: {
+            batchStock: {
+              include: {
+                batch: {
+                  include: {
+                    manufacturer: true,
+                  },
+                },
+                medicineStock: {
+                  include: {
+                    medicineVariant: {
+                      include: {
+                        medicine: true,
+                        pharmaceuticalForm: true,
+                        unitMeasure: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!exit) return null;
+
+    return ExitDetails.create({
+      exitId: new UniqueEntityId(exit.id),
+      exitDate: exit.exitDate,
+      exitType: ExitType[exit.exitType],
+      stock: exit.stock?.name ?? '',
+      operator: exit.operator?.name ?? '',
+      medicines: exit.movimentation.map((mov) => ({
+        medicineName:
+          mov.batchStock.medicineStock?.medicineVariant.medicine.name ?? '',
+        medicineStockId: mov.batchStock.medicineStockId,
+        dosage: mov.batchStock.medicineStock?.medicineVariant.dosage ?? '',
+        pharmaceuticalForm:
+          mov.batchStock.medicineStock?.medicineVariant.pharmaceuticalForm
+            .name ?? '',
+        unitMeasure:
+          mov.batchStock.medicineStock?.medicineVariant.unitMeasure.name ?? '',
+        complement:
+          mov.batchStock.medicineStock?.medicineVariant.complement ?? undefined,
+        batches: [
+          {
+            batchNumber: mov.batchStock.batch.code,
+            expirationDate: mov.batchStock.batch.expirationDate,
+            quantity: mov.quantity,
+            manufacturer: mov.batchStock.batch.manufacturer.name,
+            manufacturingDate:
+              mov.batchStock.batch.manufacturingDate ?? undefined,
+          },
+        ],
+      })),
     });
   }
 

@@ -1,4 +1,4 @@
-import type { TransferWithMovimentation } from '@/domain/pharma/enterprise/entities/value-objects/tranfer-with-movimentation';
+import { TransferWithMovimentation } from '@/domain/pharma/enterprise/entities/value-objects/tranfer-with-movimentation';
 
 export class TransferWithMovimentationPresenter {
   static toHTTP(transfer: TransferWithMovimentation) {

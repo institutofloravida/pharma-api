@@ -1,4 +1,4 @@
-import type { TransferDetails } from '@/domain/pharma/enterprise/entities/value-objects/tranfer-details';
+import { TransferDetails } from '@/domain/pharma/enterprise/entities/value-objects/tranfer-details';
 
 export class TransferPresenter {
   static toHTTP(transfer: TransferDetails) {

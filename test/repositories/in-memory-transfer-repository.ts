@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import type { Meta } from '@/core/repositories/meta';
-import type { PaginationParams } from '@/core/repositories/pagination-params';
+import { Meta } from '@/core/repositories/meta';
+import { PaginationParams } from '@/core/repositories/pagination-params';
 import { TransferRepository } from '@/domain/pharma/application/repositories/transfer-repository';
 import {
   Transfer,

@@ -8,7 +8,7 @@ import { PrismaPatientMapper } from '../mappers/prisma-patient-mapper';
 import { PatientDetails } from '@/domain/pharma/enterprise/entities/value-objects/patient-details';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { PrismaPathologyMapper } from '../mappers/prisma-pathology-mapper';
-import type { Prisma } from 'prisma/generated';
+import { Prisma } from 'prisma/generated';
 
 @Injectable()
 export class PrismaPatientsRepository implements PatientsRepository {

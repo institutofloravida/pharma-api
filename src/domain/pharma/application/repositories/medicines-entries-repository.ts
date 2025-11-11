@@ -2,7 +2,7 @@ import { Meta } from '@/core/repositories/meta';
 import { MedicineEntry } from '../../enterprise/entities/entry';
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { EntryWithStock } from '../../enterprise/entities/value-objects/entry-with-stock';
-import type { EntryDetails } from '../../enterprise/entities/value-objects/entry-details';
+import { EntryDetails } from '../../enterprise/entities/value-objects/entry-details';
 
 export abstract class MedicinesEntriesRepository {
   abstract create(medicineEntry: MedicineEntry): Promise<void>;
