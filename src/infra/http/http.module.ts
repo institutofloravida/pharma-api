@@ -186,6 +186,9 @@ import { GetEntryDetailsController } from './controllers/movimentation/entry/get
 import { GetEntryDetailsUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/get-entry-details';
 import { GetExitDetailsController } from './controllers/movimentation/exit/get-exit-details.controller';
 import { GetExitDetailsUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/get-exit-details';
+import { GetInventoryReportController } from './controllers/reports/get-inventory-report.controller';
+import { GetInventoryReportUseCase } from '@/domain/pharma/application/use-cases/reports/get-inventory-report';
+import { GetInventoryReportGroupedUseCase } from '@/domain/pharma/application/use-cases/reports/get-inventory-report-grouped';
 
 @Module({
   imports: [
@@ -272,6 +275,7 @@ import { GetExitDetailsUseCase } from '@/domain/pharma/application/use-cases/mov
     GetDonationReportController,
     GetTransferDetailsController,
     GetExitDetailsController,
+    GetInventoryReportController,
     RegisterMedicineEntryController,
     RegisterMedicineExitController,
     ReverseExitController,
@@ -365,6 +369,8 @@ import { GetExitDetailsUseCase } from '@/domain/pharma/application/use-cases/mov
     GetExitByDonationUseCase,
     GetTransferUseCase,
     GetExitDetailsUseCase,
+    GetInventoryReportUseCase,
+    GetInventoryReportGroupedUseCase,
     RegisterOperatorUseCase,
     RegisterExitUseCase,
     ReverseExitUseCase,

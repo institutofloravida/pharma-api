@@ -38,7 +38,7 @@ export abstract class MedicinesStockRepository {
   ): Promise<{ medicinesStock: MedicineStockDetails[]; meta: Meta }>;
   abstract fetchAll(): Promise<{ medicinesStock: MedicineStock[] }>;
   abstract fetchInventory(
-    params: PaginationParams,
+    params: PaginationParams | null,
     institutionId: string,
     filters: {
       stockId?: string;
@@ -52,6 +52,49 @@ export abstract class MedicinesStockRepository {
   abstract getInventoryByMedicineStockId(
     medicineStockid: string,
   ): Promise<MedicineStockInventoryDetails | null>;
+
+  abstract fetchInventoryReportGrouped(
+    institutionId: string,
+    filters: {
+      stockId?: string;
+      medicineName?: string;
+      therapeuticClasses?: string[];
+      isLowStock?: boolean;
+    },
+    options?: {
+      includeBatches?: boolean;
+    },
+  ): Promise<{
+    stocks: Array<{
+      stockId: string;
+      stock: string;
+      medicines: Array<{
+        medicineId: string;
+        medicine: string;
+        medicineStocks: Array<{
+          medicineStockId: string;
+          medicineVariantId: string;
+          pharmaceuticalForm: string;
+          unitMeasure: string;
+          dosage: string;
+          complement?: string;
+          minimumLevel: number;
+          quantity: { current: number; available: number; unavailable: number };
+          batchesStocks?: Array<{
+            id: string;
+            code: string;
+            currentQuantity: number;
+            manufacturer: string;
+            expirationDate: Date;
+            manufacturingDate: Date | null;
+            isCloseToExpiration: boolean;
+            isExpired: boolean;
+          }>;
+        }>;
+      }>;
+    }>;
+    meta: Meta;
+  }>;
 
   abstract getInventoryMetrics(institutionId: string): Promise<{
     quantity: {

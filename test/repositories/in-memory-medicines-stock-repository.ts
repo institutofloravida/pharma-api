@@ -293,7 +293,7 @@ export class InMemoryMedicinesStockRepository
   }
 
   async fetchInventory(
-    { page }: PaginationParams,
+    pagination: PaginationParams | null,
     institutionId: string,
     filters: {
       stockId?: string;
@@ -303,6 +303,8 @@ export class InMemoryMedicinesStockRepository
       isLowStock?: boolean;
     },
   ): Promise<{ inventory: MedicineStockInventory[]; meta: Meta }> {
+    const page = pagination?.page ?? 1;
+    const perPage = pagination?.perPage ?? 10;
     const { stockId, medicineName, therapeuticClasses, isLowStock } = filters;
 
     const medicinesStock = this.items;
@@ -458,9 +460,9 @@ export class InMemoryMedicinesStockRepository
 
       medicinesStockFiltered.push(medicineStockInventory);
     }
-    const medicinesStockPaginatedAndOrdered = medicinesStockFiltered
-      // .sort((a, b) => b..getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 10, page * 10);
+    const medicinesStockPaginatedAndOrdered = pagination
+      ? medicinesStockFiltered.slice((page - 1) * perPage, page * perPage)
+      : medicinesStockFiltered;
 
     return {
       inventory: medicinesStockPaginatedAndOrdered,
@@ -620,5 +622,222 @@ export class InMemoryMedicinesStockRepository
       (item) => item.quantity > 0 && item.stockId.toString() === stockId,
     );
     return medicinesStock.length === 0;
+  }
+
+  async fetchInventoryReportGrouped(
+    institutionId: string,
+    filters: {
+      stockId?: string;
+      medicineName?: string;
+      therapeuticClasses?: string[];
+      isLowStock?: boolean;
+    },
+    options?: {
+      includeBatches?: boolean;
+    },
+  ): Promise<{
+    stocks: Array<{
+      stockId: string;
+      stock: string;
+      medicines: Array<{
+        medicineId: string;
+        medicine: string;
+        medicineStocks: Array<{
+          medicineStockId: string;
+          medicineVariantId: string;
+          pharmaceuticalForm: string;
+          unitMeasure: string;
+          dosage: string;
+          complement?: string;
+          minimumLevel: number;
+          quantity: { current: number; available: number; unavailable: number };
+          batchesStocks?: Array<{
+            id: string;
+            code: string;
+            currentQuantity: number;
+            manufacturer: string;
+            expirationDate: Date;
+            manufacturingDate: Date | null;
+            isCloseToExpiration: boolean;
+            isExpired: boolean;
+          }>;
+        }>;
+      }>;
+    }>;
+    meta: Meta;
+  }> {
+    const includeBatches = options?.includeBatches ?? false;
+    const { stockId, medicineName, therapeuticClasses, isLowStock } = filters;
+
+    const institution = await this.institutionsRepository.findById(institutionId);
+    if (!institution) {
+      throw new Error(`Instituição com Id ${institutionId} não foi encontrado!`);
+    }
+
+    const stocksIds = this.stocksRepository.items
+      .filter((s) => s.institutionId.equal(institution.id))
+      .map((s) => s.id.toString())
+      .filter((id) => (!stockId ? true : id === stockId));
+
+    const result = new Map<
+      string,
+      {
+        stockId: string;
+        stock: string;
+        medicines: Map<
+          string,
+          {
+            medicineId: string;
+            medicine: string;
+            medicineStocks: any[];
+          }
+        >;
+      }
+    >();
+
+    for (const ms of this.items) {
+      if (!stocksIds.includes(ms.stockId.toString())) continue;
+
+      const med = await this.medicinesRepository.findByMedicineVariantId(
+        ms.medicineVariantId.toString(),
+      );
+      if (!med) continue;
+      if (
+        !med.content.toLowerCase().includes((medicineName ?? '').toLowerCase())
+      )
+        continue;
+
+      if (therapeuticClasses) {
+        const cls = med.therapeuticClassesIds.map((id) => id.toString());
+        if (!therapeuticClasses.some((id) => cls.includes(id))) continue;
+      }
+
+      const variant = await this.medicinesVariantsRepository.findById(
+        ms.medicineVariantId.toString(),
+      );
+      if (!variant) continue;
+      const pf = await this.pharmaceuticalFormsRepository.findById(
+        variant.pharmaceuticalFormId.toString(),
+      );
+      const um = await this.unitsMeasureRepository.findById(
+        variant.unitMeasureId.toString(),
+      );
+      const stock = this.stocksRepository.items.find((s) =>
+        s.id.equal(ms.stockId),
+      )!;
+
+      // batches calculation
+      let expiredSum = 0;
+      let batches: Array<{
+        id: string;
+        code: string;
+        currentQuantity: number;
+        manufacturer: string;
+        expirationDate: Date;
+        manufacturingDate: Date | null;
+        isCloseToExpiration: boolean;
+        isExpired: boolean;
+      }> | undefined = undefined;
+
+      const bsList = await Promise.all(
+        ms.batchesStockIds.map((id) => this.batchesStocksRepository.findById(id.toString())),
+      );
+      const bsResolved = bsList.filter(Boolean);
+      if (includeBatches) {
+        batches = await Promise.all(
+          bsResolved.map(async (bs) => {
+            const batch = await this.batchesRepository.findById(
+              bs!.batchId.toString(),
+            );
+            const manufacturer = await this.manufacturersRepository.findById(
+              batch!.manufacturerId.toString(),
+            );
+            const isExpired = batch!.isExpired();
+            if (isExpired) expiredSum += bs!.quantity;
+            return {
+              id: bs!.id.toString(),
+              code: batch!.code,
+              currentQuantity: bs!.quantity,
+              manufacturer: manufacturer!.content,
+              expirationDate: batch!.expirationDate,
+              manufacturingDate: batch!.manufacturingDate,
+              isCloseToExpiration: batch!.isCloseToExpiration(),
+              isExpired,
+            };
+          }),
+        );
+      } else {
+        // compute expired sum without including batches
+        for (const bs of bsResolved) {
+          const batch = await this.batchesRepository.findById(
+            bs!.batchId.toString(),
+          );
+          if (batch?.isExpired()) expiredSum += bs!.quantity;
+        }
+      }
+
+      const available = ms.quantity - expiredSum;
+      const item = {
+        medicineStockId: ms.id.toString(),
+        medicineVariantId: variant.id.toString(),
+        pharmaceuticalForm: pf!.content,
+        unitMeasure: um!.acronym,
+        dosage: variant.dosage,
+        complement: variant.complement ?? undefined,
+        minimumLevel: ms.minimumLevel,
+        quantity: {
+          current: ms.quantity,
+          available,
+          unavailable: expiredSum,
+        },
+        ...(includeBatches ? { batchesStocks: batches } : {}),
+      };
+
+      if (isLowStock) {
+        if (!(available < ms.minimumLevel && available > 0)) continue;
+      }
+
+      const stockKey = stock.id.toString();
+      const medicineKey = med.id.toString();
+      if (!result.has(stockKey)) {
+        result.set(stockKey, {
+          stockId: stockKey,
+          stock: stock.content,
+          medicines: new Map(),
+        });
+      }
+      const stockEntry = result.get(stockKey)!;
+      if (!stockEntry.medicines.has(medicineKey)) {
+        stockEntry.medicines.set(medicineKey, {
+          medicineId: medicineKey,
+          medicine: med.content,
+          medicineStocks: [],
+        });
+      }
+      stockEntry.medicines.get(medicineKey)!.medicineStocks.push(item);
+    }
+
+    const stocks = Array.from(result.values()).map((s) => ({
+      stockId: s.stockId,
+      stock: s.stock,
+      medicines: Array.from(s.medicines.values()),
+    }));
+
+    const totalCount = stocks.reduce(
+      (acc, s) =>
+        acc +
+        s.medicines.reduce(
+          (acc2, m) => acc2 + m.medicineStocks.length,
+          0,
+        ),
+      0,
+    );
+    return {
+      stocks,
+      meta: {
+        page: 1,
+        totalCount,
+      },
+    };
   }
 }
