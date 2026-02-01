@@ -20,9 +20,12 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     },
     "types": [
+      "node",
       "vitest/globals",
     ],
     "strictPropertyInitialization": false

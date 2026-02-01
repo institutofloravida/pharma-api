@@ -2,18 +2,18 @@ version: "3.8"
 
 services:
   postgres:
-    container_name: pharma-db
     image: bitnami/postgresql:latest
+    container_name: pharma-db
     environment:
-      - POSTGRESQL_USERNAME=${POSTGRES_USER}
-      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRESQL_DATABASE=${POSTGRES_DB}
-    ports:
-      - "5432:5432"
+      POSTGRESQL_USERNAME: ${POSTGRES_USER}
+      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRESQL_DATABASE: ${POSTGRES_DB}
     volumes:
-      - ./data/postgres:/bitnami/postgresql
+      - postgres_data:/bitnami/postgresql
+    networks:
+      - pharma-net
 
-  app:
+  api:
     build: .
     container_name: pharma-api
     ports:
@@ -22,8 +22,17 @@ services:
       - .env
     depends_on:
       - postgres
+    networks:
+      - pharma-net
     command: >
       sh -c "
         npx prisma migrate deploy &&
-        npm run start:prod
+        node dist/src/infra/main.js
       "
+
+volumes:
+  postgres_data:
+
+networks:
+  pharma-net:
+    driver: bridge
