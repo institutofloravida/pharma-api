@@ -8,6 +8,7 @@ export abstract class PathologiesRepository {
   abstract delete(pathology: Pathology): Promise<void>
   abstract findById(id: string): Promise<Pathology | null>
   abstract findByContent(content: string): Promise<Pathology | null>
+  abstract findByCode(code: string): Promise<Pathology | null>
   abstract findMany(
     params: PaginationParams,
     content?: string

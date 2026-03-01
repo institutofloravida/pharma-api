@@ -38,6 +38,7 @@ describe('Create Pathology (E2E)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'pathology 1',
+        code: 'A001',
       })
 
     expect(response.statusCode).toBe(201)

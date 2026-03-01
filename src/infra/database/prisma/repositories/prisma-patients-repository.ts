@@ -90,6 +90,7 @@ export class PrismaPatientsRepository implements PatientsRepository {
           select: {
             id: true,
             name: true,
+            code: true,
             createdAt: true,
             updatedAt: true,
           },

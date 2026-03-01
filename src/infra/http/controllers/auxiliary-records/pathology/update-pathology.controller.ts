@@ -17,11 +17,12 @@ export class UpdatePathologyController {
   async handle(
     @Param('id') pathologyId: string,
     @Body() body: UpdatePathologyDto) {
-    const { name } = body
+    const { name, code } = body
 
     const result = await this.updatePathology.execute({
       pathologyId,
       content: name,
+      code,
     })
 
     if (result.isLeft()) {

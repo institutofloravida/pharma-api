@@ -32,6 +32,17 @@ export class InMemoryPathologiesRepository implements PathologiesRepository {
     return pathology
   }
 
+  async findByCode(code: string): Promise<Pathology | null> {
+    const pathology = this.items.find(
+      (item) => item.code.toLowerCase() === code.toLowerCase().trim(),
+    )
+    if (!pathology) {
+      return null
+    }
+
+    return pathology
+  }
+
   async findByContent(content: string): Promise<Pathology | null> {
     const pathology = this.items.find(
       (item) => item.content.toLowerCase() === content.toLowerCase().trim(),

@@ -1,5 +1,7 @@
 import { hash } from 'bcryptjs';
 import { InstitutionType, OperatorRole, PrismaClient } from './generated';
+import * as fs from 'fs';
+import * as readline from 'readline';
 
 const prisma = new PrismaClient();
 
@@ -26,6 +28,42 @@ async function clearDatabase() {
   await prisma.institution.deleteMany();
   await prisma.movementType.deleteMany();
   await prisma.patient.deleteMany();
+}
+
+async function seedPathologiesFromCSV() {
+  const csvPath = `${__dirname}/CSV/tabela-cid.csv`;
+  const fileStream = fs.createReadStream(csvPath, { encoding: 'utf8' });
+  const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
+
+  let isFirstLine = true;
+  let batch: { code: string; name: string }[] = [];
+  const BATCH_SIZE = 500;
+
+  for await (const line of rl) {
+    if (isFirstLine) {
+      isFirstLine = false;
+      continue;
+    }
+
+    const cols = line.split(';');
+    const code = cols[0]?.trim();
+    const name = cols[4]?.trim();
+
+    if (!code || !name) continue;
+
+    batch.push({ code, name });
+
+    if (batch.length >= BATCH_SIZE) {
+      await prisma.pathology.createMany({ data: batch, skipDuplicates: true });
+      batch = [];
+    }
+  }
+
+  if (batch.length > 0) {
+    await prisma.pathology.createMany({ data: batch, skipDuplicates: true });
+  }
+
+  console.log('Pathologies seeded from CSV.');
 }
 
 async function main() {
@@ -199,35 +237,7 @@ async function main() {
     ],
   });
 
-  await prisma.pathology.createMany({
-    data: [
-      { name: 'Hipertensão Arterial' },
-      { name: 'Diabetes Mellitus' },
-      { name: 'Infecção do Trato Urinário' },
-      { name: 'Gripe' },
-      { name: 'Dengue' },
-      { name: 'Infecção de Garganta' },
-      { name: 'Cefaleia (Dor de Cabeça)' },
-      { name: 'Asma' },
-      { name: 'Bronquite' },
-      { name: 'Dermatite de Contato' },
-      { name: 'Sinusite' },
-      { name: 'Otite Média' },
-      { name: 'Conjuntivite' },
-      { name: 'Gastrite' },
-      { name: 'Obesidade' },
-      { name: 'Anemia Ferropriva' },
-      { name: 'Síndrome do Intestino Irritável' },
-      { name: 'Depressão' },
-      { name: 'Ansiedade' },
-      { name: 'Hipotireoidismo' },
-      { name: 'Insônia' },
-      { name: 'Artrite Reumatoide' },
-      { name: 'Herpes Zoster' },
-      { name: 'Viroses Respiratórias' },
-      { name: 'Candidíase Vaginal' },
-    ],
-  });
+  await seedPathologiesFromCSV();
 
   const pathology = await prisma.pathology.findFirst();
 

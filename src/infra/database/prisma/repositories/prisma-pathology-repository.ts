@@ -53,6 +53,23 @@ export class PrismaPathologysRepository implements PathologiesRepository {
     return PrismaPathologyMapper.toDomain(pathology);
   }
 
+  async findByCode(code: string): Promise<Pathology | null> {
+    const pathology = await this.prisma.pathology.findFirst({
+      where: {
+        code: {
+          equals: code,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    if (!pathology) {
+      return null;
+    }
+
+    return PrismaPathologyMapper.toDomain(pathology);
+  }
+
   async findByContent(content: string) {
     const pathology = await this.prisma.pathology.findFirst({
       where: {
@@ -75,19 +92,21 @@ export class PrismaPathologysRepository implements PathologiesRepository {
     content?: string,
   ): Promise<{ pathologies: Pathology[]; meta: Meta }> {
     const pageSize = 10;
-    const whereClause: Prisma.PathologyWhereInput = {
-      name: {
-        contains: content ?? '',
-        mode: Prisma.QueryMode.insensitive,
-      },
-    };
+    const whereClause: Prisma.PathologyWhereInput = content
+      ? {
+          OR: [
+            { name: { contains: content, mode: Prisma.QueryMode.insensitive } },
+            { code: { contains: content, mode: Prisma.QueryMode.insensitive } },
+          ],
+        }
+      : {};
 
     const [pathologies, totalCount] = await this.prisma.$transaction([
       this.prisma.pathology.findMany({
         where: whereClause,
         skip: (page - 1) * pageSize,
         take: pageSize,
-        orderBy: { name: 'asc' },
+        orderBy: { code: 'asc' },
       }),
       this.prisma.pathology.count({ where: whereClause }),
     ]);

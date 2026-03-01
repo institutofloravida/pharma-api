@@ -38,6 +38,7 @@ describe('Update pathology (E2E)', () => {
 
     const pathology = await pathologyFactory.makePrismaPathology({
       content: 'Hipertensão',
+      code: 'I10',
     })
 
     const response = await request(app.getHttpServer())

@@ -1,12 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 
 export class UpdatePathologyDto {
   @ApiProperty({
+    example: 'E11',
+    description: 'Código CID-10 atualizado da pathologia',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  readonly code?: string
+
+  @ApiProperty({
     example: 'Asma',
     description: 'Nome ou conteúdo atualizado da pathologia',
+    required: false,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly name?: string
 }

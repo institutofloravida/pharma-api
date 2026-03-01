@@ -38,6 +38,7 @@ describe('Get Pathology (E2E)', () => {
 
     const pathology = await pathologyFactory.makePrismaPathology({
       content: 'ASMA',
+      code: 'J45',
     })
 
     const response = await request(app.getHttpServer())

@@ -8,6 +8,7 @@ import { PathologyAlreadyExistsError } from './_erros/pathology-already-exists-e
 interface updatePathologyUseCaseRequest {
   pathologyId: string;
   content?: string;
+  code?: string;
 }
 
 type updatePathologyUseCaseResponse = Either<
@@ -22,12 +23,26 @@ export class UpdatePathologyUseCase {
   constructor(private pathologyRepository: PathologiesRepository) {}
   async execute({
     content,
+    code,
     pathologyId,
   }: updatePathologyUseCaseRequest): Promise<updatePathologyUseCaseResponse> {
     const pathology = await this.pathologyRepository.findById(pathologyId)
     if (!pathology) {
       return left(new ResourceNotFoundError())
     }
+
+    if (code) {
+      const pathologyWithSameCode =
+        await this.pathologyRepository.findByCode(code)
+      if (
+        pathologyWithSameCode &&
+        !pathology.id.equal(pathologyWithSameCode.id)
+      ) {
+        return left(new PathologyAlreadyExistsError(code))
+      }
+      pathology.code = code
+    }
+
     if (content) {
       const pathologyWithSameContent =
         await this.pathologyRepository.findByContent(content)

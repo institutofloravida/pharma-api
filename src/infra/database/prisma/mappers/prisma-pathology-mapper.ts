@@ -6,6 +6,7 @@ export class PrismaPathologyMapper {
   static toDomain(raw: PrismaPathology): Pathology {
     return Pathology.create({
       content: raw.name,
+      code: raw.code,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     },
@@ -16,6 +17,7 @@ export class PrismaPathologyMapper {
   static toPrisma(pathology: Pathology): Prisma.PathologyUncheckedCreateInput {
     return {
       id: pathology.id.toString(),
+      code: pathology.code,
       name: pathology.content,
       createdAt: pathology.createdAt,
       updatedAt: pathology.updatedAt,

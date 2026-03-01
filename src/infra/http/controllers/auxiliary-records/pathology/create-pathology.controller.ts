@@ -18,10 +18,11 @@ export class CreatePathologyController {
   @Post()
   @HttpCode(201)
   async handle(@Body() body: CreatePathologyDTO) {
-    const { name } = body
+    const { name, code } = body
 
     const result = await this.createPathology.execute({
       content: name,
+      code,
     })
 
     if (result.isLeft()) {

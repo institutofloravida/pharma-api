@@ -11,6 +11,7 @@ export function makePathology(
 ) {
   const pathology = Pathology.create({
     content: faker.lorem.sentence(),
+    code: faker.string.alphanumeric(5).toUpperCase(),
     ...override,
   },
   id)

@@ -39,9 +39,11 @@ describe('Fetch Pathologies (E2E)', () => {
     await Promise.all([
       pathologyFactory.makePrismaPathology({
         content: 'pathology 1',
+        code: 'P001',
       }),
       pathologyFactory.makePrismaPathology({
         content: 'pathology 2',
+        code: 'P002',
       }),
     ])
 

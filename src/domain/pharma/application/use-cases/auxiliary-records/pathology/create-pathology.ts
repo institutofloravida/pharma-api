@@ -6,6 +6,7 @@ import { PathologyAlreadyExistsError } from './_erros/pathology-already-exists-e
 
 interface createPathologyUseCaseRequest {
   content: string,
+  code: string,
 }
 
 type createPathologyUseCaseResponse = Either<
@@ -18,15 +19,21 @@ type createPathologyUseCaseResponse = Either<
 @Injectable()
 export class CreatePathologyUseCase {
   constructor(private pathologyRepository: PathologiesRepository) {}
-  async execute({ content }: createPathologyUseCaseRequest): Promise<createPathologyUseCaseResponse> {
-    const pathology = Pathology.create({
-      content,
-    })
+  async execute({ content, code }: createPathologyUseCaseRequest): Promise<createPathologyUseCaseResponse> {
+    const codeExists = await this.pathologyRepository.findByCode(code)
+    if (codeExists) {
+      return left(new PathologyAlreadyExistsError(code))
+    }
 
     const contentExists = await this.pathologyRepository.findByContent(content)
     if (contentExists) {
       return left(new PathologyAlreadyExistsError(content))
     }
+
+    const pathology = Pathology.create({
+      content,
+      code,
+    })
 
     await this.pathologyRepository.create(pathology)
 
