@@ -580,6 +580,7 @@ export class InMemoryMedicinesStockRepository
       unavailable: number;
       zero: number;
       expired: number;
+      closeToExpiration: number;
     };
   }> {
     const institution =
@@ -613,8 +614,36 @@ export class InMemoryMedicinesStockRepository
         expired: medicinesStock.inventory.filter(
           (item) => item.quantity.unavailable > 0,
         ).length,
+        closeToExpiration: 0,
       },
     };
+  }
+
+  async getInventoryAlerts(_institutionId: string): Promise<{
+    expiringBatches: Array<{
+      medicineStockId: string;
+      medicine: string;
+      stock: string;
+      stockId: string;
+      dosage: string;
+      pharmaceuticalForm: string;
+      unitMeasure: string;
+      complement?: string;
+      batchCode: string;
+      expirationDate: Date;
+      quantity: number;
+      expirationWarningDays: number;
+    }>;
+    lowStockMedicines: Array<{
+      medicineStockId: string;
+      medicine: string;
+      stock: string;
+      stockId: string;
+      currentQuantity: number;
+      minimumLevel: number;
+    }>;
+  }> {
+    return { expiringBatches: [], lowStockMedicines: [] };
   }
 
   async stockIsZero(stockId: string): Promise<boolean> {

@@ -44,6 +44,8 @@ import { MovimentationRepository } from '@/domain/pharma/application/repositorie
 import { PrismaMovimentationRepository } from './prisma/repositories/prisma-movimentation-repository';
 import { TransferRepository } from '@/domain/pharma/application/repositories/transfer-repository';
 import { PrismaTransferRepository } from './prisma/repositories/prisma-transfer-repository';
+import { StockSettingsRepository } from '@/domain/pharma/application/repositories/stock-settings-repository';
+import { PrismaStockSettingsRepository } from './prisma/repositories/prisma-stock-settings-repository';
 
 @Module({
   providers: [
@@ -100,6 +102,7 @@ import { PrismaTransferRepository } from './prisma/repositories/prisma-transfer-
       useClass: PrismaMovimentationRepository,
     },
     { provide: TransferRepository, useClass: PrismaTransferRepository },
+    { provide: StockSettingsRepository, useClass: PrismaStockSettingsRepository },
   ],
   exports: [
     PrismaService,
@@ -125,6 +128,7 @@ import { PrismaTransferRepository } from './prisma/repositories/prisma-transfer-
     UseMedicinesRepository,
     MovimentationRepository,
     TransferRepository,
+    StockSettingsRepository,
   ],
 })
 export class DatabaseModule {}

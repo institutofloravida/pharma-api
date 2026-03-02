@@ -798,69 +798,62 @@ export class PrismaMedicinesStockRepository
       unavailable: number;
       zero: number;
       expired: number;
+      closeToExpiration: number;
     };
   }> {
+    const now = new Date();
+
+    // Get all stocks with their settings to determine per-stock warning days
+    const stocks = await this.prisma.stock.findMany({
+      where: { institutionId },
+      select: { id: true, settings: { select: { expirationWarningDays: true } } },
+    });
+
     const [totalCurrent, available, zero] = await this.prisma.$transaction([
       this.prisma.medicineStock.aggregate({
         where: {
-          stock: {
-            institution: {
-              id: institutionId,
-            },
-          },
+          stock: { institution: { id: institutionId } },
           currentQuantity: { gt: 0 },
         },
-        _sum: {
-          currentQuantity: true,
-        },
+        _sum: { currentQuantity: true },
       }),
       this.prisma.batcheStock.aggregate({
         where: {
-          stock: {
-            institution: {
-              id: institutionId,
-            },
-          },
-          batch: {
-            expirationDate: {
-              gt: new Date(),
-            },
-          },
+          stock: { institution: { id: institutionId } },
+          batch: { expirationDate: { gt: now } },
           currentQuantity: { gt: 0 },
         },
-        _sum: {
-          currentQuantity: true,
-        },
+        _sum: { currentQuantity: true },
       }),
       this.prisma.medicineStock.count({
         where: {
-          stock: {
-            institution: {
-              id: institutionId,
-            },
-          },
+          stock: { institution: { id: institutionId } },
           currentQuantity: 0,
         },
       }),
-      this.prisma.batcheStock.aggregate({
-        where: {
-          stock: {
-            institution: {
-              id: institutionId,
-            },
-          },
-          batch: {
-            expirationDate: {
-              gt: new Date(),
-            },
-          },
-          currentQuantity: { gt: 0 },
-        },
-        _sum: {
-          currentQuantity: true,
-        },
-      }),
     ]);
+
+    // Count medicines with batches close to expiration (per stock settings)
+    let closeToExpirationCount = 0;
+    for (const stock of stocks) {
+      const warningDays = stock.settings?.expirationWarningDays ?? 30;
+      const warningDate = new Date(now.getTime() + warningDays * 24 * 60 * 60 * 1000);
+      const count = await this.prisma.medicineStock.count({
+        where: {
+          stockId: stock.id,
+          currentQuantity: { gt: 0 },
+          batchesStocks: {
+            some: {
+              currentQuantity: { gt: 0 },
+              batch: {
+                expirationDate: { gt: now, lte: warningDate },
+              },
+            },
+          },
+        },
+      });
+      closeToExpirationCount += count;
+    }
 
     return {
       quantity: {
@@ -873,8 +866,134 @@ export class PrismaMedicinesStockRepository
         expired:
           (totalCurrent._sum.currentQuantity ?? 0) -
           (available._sum.currentQuantity ?? 0),
+        closeToExpiration: closeToExpirationCount,
       },
     };
+  }
+
+  async getInventoryAlerts(institutionId: string): Promise<{
+    expiringBatches: Array<{
+      medicineStockId: string;
+      medicine: string;
+      stock: string;
+      stockId: string;
+      dosage: string;
+      pharmaceuticalForm: string;
+      unitMeasure: string;
+      complement?: string;
+      batchCode: string;
+      expirationDate: Date;
+      quantity: number;
+      expirationWarningDays: number;
+    }>;
+    lowStockMedicines: Array<{
+      medicineStockId: string;
+      medicine: string;
+      stock: string;
+      stockId: string;
+      currentQuantity: number;
+      minimumLevel: number;
+    }>;
+  }> {
+    const now = new Date();
+
+    // Low stock: currentQuantity < minimumLevel and minimumLevel > 0
+    const lowStockRecords = await this.prisma.medicineStock.findMany({
+      where: {
+        stock: { institutionId },
+        minimumLevel: { gt: 0 },
+        currentQuantity: { lt: this.prisma.medicineStock.fields.minimumLevel },
+      },
+      include: {
+        stock: { select: { id: true, name: true } },
+        medicineVariant: {
+          include: {
+            medicine: { select: { name: true } },
+            pharmaceuticalForm: { select: { name: true } },
+            unitMeasure: { select: { acronym: true } },
+          },
+        },
+      },
+    });
+
+    const lowStockMedicines = lowStockRecords.map((ms) => ({
+      medicineStockId: ms.id,
+      medicine: ms.medicineVariant.medicine.name,
+      stock: ms.stock.name,
+      stockId: ms.stock.id,
+      currentQuantity: ms.currentQuantity,
+      minimumLevel: ms.minimumLevel,
+    }));
+
+    // Expiring batches: per-stock warning days
+    const stocks = await this.prisma.stock.findMany({
+      where: { institutionId },
+      select: { id: true, name: true, settings: { select: { expirationWarningDays: true } } },
+    });
+
+    const expiringBatches: Array<{
+      medicineStockId: string;
+      medicine: string;
+      stock: string;
+      stockId: string;
+      dosage: string;
+      pharmaceuticalForm: string;
+      unitMeasure: string;
+      complement?: string;
+      batchCode: string;
+      expirationDate: Date;
+      quantity: number;
+      expirationWarningDays: number;
+    }> = [];
+
+    for (const stock of stocks) {
+      const warningDays = stock.settings?.expirationWarningDays ?? 30;
+      const warningDate = new Date(now.getTime() + warningDays * 24 * 60 * 60 * 1000);
+
+      const batchStocks = await this.prisma.batcheStock.findMany({
+        where: {
+          stockId: stock.id,
+          currentQuantity: { gt: 0 },
+          batch: {
+            expirationDate: { gt: now, lte: warningDate },
+          },
+        },
+        include: {
+          medicineStock: {
+            include: {
+              medicineVariant: {
+                include: {
+                  medicine: { select: { name: true } },
+                  pharmaceuticalForm: { select: { name: true } },
+                  unitMeasure: { select: { acronym: true } },
+                },
+              },
+            },
+          },
+          batch: { select: { code: true, expirationDate: true } },
+        },
+      });
+
+      for (const bs of batchStocks) {
+        if (!bs.medicineStock) continue;
+        expiringBatches.push({
+          medicineStockId: bs.medicineStockId,
+          medicine: bs.medicineStock.medicineVariant.medicine.name,
+          stock: stock.name,
+          stockId: stock.id,
+          dosage: bs.medicineStock.medicineVariant.dosage,
+          pharmaceuticalForm: bs.medicineStock.medicineVariant.pharmaceuticalForm.name,
+          unitMeasure: bs.medicineStock.medicineVariant.unitMeasure.acronym,
+          complement: bs.medicineStock.medicineVariant.complement ?? undefined,
+          batchCode: bs.batch.code,
+          expirationDate: bs.batch.expirationDate,
+          quantity: bs.currentQuantity,
+          expirationWarningDays: warningDays,
+        });
+      }
+    }
+
+    return { expiringBatches, lowStockMedicines };
   }
 
   async fetchAll(): Promise<{ medicinesStock: MedicineStock[] }> {

@@ -189,6 +189,14 @@ import { GetExitDetailsUseCase } from '@/domain/pharma/application/use-cases/mov
 import { GetInventoryReportController } from './controllers/reports/get-inventory-report.controller';
 import { GetInventoryReportUseCase } from '@/domain/pharma/application/use-cases/reports/get-inventory-report';
 import { GetInventoryReportGroupedUseCase } from '@/domain/pharma/application/use-cases/reports/get-inventory-report-grouped';
+import { GetStockSettingsController } from './controllers/auxiliary-records/stock/get-stock-settings.controller';
+import { UpsertStockSettingsController } from './controllers/auxiliary-records/stock/upsert-stock-settings.controller';
+import { GetStockSettingsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/get-stock-settings';
+import { UpsertStockSettingsUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/stock/upsert-stock-settings';
+import { UpdateMedicineStockMinimumLevelController } from './controllers/inventory/update-medicine-stock-minimum-level.controller';
+import { UpdateMedicineStockMinimumLevelUseCase } from '@/domain/pharma/application/use-cases/inventory/update-medicine-stock-minimum-level';
+import { GetInventoryAlertsController } from './controllers/inventory/get-inventory-alerts.controller';
+import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases/metrics/get-inventory-alerts';
 
 @Module({
   imports: [
@@ -291,6 +299,10 @@ import { GetInventoryReportGroupedUseCase } from '@/domain/pharma/application/us
     UpdateMedicineVariantController,
     UpdatePatientController,
     ValidateTokenController,
+    GetStockSettingsController,
+    UpsertStockSettingsController,
+    UpdateMedicineStockMinimumLevelController,
+    GetInventoryAlertsController,
   ],
   providers: [
     ActivateOperatorUseCase,
@@ -386,6 +398,10 @@ import { GetInventoryReportGroupedUseCase } from '@/domain/pharma/application/us
     UpdateMedicineUseCase,
     UpdateMedicineVariantUseCase,
     UpdatePatientUseCase,
+    GetStockSettingsUseCase,
+    UpsertStockSettingsUseCase,
+    UpdateMedicineStockMinimumLevelUseCase,
+    GetInventoryAlertsUseCase,
   ],
 })
 export class HttpModule {}

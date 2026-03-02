@@ -282,6 +282,7 @@ describe('Get Inventory Metrics', () => {
             unavailable: 0,
             zero: 0,
             expired: 0,
+            closeToExpiration: 0,
           },
         },
       }),

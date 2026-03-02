@@ -103,7 +103,33 @@ export abstract class MedicinesStockRepository {
       unavailable: number;
       zero: number;
       expired: number;
+      closeToExpiration: number;
     };
+  }>;
+
+  abstract getInventoryAlerts(institutionId: string): Promise<{
+    expiringBatches: Array<{
+      medicineStockId: string;
+      medicine: string;
+      stock: string;
+      stockId: string;
+      dosage: string;
+      pharmaceuticalForm: string;
+      unitMeasure: string;
+      complement?: string;
+      batchCode: string;
+      expirationDate: Date;
+      quantity: number;
+      expirationWarningDays: number;
+    }>;
+    lowStockMedicines: Array<{
+      medicineStockId: string;
+      medicine: string;
+      stock: string;
+      stockId: string;
+      currentQuantity: number;
+      minimumLevel: number;
+    }>;
   }>;
 
   abstract stockIsZero(stockId: string): Promise<boolean>;

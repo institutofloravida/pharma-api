@@ -70,8 +70,21 @@ model Stock {
   entries         MedicineEntry[]
   exits           Exit[]
   institution     Institution?    @relation(fields: [institutionId], references: [id])
+  settings        StockSettings?
 
   @@map("stocks")
+}
+
+model StockSettings {
+  id                    String    @id @default(cuid())
+  stockId               String    @unique @map("stock_id")
+  expirationWarningDays Int       @default(30) @map("expiration_warning_days")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime? @updatedAt @map("updated_at")
+
+  stock Stock @relation(fields: [stockId], references: [id])
+
+  @@map("stock_settings")
 }
 
 model PharmaceuticalForm {
