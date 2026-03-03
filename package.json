@@ -22,10 +22,11 @@
     "test:e2e": "NODE_ENV=TEST vitest run --config ./vitest.config.e2e.mts",
     "test:e2e:ui:cov": "NODE_ENV=TEST vitest --ui   --coverage.enabled=true --config ./vitest.config.e2e.mts  ",
     "test:e2e:watch": "NODE_ENV=TEST vitest --config ./vitest.config.e2e.mts",
-    "seed:js": "node dist/prisma/seed.js"
+    "seed:js": "node dist/prisma/seed.js",
+    "seed": "prisma db seed"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node dist/prisma/seed.js"
   },
   "dependencies": {
     "@js-brasil/fakerbr": "^0.0.2",

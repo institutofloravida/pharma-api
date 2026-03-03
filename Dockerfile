@@ -19,6 +19,6 @@ COPY --from=builder /app/prisma ./prisma
 COPY package*.json ./
 
 ENV NODE_ENV=production
-EXPOSE 3000
+EXPOSE 3333
 
 CMD ["node", "dist/src/infra/main.js"]
