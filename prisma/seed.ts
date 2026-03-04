@@ -183,7 +183,6 @@ estoques
  2279f65d-93d9-45f4-9022-5f828932204c | Estoque Sala     | t      | 2026-03-02 13:44:56.936 | 2026-03-03 18:09:39.801 | ad0926d0-cc60-4a05-a44b-1fefb49ad8fe
  2b633cb3-6dad-44e4-b2b1-910031ae9dff | Estoque Farmácia | t      | 2026-03-03 18:07:58.104 | 2026-03-03 18:09:52.817 | 7d2e63b4-0da6-4bd0-8ea7-c89c42ea766d
 (2 rows)
-
 */
 
 import { hash } from 'bcryptjs';
@@ -587,7 +586,9 @@ async function main() {
   const medicineCetoconazol = medicines.find((m) => m.name === 'CETOCONAZOL');
   const medicineMicozen = medicines.find((m) => m.name === 'MICOZEN');
   const medicineCefalexina = medicines.find((m) => m.name === 'CEFALEXINA');
-  const medicineXaropeAdulto = medicines.find((m) => m.name === 'XAROPE ADULTO');
+  const medicineXaropeAdulto = medicines.find(
+    (m) => m.name === 'XAROPE ADULTO',
+  );
   const medicineXaropePediatrico = medicines.find(
     (m) => m.name === 'XAROPE PEDIÁTRICO',
   );
@@ -595,11 +596,7 @@ async function main() {
     (m) => m.name === 'XAROPE GENÉRICO',
   );
 
-  if (
-    medicineBromoprida &&
-    formGotas &&
-    unitMeasureMgMl
-  ) {
+  if (medicineBromoprida && formGotas && unitMeasureMgMl) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineBromoprida.id,
@@ -611,11 +608,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineFlogoral &&
-    formCreme &&
-    unitMeasureGG
-  ) {
+  if (medicineFlogoral && formCreme && unitMeasureGG) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineFlogoral.id,
@@ -627,11 +620,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineAcheflan &&
-    formComprimido &&
-    unitMeasureMg
-  ) {
+  if (medicineAcheflan && formComprimido && unitMeasureMg) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineAcheflan.id,
@@ -643,11 +632,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineXaropeAdulto &&
-    formXarope &&
-    unitMeasureMgMl
-  ) {
+  if (medicineXaropeAdulto && formXarope && unitMeasureMgMl) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineXaropeAdulto.id,
@@ -659,11 +644,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineCetoconazol &&
-    formComprimido &&
-    unitMeasureMg
-  ) {
+  if (medicineCetoconazol && formComprimido && unitMeasureMg) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineCetoconazol.id,
@@ -675,11 +656,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineFlogoral &&
-    formCreme &&
-    unitMeasureMgG
-  ) {
+  if (medicineFlogoral && formCreme && unitMeasureMgG) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineFlogoral.id,
@@ -691,11 +668,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineXaropePediatrico &&
-    formSpray &&
-    unitMeasureMgMl
-  ) {
+  if (medicineXaropePediatrico && formSpray && unitMeasureMgMl) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineXaropePediatrico.id,
@@ -707,11 +680,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineMeritor &&
-    formComprimido &&
-    unitMeasureMg
-  ) {
+  if (medicineMeritor && formComprimido && unitMeasureMg) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineMeritor.id,
@@ -723,11 +692,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineDipirona &&
-    formSolucaoOral &&
-    unitMeasureMgMl
-  ) {
+  if (medicineDipirona && formSolucaoOral && unitMeasureMgMl) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineDipirona.id,
@@ -739,11 +704,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineAcetilcisteina &&
-    formXarope &&
-    unitMeasureMgMl
-  ) {
+  if (medicineAcetilcisteina && formXarope && unitMeasureMgMl) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineAcetilcisteina.id,
@@ -755,11 +716,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineXaropeGenerico &&
-    formXarope &&
-    unitMeasureMgMl
-  ) {
+  if (medicineXaropeGenerico && formXarope && unitMeasureMgMl) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineXaropeGenerico.id,
@@ -771,11 +728,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineFlagass &&
-    formGotas &&
-    unitMeasureMgMl
-  ) {
+  if (medicineFlagass && formGotas && unitMeasureMgMl) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineFlagass.id,
@@ -787,11 +740,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineFamox &&
-    formComprimido &&
-    unitMeasureMg
-  ) {
+  if (medicineFamox && formComprimido && unitMeasureMg) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineFamox.id,
@@ -803,11 +752,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineBusonid &&
-    formCapsulaInalatoria &&
-    unitMeasureMg
-  ) {
+  if (medicineBusonid && formCapsulaInalatoria && unitMeasureMg) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineBusonid.id,
@@ -819,11 +764,7 @@ async function main() {
     });
   }
 
-  if (
-    medicineBusonid &&
-    formCapsulaInalatoria &&
-    unitMeasureMg
-  ) {
+  if (medicineBusonid && formCapsulaInalatoria && unitMeasureMg) {
     await prisma.medicineVariant.create({
       data: {
         medicineId: medicineBusonid.id,
