@@ -204,10 +204,19 @@ async function clearDatabase() {
   await prisma.medicineEntry.deleteMany();
   await prisma.batcheStock.deleteMany();
   await prisma.medicineStock.deleteMany();
+  await prisma.medicineVariant.deleteMany();
+  await prisma.therapeuticClass.deleteMany();
+  await prisma.medicine.deleteMany();
+  await prisma.pharmaceuticalForm.deleteMany();
+  await prisma.unitMeasure.deleteMany();
+  await prisma.pathology.deleteMany();
   await prisma.batch.deleteMany();
   await prisma.manufacturer.deleteMany();
   await prisma.stockSettings.deleteMany();
   await prisma.stock.deleteMany();
+  await prisma.operator.deleteMany();
+  await prisma.institution.deleteMany();
+  await prisma.movementType.deleteMany();
   await prisma.patient.deleteMany();
 }
 
