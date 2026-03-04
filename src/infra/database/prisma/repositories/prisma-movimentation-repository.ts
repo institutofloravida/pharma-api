@@ -61,12 +61,6 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
     } = filters;
 
     const whereClause: Prisma.MovimentationWhereInput = {
-      ...(movementTypeId && {
-        OR: [
-          { entry: { movementTypeId: { equals: movementTypeId } } },
-          { exit: { movementTypeId: { equals: movementTypeId } } },
-        ],
-      }),
       ...(exitId && {
         exitId: { equals: exitId },
       }),
@@ -143,42 +137,64 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
               }),
             }
           : {}),
-      ...(!direction && (startDate || endDate)
-        ? {
-            OR: [
+      AND: [
+        ...(movementTypeId
+          ? [
               {
-                entry: {
-                  ...(startDate && {
-                    entryDate: {
-                      gte: new Date(startDate.setHours(0, 0, 0, 0)),
-                    },
-                  }),
-                  ...(endDate && {
-                    entryDate: {
-                      lte: new Date(endDate.setHours(23, 59, 59, 999)),
-                    },
-                  }),
-                },
+                OR: [
+                  { entry: { movementTypeId: { equals: movementTypeId } } },
+                  { exit: { movementTypeId: { equals: movementTypeId } } },
+                ],
               },
+            ]
+          : []),
+        ...(!direction && (startDate || endDate)
+          ? [
               {
-                exit: {
-                  ...(startDate && {
-                    exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
-                  }),
-                  ...(endDate && {
-                    exitDate: {
-                      lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                OR: [
+                  {
+                    entry: {
+                      ...(startDate && {
+                        entryDate: {
+                          gte: new Date(startDate.setHours(0, 0, 0, 0)),
+                        },
+                      }),
+                      ...(endDate && {
+                        entryDate: {
+                          lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                        },
+                      }),
                     },
-                  }),
-                },
+                  },
+                  {
+                    exit: {
+                      ...(startDate && {
+                        exitDate: {
+                          gte: new Date(startDate.setHours(0, 0, 0, 0)),
+                        },
+                      }),
+                      ...(endDate && {
+                        exitDate: {
+                          lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                        },
+                      }),
+                    },
+                  },
+                ],
               },
-            ],
-          }
-        : {}),
-
-      ...(operatorId && {
-        operatorId: { equals: operatorId },
-      }),
+            ]
+          : []),
+        ...(operatorId
+          ? [
+              {
+                OR: [
+                  { entry: { operatorId: { equals: operatorId } } },
+                  { exit: { operatorId: { equals: operatorId } } },
+                ],
+              },
+            ]
+          : []),
+      ],
     };
 
     const [medicinesExits, totalCount] = await this.prisma.$transaction([

@@ -2,6 +2,7 @@ import { hash } from 'bcryptjs';
 import { InstitutionType, OperatorRole, PrismaClient } from './generated';
 import * as fs from 'fs';
 import * as readline from 'readline';
+import * as path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +32,7 @@ async function clearDatabase() {
 }
 
 async function seedPathologiesFromCSV() {
-  const csvPath = `${__dirname}/CSV/tabela-cid.csv`;
+  const csvPath = path.resolve(__dirname, '../../prisma/CSV/tabela-cid.csv');
   const fileStream = fs.createReadStream(csvPath, { encoding: 'utf8' });
   const rl = readline.createInterface({
     input: fileStream,
