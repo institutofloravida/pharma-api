@@ -403,7 +403,6 @@ async function main() {
       { name: 'Xarope' },
       { name: 'Aerossol' },
       { name: 'Pomada' },
-      { name: 'Emulsão' },
       { name: 'Solução gotas' },
       { name: 'Comprimidos' },
       { name: 'Spray' },
