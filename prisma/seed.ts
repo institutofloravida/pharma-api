@@ -195,6 +195,7 @@ import * as path from 'path';
 const prisma = new PrismaClient();
 
 async function clearDatabase() {
+  console.log('Clearing database...');
   await prisma.transfer.deleteMany();
   await prisma.address.deleteMany();
   await prisma.movimentation.deleteMany();
@@ -204,13 +205,13 @@ async function clearDatabase() {
   await prisma.medicineEntry.deleteMany();
   await prisma.batcheStock.deleteMany();
   await prisma.medicineStock.deleteMany();
+  await prisma.batch.deleteMany();
   await prisma.medicineVariant.deleteMany();
-  await prisma.therapeuticClass.deleteMany();
   await prisma.medicine.deleteMany();
+  await prisma.therapeuticClass.deleteMany();
   await prisma.pharmaceuticalForm.deleteMany();
   await prisma.unitMeasure.deleteMany();
   await prisma.pathology.deleteMany();
-  await prisma.batch.deleteMany();
   await prisma.manufacturer.deleteMany();
   await prisma.stockSettings.deleteMany();
   await prisma.stock.deleteMany();
@@ -218,6 +219,7 @@ async function clearDatabase() {
   await prisma.institution.deleteMany();
   await prisma.movementType.deleteMany();
   await prisma.patient.deleteMany();
+  console.log('Database cleared!');
 }
 
 async function seedPathologiesFromCSV() {
