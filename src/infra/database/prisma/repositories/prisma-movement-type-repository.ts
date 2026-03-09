@@ -59,7 +59,7 @@ export class PrismaMovementTypesRepository implements MovementTypesRepository {
         where: whereClause,
         take: 10,
         orderBy: {
-          createdAt: 'desc',
+          name: 'asc',
         },
         skip: (page - 1) * 10,
       }),

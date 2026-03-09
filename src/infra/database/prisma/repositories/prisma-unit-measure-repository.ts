@@ -97,7 +97,7 @@ export class PrismaUnitsMeasureRepository implements UnitsMeasureRepository {
             },
           ],
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { name: 'asc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),

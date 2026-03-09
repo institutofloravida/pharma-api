@@ -24,7 +24,7 @@ export class PrismaMedicineMapper {
         connect: medicine.medicinesVariantsIds.map(item => ({ id: item.toString() })),
       },
       therapeuticClasses: {
-        connect: medicine.therapeuticClassesIds.map(item => ({ id: item.toString() })),
+        set: medicine.therapeuticClassesIds.map(item => ({ id: item.toString() })),
       },
       createdAt: medicine.createdAt,
       updatedAt: medicine.updatedAt,

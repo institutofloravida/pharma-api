@@ -92,7 +92,7 @@ export class PrismaManufacturersRepository implements ManufacturersRepository {
             contains: cnpj ?? '',
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { name: 'asc' },
         skip: (page - 1) * 10,
         take: 10,
       }),

@@ -168,7 +168,7 @@ export class PrismaOperatorsRepository implements OperatorsRepository {
               select: { id: true, name: true },
             },
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { name: 'asc' },
           take: 10,
           skip: (page - 1) * 10,
         }),

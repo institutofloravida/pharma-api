@@ -129,6 +129,7 @@ export class PrismaMedicinesVariantsRepository
           pharmaceuticalForm: true,
           unitMeasure: true,
         },
+        orderBy: { medicine: { name: 'asc' } },
         skip: (page - 1) * perPage,
         take: perPage,
       }),

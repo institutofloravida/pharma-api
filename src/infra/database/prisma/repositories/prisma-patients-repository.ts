@@ -240,6 +240,7 @@ export class PrismaPatientsRepository implements PatientsRepository {
             },
           },
         },
+        orderBy: { name: 'asc' },
         take: 10,
         skip: (page - 1) * 10,
       }),

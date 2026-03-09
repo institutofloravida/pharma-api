@@ -76,7 +76,7 @@ export class PrismaPharmaceuticalFormsRepository
       this.prisma.pharmaceuticalForm.findMany({
         where: whereClause,
         orderBy: {
-          createdAt: 'desc',
+          name: 'asc',
         },
         take: perPage,
         skip: (page - 1) * perPage,
