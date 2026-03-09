@@ -27,6 +27,85 @@ export class PrismaDispensationsMedicinesRepository
     });
   }
 
+  async findById(id: string): Promise<DispensationWithMedicines | null> {
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+      `
+      SELECT
+        d.id as "dispensationId",
+        d.dispensation_date as "dispensationDate",
+        o.id as "operatorId",
+        o.name as "operatorName",
+        p.id as "patientId",
+        p.name as "patientName",
+        s.name as "stockName",
+        e.reverse_at as "reverseAt",
+        COUNT(DISTINCT meds."medicineStockId") as "items",
+        COALESCE(json_agg(
+          json_build_object(
+            'medicineStockId', meds."medicineStockId",
+            'medicine', meds.medicine,
+            'pharmaceuticalForm', meds."pharmaceuticalForm",
+            'unitMeasure', meds."unitMeasure",
+            'complement', meds.complement,
+            'quantity', meds.quantity,
+            'dosage', meds.dosage
+          )
+        ) FILTER (WHERE meds."medicineStockId" IS NOT NULL), '[]') as medicines
+      FROM dispensations d
+      INNER JOIN "exits" e ON e.dispensation_id = d.id
+      INNER JOIN operators o ON o.id = e.operator_id
+      INNER JOIN patients p ON p.id = d.patient_id
+      INNER JOIN stocks s ON s.id = e.stock_id
+      LEFT JOIN LATERAL (
+        SELECT
+          bs.medicine_stock_id AS "medicineStockId",
+          m2.name AS medicine,
+          pf.name AS "pharmaceuticalForm",
+          um.acronym AS "unitMeasure",
+          mv.dosage AS "dosage",
+          mv.complement AS complement,
+          SUM(mtn.quantity) AS quantity
+        FROM movimentation mtn
+        INNER JOIN batches_stocks bs ON bs.id = mtn.batch_stock_id
+        INNER JOIN medicines_stocks ms ON ms.id = bs.medicine_stock_id
+        INNER JOIN medicines_variants mv ON mv.id = ms.medicine_variant_id
+        INNER JOIN medicines m2 ON m2.id = mv.medicine_id
+        INNER JOIN pharmaceutical_forms pf ON pf.id = mv.pharmaceutical_form_id
+        INNER JOIN unit_measures um ON um.id = mv.unit_measure_id
+        WHERE mtn.exit_id = e.id
+        GROUP BY bs.medicine_stock_id, m2.name, pf.name, um.name, mv.complement, um.acronym, mv.dosage
+      ) meds ON TRUE
+      WHERE d.id = $1
+      GROUP BY d.id, d.dispensation_date, o.id, o.name, p.id, p.name, s.name, e.reverse_at
+      `,
+      id,
+    );
+
+    if (!rows.length) return null;
+
+    const row = rows[0];
+    return DispensationWithMedicines.create({
+      dispensationDate: row.dispensationDate,
+      dispensationId: new UniqueEntityId(row.dispensationId),
+      operator: row.operatorName,
+      operatorId: new UniqueEntityId(row.operatorId),
+      patientId: new UniqueEntityId(row.patientId),
+      patient: row.patientName,
+      stock: row.stockName,
+      reverseAt: row.reverseAt ?? null,
+      items: Number(row.items),
+      medicines: (row.medicines as any[]).map((med) => ({
+        medicineStockId: new UniqueEntityId(med.medicineStockId),
+        medicine: med.medicine,
+        pharmaceuticalForm: med.pharmaceuticalForm,
+        unitMeasure: med.unitMeasure,
+        complement: med.complement,
+        dosage: med.dosage,
+        quantity: Number(med.quantity),
+      })),
+    });
+  }
+
   async findMany(
     { page }: PaginationParams,
     filters: {

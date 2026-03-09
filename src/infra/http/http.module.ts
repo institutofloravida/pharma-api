@@ -54,6 +54,8 @@ import { DispensationController } from './controllers/dispensation/create-dispen
 import { DispensationMedicineUseCase } from '@/domain/pharma/application/use-cases/dispensation/dispensation-medicine';
 import { FetchDispensationsController } from './controllers/dispensation/fetch-dispensations.controller';
 import { FetchDispensationsUseCase } from '@/domain/pharma/application/use-cases/dispensation/fetch-dispensation';
+import { GetDispensationDetailsController } from './controllers/dispensation/get-dispensation-details.controller';
+import { GetDispensationDetailsUseCase } from '@/domain/pharma/application/use-cases/dispensation/get-dispensation-details';
 import { CreateMovementTypeController } from './controllers/auxiliary-records/movement-type/create-movement-type.controller';
 import { CreateMovementTypeUseCase } from '@/domain/pharma/application/use-cases/auxiliary-records/movement-type/create-movement-type';
 import { CreateInstitutionUseCase } from '@/domain/pharma/application/use-cases/institution/create-institution';
@@ -237,6 +239,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     DeleteOperatorController,
     DispensationController,
     DispensationPreviewController,
+    GetDispensationDetailsController,
     FetchOperatorsController,
     FetchInstitutionsController,
     FetchStocksController,
@@ -324,6 +327,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     ConfirmTransferUseCase,
     DispensationPreviewUseCase,
     DispensationMedicineUseCase,
+    GetDispensationDetailsUseCase,
     DeleteManufacturerUseCase,
     DeletePathologyUseCase,
     DeleteTherapeuticClassUseCase,

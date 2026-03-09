@@ -3,7 +3,7 @@ import { EntryWithStock } from '@/domain/pharma/enterprise/entities/value-object
 export class MedicineEntryPresenter {
   static toHTTP(entry: EntryWithStock) {
     return {
-      entryId: entry.entryId,
+      entryId: entry.entryId.toString(),
       stock: entry.stock,
       entryDate: entry.entryDate,
       nfNumber: entry.nfNumber,

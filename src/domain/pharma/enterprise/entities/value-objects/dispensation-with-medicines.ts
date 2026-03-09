@@ -9,6 +9,8 @@ export interface DispensationWithMedicinesProps {
   patient: string;
   dispensationDate: Date;
   items: number;
+  stock?: string;
+  reverseAt?: Date | null;
   medicines: {
     medicineStockId: UniqueEntityId;
     medicine: string;
@@ -47,6 +49,14 @@ export class DispensationWithMedicines extends ValueObject<DispensationWithMedic
 
   get dispensationDate() {
     return this.props.dispensationDate;
+  }
+
+  get stock() {
+    return this.props.stock;
+  }
+
+  get reverseAt() {
+    return this.props.reverseAt;
   }
 
   get medicines() {

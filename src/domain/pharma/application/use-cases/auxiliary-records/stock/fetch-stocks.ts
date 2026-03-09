@@ -37,7 +37,7 @@ export class FetchStocksUseCase {
     institutionsIds,
   }: FetchStocksUseCaseRequest): Promise<FetchStocksUseCaseResponse> {
     const operator = await this.operatorsRepository.findById(operatorId)
-    if (institutionsIds) {
+    if (institutionsIds && !operator?.isSuperAdmin()) {
       const institutionsIdsByOperator = operator?.institutionsIds.map(item => item.toString())
       for (const item of institutionsIds) {
         if (!institutionsIdsByOperator?.includes(item)) {

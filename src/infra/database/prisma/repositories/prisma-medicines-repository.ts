@@ -26,7 +26,12 @@ export class PrismaMedicinesRepository implements MedicinesRepository {
       where: {
         id: medicine.id.toString(),
       },
-      data,
+      data: {
+        ...data,
+        therapeuticClasses: {
+          set: medicine.therapeuticClassesIds.map(item => ({ id: item.toString() })),
+        },
+      },
     })
   }
 

@@ -10,6 +10,7 @@ import { DispensationWithMedicines } from '../../enterprise/entities/value-objec
 
 export abstract class DispensationsMedicinesRepository {
   abstract create(dispensation: Dispensation): Promise<void>;
+  abstract findById(id: string): Promise<DispensationWithMedicines | null>;
   abstract findMany(
     params: PaginationParams,
     filters: {
