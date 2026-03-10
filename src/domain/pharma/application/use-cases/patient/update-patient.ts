@@ -19,7 +19,7 @@ interface updatePatientUseCaseRequest {
   patientId: string;
   name: string;
   cpf?: string;
-  sus: string;
+  sus?: string | null;
   birthDate: Date;
   gender: Gender;
   race: Race;
@@ -77,14 +77,14 @@ export class UpdatePatientUseCase {
 
     if (pathologiesCheck.includes(false)) {
       return left(
-        new ResourceNotFoundError('One or more pathologies not found'),
+        new ResourceNotFoundError('Uma ou mais patologias não foram encontradas'),
       )
     }
 
     const patientWithSameCpf = await this.patientRepository.findByCpf(
       cpf || '',
     )
-    const patientWithSameSus = await this.patientRepository.findBySus(sus)
+    const patientWithSameSus = sus ? await this.patientRepository.findBySus(sus) : null
     if (
       patientWithSameCpf &&
       !patientWithSameCpf.id.equal(new UniqueEntityId(patientId))

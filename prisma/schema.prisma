@@ -293,7 +293,7 @@ model Patient {
   id                  String    @id @default(uuid())
   name                String
   cpf                 String?   @unique
-  sus                 String    @unique
+  sus                 String?   @unique
   birthDate           DateTime  @map("birth_date")
   gender              Gender
   race                Race

@@ -17,7 +17,7 @@ import { AddresssRepository } from '../../repositories/address-repository'
 interface createPatientUseCaseRequest {
   name: string;
   cpf?: string;
-  sus: string;
+  sus?: string | null;
   birthDate: Date;
   gender: Gender;
   race: Race;
@@ -69,16 +69,16 @@ export class CreatePatientUseCase {
 
     if (pathologiesCheck.includes(false)) {
       return left(
-        new ResourceNotFoundError('One or more pathologies not found'),
+        new ResourceNotFoundError('Uma ou mais patologias não foram encontradas'),
       )
     }
 
     const patientWithSameCpf = await this.patientRepository.findByCpf(cpf || '')
-    const patientWithSameSus = await this.patientRepository.findBySus(sus)
+    const patientWithSameSus = sus ? await this.patientRepository.findBySus(sus) : null
     if (patientWithSameCpf) {
       return left(
         new PatientAlreadyExistsError(
-          `Alredy exists an patient with CPF ${patientWithSameCpf.cpf}`,
+          `Já existe um paciente com o CPF ${patientWithSameCpf.cpf}`,
         ),
       )
     }
@@ -86,7 +86,7 @@ export class CreatePatientUseCase {
     if (patientWithSameSus) {
       return left(
         new PatientAlreadyExistsError(
-          `Alredy exists an patient with SUS card ${patientWithSameSus.sus}`,
+          `Já existe um paciente com o cartão SUS ${patientWithSameSus.sus}`,
         ),
       )
     }

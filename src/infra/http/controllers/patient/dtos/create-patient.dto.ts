@@ -81,13 +81,13 @@ export class CreatePatientDto {
   @IsOptional()
   cpf?: string | null
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'SUS number of the patient',
     example: '123456789012345',
   })
   @IsString()
-  @IsNotEmpty()
-  sus: string
+  @IsOptional()
+  sus?: string | null
 
   @ApiProperty({
     description: 'Birth date of the patient',

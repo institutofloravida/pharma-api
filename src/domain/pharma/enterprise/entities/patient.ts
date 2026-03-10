@@ -8,7 +8,7 @@ export type Race = 'BLACK' | 'WHITE' | 'YELLOW' | 'MIXED' | 'UNDECLARED' | 'INDI
 export interface PatientProps {
   name: string
   cpf?: string | null
-  sus: string
+  sus?: string | null
   birthDate: Date
   gender: Gender
   race: Race
@@ -46,17 +46,19 @@ export class Patient extends AggregateRoot<PatientProps> {
       : null
   }
 
-  get sus() {
-    return this.props.sus
+  get sus(): string | null {
+    return this.props.sus ?? null
   }
 
-  set sus(value: string) {
+  set sus(value: string | null) {
     this.props.sus = value
     this.touch()
   }
 
-  public getFormattedSus(): string {
-    return this.sus.replace(/^(\d{3})(\d{4})(\d{4})(\d{4})$/, '$1 $2 $3 $4')
+  public getFormattedSus(): string | null {
+    return this.sus
+      ? this.sus.replace(/^(\d{3})(\d{4})(\d{4})(\d{4})$/, '$1 $2 $3 $4')
+      : null
   }
 
   get birthDate() {

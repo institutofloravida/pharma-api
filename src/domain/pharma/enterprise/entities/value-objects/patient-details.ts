@@ -7,7 +7,7 @@ export interface PatientDetailsProps {
   patientId: UniqueEntityId
   name: string;
   cpf?: string | null;
-  sus: string;
+  sus?: string | null;
   birthDate: Date;
   gender: Gender;
   race: Race;
@@ -52,8 +52,10 @@ export class PatientDetails extends ValueObject<PatientDetailsProps> {
     return this.props.sus
   }
 
-  public getFormattedSus(): string {
-    return this.sus.replace(/^(\d{3})(\d{4})(\d{4})(\d{4})$/, '$1 $2 $3 $4')
+  public getFormattedSus(): string | null {
+    return this.sus
+      ? this.sus.replace(/^(\d{3})(\d{4})(\d{4})(\d{4})$/, '$1 $2 $3 $4')
+      : null
   }
 
   get birthDate() {
