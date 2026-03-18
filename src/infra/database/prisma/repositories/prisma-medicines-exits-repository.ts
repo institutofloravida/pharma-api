@@ -60,7 +60,7 @@ export class PrismaMedicinesExitsRepository
             stockDestination: {
               include: {
                 institution: {
-                  select: { name: true },
+                  select: { name: true, responsible: true },
                 },
               },
             },
@@ -92,7 +92,9 @@ export class PrismaMedicinesExitsRepository
     return PrismaExitDetailsMapper.toDomain({
       ...exit,
       destinationInstitution,
-      responsibleByInstitution: exit.destinationInstitution?.responsible,
+      responsibleByInstitution:
+        exit.destinationInstitution?.responsible ??
+        exit.transfer?.stockDestination?.institution?.responsible,
       exitType: exit.exitType,
       items: items.length,
       operator: exit.operator.name,
