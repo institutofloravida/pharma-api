@@ -1,6 +1,7 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ValueObject } from '@/core/entities/value-object';
 import { ExitType } from '../exit';
+import { TransferStatus } from '../transfer';
 
 export interface ExitWithStockProps {
   exitId: UniqueEntityId;
@@ -13,6 +14,7 @@ export interface ExitWithStockProps {
   reverseAt?: Date | null;
   operator: string;
   items: number;
+  transferStatus?: TransferStatus;
 }
 
 export class ExitWithStock extends ValueObject<ExitWithStockProps> {
@@ -54,6 +56,10 @@ export class ExitWithStock extends ValueObject<ExitWithStockProps> {
 
   get items() {
     return this.props.items;
+  }
+
+  get transferStatus() {
+    return this.props.transferStatus;
   }
 
   static create(props: ExitWithStockProps) {

@@ -55,6 +55,17 @@ export class PrismaMedicinesExitsRepository
         stock: {
           select: { name: true },
         },
+        transfer: {
+          include: {
+            stockDestination: {
+              include: {
+                institution: {
+                  select: { name: true },
+                },
+              },
+            },
+          },
+        },
       },
     });
     if (!exit) return null;
@@ -74,14 +85,19 @@ export class PrismaMedicinesExitsRepository
       },
     });
 
+    const destinationInstitution =
+      exit.destinationInstitution?.name ??
+      exit.transfer?.stockDestination?.institution?.name;
+
     return PrismaExitDetailsMapper.toDomain({
       ...exit,
-      destinationInstitution: exit.destinationInstitution?.name,
+      destinationInstitution,
       responsibleByInstitution: exit.destinationInstitution?.responsible,
       exitType: exit.exitType,
       items: items.length,
       operator: exit.operator.name,
       stock: exit.stock.name,
+      transferStatus: exit.transfer?.status ?? undefined,
     });
   }
 
@@ -224,10 +240,11 @@ export class PrismaMedicinesExitsRepository
         exitType: ExitType;
         items: number;
         reverseAt?: Date | null;
+        transferStatus?: string | null;
       }[]
     >(
       `
-    select 
+    select
       e.id as "id",
       e.exit_type as "exitType",
       e.exit_date as "exitDate",
@@ -236,6 +253,7 @@ export class PrismaMedicinesExitsRepository
       s."id" as "stockId",
       e.reverse_at as "reverseAt",
      i."name" as "destinationInstitution",
+      t.status as "transferStatus",
       COUNT(distinct bs.medicine_stock_id) as "items"
     from movimentation m
     inner join "exits" e on e.id = m.exit_id
@@ -243,8 +261,9 @@ export class PrismaMedicinesExitsRepository
     inner join operators o on o.id = e.operator_id
     inner join stocks s on s.id = e.stock_id
     left join institutions i on i.id = e.destination_institution_id
+    left join transfers t on t.id = e.transfer_id
     ${whereSQL}
-group by e.id, o."name", s."name", i."name", s."id"
+group by e.id, o."name", s."name", i."name", s."id", t.status
     order by e.exit_date desc
     limit 10 offset ${(page - 1) * 10}
   `,
@@ -283,6 +302,9 @@ group by e.id, o."name", s."name", i."name", s."id"
         reverseAt: exit.reverseAt ?? null,
         exitId: new UniqueEntityId(exit.id),
         items: Number(exit.items),
+        transferStatus: exit.transferStatus
+          ? (exit.transferStatus as any)
+          : undefined,
       });
     });
     return {

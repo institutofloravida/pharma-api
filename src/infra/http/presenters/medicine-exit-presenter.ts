@@ -12,6 +12,7 @@ export class MedicineExitPresenter {
       reverseAt: exit.reverseAt ?? null,
       stock: exit.stock,
       items: exit.items,
+      transferStatus: exit.transferStatus ?? null,
     };
   }
 }

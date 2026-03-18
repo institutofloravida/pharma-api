@@ -1,5 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
+import { TransferStatus } from '@/domain/pharma/enterprise/entities/transfer';
 import { ExitWithStock } from '@/domain/pharma/enterprise/entities/value-objects/exit-with-stock';
 import { Exit as PrismaExit } from 'prisma/generated';
 
@@ -11,6 +12,7 @@ export class PrismaExitDetailsMapper {
       items: number;
       responsibleByInstitution?: string;
       destinationInstitution?: string;
+      transferStatus?: string;
     },
   ): ExitWithStock {
     return ExitWithStock.create({
@@ -23,6 +25,9 @@ export class PrismaExitDetailsMapper {
       stock: raw.stock,
       exitType: ExitType[raw.exitType],
       items: Number(raw.items),
+      transferStatus: raw.transferStatus
+        ? TransferStatus[raw.transferStatus as keyof typeof TransferStatus]
+        : undefined,
     });
   }
 }

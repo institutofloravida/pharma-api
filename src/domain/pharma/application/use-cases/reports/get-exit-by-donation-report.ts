@@ -7,6 +7,7 @@ import { MovimentationRepository } from '../../repositories/movimentation-reposi
 import { MedicinesExitsRepository } from '../../repositories/medicines-exits-repository';
 import { ResourceNotFoundError } from '@/core/erros/errors/resource-not-found-error';
 import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
+import { TransferStatus } from '@/domain/pharma/enterprise/entities/transfer';
 
 interface GetExitByDonationUseCaseRequest {
   exitId: string;
@@ -36,8 +37,17 @@ export class GetExitByDonationUseCase {
       return left(new ResourceNotFoundError('Exit not found'));
     }
 
-    if (exit.exitType !== ExitType.DONATION) {
-      return left(new ResourceNotFoundError('Exit is not a donation'));
+    const isDonation = exit.exitType === ExitType.DONATION;
+    const isConfirmedTransfer =
+      exit.exitType === ExitType.TRANSFER &&
+      exit.transferStatus === TransferStatus.CONFIRMED;
+
+    if (!isDonation && !isConfirmedTransfer) {
+      return left(
+        new ResourceNotFoundError(
+          'Exit is not a donation or confirmed transfer',
+        ),
+      );
     }
 
     const { movimentation, meta } =
