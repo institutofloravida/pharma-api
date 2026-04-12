@@ -88,11 +88,11 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
 
   async findMany(
     { page }: PaginationParams,
-    filters: { content?: string, cnpj?: string },
+    filters: { content?: string, cnpj?: string, controlStock?: boolean },
     operatorId: string,
     isSuper = false,
   ): Promise<{ institutions: Institution[]; meta: Meta }> {
-    const { cnpj, content } = filters
+    const { cnpj, content, controlStock } = filters
 
     const whereClause: Prisma.InstitutionWhereInput = {
       name: {
@@ -101,6 +101,9 @@ export class PrismaInstitutionsRepository implements InstitutionsRepository {
       },
       ...(cnpj && {
         cnpj,
+      }),
+      ...(controlStock && {
+        controlStock,
       }),
       operators: {
         ...(!isSuper && {

@@ -12,6 +12,7 @@ interface FetchInstitutionsUseCaseRequest {
   cnpj?: string;
   content?: string;
   operatorId: string
+  controlStock?: boolean
 }
 
 type FetchInstitutionsUseCaseResponse = Either<
@@ -31,6 +32,7 @@ export class FethInstitutionsUseCase {
     content,
     cnpj,
     operatorId,
+    controlStock
   }: FetchInstitutionsUseCaseRequest): Promise<FetchInstitutionsUseCaseResponse> {
     const operator = await this.operatorsRepository.findById(operatorId)
     if (!operator) {
@@ -41,6 +43,7 @@ export class FethInstitutionsUseCase {
       {
         content,
         cnpj,
+        controlStock
       },
       operatorId,
       operator.role === OperatorRole.SUPER_ADMIN,

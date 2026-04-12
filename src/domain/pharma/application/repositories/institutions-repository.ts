@@ -10,7 +10,7 @@ export abstract class InstitutionsRepository {
   abstract findByCnpj(cnpj: string): Promise<Institution | null>
   abstract findMany(
     params: PaginationParams,
-    filters: { content?: string, cnpj?: string },
+    filters: { content?: string, cnpj?: string, controlStock?: boolean },
     operatorId: string,
     isSuper?: boolean
   ): Promise<{ institutions: Institution[]; meta: Meta }>

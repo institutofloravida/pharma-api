@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsOptional, IsString, IsNumber, Min } from 'class-validator'
-import { Type } from 'class-transformer'
+import { IsOptional, IsString, IsNumber, Min, IsBoolean } from 'class-validator'
+import { Type, Transform } from 'class-transformer'
 
 export class FetchInstitutionsDto {
   @ApiProperty({
@@ -31,4 +31,14 @@ export class FetchInstitutionsDto {
   @IsNumber()
   @Min(1)
   page: number = 1
+
+  @ApiProperty({
+    description: 'Filtro de busca para as instituições que controlam estoque',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  controlStock?: boolean
 }
