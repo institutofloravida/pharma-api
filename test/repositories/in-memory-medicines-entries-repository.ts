@@ -43,6 +43,22 @@ export class InMemoryMedicinesEntriesRepository
     this.items.push(medicineEntry);
   }
 
+  async save(medicineEntry: MedicineEntry) {
+    const index = this.items.findIndex((item) =>
+      item.id.equal(medicineEntry.id),
+    );
+    if (index >= 0) {
+      this.items[index] = medicineEntry;
+    }
+  }
+
+  async findById(entryId: string): Promise<MedicineEntry | null> {
+    return (
+      this.items.find((item) => item.id.equal(new UniqueEntityId(entryId))) ??
+      null
+    );
+  }
+
   async findMany(
     { page, perPage = 10 }: PaginationParams,
     filters: {
@@ -286,6 +302,7 @@ export class InMemoryMedicinesEntriesRepository
       }
 
       medicines[medicineIndex].batches.push({
+        movimentationId: movement.id.toString(),
         batchNumber: batch.code,
         expirationDate: batch.expirationDate,
         manufacturingDate: batch.manufacturingDate ?? undefined,

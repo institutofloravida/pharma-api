@@ -8,6 +8,9 @@ import { EntryType } from '@/domain/pharma/enterprise/entities/entry';
 import { BatchesRepository } from '../../../repositories/batches-repository';
 import { ExitNotFoundError } from './_errors/exit-not-found-error';
 import { ExitAlreadyReversedError } from './_errors/exit-already-reversed-error';
+import { TransferRepository } from '../../../repositories/transfer-repository';
+import { ExitType } from '@/domain/pharma/enterprise/entities/exit';
+import { TransferStatus } from '@/domain/pharma/enterprise/entities/transfer';
 
 interface reverseExitUseCaseRequest {
   exitId: string;
@@ -24,6 +27,7 @@ export class ReverseExitUseCase {
     private registerEntryUseCase: RegisterMedicineEntryUseCase,
     private batchStocksRepository: BatchStocksRepository,
     private batchesRepository: BatchesRepository,
+    private transferRepository: TransferRepository,
   ) {}
 
   async execute({
@@ -113,6 +117,16 @@ export class ReverseExitUseCase {
     exit.reverseAt = new Date();
 
     await this.exitsRepository.save(exit);
+
+    if (exit.exitType === ExitType.TRANSFER && exit.transferId) {
+      const transfer = await this.transferRepository.findById(
+        exit.transferId.toString(),
+      );
+      if (transfer && transfer.status === TransferStatus.PENDING) {
+        transfer.status = TransferStatus.CANCELED;
+        await this.transferRepository.save(transfer);
+      }
+    }
 
     return right(null);
   }

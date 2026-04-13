@@ -18,6 +18,7 @@ export class InventoryMedicineDetailsPresenter {
         return {
           ...batch,
           id: batch.id.toString(),
+          batchId: batch.batchId.toString(),
         };
       }),
       isLowStock: medicineInventoryDetails.isLowStock(),

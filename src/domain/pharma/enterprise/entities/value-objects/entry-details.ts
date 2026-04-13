@@ -3,11 +3,13 @@ import { ValueObject } from '@/core/entities/value-object';
 import { EntryType } from '../entry';
 
 export interface EntryDetailsBatchProps {
+  movimentationId: string;
   batchNumber: string;
   manufacturer: string;
   manufacturingDate?: Date;
   expirationDate: Date;
-  quantity: number;
+  quantity: number; // quantidade efetiva (após correções)
+  originalQuantity?: number; // quantidade original (preenchida quando houve correção)
 }
 
 export interface EntryDetailsMedicineProps {
@@ -28,6 +30,8 @@ export interface EntryDetailsProps {
   operator: string;
   entryType: EntryType;
   movementType?: string;
+  correctedAt?: Date | null;
+  correctionOfEntryId?: string | null;
   medicines: EntryDetailsMedicineProps[];
 }
 
@@ -58,6 +62,14 @@ export class EntryDetails extends ValueObject<EntryDetailsProps> {
 
   get movementType() {
     return this.props.movementType;
+  }
+
+  get correctedAt() {
+    return this.props.correctedAt;
+  }
+
+  get correctionOfEntryId() {
+    return this.props.correctionOfEntryId;
   }
 
   get medicines() {

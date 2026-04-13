@@ -46,6 +46,8 @@ import { FetchRegisterMedicinesEntriesUseCase } from '@/domain/pharma/applicatio
 import { FetchMedicinesEntriesController } from './controllers/movimentation/entry/fetch-medicines-entries.controller';
 import { FetchBatchesController } from './controllers/auxiliary-records/batch/fetch-batches.controller';
 import { FetchBatchesUseCase } from '@/domain/pharma/application/use-cases/stock/batch/fetch-batches';
+import { UpdateBatchController } from './controllers/auxiliary-records/batch/update-batch.controller';
+import { UpdateBatchUseCase } from '@/domain/pharma/application/use-cases/stock/batch/update-batch';
 import { CreatePatientController } from './controllers/patient/create-patient.controller';
 import { CreatePatientUseCase } from '@/domain/pharma/application/use-cases/patient/create-patient';
 import { FetchPatientsController } from './controllers/patient/fetch-patients.controller';
@@ -154,6 +156,8 @@ import { CreateTransferController } from './controllers/movimentation/transfer/c
 import { CreateTransferUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/create-transfer';
 import { ConfirmTransferController } from './controllers/movimentation/transfer/confirm-tranfer.controller';
 import { ConfirmTransferUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/confirm-transfer';
+import { CancelTransferController } from './controllers/movimentation/transfer/cancel-transfer.controller';
+import { CancelTransferUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/cancel-transfer';
 import { FetchTransfersController } from './controllers/movimentation/transfer/fetch-transfers.controller';
 import { FetchTransfersUseCase } from '@/domain/pharma/application/use-cases/movimentation/transfer/fetch-transfers';
 import { GetTransferDetailsController } from './controllers/movimentation/transfer/get-transfer.controller';
@@ -172,6 +176,8 @@ import { FetchMovimentationUseCase } from '@/domain/pharma/application/use-cases
 import { FetchMovimentationsController } from './controllers/movimentation/fetch-movimentation.controller';
 import { ReverseExitUseCase } from '@/domain/pharma/application/use-cases/movimentation/exit/reverse-exit';
 import { ReverseExitController } from './controllers/movimentation/exit/reverse-exit.controller';
+import { CorrectMedicineEntryUseCase } from '@/domain/pharma/application/use-cases/movimentation/entry/correct-medicine-entry';
+import { CorrectMedicineEntryController } from './controllers/movimentation/entry/correct-medicine-entry.controller';
 import { DeactivateOperatorController } from './controllers/operator/deactivate-operator.controller';
 import { DeactivateOperatorUseCase } from '@/domain/pharma/application/use-cases/operator/deactivate-operator';
 import { DeleteOperatorController } from './controllers/operator/delete-operator.controller';
@@ -226,6 +232,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     CreateMonthlyMedicineUtilizationController,
     CreateTransferController,
     ConfirmTransferController,
+    CancelTransferController,
     DeactivateStockController,
     DeactivateOperatorController,
     DeleteManufacturerController,
@@ -252,6 +259,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     FetchMedicinesVariantsController,
     FetchMedicinesEntriesController,
     FetchBatchesController,
+    UpdateBatchController,
     FetchPatientsController,
     FetchDispensationsController,
     FetchBatchesStockController,
@@ -290,6 +298,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     RegisterMedicineEntryController,
     RegisterMedicineExitController,
     ReverseExitController,
+    CorrectMedicineEntryController,
     UpdateInstitutionController,
     UpdatePathologyController,
     UpdateTherapeuticClassController,
@@ -325,6 +334,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     CreateMonthlyMedicineUtilizationUseCase,
     CreateTransferUseCase,
     ConfirmTransferUseCase,
+    CancelTransferUseCase,
     DispensationPreviewUseCase,
     DispensationMedicineUseCase,
     GetDispensationDetailsUseCase,
@@ -351,6 +361,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     FetchMedicinesVariantsUseCase,
     FetchRegisterMedicinesEntriesUseCase,
     FetchBatchesUseCase,
+    UpdateBatchUseCase,
     FetchPatientsUseCase,
     FetchDispensationsUseCase,
     FetchBatchesStockUseCase,
@@ -390,6 +401,7 @@ import { GetInventoryAlertsUseCase } from '@/domain/pharma/application/use-cases
     RegisterOperatorUseCase,
     RegisterExitUseCase,
     ReverseExitUseCase,
+    CorrectMedicineEntryUseCase,
     RegisterMedicineEntryUseCase,
     UpdateInstitutionUseCase,
     UpdatePathologyUseCase,

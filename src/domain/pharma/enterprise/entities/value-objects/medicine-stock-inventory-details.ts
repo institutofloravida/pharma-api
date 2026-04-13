@@ -18,6 +18,7 @@ export interface MedicineStockInventoryDetailsProps {
   };
   batchesStock: {
     id: UniqueEntityId;
+    batchId: UniqueEntityId;
     code: string;
     quantity: number;
     expirationDate: Date;

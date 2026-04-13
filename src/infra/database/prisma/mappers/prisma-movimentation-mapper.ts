@@ -13,6 +13,9 @@ export class PrismaMovimentationMapper {
         quantity: raw.quantity,
         entryId: raw.entryId ? new UniqueEntityId(raw.entryId) : undefined,
         exitId: raw.exitId ? new UniqueEntityId(raw.exitId) : undefined,
+        correctionEntryId: raw.correctionEntryId
+          ? new UniqueEntityId(raw.correctionEntryId)
+          : undefined,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt ?? undefined,
       },
@@ -28,9 +31,9 @@ export class PrismaMovimentationMapper {
       batchStockId: movimentation.batchestockId.toString(),
       direction: movimentation.direction,
       quantity: movimentation.quantity,
-
       entryId: movimentation.entryId?.toString(),
       exitId: movimentation.exitId?.toString(),
+      correctionEntryId: movimentation.correctionEntryId?.toString(),
       createdAt: movimentation.createdAt,
       updatedAt: movimentation.updatedAt,
     };

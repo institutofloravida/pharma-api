@@ -21,6 +21,10 @@ export class PrismaMedicineEntryMapper {
           ? new UniqueEntityId(raw.movementTypeId)
           : undefined,
         transferId: raw.transferId ? new UniqueEntityId(raw.transferId) : null,
+        correctionOfEntryId: raw.correctionOfEntryId
+          ? new UniqueEntityId(raw.correctionOfEntryId)
+          : null,
+        correctedAt: raw.correctedAt ?? null,
         entryDate: raw.entryDate,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
@@ -42,6 +46,9 @@ export class PrismaMedicineEntryMapper {
       transferId: medicineEntry.transferId
         ? medicineEntry.transferId.toString()
         : null,
+      correctionOfEntryId:
+        medicineEntry.correctionOfEntryId?.toString() ?? null,
+      correctedAt: medicineEntry.correctedAt ?? null,
       entryDate: medicineEntry.entryDate,
       createdAt: medicineEntry.createdAt,
       updatedAt: medicineEntry.updatedAt,

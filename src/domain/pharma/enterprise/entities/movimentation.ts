@@ -9,6 +9,7 @@ export interface MovimentationProps {
   quantity: number;
   exitId?: UniqueEntityId;
   entryId?: UniqueEntityId;
+  correctionEntryId?: UniqueEntityId;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -42,6 +43,10 @@ export class Movimentation extends Entity<MovimentationProps> {
     return this.props.entryId;
   }
 
+  get correctionEntryId() {
+    return this.props.correctionEntryId;
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }
@@ -58,12 +63,18 @@ export class Movimentation extends Entity<MovimentationProps> {
     props: Optional<MovimentationProps, 'createdAt'>,
     id?: UniqueEntityId,
   ) {
-    if (!props.exitId && !props.entryId) {
-      throw new Error('exitId or entryId is required');
+    if (!props.exitId && !props.entryId && !props.correctionEntryId) {
+      throw new Error('exitId, entryId or correctionEntryId is required');
     }
 
-    if (props.direction === 'EXIT' && !props.exitId) {
-      throw new Error('exitId is required for EXIT direction');
+    if (
+      props.direction === 'EXIT' &&
+      !props.exitId &&
+      !props.correctionEntryId
+    ) {
+      throw new Error(
+        'exitId or correctionEntryId is required for EXIT direction',
+      );
     }
     if (props.direction === 'ENTRY' && !props.entryId) {
       throw new Error('entryId is required for ENTRY direction');

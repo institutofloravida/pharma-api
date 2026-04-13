@@ -7,6 +7,7 @@ export enum EntryType {
   MOVEMENT_TYPE = 'MOVEMENT_TYPE',
   TRANSFER = 'TRANSFER',
   INVENTORY = 'INVENTORY',
+  CORRECTION = 'CORRECTION',
 }
 
 export interface MedicineEntryProps {
@@ -17,6 +18,8 @@ export interface MedicineEntryProps {
   movementTypeId?: UniqueEntityId;
   transferId?: UniqueEntityId | null;
   operatorId: UniqueEntityId;
+  correctionOfEntryId?: UniqueEntityId | null;
+  correctedAt?: Date | null;
   createdAt: Date;
   updatedAt?: Date | null;
 }
@@ -33,6 +36,11 @@ export class MedicineEntry extends Entity<MedicineEntryProps> {
 
   get nfNumber() {
     return this.props.nfNumber;
+  }
+
+  set nfNumber(value: string | undefined) {
+    this.props.nfNumber = value;
+    this.touch();
   }
 
   get entryDate() {
@@ -80,6 +88,19 @@ export class MedicineEntry extends Entity<MedicineEntryProps> {
     this.touch();
   }
 
+  get correctionOfEntryId() {
+    return this.props.correctionOfEntryId;
+  }
+
+  get correctedAt() {
+    return this.props.correctedAt;
+  }
+
+  set correctedAt(value: Date | null | undefined) {
+    this.props.correctedAt = value;
+    this.touch();
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }
@@ -97,8 +118,9 @@ export class MedicineEntry extends Entity<MedicineEntryProps> {
     id?: UniqueEntityId,
   ) {
     if (
-      (props.entryType === EntryType.TRANSFER && !props.transferId) ||
-      (props.transferId && props.entryType === EntryType.MOVEMENT_TYPE)
+      props.entryType !== EntryType.CORRECTION &&
+      ((props.entryType === EntryType.TRANSFER && !props.transferId) ||
+        (props.transferId && props.entryType === EntryType.MOVEMENT_TYPE))
     ) {
       throw new Error('Invalid entry type');
     }

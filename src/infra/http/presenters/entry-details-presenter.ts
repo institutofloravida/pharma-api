@@ -10,6 +10,8 @@ export class EntryDetailsPresenter {
       nfNumber: entryDetails.nfNumber,
       operator: entryDetails.operator,
       stock: entryDetails.stock,
+      correctedAt: entryDetails.correctedAt ?? null,
+      correctionOfEntryId: entryDetails.correctionOfEntryId ?? null,
       medicines: entryDetails.medicines.map((medicine) => ({
         medicineStockId: medicine.medicineStockId,
         medicineName: medicine.medicineName,
@@ -18,11 +20,13 @@ export class EntryDetailsPresenter {
         unitMeasure: medicine.unitMeasure,
         complement: medicine.complement,
         batches: medicine.batches.map((batch) => ({
+          movimentationId: batch.movimentationId,
           batchNumber: batch.batchNumber,
           manufacturer: batch.manufacturer,
           manufacturingDate: batch.manufacturingDate,
           expirationDate: batch.expirationDate,
           quantity: batch.quantity,
+          originalQuantity: batch.originalQuantity ?? null,
         })),
       })),
     };

@@ -46,6 +46,10 @@ export class ConfirmTransferUseCase {
       return left(new TransferNotFoundError(transferId));
     }
 
+    if (transfer.status === TransferStatus.CANCELED) {
+      return left(new Error('Transfer has been cancelled'));
+    }
+
     if (transfer.status !== TransferStatus.PENDING) {
       return left(new Error('Transfer already completed'));
     }
@@ -56,6 +60,10 @@ export class ConfirmTransferUseCase {
 
     if (!exit) {
       return left(new Error('Exit not found for this transfer'));
+    }
+
+    if (exit.reverseAt) {
+      return left(new Error('Transfer has been cancelled'));
     }
 
     const movimentations =

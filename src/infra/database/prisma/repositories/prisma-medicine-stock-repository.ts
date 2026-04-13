@@ -517,6 +517,7 @@ export class PrismaMedicinesStockRepository
 
       return {
         id: new UniqueEntityId(batchStock.id),
+        batchId: batch.id,
         code: batch.code,
         quantity: batchStock.currentQuantity,
         expirationDate: batch.expirationDate,

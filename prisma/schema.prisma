@@ -325,17 +325,19 @@ model Dispensation {
 }
 
 model Movimentation {
-  id           String            @id @default(uuid())
-  direction    MovementDirection
-  batchStockId String            @map("batch_stock_id")
-  quantity     Int
-  exitId       String?           @map("exit_id")
-  entryId      String?           @map("entry_id")
-  createdAt    DateTime          @default(now()) @map("created_at")
-  updatedAt    DateTime?         @updatedAt @map("updated_at")
+  id                String            @id @default(uuid())
+  direction         MovementDirection
+  batchStockId      String            @map("batch_stock_id")
+  quantity          Int
+  exitId            String?           @map("exit_id")
+  entryId           String?           @map("entry_id")
+  correctionEntryId String?           @map("correction_entry_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime?         @updatedAt @map("updated_at")
 
-  entry MedicineEntry? @relation(fields: [entryId], references: [id])
-  exit  Exit?          @relation(fields: [exitId], references: [id])
+  entry           MedicineEntry? @relation("EntryMovimentation", fields: [entryId], references: [id])
+  correctionEntry MedicineEntry? @relation("CorrectionMovimentation", fields: [correctionEntryId], references: [id])
+  exit            Exit?          @relation(fields: [exitId], references: [id])
 
   batchStock BatcheStock @relation(fields: [batchStockId], references: [id])
 
@@ -346,25 +348,31 @@ enum EntryType {
   TRANSFER
   MOVEMENT_TYPE
   INVENTORY
+  CORRECTION
 }
 
 model MedicineEntry {
-  id             String    @id @default(uuid())
-  operatorId     String    @map("operator_id")
-  entryDate      DateTime  @default(now()) @map("entry_date")
-  stockId        String    @map("stock_id")
-  movementTypeId String?   @map("movement_type_id")
-  nfNumber       String?   @map("nf_number")
-  transferId     String?   @unique @map("transfer_id")
-  entryType      EntryType @map("entry_type")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime? @updatedAt @map("updated_at")
+  id                   String    @id @default(uuid())
+  operatorId           String    @map("operator_id")
+  entryDate            DateTime  @default(now()) @map("entry_date")
+  stockId              String    @map("stock_id")
+  movementTypeId       String?   @map("movement_type_id")
+  nfNumber             String?   @map("nf_number")
+  transferId           String?   @unique @map("transfer_id")
+  entryType            EntryType @map("entry_type")
+  correctionOfEntryId  String?   @map("correction_of_entry_id")
+  correctedAt          DateTime? @map("corrected_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime? @updatedAt @map("updated_at")
 
-  transfer      Transfer?       @relation(fields: [transferId], references: [id])
-  operator      Operator        @relation(fields: [operatorId], references: [id])
-  stock         Stock           @relation(fields: [stockId], references: [id])
-  movementType  MovementType?   @relation(fields: [movementTypeId], references: [id])
-  movimentation Movimentation[]
+  transfer              Transfer?       @relation(fields: [transferId], references: [id])
+  operator              Operator        @relation(fields: [operatorId], references: [id])
+  stock                 Stock           @relation(fields: [stockId], references: [id])
+  movementType          MovementType?   @relation(fields: [movementTypeId], references: [id])
+  correctionOf          MedicineEntry?  @relation("EntryCorrectionSelf", fields: [correctionOfEntryId], references: [id])
+  corrections           MedicineEntry[] @relation("EntryCorrectionSelf")
+  movimentation         Movimentation[] @relation("EntryMovimentation")
+  correctionMovimentation Movimentation[] @relation("CorrectionMovimentation")
 
   @@map("medicines_entries")
 }

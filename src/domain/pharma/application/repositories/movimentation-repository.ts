@@ -8,6 +8,14 @@ import { PaginationParams } from '@/core/repositories/pagination-params';
 export abstract class MovimentationRepository {
   abstract create(movimentation: Movimentation): Promise<void>;
 
+  /**
+   * Retorna um Map de batchStockId → delta acumulado de todas as correções
+   * feitas sobre a entrada original (positivo = entrada, negativo = saída).
+   */
+  abstract fetchCorrectionDeltas(
+    originalEntryId: string,
+  ): Promise<Map<string, number>>;
+
   abstract fetchMovimentation(
     filters: {
       institutionId?: string;

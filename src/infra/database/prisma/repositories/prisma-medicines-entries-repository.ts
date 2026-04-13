@@ -25,6 +25,28 @@ export class PrismaMedicinesEntriesRepository
     });
   }
 
+  async save(medicineEntry: MedicineEntry): Promise<void> {
+    const data = PrismaMedicineEntryMapper.toPrisma(medicineEntry);
+    await this.prisma.medicineEntry.update({
+      where: { id: data.id },
+      data: {
+        nfNumber: data.nfNumber,
+        entryDate: data.entryDate,
+        movementTypeId: data.movementTypeId,
+        correctedAt: data.correctedAt,
+        updatedAt: data.updatedAt,
+      },
+    });
+  }
+
+  async findById(entryId: string): Promise<MedicineEntry | null> {
+    const entry = await this.prisma.medicineEntry.findUnique({
+      where: { id: entryId },
+    });
+    if (!entry) return null;
+    return PrismaMedicineEntryMapper.toDomain(entry);
+  }
+
   async findMany(
     { page }: PaginationParams,
     filters: {
@@ -36,7 +58,7 @@ export class PrismaMedicinesEntriesRepository
   ): Promise<{ entries: EntryWithStock[]; meta: Meta }> {
     const { institutionId, entryDate, operatorId, stockId } = filters;
 
-    const whereClauses: string[] = [];
+    const whereClauses: string[] = [`me.entry_type != 'CORRECTION'`];
     const params: any[] = [];
     let paramIndex = 1;
 
@@ -160,6 +182,31 @@ export class PrismaMedicinesEntriesRepository
       return null;
     }
 
+    // Buscar todas as correções desta entrada e calcular deltas por batchStockId
+    const correctionEntries = await this.prisma.medicineEntry.findMany({
+      where: { correctionOfEntryId: entryId },
+      include: {
+        movimentation: true,          // deltas positivos (direction=ENTRY)
+        correctionMovimentation: true, // deltas negativos (direction=EXIT)
+      },
+    });
+
+    const deltaMap = new Map<string, number>();
+    for (const correction of correctionEntries) {
+      for (const mov of correction.movimentation) {
+        deltaMap.set(
+          mov.batchStockId,
+          (deltaMap.get(mov.batchStockId) ?? 0) + mov.quantity,
+        );
+      }
+      for (const mov of correction.correctionMovimentation) {
+        deltaMap.set(
+          mov.batchStockId,
+          (deltaMap.get(mov.batchStockId) ?? 0) - mov.quantity,
+        );
+      }
+    }
+
     const entryDetails = EntryDetails.create({
       entryDate: entry.entryDate,
       nfNumber: entry.nfNumber ?? undefined,
@@ -168,29 +215,39 @@ export class PrismaMedicinesEntriesRepository
       entryId: new UniqueEntityId(entry.id),
       entryType: EntryType[entry.entryType],
       movementType: entry.movementType?.name ?? undefined,
-      medicines: entry.movimentation.map((mov) => ({
-        medicineName:
-          mov.batchStock.medicineStock?.medicineVariant.medicine.name ?? '',
-        medicineStockId: mov.batchStock.medicineStockId,
-        dosage: mov.batchStock.medicineStock?.medicineVariant.dosage ?? '',
-        pharmaceuticalForm:
-          mov.batchStock.medicineStock?.medicineVariant.pharmaceuticalForm
-            .name ?? '',
-        unitMeasure:
-          mov.batchStock.medicineStock?.medicineVariant.unitMeasure.name ?? '',
-        complement:
-          mov.batchStock.medicineStock?.medicineVariant.complement ?? undefined,
-        batches: [
-          {
-            batchNumber: mov.batchStock.batch.code,
-            expirationDate: mov.batchStock.batch.expirationDate,
-            quantity: mov.quantity,
-            manufacturer: mov.batchStock.batch.manufacturer.name,
-            manufacturingDate:
-              mov.batchStock.batch.manufacturingDate ?? undefined,
-          },
-        ],
-      })),
+      correctedAt: entry.correctedAt ?? null,
+      correctionOfEntryId: entry.correctionOfEntryId ?? null,
+      medicines: entry.movimentation.map((mov) => {
+        const delta = deltaMap.get(mov.batchStockId) ?? 0;
+        const effectiveQuantity = mov.quantity + delta;
+        return {
+          medicineName:
+            mov.batchStock.medicineStock?.medicineVariant.medicine.name ?? '',
+          medicineStockId: mov.batchStock.medicineStockId,
+          dosage: mov.batchStock.medicineStock?.medicineVariant.dosage ?? '',
+          pharmaceuticalForm:
+            mov.batchStock.medicineStock?.medicineVariant.pharmaceuticalForm
+              .name ?? '',
+          unitMeasure:
+            mov.batchStock.medicineStock?.medicineVariant.unitMeasure.name ??
+            '',
+          complement:
+            mov.batchStock.medicineStock?.medicineVariant.complement ??
+            undefined,
+          batches: [
+            {
+              movimentationId: mov.id,
+              batchNumber: mov.batchStock.batch.code,
+              expirationDate: mov.batchStock.batch.expirationDate,
+              quantity: effectiveQuantity,
+              originalQuantity: delta !== 0 ? mov.quantity : undefined,
+              manufacturer: mov.batchStock.batch.manufacturer.name,
+              manufacturingDate:
+                mov.batchStock.batch.manufacturingDate ?? undefined,
+            },
+          ],
+        };
+      }),
     });
 
     return entryDetails;

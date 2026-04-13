@@ -65,6 +65,36 @@ export class InMemoryMovimentationRepository
     this.items.push(movimentation);
   }
 
+  async fetchCorrectionDeltas(
+    originalEntryId: string,
+  ): Promise<Map<string, number>> {
+    const entriesRepo = this.getEntriesRepository();
+    const correctionEntries = entriesRepo.items.filter(
+      (e) => e.correctionOfEntryId?.toString() === originalEntryId,
+    );
+    const correctionIds = new Set(correctionEntries.map((e) => e.id.toString()));
+
+    const deltaMap = new Map<string, number>();
+    for (const mov of this.items) {
+      const bsId = mov.batchestockId.toString();
+      if (
+        mov.direction === 'ENTRY' &&
+        mov.entryId &&
+        correctionIds.has(mov.entryId.toString())
+      ) {
+        deltaMap.set(bsId, (deltaMap.get(bsId) ?? 0) + mov.quantity);
+      }
+      if (
+        mov.direction === 'EXIT' &&
+        mov.correctionEntryId &&
+        correctionIds.has(mov.correctionEntryId.toString())
+      ) {
+        deltaMap.set(bsId, (deltaMap.get(bsId) ?? 0) - mov.quantity);
+      }
+    }
+    return deltaMap;
+  }
+
   async fetchMovimentation(
     filters: {
       institutionId?: string;

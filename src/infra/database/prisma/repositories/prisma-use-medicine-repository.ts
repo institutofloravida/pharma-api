@@ -119,6 +119,7 @@ export class PrismaUseMedicinesRepository implements UseMedicinesRepository {
     AND um.month = ${month}
   GROUP BY 
     um."id", mv."complement", mv."dosage", pf."name", um2."acronym", m."name", ms."current_quantity"
+  ORDER BY m."name" ASC
 `,
     );
 

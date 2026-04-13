@@ -11,6 +11,13 @@ export class InMemoryBatchesRepository implements BatchesRepository {
     this.items.push(batch)
   }
 
+  async save(batch: Batch) {
+    const index = this.items.findIndex((item) => item.id.equal(batch.id))
+    if (index >= 0) {
+      this.items[index] = batch
+    }
+  }
+
   async findById(id: string) {
     const batch = this.items.find((item) => item.id.toString() === id)
     if (!batch) {

@@ -4,6 +4,7 @@ import { Meta } from '@/core/repositories/meta'
 
 export abstract class BatchesRepository {
   abstract create(batch: Batch): Promise<void>
+  abstract save(batch: Batch): Promise<void>
   abstract findById(id: string): Promise<Batch | null>
   abstract findMany(
     params: PaginationParams,

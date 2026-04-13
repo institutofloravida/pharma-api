@@ -22,6 +22,44 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
     });
   }
 
+  async fetchCorrectionDeltas(
+    originalEntryId: string,
+  ): Promise<Map<string, number>> {
+    const [entryCorrections, exitCorrections] = await this.prisma.$transaction([
+      // Movimentações de ENTRADA criadas por correções da entrada original
+      this.prisma.movimentation.findMany({
+        where: {
+          direction: 'ENTRY',
+          entry: { correctionOfEntryId: originalEntryId },
+        },
+        select: { batchStockId: true, quantity: true },
+      }),
+      // Movimentações de SAÍDA criadas por correções da entrada original
+      this.prisma.movimentation.findMany({
+        where: {
+          direction: 'EXIT',
+          correctionEntry: { correctionOfEntryId: originalEntryId },
+        },
+        select: { batchStockId: true, quantity: true },
+      }),
+    ]);
+
+    const deltaMap = new Map<string, number>();
+    for (const mov of entryCorrections) {
+      deltaMap.set(
+        mov.batchStockId,
+        (deltaMap.get(mov.batchStockId) ?? 0) + mov.quantity,
+      );
+    }
+    for (const mov of exitCorrections) {
+      deltaMap.set(
+        mov.batchStockId,
+        (deltaMap.get(mov.batchStockId) ?? 0) - mov.quantity,
+      );
+    }
+    return deltaMap;
+  }
+
   async fetchMovimentation(
     filters: {
       institutionId?: string;
@@ -105,14 +143,10 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
         ? {
             exit: {
               ...((startDate || endDate) && {
-                ...(startDate && {
-                  exitDate: { gte: new Date(startDate.setHours(0, 0, 0, 0)) },
-                }),
-                ...(endDate && {
-                  exitDate: {
-                    lte: new Date(endDate.setHours(23, 59, 59, 999)),
-                  },
-                }),
+                exitDate: {
+                  ...(startDate && { gte: new Date(startDate.setHours(0, 0, 0, 0)) }),
+                  ...(endDate && { lte: new Date(endDate.setHours(23, 59, 59, 999)) }),
+                },
               }),
               ...(exitType && {
                 exitType: { equals: $Enums.ExitType[exitType] },
@@ -123,16 +157,10 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
           ? {
               ...((startDate || endDate) && {
                 entry: {
-                  ...(startDate && {
-                    entryDate: {
-                      gte: new Date(startDate.setHours(0, 0, 0, 0)),
-                    },
-                  }),
-                  ...(endDate && {
-                    entryDate: {
-                      lte: new Date(endDate.setHours(23, 59, 59, 999)),
-                    },
-                  }),
+                  entryDate: {
+                    ...(startDate && { gte: new Date(startDate.setHours(0, 0, 0, 0)) }),
+                    ...(endDate && { lte: new Date(endDate.setHours(23, 59, 59, 999)) }),
+                  },
                 },
               }),
             }
@@ -154,30 +182,18 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
                 OR: [
                   {
                     entry: {
-                      ...(startDate && {
-                        entryDate: {
-                          gte: new Date(startDate.setHours(0, 0, 0, 0)),
-                        },
-                      }),
-                      ...(endDate && {
-                        entryDate: {
-                          lte: new Date(endDate.setHours(23, 59, 59, 999)),
-                        },
-                      }),
+                      entryDate: {
+                        ...(startDate && { gte: new Date(startDate.setHours(0, 0, 0, 0)) }),
+                        ...(endDate && { lte: new Date(endDate.setHours(23, 59, 59, 999)) }),
+                      },
                     },
                   },
                   {
                     exit: {
-                      ...(startDate && {
-                        exitDate: {
-                          gte: new Date(startDate.setHours(0, 0, 0, 0)),
-                        },
-                      }),
-                      ...(endDate && {
-                        exitDate: {
-                          lte: new Date(endDate.setHours(23, 59, 59, 999)),
-                        },
-                      }),
+                      exitDate: {
+                        ...(startDate && { gte: new Date(startDate.setHours(0, 0, 0, 0)) }),
+                        ...(endDate && { lte: new Date(endDate.setHours(23, 59, 59, 999)) }),
+                      },
                     },
                   },
                 ],
@@ -226,6 +242,13 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
                   id: true,
                   name: true,
                 },
+              },
+            },
+          },
+          correctionEntry: {
+            select: {
+              operator: {
+                select: { id: true, name: true },
               },
             },
           },
@@ -282,15 +305,19 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
         operator:
           movimentation.direction === 'ENTRY'
             ? (movimentation.entry?.operator.name ?? '')
-            : (movimentation.exit?.operator.name ?? ''),
+            : movimentation.correctionEntry
+              ? (movimentation.correctionEntry.operator.name ?? '')
+              : (movimentation.exit?.operator.name ?? ''),
         movementType:
           movimentation.direction === 'ENTRY'
             ? movimentation.entry?.entryType === 'MOVEMENT_TYPE'
               ? (movimentation.entry.movementType?.name ?? '')
               : (movimentation.entry?.entryType ?? '')
-            : movimentation.exit?.exitType === 'MOVEMENT_TYPE'
-              ? (movimentation.exit.movementType?.name ?? '')
-              : (movimentation.exit?.exitType ?? ''),
+            : movimentation.correctionEntry
+              ? 'CORRECTION'
+              : movimentation.exit?.exitType === 'MOVEMENT_TYPE'
+                ? (movimentation.exit.movementType?.name ?? '')
+                : (movimentation.exit?.exitType ?? ''),
         stock: movimentation.batchStock.stock.name,
         medicine: movimentation.batchStock.medicineVariant.medicine.name,
         dosage: movimentation.batchStock.medicineVariant.dosage,
@@ -308,7 +335,9 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
         operatorId:
           movimentation.direction === 'ENTRY'
             ? new UniqueEntityId(movimentation.entry?.operator.id)
-            : new UniqueEntityId(movimentation.exit?.operator.id),
+            : movimentation.correctionEntry
+              ? new UniqueEntityId(movimentation.correctionEntry.operator.id)
+              : new UniqueEntityId(movimentation.exit?.operator.id),
         pharmaceuticalFormId: new UniqueEntityId(
           movimentation.batchStock.medicineVariant.pharmaceuticalForm.id,
         ),

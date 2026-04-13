@@ -413,8 +413,8 @@ export class PrismaDispensationsMedicinesRepository
     ORDER BY DATE(d."dispensation_date") ASC
     `,
       institutionId,
-      startDate,
-      endDate,
+      new Date(startDate.setHours(0, 0, 0, 0)),
+      new Date(endDate.setHours(23, 59, 59, 999)),
     );
 
     const totalCount = dispensesGroupedByDay.reduce(

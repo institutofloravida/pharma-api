@@ -6,6 +6,8 @@ import { EntryDetails } from '../../enterprise/entities/value-objects/entry-deta
 
 export abstract class MedicinesEntriesRepository {
   abstract create(medicineEntry: MedicineEntry): Promise<void>;
+  abstract save(medicineEntry: MedicineEntry): Promise<void>;
+  abstract findById(entryId: string): Promise<MedicineEntry | null>;
   abstract findMany(
     params: PaginationParams,
     filters: {
