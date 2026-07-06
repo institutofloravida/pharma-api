@@ -71,6 +71,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       medicineVariantId?: string;
       medicineStockId?: string;
       batcheStockId?: string;
+      manufacturerId?: string;
       quantity?: number;
       movementTypeId?: string;
       direction?: MovementDirection;
@@ -85,6 +86,7 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
       institutionId,
       startDate,
       batcheStockId,
+      manufacturerId,
       direction,
       exitType,
       medicineId,
@@ -136,6 +138,11 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
         ...(institutionId && {
           stock: {
             institutionId: { equals: institutionId },
+          },
+        }),
+        ...(manufacturerId && {
+          batch: {
+            manufacturerId: { equals: manufacturerId },
           },
         }),
       },
@@ -268,6 +275,8 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
               batch: {
                 select: {
                   code: true,
+                  manufacturerId: true,
+                  manufacturer: { select: { name: true } },
                 },
               },
               stock: { select: { name: true } },
@@ -298,6 +307,10 @@ export class PrismaMovimentationRepository implements MovimentationRepository {
         ),
         batchStockId: new UniqueEntityId(movimentation.batchStockId),
         batchCode: movimentation.batchStock.batch.code,
+        manufacturer: movimentation.batchStock.batch.manufacturer.name,
+        manufacturerId: new UniqueEntityId(
+          movimentation.batchStock.batch.manufacturerId,
+        ),
         movementDate: movimentation.createdAt,
         exitType: movimentation.exit?.exitType
           ? ExitType[movimentation.exit.exitType]

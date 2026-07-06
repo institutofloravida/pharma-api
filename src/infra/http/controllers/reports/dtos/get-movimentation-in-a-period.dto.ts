@@ -78,6 +78,14 @@ export class GetMovimentationInAPeriodDto {
 
   @ApiPropertyOptional({
     example: 'f30579b4-d4d9-46f8-9e59-645d45df1ab3',
+    description: 'ID do fabricante para filtrar as movimentações.',
+  })
+  @IsOptional()
+  @IsString({ message: 'O ID do fabricante deve ser uma string.' })
+  manufacturerId?: string
+
+  @ApiPropertyOptional({
+    example: 'f30579b4-d4d9-46f8-9e59-645d45df1ab3',
     description: 'ID do tipo de moviementação para filtrar as movimentações.',
   })
   @IsOptional()

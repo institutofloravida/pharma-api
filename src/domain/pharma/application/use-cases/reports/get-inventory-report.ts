@@ -11,6 +11,7 @@ interface GetInventoryReportUseCaseRequest {
   therapeuticClasses?: string[];
   isCloseToExpiring?: boolean;
   isLowStock?: boolean;
+  manufacturerId?: string;
 }
 
 type GetInventoryReportUseCaseResponse = Either<
@@ -32,6 +33,7 @@ export class GetInventoryReportUseCase {
     therapeuticClasses,
     isCloseToExpiring,
     isLowStock,
+    manufacturerId,
   }: GetInventoryReportUseCaseRequest): Promise<GetInventoryReportUseCaseResponse> {
     const { inventory, meta } =
       await this.medicinesStockRepository.fetchInventory(null, institutionId, {
@@ -40,6 +42,7 @@ export class GetInventoryReportUseCase {
         therapeuticClasses,
         isCloseToExpiring,
         isLowStock,
+        manufacturerId,
       });
 
     return right({

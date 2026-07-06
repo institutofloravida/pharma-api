@@ -7,6 +7,7 @@ export class MovimentationPresenter {
       direction: movimentation.direction,
       medicine: movimentation.medicine,
       batchCode: movimentation.batchCode,
+      manufacturer: movimentation.manufacturer,
       complement: movimentation.complement,
       dosage: movimentation.dosage,
       pharmaceuticalForm: movimentation.pharmaceuticalForm,

@@ -276,6 +276,7 @@ export class PrismaDispensationsMedicinesRepository
     endDate?: Date,
     patientId?: string,
     operatorId?: string,
+    manufacturerId?: string,
   ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }> {
     const whereClauses: string[] = ["e.exit_type = 'DISPENSATION'"];
     const params: any[] = [];
@@ -300,6 +301,16 @@ export class PrismaDispensationsMedicinesRepository
     if (operatorId) {
       whereClauses.push(`o.id = $${paramIndex++}`);
       params.push(operatorId);
+    }
+    if (manufacturerId) {
+      whereClauses.push(`EXISTS (
+        SELECT 1
+        FROM movimentation mtn2
+        INNER JOIN batches_stocks bs2 ON bs2.id = mtn2.batch_stock_id
+        INNER JOIN batches b2 ON b2.id = bs2.batch_id
+        WHERE mtn2.exit_id = e.id AND b2.manufacturer_id = $${paramIndex++}
+      )`);
+      params.push(manufacturerId);
     }
 
     const whereSQL =

@@ -35,6 +35,7 @@ export abstract class DispensationsMedicinesRepository {
     endDate?: Date,
     patientId?: string,
     operatorId?: string,
+    manufacturerId?: string,
   ): Promise<{ dispensations: DispensationWithMedicines[]; meta: MetaReport }>;
   abstract fetchDispensesPerDay(
     institutionId: string,

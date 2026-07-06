@@ -22,6 +22,8 @@ export interface MovimentationDetailsProps {
   medicineStockId: UniqueEntityId;
   batchCode: string;
   batchStockId: UniqueEntityId;
+  manufacturer?: string;
+  manufacturerId?: UniqueEntityId;
   quantity: number;
   movementDate: Date;
   movementType?: string;
@@ -100,6 +102,14 @@ export class MovimentationDetails extends ValueObject<MovimentationDetailsProps>
 
   get batchStockId() {
     return this.props.batchStockId;
+  }
+
+  get manufacturer() {
+    return this.props.manufacturer;
+  }
+
+  get manufacturerId() {
+    return this.props.manufacturerId;
   }
 
   get quantity() {

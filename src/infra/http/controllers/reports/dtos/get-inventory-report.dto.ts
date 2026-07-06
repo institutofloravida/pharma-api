@@ -45,6 +45,14 @@ export class GetInventoryReportDto {
   therapeuticClassesIds?: string[];
 
   @ApiPropertyOptional({
+    example: 'c3a8f1ee-5d77-4b01-80a5-e801745f0723',
+    description: 'ID do fabricante para filtrar o inventário',
+  })
+  @IsOptional()
+  @IsUUID()
+  manufacturerId?: string;
+
+  @ApiPropertyOptional({
     example: true,
     description: 'Indica se o estoque está baixo',
   })

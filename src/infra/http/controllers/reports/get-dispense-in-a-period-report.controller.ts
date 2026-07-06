@@ -26,6 +26,7 @@ export class GetDispenseInAPeriodController {
       endDate,
       operatorId,
       patientId,
+      manufacturerId,
     } = queryParams
     const result = await this.GetDispensesInAPeriod.execute({
       institutionId,
@@ -33,6 +34,7 @@ export class GetDispenseInAPeriodController {
       endDate: new Date(endDate),
       operatorId,
       patientId,
+      manufacturerId,
     })
 
     if (result.isLeft()) {

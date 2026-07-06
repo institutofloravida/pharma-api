@@ -18,6 +18,7 @@ interface GetMovimentationInAPeriodUseCaseRequest {
   stockId?: string
   medicineStockId?: string;
   batcheStockId?: string;
+  manufacturerId?: string;
   quantity?: number;
   movementTypeId?: string;
   exitType?: ExitType;
@@ -43,6 +44,7 @@ export class GetMovimentationInAPeriodUseCase {
     startDate,
     operatorId,
     batcheStockId,
+    manufacturerId,
     exitType,
     medicineId,
     stockId,
@@ -61,6 +63,7 @@ export class GetMovimentationInAPeriodUseCase {
       stockId,
       medicineStockId,
       batcheStockId,
+      manufacturerId,
       movementTypeId,
       operatorId,
       quantity,

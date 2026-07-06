@@ -284,11 +284,12 @@ export class PrismaMedicinesStockRepository
       therapeuticClasses?: string[];
       isCloseToExpiring?: boolean;
       isLowStock?: boolean;
+      manufacturerId?: string;
     },
   ): Promise<{ inventory: MedicineStockInventory[]; meta: Meta }> {
     const page = pagination?.page ?? 1;
     const perPage = pagination?.perPage ?? 10;
-    const { isLowStock, medicineName, stockId, therapeuticClasses } = filters;
+    const { isLowStock, medicineName, stockId, therapeuticClasses, manufacturerId } = filters;
     const whereClause: Prisma.MedicineStockWhereInput = {
       stock: {
         institution: {
@@ -301,6 +302,14 @@ export class PrismaMedicinesStockRepository
         },
       }),
       ...(stockId && { stockId }),
+      ...(manufacturerId && {
+        batchesStocks: {
+          some: {
+            currentQuantity: { gt: 0 },
+            batch: { manufacturerId: { equals: manufacturerId } },
+          },
+        },
+      }),
       medicineVariant: {
         medicine: {
           name: {
@@ -347,9 +356,10 @@ export class PrismaMedicinesStockRepository
           },
           batchesStocks: {
             where: {
-              currentQuantity: {
-                gt: 0,
-              },
+              currentQuantity: { gt: 0 },
+              ...(manufacturerId && {
+                batch: { manufacturerId: { equals: manufacturerId } },
+              }),
             },
             select: {
               id: true,
@@ -366,6 +376,59 @@ export class PrismaMedicinesStockRepository
 
     const inventoryMaped = await Promise.all(
       inventory.map(async (medicineStock) => {
+        if (manufacturerId) {
+          const [available, unavailable] = await this.prisma.$transaction([
+            this.prisma.batcheStock.aggregate({
+              where: {
+                medicineStockId: medicineStock.id,
+                currentQuantity: { gt: 0 },
+                batch: {
+                  manufacturerId: { equals: manufacturerId },
+                  expirationDate: { gt: new Date() },
+                },
+              },
+              _sum: { currentQuantity: true },
+            }),
+            this.prisma.batcheStock.aggregate({
+              where: {
+                medicineStockId: medicineStock.id,
+                currentQuantity: { gt: 0 },
+                batch: {
+                  manufacturerId: { equals: manufacturerId },
+                  expirationDate: { lte: new Date() },
+                },
+              },
+              _sum: { currentQuantity: true },
+            }),
+          ]);
+          const availableQty = available._sum.currentQuantity ?? 0;
+          const unavailableQty = unavailable._sum.currentQuantity ?? 0;
+
+          return MedicineStockInventory.create({
+            stockId: new UniqueEntityId(medicineStock.stock.id),
+            minimumLevel: medicineStock.minimumLevel,
+            dosage: medicineStock.medicineVariant.dosage,
+            unitMeasure: medicineStock.medicineVariant.unitMeasure.acronym,
+            medicine: medicineStock.medicineVariant.medicine.name,
+            complement: medicineStock.medicineVariant.complement ?? undefined,
+            pharmaceuticalForm:
+              medicineStock.medicineVariant.pharmaceuticalForm.name,
+            quantity: {
+              current: availableQty + unavailableQty,
+              available: availableQty,
+              unavailable: unavailableQty,
+            },
+            stock: medicineStock.stock.name,
+            medicineStockId: new UniqueEntityId(medicineStock.id),
+            medicineVariantId: new UniqueEntityId(
+              medicineStock.medicineVariant.id,
+            ),
+            batchesStockIds: medicineStock.batchesStocks.map(
+              (item) => new UniqueEntityId(item.id),
+            ),
+          });
+        }
+
         const totalQuantityBatchesOnStockExpired =
           await this.prisma.batcheStock.aggregate({
             where: {
@@ -554,6 +617,7 @@ export class PrismaMedicinesStockRepository
       medicineName?: string;
       therapeuticClasses?: string[];
       isLowStock?: boolean;
+      manufacturerId?: string;
     },
     options?: {
       includeBatches?: boolean;
@@ -589,7 +653,7 @@ export class PrismaMedicinesStockRepository
     }>;
     meta: Meta;
   }> {
-    const { stockId, medicineName, therapeuticClasses, isLowStock } = filters;
+    const { stockId, medicineName, therapeuticClasses, isLowStock, manufacturerId } = filters;
     const includeBatches = options?.includeBatches ?? false;
 
     const whereClause: Prisma.MedicineStockWhereInput = {
@@ -597,6 +661,14 @@ export class PrismaMedicinesStockRepository
       ...(stockId && { stockId }),
       ...(isLowStock && {
         currentQuantity: { lt: this.prisma.medicineStock.fields.minimumLevel },
+      }),
+      ...(manufacturerId && {
+        batchesStocks: {
+          some: {
+            currentQuantity: { gt: 0 },
+            batch: { manufacturerId: { equals: manufacturerId } },
+          },
+        },
       }),
       medicineVariant: {
         medicine: {
@@ -708,6 +780,9 @@ export class PrismaMedicinesStockRepository
           where: {
             medicineStockId: ms.id,
             currentQuantity: { gt: 0 },
+            ...(manufacturerId && {
+              batch: { manufacturerId: { equals: manufacturerId } },
+            }),
           },
           include: {
             batch: {
@@ -715,6 +790,7 @@ export class PrismaMedicinesStockRepository
             },
           },
         });
+        let currentSum = 0;
         const batches = batchesWithBatch.map((bs) => {
           const isExpired = bs.batch.expirationDate <= new Date();
           const isCloseToExpiration =
@@ -722,6 +798,7 @@ export class PrismaMedicinesStockRepository
             bs.batch.expirationDate <=
               new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
           if (isExpired) expiredSum += bs.currentQuantity;
+          currentSum += bs.currentQuantity;
           return {
             id: bs.id,
             code: bs.batch.code,
@@ -734,6 +811,7 @@ export class PrismaMedicinesStockRepository
           };
         });
 
+        const current = manufacturerId ? currentSum : ms.currentQuantity;
         medicineEntry.medicineStocks.push({
           medicineStockId: ms.id,
           medicineVariantId: ms.medicineVariant.id,
@@ -743,11 +821,52 @@ export class PrismaMedicinesStockRepository
           complement: ms.medicineVariant.complement ?? undefined,
           minimumLevel: ms.minimumLevel,
           quantity: {
-            current: ms.currentQuantity,
-            available: ms.currentQuantity - expiredSum,
+            current,
+            available: current - expiredSum,
             unavailable: expiredSum,
           },
           batchesStocks: batches,
+        });
+      } else if (manufacturerId) {
+        const [available, unavailable] = await this.prisma.$transaction([
+          this.prisma.batcheStock.aggregate({
+            where: {
+              medicineStockId: ms.id,
+              currentQuantity: { gt: 0 },
+              batch: {
+                manufacturerId: { equals: manufacturerId },
+                expirationDate: { gt: new Date() },
+              },
+            },
+            _sum: { currentQuantity: true },
+          }),
+          this.prisma.batcheStock.aggregate({
+            where: {
+              medicineStockId: ms.id,
+              currentQuantity: { gt: 0 },
+              batch: {
+                manufacturerId: { equals: manufacturerId },
+                expirationDate: { lte: new Date() },
+              },
+            },
+            _sum: { currentQuantity: true },
+          }),
+        ]);
+        const availableQty = available._sum.currentQuantity ?? 0;
+        const unavailableQty = unavailable._sum.currentQuantity ?? 0;
+        medicineEntry.medicineStocks.push({
+          medicineStockId: ms.id,
+          medicineVariantId: ms.medicineVariant.id,
+          pharmaceuticalForm: ms.medicineVariant.pharmaceuticalForm.name,
+          unitMeasure: ms.medicineVariant.unitMeasure.acronym,
+          dosage: ms.medicineVariant.dosage,
+          complement: ms.medicineVariant.complement ?? undefined,
+          minimumLevel: ms.minimumLevel,
+          quantity: {
+            current: availableQty + unavailableQty,
+            available: availableQty,
+            unavailable: unavailableQty,
+          },
         });
       } else {
         // compute via aggregate for expired quantity

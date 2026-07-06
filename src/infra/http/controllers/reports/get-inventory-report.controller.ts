@@ -32,6 +32,7 @@ export class GetInventoryReportController {
       therapeuticClassesIds,
       group,
       includeBatches,
+      manufacturerId,
     } = queryParams;
 
     if (group) {
@@ -42,6 +43,7 @@ export class GetInventoryReportController {
         isLowStock,
         therapeuticClasses: therapeuticClassesIds,
         includeBatches,
+        manufacturerId,
       });
 
       if (result.isLeft()) {
@@ -61,6 +63,7 @@ export class GetInventoryReportController {
       medicineName,
       isLowStock,
       therapeuticClasses: therapeuticClassesIds,
+      manufacturerId,
     });
 
     if (result.isLeft()) {

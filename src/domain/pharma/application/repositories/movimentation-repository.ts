@@ -27,6 +27,7 @@ export abstract class MovimentationRepository {
       medicineVariantId?: string;
       medicineStockId?: string;
       batcheStockId?: string;
+      manufacturerId?: string;
       quantity?: number;
       movementTypeId?: string;
       direction?: MovementDirection;

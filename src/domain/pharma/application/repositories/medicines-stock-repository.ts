@@ -47,6 +47,7 @@ export abstract class MedicinesStockRepository {
       isCloseToExpiring?: boolean;
       isLowStock?: boolean;
       includeZero?: boolean;
+      manufacturerId?: string;
     },
   ): Promise<{ inventory: MedicineStockInventory[]; meta: Meta }>;
   abstract getInventoryByMedicineStockId(
@@ -60,6 +61,7 @@ export abstract class MedicinesStockRepository {
       medicineName?: string;
       therapeuticClasses?: string[];
       isLowStock?: boolean;
+      manufacturerId?: string;
     },
     options?: {
       includeBatches?: boolean;

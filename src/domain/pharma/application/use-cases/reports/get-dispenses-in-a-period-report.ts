@@ -10,6 +10,7 @@ interface GetDispenseInAPeriodUseCaseRequest {
   endDate: Date;
   patientId?: string;
   operatorId?: string;
+  manufacturerId?: string;
 }
 
 type GetDispenseInAPeriodUseCaseResponse = Either<
@@ -32,6 +33,7 @@ export class GetDispenseInAPeriodUseCase {
     startDate,
     patientId,
     operatorId,
+    manufacturerId,
   }: GetDispenseInAPeriodUseCaseRequest): Promise<GetDispenseInAPeriodUseCaseResponse> {
     const { dispensations, meta } =
       await this.dispensationRepository.getDispensationsInAPeriod(
@@ -40,6 +42,7 @@ export class GetDispenseInAPeriodUseCase {
         endDate,
         patientId,
         operatorId,
+        manufacturerId,
       )
     return right({
       dispenses: dispensations,

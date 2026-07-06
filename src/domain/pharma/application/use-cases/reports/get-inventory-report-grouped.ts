@@ -10,6 +10,7 @@ interface GetInventoryReportGroupedUseCaseRequest {
   therapeuticClasses?: string[];
   isLowStock?: boolean;
   includeBatches?: boolean;
+  manufacturerId?: string;
 }
 
 type GetInventoryReportGroupedUseCaseResponse = Either<
@@ -58,6 +59,7 @@ export class GetInventoryReportGroupedUseCase {
     therapeuticClasses,
     isLowStock,
     includeBatches,
+    manufacturerId,
   }: GetInventoryReportGroupedUseCaseRequest): Promise<GetInventoryReportGroupedUseCaseResponse> {
     const { stocks, meta } =
       await this.medicinesStockRepository.fetchInventoryReportGrouped(
@@ -67,6 +69,7 @@ export class GetInventoryReportGroupedUseCase {
           medicineName,
           therapeuticClasses,
           isLowStock,
+          manufacturerId,
         },
         { includeBatches },
       );
